@@ -53,11 +53,17 @@ Token ScannerGetNextToken(Scanner* scan)
 	switch (next_char)
 	{
 	case '{':
+		return TKN_LEFT_CURLY;
 	case '}':
+		return TKN_RIGHT_CURLY;
 	case '(':
+		return TKN_LEFT_PAREN;
 	case ')':
+		return TKN_RIGHT_PAREN;
 	case '[':
+		return TKN_LEFT_SQUARE;
 	case ']':
+		return TKN_RIGHT_SQUARE;
 	case '+':
 		return impl_scanner_handle_plus(scan);
 	case '-':

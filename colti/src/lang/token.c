@@ -128,6 +128,19 @@ const char* TokenToString(Token tkn)
 	case TKN_SEMICOLON:
 		return "TKN_SEMICOLON";
 
+	case TKN_LEFT_CURLY:
+		return "TKN_LEFT_CURLY";
+	case TKN_RIGHT_CURLY:
+		return "TKN_RIGHT_CURLY";
+	case TKN_LEFT_PAREN:
+		return "TKN_LEFT_PAREN";
+	case TKN_RIGHT_PAREN:
+		return "TKN_RIGHT_PAREN";
+	case TKN_LEFT_SQUARE:
+		return "TKN_LEFT_SQUARE";
+	case TKN_RIGHT_SQUARE:
+		return "TKN_RIGHT_SQUARE";
+
 	case TKN_EOF:
 		return "TKN_EOF";
 	case TKN_ERROR:

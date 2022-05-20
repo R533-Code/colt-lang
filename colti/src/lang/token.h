@@ -140,6 +140,20 @@ typedef enum
 	/// @brief ;
 	TKN_SEMICOLON,
 
+	/// @brief {
+	TKN_LEFT_CURLY,
+	/// @brief }
+	TKN_RIGHT_CURLY,
+	/// @brief (
+	TKN_LEFT_PAREN,
+	/// @brief )
+	TKN_RIGHT_PAREN,
+	/// @brief [
+	TKN_LEFT_SQUARE,
+	/// @brief ]
+	TKN_RIGHT_SQUARE,
+
+
 	/// @brief Returned after the whole string is parsed
 	TKN_EOF,
 	/// @brief Returned for unterminated string and not recognized characters
