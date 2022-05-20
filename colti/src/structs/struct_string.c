@@ -295,6 +295,29 @@ bool StringViewEqual(StringView lhs, StringView rhs)
 	return memcmp(lhs.start, rhs.start, lhs.end - lhs.start) == 0;
 }
 
+bool StringViewContains(StringView lhs, StringView rhs)
+{	
+	for (size_t i = 0; i < (lhs.end - lhs.start) - (rhs.end - rhs.start); i++)
+	{
+		if (lhs.start[i] == rhs.start[0])
+		{
+			bool found = true;
+			for (size_t j = 1; j < (rhs.end - rhs.start); j++)
+			{
+				if (lhs.start[i + j] != rhs.start[j])
+				{
+					found = false;
+					break;
+				}
+			}
+			if (found)
+				return found;
+			continue;
+		}
+	}
+	return false;	
+}
+
 /*****************************************
 IMPLEMENTATION HELPERS
 *****************************************/

@@ -159,6 +159,12 @@ void StringViewPrint(const StringView strv);
 /// @return True if the content pointed by the views is the same
 bool StringViewEqual(StringView lhs, StringView rhs);
 
+/// @brief Check if a string view contains another one
+/// @param lhs The string in which to search
+/// @param rhs The string to search for
+/// @return True if 'lhs' contains 'rhs'
+bool StringViewContains(StringView lhs, StringView rhs);
+
 /*****************************************
 IMPLEMENTATION HELPERS
 *****************************************/
