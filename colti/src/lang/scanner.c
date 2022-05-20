@@ -176,6 +176,10 @@ Token impl_scanner_handle_identifier(Scanner* scan, char current_char)
 		StringAppendChar(&scan->parsed_identifier, next_char);
 		next_char = impl_get_next_char(scan);
 	}
+	//rewind back a char so that the next time impl_get_next_char is called
+	//we return the character that was not alnum
+	if (next_char != EOF)
+		scan->offset--;
 
 	return impl_token_identifier_or_keyword(&scan->parsed_identifier);
 }
@@ -211,7 +215,12 @@ Token impl_scanner_handle_digit(Scanner* scan, char current_char)
 		}
 		//Handle the different bases: 0x, 0b, 0o
 		after_0 = (char)tolower(impl_get_next_char(scan)); //consume the x|b|o
-		impl_parse_alnum(scan);
+
+		//rewind back a char so that the next time impl_get_next_char is called
+		//we return the character that was not alnum
+		if (impl_parse_alnum(scan) != EOF)
+			scan->offset--;
+
 		if (scan->parsed_identifier.size == 2) //Contains only the '0'
 		{
 			const char* range_str;
@@ -261,6 +270,11 @@ Token impl_scanner_handle_digit(Scanner* scan, char current_char)
 		//Parse as many digits as possible
 		(void)impl_parse_digits(scan);
 	}
+
+	//rewind back a char so that the next time impl_get_next_char is called
+	//we return the character that was not alnum
+	if (next_char != EOF)
+		scan->offset--;
 
 	if (isfloat)
 		return impl_token_str_to_double(scan);
@@ -353,7 +367,44 @@ Token impl_scanner_handle_slash(Scanner* scan)
 
 Token impl_scanner_handle_dot(Scanner* scan)
 {
-	//TODO: float or just point handling
+	if (isdigit(impl_peek_next_char(scan, 0)))
+	{
+		//Clear the string
+		scan->parsed_identifier.size = 1;
+		scan->parsed_identifier.ptr[0] = '\0';
+
+		StringAppendChar(&scan->parsed_identifier, '.');
+
+		char next_char = impl_parse_digits(scan);
+		//Parse as many digits as possible, and check if parsing stopped after hitting an 'e'
+		if (next_char == 'e')
+		{
+			StringAppendChar(&scan->parsed_identifier, next_char);
+			next_char = impl_peek_next_char(scan, 0);
+
+			// .[0-9]+?e[+-][0-9]+ is a float
+			if (next_char == '+' || next_char == '-' || isdigit(next_char))
+			{
+				StringAppendChar(&scan->parsed_identifier, next_char);
+				next_char = impl_get_next_char(scan);
+				if (next_char == '+') //skip the + after the exponent
+					next_char = impl_get_next_char(scan);
+
+				StringAppendChar(&scan->parsed_identifier, next_char);
+
+				//Parse as many digits as possible
+				(void)impl_parse_digits(scan);
+
+			}
+		}
+		//rewind back a char so that the next time impl_get_next_char is called
+		//we return the character that was not alnum
+		if (next_char != EOF)
+			scan->offset--;
+		return impl_token_str_to_double(scan);
+	}
+	else
+		return TKN_DOT;
 }
 
 Token impl_scanner_handle_less(Scanner* scan)
