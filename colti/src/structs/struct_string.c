@@ -297,12 +297,12 @@ bool StringViewEqual(StringView lhs, StringView rhs)
 
 bool StringViewContains(StringView lhs, StringView rhs)
 {	
-	for (size_t i = 0; i < (lhs.end - lhs.start) - (rhs.end - rhs.start); i++)
+	for (size_t i = 0; i < (uint64_t)(lhs.end - lhs.start) - (uint64_t)(rhs.end - rhs.start); i++)
 	{
 		if (lhs.start[i] == rhs.start[0])
 		{
 			bool found = true;
-			for (size_t j = 1; j < (rhs.end - rhs.start); j++)
+			for (size_t j = 1; j < (uint64_t)(rhs.end - rhs.start); j++)
 			{
 				if (lhs.start[i + j] != rhs.start[j])
 				{
