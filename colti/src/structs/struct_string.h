@@ -104,6 +104,12 @@ void StringAppendString(String* str, const char* what);
 /// @return True if the strings are equal
 bool StringEqual(const String* lhs, const String* rhs);
 
+/// @brief Check if a String contains 'what'
+/// @param str The String in which to check
+/// @param what The string to search for
+/// @return True if the 'str' contains 'what'
+bool StringContains(const String* str, const char* what);
+
 /// @brief Fills a string with the specified character
 /// @param str The string to modify
 /// @param character The character with which to fill the string

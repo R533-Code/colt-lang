@@ -195,6 +195,32 @@ bool StringEqual(const String* lhs, const String* rhs)
 	return memcmp(lhs->ptr, rhs->ptr, lhs->size - 1) == 0;	
 }
 
+bool StringContains(const String* str, const char* what)
+{
+	colti_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
+	size_t what_size = strlen(what);
+
+	for (size_t i = 0; i < str->size - what_size; i++)
+	{
+		if (str->ptr[i] == what[0])
+		{
+			bool found = true;
+			for (size_t j = 1; j < what_size; j++)
+			{
+				if (str->ptr[i + j] != what[j])
+				{
+					found = false;
+					break;
+				}
+			}
+			if (found)
+				return found;
+			continue;
+		}
+	}
+	return false;
+}
+
 void StringFill(String* str, char character)
 {
 	colti_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
