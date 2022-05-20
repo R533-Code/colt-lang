@@ -205,7 +205,7 @@ Token impl_scanner_handle_digit(Scanner* scan, char current_char)
 		break; case 'o': //OCTAL	
 			base = 8;
 		break; default:
-			if (!isdigit(after_0))
+			if (!isdigit(after_0) && after_0 != '.')
 			{
 				scan->parsed_uinteger = 0;
 				return TKN_INTEGER;
@@ -382,25 +382,39 @@ Token impl_scanner_handle_dot(Scanner* scan)
 			StringAppendChar(&scan->parsed_identifier, next_char);
 			next_char = impl_peek_next_char(scan, 0);
 
-			// .[0-9]+?e[+-][0-9]+ is a float
-			if (next_char == '+' || next_char == '-' || isdigit(next_char))
-			{
-				StringAppendChar(&scan->parsed_identifier, next_char);
+			if (next_char == '+') //skip the + after the exponent
 				next_char = impl_get_next_char(scan);
-				if (next_char == '+') //skip the + after the exponent
-					next_char = impl_get_next_char(scan);
-
+			else if (next_char == '-')
+			{
+				next_char = impl_get_next_char(scan);
+				StringAppendChar(&scan->parsed_identifier, next_char);
+			}
+			
+			next_char = impl_peek_next_char(scan, 0);
+			if (isdigit(next_char))
+			{
+				// get the peeked character
+				next_char = impl_get_next_char(scan);
 				StringAppendChar(&scan->parsed_identifier, next_char);
 
 				//Parse as many digits as possible
-				(void)impl_parse_digits(scan);
-
+				if (impl_parse_digits(scan) != EOF)
+					scan->offset--;
+				//rewind back a char so that the next time impl_get_next_char is called
+				//we return the character that was not alnum
+			}
+			else
+			{
+				//TODO: error, next_char expects to be followed by digits!
 			}
 		}
-		//rewind back a char so that the next time impl_get_next_char is called
-		//we return the character that was not alnum
-		if (next_char != EOF)
-			scan->offset--;
+		else
+		{
+			//rewind back a char so that the next time impl_get_next_char is called
+			//we return the character that was not an 'e'
+			if (next_char != EOF)
+				scan->offset--;
+		}
 		return impl_token_str_to_double(scan);
 	}
 	else
