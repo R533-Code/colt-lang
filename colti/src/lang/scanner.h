@@ -38,7 +38,8 @@ typedef struct
 } Scanner;
 
 /// @brief Initializes a Scanner
-/// @param to_scan The scanner to initialize
+/// @param scan The scanner to initialize
+/// @param to_scan The StringView to scan
 void ScannerInit(Scanner* scan, StringView to_scan);
 
 /// @brief Frees any resources used by a Scanner
@@ -75,7 +76,7 @@ IMPLEMENTATION HELPERS
 /// be called for when error are found to avoid slowdown.
 /// @param scan The scanner from which to get the lexeme and line
 /// @param error The error, which is a `printf` style-format string
-/// @param  Variadic number of arguments to format to 'error'
+/// @param ... Variadic number of arguments to format to 'error'
 void impl_scanner_print_error(const Scanner* scan, const char* error, ...);
 
 /// @brief Returns the next character in the stream, and updates the offset
@@ -97,7 +98,6 @@ Token impl_scanner_handle_identifier(Scanner* scan);
 
 /// @brief Handles a digit case, searching for if it's a float or an integer
 /// @param scan The scanner from which to get the value
-/// @param current_char The pointer to the current char (which should be a digit)
 /// @return The Token representing the identifier
 Token impl_scanner_handle_digit(Scanner* scan);
 
@@ -137,7 +137,7 @@ Token impl_scanner_handle_less(Scanner* scan);
 Token impl_scanner_handle_greater(Scanner* scan);
 
 /// @brief Handles comparisons for determining if an identifier is a keyword
-/// @param str The string to compare
+/// @param string The string to compare
 /// @return A Token representing a keyword, or TKN_IDENTIFIER
 Token impl_token_identifier_or_keyword(const String* string);
 
