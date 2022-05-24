@@ -10,6 +10,7 @@ void ScannerInit(Scanner* scan, StringView to_scan)
 	memset(scan, 0, sizeof(Scanner));
 	scan->view = to_scan;
 	scan->current_line = 1; //the line number starts at 1
+	scan->current_char = ' ';
 	StringInit(&scan->parsed_identifier);
 }
 
@@ -20,6 +21,7 @@ void ScannerFree(Scanner* scan)
 
 StringView ScannerGetIdentifier(const Scanner* scan)
 {
+	//FIXME: we should copy the string
 	return StringToStringView(&scan->parsed_identifier);
 }
 
@@ -35,22 +37,21 @@ uint64_t ScannerGetInt(const Scanner* scan)
 
 Token ScannerGetNextToken(Scanner* scan)
 {
-	char next_char = impl_get_next_char(scan);
-	while (isspace(next_char))
+	while (isspace(scan->current_char))
 	{
-		if (next_char == '\n')
+		if (scan->current_char == '\n')
 			scan->current_line += 1;
-		next_char = impl_get_next_char(scan);
+		scan->current_char = impl_get_next_char(scan);
 	}
 	//we store the current offset, which is the beginning of the current lexeme
 	scan->lexeme_begin = scan->offset - 1;
 
-	if (isalpha(next_char))
-		return impl_scanner_handle_identifier(scan, next_char);
-	else if (isdigit(next_char))
-		return impl_scanner_handle_digit(scan, next_char);
+	if (isalpha(scan->current_char) || scan->current_char == '_')
+		return impl_scanner_handle_identifier(scan);
+	else if (isdigit(scan->current_char))
+		return impl_scanner_handle_digit(scan);
 	
-	switch (next_char)
+	switch (scan->current_char)
 	{
 	case '{':
 		return TKN_LEFT_CURLY;
@@ -88,10 +89,11 @@ Token ScannerGetNextToken(Scanner* scan)
 		}
 		return TKN_COLON;
 	case ';':
+		scan->current_char = impl_get_next_char(scan);
 		return TKN_SEMICOLON;
 	case '%':
-		return TKN_EOF;
-		//TKN_OPERATOR_MODULO
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_MODULO;
 	}
 
 	return TKN_EOF;
@@ -146,11 +148,11 @@ void impl_scanner_print_error(const Scanner* scan, const char* error, ...)
 	int offset = (impl_peek_next_char(scan, 0) == EOF ? 0 : 1);
 
 	//To highlight the error lexeme, we need to break down the line in 3 parts:
-	//
+	//The part before the error, the error, and the part after the error
 	fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED"%.*s"CONSOLE_COLOR_RESET"%.*s\n",
 		(uint32_t)(scan->lexeme_begin - line_begin), scan->view.start + line_begin,
 		(uint32_t)(scan->offset - scan->lexeme_begin - offset), scan->view.start + scan->lexeme_begin,
-		(uint32_t)(line_end - scan->offset), scan->view.end - (line_end - scan->offset) - offset
+		(uint32_t)(line_end - scan->offset + offset), scan->view.end - (line_end - scan->offset) - offset
 	);
 }
 
@@ -168,41 +170,32 @@ char impl_peek_next_char(const Scanner* scan, uint64_t offset)
 	return EOF;
 }
 
-Token impl_scanner_handle_identifier(Scanner* scan, char current_char)
+Token impl_scanner_handle_identifier(Scanner* scan)
 {
 	//Clear the string
-	scan->parsed_identifier.size = 1;
-	scan->parsed_identifier.ptr[0] = '\0';
-
-	StringAppendChar(&scan->parsed_identifier, current_char);
+	StringClear(&scan->parsed_identifier);
+	StringAppendChar(&scan->parsed_identifier, scan->current_char);
 	
-	char next_char = impl_get_next_char(scan);
-	while (isalnum(next_char))
+	scan->current_char = impl_get_next_char(scan);
+	while (isalnum(scan->current_char) || scan->current_char == '_')
 	{
-		StringAppendChar(&scan->parsed_identifier, next_char);
-		next_char = impl_get_next_char(scan);
-	}
-	//rewind back a char so that the next time impl_get_next_char is called
-	//we return the character that was not alnum
-	if (next_char != EOF)
-		scan->offset--;
-
+		StringAppendChar(&scan->parsed_identifier, scan->current_char);
+		scan->current_char = impl_get_next_char(scan);
+	}	
 	return impl_token_identifier_or_keyword(&scan->parsed_identifier);
 }
 
-Token impl_scanner_handle_digit(Scanner* scan, char current_char)
+Token impl_scanner_handle_digit(Scanner* scan)
 {
 	//Clear the string
-	scan->parsed_identifier.size = 1;
-	scan->parsed_identifier.ptr[0] = '\0';
+	StringClear(&scan->parsed_identifier);
+	StringAppendChar(&scan->parsed_identifier, scan->current_char);
 
-	StringAppendChar(&scan->parsed_identifier, current_char);
-
-	if (current_char == '0') //Could be 0x, 0b, 0o
+	if (scan->current_char == '0') //Could be 0x, 0b, 0o
 	{
-		char after_0 = (char)tolower(impl_peek_next_char(scan, 0));
+		scan->current_char = impl_get_next_char(scan);
 		int base = 10;
-		switch (after_0)
+		switch (scan->current_char)
 		{
 		break; case 'x': //HEXADECIMAL
 			base = 16;			
@@ -211,26 +204,21 @@ Token impl_scanner_handle_digit(Scanner* scan, char current_char)
 		break; case 'o': //OCTAL	
 			base = 8;
 		break; default:
-			if (!isdigit(after_0) && after_0 != '.')
+			if (!isdigit(scan->current_char) && scan->current_char != '.')
 			{
 				scan->parsed_uinteger = 0;
 				return TKN_INTEGER;
 			}
 			else //We recurse now that we have popped the leading 0
-				return impl_scanner_handle_digit(scan, impl_get_next_char(scan));
+				return impl_scanner_handle_digit(scan);
 		}
-		//Handle the different bases: 0x, 0b, 0o
-		after_0 = (char)tolower(impl_get_next_char(scan)); //consume the x|b|o
 
-		//rewind back a char so that the next time impl_get_next_char is called
-		//we return the character that was not alnum
-		if (impl_parse_alnum(scan) != EOF)
-			scan->offset--;
+		scan->current_char = impl_parse_alnum(scan);
 
 		if (scan->parsed_identifier.size == 2) //Contains only the '0'
 		{
 			const char* range_str;
-			switch (after_0)
+			switch (scan->current_char)
 			{
 			break; case 'x':
 				range_str = "[0-9a-f]";
@@ -239,48 +227,42 @@ Token impl_scanner_handle_digit(Scanner* scan, char current_char)
 			break; case 'o':
 				range_str = "[0-7]";
 			break; default: //should never happen
-				colti_assert(false, "after_0 was an unexpected value!");
 				range_str = "ERROR";
 			}
-			impl_scanner_print_error(scan, "'0%c' should be followed by characters in range %s!", after_0, range_str);
+			impl_scanner_print_error(scan, "'0%c' should be followed by characters in range %s!", scan->current_char, range_str);
 			return TKN_ERROR;
 		}
 		return impl_token_str_to_uinteger(scan, base);
 	}
 
 	//Parse as many digits as possible
-	char next_char = impl_parse_digits(scan);	
+	scan->current_char = impl_parse_digits(scan);
 
 	bool isfloat = false;
 	// [0-9]+ followed by a .[0-9] is a float
-	if (next_char == '.' && isdigit(impl_peek_next_char(scan, 0)))
+	if (scan->current_char == '.' && isdigit(impl_peek_next_char(scan, 0)))
 	{
 		isfloat = true;
-		StringAppendChar(&scan->parsed_identifier, next_char);
+		StringAppendChar(&scan->parsed_identifier, scan->current_char);
 
 		//Parse as many digits as possible
-		next_char = impl_parse_digits(scan);
+		scan->current_char = impl_parse_digits(scan);
 	}
 	char after_e = impl_peek_next_char(scan, 0);
 	// [0-9]+(.[0-9]+)?e[+-][0-9]+ is a float
-	if (next_char == 'e' && (after_e == '+' || after_e == '-' || isdigit(after_e)))
+	if (scan->current_char == 'e' && (after_e == '+' || after_e == '-' || isdigit(after_e)))
 	{
 		isfloat = true;
-		StringAppendChar(&scan->parsed_identifier, next_char);
-		next_char = impl_get_next_char(scan);
-		if (next_char == '+') //skip the + after the exponent
-			next_char = impl_get_next_char(scan);
+		StringAppendChar(&scan->parsed_identifier, scan->current_char);
+		scan->current_char = impl_get_next_char(scan);
+		if (scan->current_char == '+') //skip the + after the exponent
+			scan->current_char = impl_get_next_char(scan);
 
-		StringAppendChar(&scan->parsed_identifier, next_char);		
+		StringAppendChar(&scan->parsed_identifier, scan->current_char);
 		
 		//Parse as many digits as possible
-		(void)impl_parse_digits(scan);
+		scan->current_char = impl_parse_digits(scan);
 	}
-
-	//rewind back a char so that the next time impl_get_next_char is called
-	//we return the character that was not alnum
-	if (next_char != EOF)
-		scan->offset--;
 
 	if (isfloat)
 		return impl_token_str_to_double(scan);
@@ -290,41 +272,42 @@ Token impl_scanner_handle_digit(Scanner* scan, char current_char)
 
 Token impl_scanner_handle_plus(Scanner* scan)
 {
-	Token to_ret;
-	switch (impl_peek_next_char(scan, 0))
+	scan->current_char = impl_get_next_char(scan);
+	switch (scan->current_char)
 	{
 	break; case '=':
-		to_ret = TKN_OPERATOR_PLUS_EQUAL;
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_PLUS_EQUAL;
 	break; case '+':
-		to_ret = TKN_OPERATOR_PLUS_PLUS;
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_PLUS_PLUS;
 	break; default:
 		return TKN_OPERATOR_PLUS;
 	}
-	scan->offset++; //consume the peeked character
-	return to_ret;
 }
 
 Token impl_scanner_handle_minus(Scanner* scan)
 {
-	Token to_ret;
-	switch (impl_peek_next_char(scan, 0))
+	scan->current_char = impl_get_next_char(scan);
+	switch (scan->current_char)
 	{
 	break; case '=':
-		to_ret = TKN_OPERATOR_MINUS_EQUAL;
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_MINUS_EQUAL;
 	break; case '-':
-		to_ret = TKN_OPERATOR_MINUS_MINUS;
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_MINUS_MINUS;
 	break; default:
 		return TKN_OPERATOR_MINUS;
 	}
-	scan->offset++; //consume the peeked character
-	return to_ret;
 }
 
 Token impl_scanner_handle_star(Scanner* scan)
 {
-	if (impl_peek_next_char(scan, 0) == '=')
+	scan->current_char = impl_get_next_char(scan);
+	if (scan->current_char == '=')
 	{
-		scan->offset++; //consume the peeked character
+		scan->current_char = impl_get_next_char(scan);
 		return TKN_OPERATOR_STAR_EQUAL;
 	}
 	return TKN_OPERATOR_STAR;
@@ -332,36 +315,36 @@ Token impl_scanner_handle_star(Scanner* scan)
 
 Token impl_scanner_handle_slash(Scanner* scan)
 {
-	switch (impl_peek_next_char(scan, 0))
+	scan->current_char = impl_get_next_char(scan);
+	switch (scan->current_char)
 	{
 	case '=':
-		scan->offset++; //consume the peeked character
+		scan->current_char = impl_get_next_char(scan);
 		return TKN_OPERATOR_SLASH_EQUAL;
 	case '/': // one line comment
 	{
-		scan->offset++; //consume the peeked character
-		char next_char = impl_get_next_char(scan);
-		while (next_char != EOF && next_char != '\n')
-			next_char = impl_get_next_char(scan);
-		if (next_char == '\n')
+		scan->current_char = impl_get_next_char(scan);
+		while (scan->current_char != EOF && scan->current_char != '\n')
+			scan->current_char = impl_get_next_char(scan);
+		
+		if (scan->current_char == '\n')
 			scan->current_line++;
 		return ScannerGetNextToken(scan); //recurse and return the token after the comment
 	}
 	case '*': // multi-line comment
 	{
-		scan->offset++; //consume the peeked character
-		char next_char = impl_get_next_char(scan);
-		while (next_char != EOF)
+		scan->current_char = impl_get_next_char(scan);
+		while (scan->current_char != EOF)
 		{
-			if (next_char == '\n')
+			if (scan->current_char == '\n')
 				scan->current_line++;
-			if (next_char == '*')
+			if (scan->current_char == '*')
 			{
-				next_char = impl_get_next_char(scan);
-				if (next_char == '/')
+				scan->current_char = impl_get_next_char(scan);
+				if (scan->current_char == '/')
 					return ScannerGetNextToken(scan); //recurse and return the token after the comment
 			}
-			next_char = impl_get_next_char(scan);
+			scan->current_char = impl_get_next_char(scan);
 		}
 		//TODO: error for unterminated multi-line comment
 		return TKN_ERROR;
@@ -376,51 +359,25 @@ Token impl_scanner_handle_dot(Scanner* scan)
 	if (isdigit(impl_peek_next_char(scan, 0)))
 	{
 		//Clear the string
-		scan->parsed_identifier.size = 1;
-		scan->parsed_identifier.ptr[0] = '\0';
+		StringClear(&scan->parsed_identifier);
+		StringAppendChar(&scan->parsed_identifier, scan->current_char);
 
-		StringAppendChar(&scan->parsed_identifier, '.');
+		scan->current_char = impl_parse_digits(scan);
 
-		char next_char = impl_parse_digits(scan);
-		//Parse as many digits as possible, and check if parsing stopped after hitting an 'e'
-		if (next_char == 'e')
+		char after_e = impl_peek_next_char(scan, 0);
+		// [0-9]+(.[0-9]+)?e[+-][0-9]+ is a float
+		if (scan->current_char == 'e' && (after_e == '+' || after_e == '-' || isdigit(after_e)))
 		{
-			StringAppendChar(&scan->parsed_identifier, next_char);
-			next_char = impl_peek_next_char(scan, 0);
+			StringAppendChar(&scan->parsed_identifier, scan->current_char);
+			scan->current_char = impl_get_next_char(scan);
+			if (scan->current_char == '+') //skip the + after the exponent
+				scan->current_char = impl_get_next_char(scan);
 
-			if (next_char == '+') //skip the + after the exponent
-				next_char = impl_get_next_char(scan);
-			else if (next_char == '-')
-			{
-				next_char = impl_get_next_char(scan);
-				StringAppendChar(&scan->parsed_identifier, next_char);
-			}
-			
-			next_char = impl_peek_next_char(scan, 0);
-			if (isdigit(next_char))
-			{
-				// get the peeked character
-				next_char = impl_get_next_char(scan);
-				StringAppendChar(&scan->parsed_identifier, next_char);
+			StringAppendChar(&scan->parsed_identifier, scan->current_char);
 
-				//Parse as many digits as possible
-				if (impl_parse_digits(scan) != EOF)
-					scan->offset--;
-				//rewind back a char so that the next time impl_get_next_char is called
-				//we return the character that was not alnum
-			}
-			else
-			{
-				//TODO: error, next_char expects to be followed by digits!
-			}
-		}
-		else
-		{
-			//rewind back a char so that the next time impl_get_next_char is called
-			//we return the character that was not an 'e'
-			if (next_char != EOF)
-				scan->offset--;
-		}
+			//Parse as many digits as possible
+			scan->current_char = impl_parse_digits(scan);
+		}		
 		return impl_token_str_to_double(scan);
 	}
 	else
@@ -429,84 +386,90 @@ Token impl_scanner_handle_dot(Scanner* scan)
 
 Token impl_scanner_handle_less(Scanner* scan)
 {
-	Token to_ret;
-	switch (impl_peek_next_char(scan, 0))
+	scan->current_char = impl_get_next_char(scan);
+	switch (scan->current_char)
 	{
 	break; case '=':
-		to_ret = TKN_OPERATOR_LESS_EQUAL;
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_LESS_EQUAL;
 	break; case '<':
-		to_ret = TKN_OPERATOR_LESS_LESS;
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_LESS_LESS;
 	break; case ':':
-		to_ret = TKN_OPERATOR_LESS_COLON;
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_LESS_COLON;
 	break; default:
 		return TKN_OPERATOR_LESS;
-	}
-	scan->offset++; //consume the peeked character
-	return to_ret;
+	}	
 }
 
 Token impl_scanner_handle_greater(Scanner* scan)
 {
-	Token to_ret;
-	switch (impl_peek_next_char(scan, 0))
+	scan->current_char = impl_get_next_char(scan);
+	switch (scan->current_char)
 	{
 	break; case '=':
-		to_ret = TKN_OPERATOR_GREATER_EQUAL;
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_GREATER_EQUAL;
 	break; case '>':
-		to_ret = TKN_OPERATOR_GREATER_GREATER;
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_GREATER_GREATER;
 	break; default:
 		return TKN_OPERATOR_GREATER;
 	}
-	scan->offset++; //consume the peeked character
-	return to_ret;
 }
 
 Token impl_token_identifier_or_keyword(const String* string)
 {
 	const char* str = string->ptr;
-	//size - 1 as we don't care about comparing the NUL terminator
-	size_t len = string->size - 1;
 	
+	//TODO: optimize better using len
+	//size - 1 as we don't care about comparing the NUL terminator
+	//size_t len = string->size - 1;
+	
+	if (string->size == 2)
+		return TKN_IDENTIFIER;
+
 	//Table of keywords
 	//We optimize comparisons by comparing the first character
 	switch (str[0])
 	{
 	break; case 'a':
-		if (strncmp(str, "and", len) == 0)
+		if (strcmp(str, "and") == 0)
 			return TKN_OPERATOR_AND_AND;
 	break; case 'b':
-		if (strncmp(str, "break", len) == 0)
+		if (strcmp(str, "break") == 0)
 			return TKN_KEYWORD_BREAK;
 	break; case 'c':
-		if (strncmp(str, "case", len) == 0)
+		if (strcmp(str, "case") == 0)
 			return TKN_KEYWORD_CASE;
-		else if (strncmp(str, "continue", len) == 0)
+		else if (strcmp(str, "continue") == 0)
 			return TKN_KEYWORD_CONTINUE;
 	break; case 'd':
-		if (strncmp(str, "default", len) == 0)
+		if (strcmp(str, "default") == 0)
 			return TKN_KEYWORD_DEFAULT;
 	break; case 'e':
-		if (strncmp(str, "elif", len) == 0)
+		if (strcmp(str, "elif") == 0)
 			return TKN_KEYWORD_ELIF;
-		else if (strncmp(str, "else", len) == 0)
+		else if (strcmp(str, "else") == 0)
 			return TKN_KEYWORD_ELSE;
 	break; case 'f':
-		if (strncmp(str, "for", len) == 0)
+		if (strcmp(str, "for") == 0)
 			return TKN_KEYWORD_FOR;
 	break; case 'g':
-		if (strncmp(str, "goto", len) == 0)
+		if (strcmp(str, "goto") == 0)
 			return TKN_KEYWORD_GOTO;
 	break; case 'i':
-		if (strncmp(str, "if", len) == 0)
+		if (strcmp(str, "if") == 0)
 			return TKN_KEYWORD_IF;
 	break; case 'o':
-		if (strncmp(str, "or", len) == 0)
+		if (strcmp(str, "or") == 0)
 			return TKN_OPERATOR_OR_OR;
 	break; case 's':
-		if (strncmp(str, "switch", len) == 0)
+		if (strcmp(str, "switch") == 0)
 			return TKN_KEYWORD_SWITCH;
 	break; case 'w':
-		if (strncmp(str, "while", len) == 0)
+		if (strcmp(str, "while") == 0)
 			return TKN_KEYWORD_WHILE;
 	break; default:
 		return TKN_IDENTIFIER;

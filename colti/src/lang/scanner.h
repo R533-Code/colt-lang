@@ -24,6 +24,8 @@ typedef struct
 	uint64_t lexeme_begin;
 	/// @brief The current line number
 	uint64_t current_line;
+	/// @brief The current char
+	char current_char;
 
 	/// @brief The last parsed identifier
 	String parsed_identifier;
@@ -90,15 +92,14 @@ char impl_peek_next_char(const Scanner* scan, uint64_t offset);
 
 /// @brief Handles an identifier case, searching for if it's a keyword or not
 /// @param scan The scanner from which to get the identifier
-/// @param current_char The pointer to the current char (which should be an alpha), which will be modified
 /// @return The Token representing the identifier
-Token impl_scanner_handle_identifier(Scanner* scan, char current_char);
+Token impl_scanner_handle_identifier(Scanner* scan);
 
 /// @brief Handles a digit case, searching for if it's a float or an integer
 /// @param scan The scanner from which to get the value
 /// @param current_char The pointer to the current char (which should be a digit)
 /// @return The Token representing the identifier
-Token impl_scanner_handle_digit(Scanner* scan, char current_char);
+Token impl_scanner_handle_digit(Scanner* scan);
 
 Token impl_scanner_handle_plus(Scanner* scan);
 
