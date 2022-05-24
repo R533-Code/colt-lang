@@ -79,6 +79,13 @@ IMPLEMENTATION HELPERS
 /// @param ... Variadic number of arguments to format to 'error'
 void impl_scanner_print_error(const Scanner* scan, const char* error, ...);
 
+/// @brief Prints an error for unclosed multi-line comments.
+/// The string manipulation calculation used by `impl_scanner_print_error`
+/// do not work for unclosed comments, which is why it is separated in its
+/// own function.
+/// @param scan The scanner from which to get the lexeme and line
+void impl_scanner_print_unclosed_comment(const Scanner* scan);
+
 /// @brief Returns the next character in the stream, and updates the offset
 /// @param scan The scanner from which to get the character
 /// @return The next character or EOF (-1) if no more characters are available

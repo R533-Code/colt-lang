@@ -136,14 +136,14 @@ void impl_scanner_print_error(const Scanner* scan, const char* error, ...)
 		}
 		newline--;
 	}
-	//if we stand at the end of the line, we don't want to print the newline
 	if (*newline == '\n')
-		line_begin++;
+		line_begin++; // + 1 as we don't want the \n to be included
 
 	//starts with the size of the string from the beginning of the line till the end of the whole string.
 	size_t line_end = scan->view.end - newline;
-	//reset the newline pointer to after the lexeme, and start looking for a '\n'
-	newline = scan->view.start + scan->offset;
+	
+	newline = scan->view.start + scan->lexeme_begin;
+
 	while (newline != scan->view.end)
 	{
 		if (*newline == '\n')
@@ -153,9 +153,8 @@ void impl_scanner_print_error(const Scanner* scan, const char* error, ...)
 		}
 		newline++;
 	}
-	//if we stand at the end of the line, we don't want to print the newline
 	if (*newline == '\n')
-		line_end--;
+		line_end--; // - 1 as we don't want the \n included
 
 	//This offset variable allows to fix highlighting issues:
 	//When the lexeme is not the last one, we need to remove 1 from the size of the lexeme.
@@ -167,8 +166,43 @@ void impl_scanner_print_error(const Scanner* scan, const char* error, ...)
 	fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED"%.*s"CONSOLE_COLOR_RESET"%.*s\n",
 		(uint32_t)(scan->lexeme_begin - line_begin), scan->view.start + line_begin,
 		(uint32_t)(scan->offset - scan->lexeme_begin - offset), scan->view.start + scan->lexeme_begin,
-		(uint32_t)(line_end - scan->offset - offset), scan->view.start + scan->offset - offset
+		(uint32_t)(line_end > (scan->offset - 1 - offset) ? line_end - (scan->offset - 1 - offset) : 0), scan->view.start + scan->offset - offset
 	);
+}
+
+void impl_scanner_print_unclosed_comment(const Scanner* scan)
+{
+	fprintf(stderr, CONSOLE_FOREGROUND_BRIGHT_RED"Error: "CONSOLE_COLOR_RESET"On line %"PRIu64": Unterminated multi-line comment!\n", scan->current_line);
+	size_t line_begin = 0;
+	//set the searching pointer to before the lexeme, and start searching backwards
+	//for the first '\n', which would be the beginning of the newline.
+	const char* newline = scan->view.start + scan->lexeme_begin;
+	while (newline != scan->view.start)
+	{
+		if (*newline == '\n')
+		{
+			line_begin = newline - scan->view.start + 1; // + 1 as we don't want the \n to be included
+			break;
+		}
+		newline--;
+	}
+	//starts with the size of the string from the beginning of the line till the end of the whole string.
+	size_t line_end = scan->view.end - newline;
+	newline = scan->view.start + scan->lexeme_begin;
+
+	while (newline != scan->view.end)
+	{
+		if (*newline == '\n')
+		{
+			line_end = newline - scan->view.start; // - 1 as we don't want the \n included
+			break;
+		}
+		newline++;
+	}
+
+	fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED"%.*s"CONSOLE_COLOR_RESET"\n",
+		(uint32_t)(scan->lexeme_begin - line_begin), scan->view.start + line_begin,
+		(uint32_t)(line_end - scan->lexeme_begin), scan->view.start + scan->lexeme_begin);
 }
 
 char impl_get_next_char(Scanner* scan)
@@ -371,8 +405,8 @@ Token impl_scanner_handle_slash(Scanner* scan)
 			}
 			scan->current_char = impl_get_next_char(scan);
 		}
-		impl_scanner_print_error(scan, "Unterminated multi-line comment!");
-		return TKN_ERROR;
+		impl_scanner_print_unclosed_comment(scan);
+		return TKN_EOF; //Compilation should fail directly
 	}
 	default:
 		return TKN_OPERATOR_SLASH;
