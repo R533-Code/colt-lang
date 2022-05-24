@@ -69,6 +69,8 @@ Token ScannerGetNextToken(Scanner* scan)
 		return impl_scanner_handle_less(scan);
 	case '>':
 		return impl_scanner_handle_greater(scan);
+	case '"':
+		return impl_scanner_handle_string(scan);
 	case ':':
 		scan->current_char = impl_get_next_char(scan);
 		if (scan->current_char == '>')
@@ -317,6 +319,29 @@ Token impl_scanner_handle_digit(Scanner* scan)
 		return impl_token_str_to_double(scan);
 	else
 		return impl_token_str_to_uinteger(scan, 10);
+}
+
+Token impl_scanner_handle_string(Scanner* scan)
+{
+	StringClear(&scan->parsed_identifier);
+	
+	//Consume the "
+	scan->current_char = impl_get_next_char(scan);
+
+	while (scan->current_char != '"' && scan->current_char != '\n' && scan->current_char != EOF)
+	{
+		StringAppendChar(&scan->parsed_identifier, scan->current_char);
+		scan->current_char = impl_get_next_char(scan);
+	}
+
+	if (scan->current_char == '\n' || scan->current_char == EOF)
+	{
+		impl_scanner_print_error(scan, "Unterminated string literal!");
+		return TKN_ERROR;
+	}
+	//Consume the "
+	scan->current_char = impl_get_next_char(scan);
+	return TKN_STRING;
 }
 
 Token impl_scanner_handle_plus(Scanner* scan)

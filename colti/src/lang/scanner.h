@@ -108,6 +108,11 @@ Token impl_scanner_handle_identifier(Scanner* scan);
 /// @return The Token representing the identifier
 Token impl_scanner_handle_digit(Scanner* scan);
 
+/// @brief Handles string literals, "...", """..."""
+/// @param scan The scanner from which to get the string
+/// @return TKN_STRING or TKN_ERROR if an error is encountered
+Token impl_scanner_handle_string(Scanner* scan);
+
 /// @brief Handles +, +=, ++
 /// @param scan The scanner from which to parse
 /// @return Token representing the parsed lexeme
