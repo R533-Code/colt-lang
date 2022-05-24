@@ -297,7 +297,7 @@ String StringGetFileContent(const char* path)
 
 StringView StringToStringView(const String* str)
 {
-	StringView strv = { str->ptr, str->ptr + str->size - 1 };
+	StringView strv = { str->ptr, str->ptr + str->size };
 	return strv;
 }
 
