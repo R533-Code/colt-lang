@@ -351,11 +351,15 @@ Token impl_scanner_handle_slash(Scanner* scan)
 			{
 				scan->current_char = impl_get_next_char(scan);
 				if (scan->current_char == '/')
+				{
+					//consume closing /
+					scan->current_char = impl_get_next_char(scan);
 					return ScannerGetNextToken(scan); //recurse and return the token after the comment
+				}
 			}
 			scan->current_char = impl_get_next_char(scan);
 		}
-		//TODO: error for unterminated multi-line comment
+		impl_scanner_print_error(scan, "Unterminated multi-line comment!");
 		return TKN_ERROR;
 	}
 	default:
