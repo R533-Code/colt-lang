@@ -14,9 +14,9 @@ void debug_scan(StringView view)
 		break; case TKN_INTEGER:
 			printf("%s: %"PRIu64"\n", TokenToString(tkn), scan.parsed_uinteger);
 		break; case TKN_IDENTIFIER:
-			printf("%s: %s\n", TokenToString(tkn), scan.parsed_identifier.ptr);
+			printf("%s: %s\n", TokenToString(tkn), scan.parsed_string.ptr);
 		break; case TKN_STRING:
-			printf("%s: %s\n", TokenToString(tkn), scan.parsed_identifier.ptr);
+			printf("%s: %s\n", TokenToString(tkn), scan.parsed_string.ptr);
 		break; default:
 			printf("%s\n", TokenToString(tkn));
 		}
