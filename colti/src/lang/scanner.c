@@ -348,16 +348,22 @@ Token impl_scanner_handle_slash(Scanner* scan)
 	}
 	case '*': // multi-line comment
 	{
+		//in the case of an unterminated multi-line comment, we want
+		//to print the line of the beginning of the multi-line comment.
+		size_t line_count = 0;
 		scan->current_char = impl_get_next_char(scan);
 		while (scan->current_char != EOF)
 		{
 			if (scan->current_char == '\n')
-				scan->current_line++;
+				line_count++;
 			if (scan->current_char == '*')
 			{
 				scan->current_char = impl_get_next_char(scan);
 				if (scan->current_char == '/')
 				{
+					//update the line count
+					scan->current_line += line_count;
+
 					//consume closing /
 					scan->current_char = impl_get_next_char(scan);
 					return ScannerGetNextToken(scan); //recurse and return the token after the comment
