@@ -24,7 +24,7 @@ typedef struct
 	uint64_t lexeme_begin;
 	/// @brief The current line number
 	uint64_t current_line;
-	/// @brief The current char
+	/// @brief The current char, which is the one to parse next
 	char current_char;
 
 	/// @brief The last parsed identifier
@@ -101,18 +101,39 @@ Token impl_scanner_handle_identifier(Scanner* scan);
 /// @return The Token representing the identifier
 Token impl_scanner_handle_digit(Scanner* scan);
 
+/// @brief Handles +, +=, ++
+/// @param scan The scanner from which to parse
+/// @return Token representing the parsed lexeme
 Token impl_scanner_handle_plus(Scanner* scan);
 
+/// @brief Handles -, -=, --
+/// @param scan The scanner from which to parse
+/// @return Token representing the parsed lexeme
 Token impl_scanner_handle_minus(Scanner* scan);
 
+/// @brief Handles *, *=
+/// @param scan The scanner from which to parse
+/// @return Token representing the parsed lexeme
 Token impl_scanner_handle_star(Scanner* scan);
 
+/// @brief Handles /, /= and comments
+/// @param scan The scanner from which to parse
+/// @return Token representing the parsed lexeme
 Token impl_scanner_handle_slash(Scanner* scan);
 
+/// @brief Handles ., which can be a floating point
+/// @param scan The scanner from which to parse
+/// @return Token representing the parsed lexeme
 Token impl_scanner_handle_dot(Scanner* scan);
 
+/// @brief Handles <, <=, <<, <:
+/// @param scan The scanner from which to parse
+/// @return Token representing the parsed lexeme
 Token impl_scanner_handle_less(Scanner* scan);
 
+/// @brief Handles >, >=, >>
+/// @param scan The scanner from which to parse
+/// @return Token representing the parsed lexeme
 Token impl_scanner_handle_greater(Scanner* scan);
 
 /// @brief Handles comparisons for determining if an identifier is a keyword
