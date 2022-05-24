@@ -73,7 +73,9 @@ const char* TokenToString(Token tkn)
 	case TKN_OPERATOR_XOR_EQUAL:
 		return "TKN_OPERATOR_XOR_EQUAL";
 	case TKN_OPERATOR_TILDE:
-		return "TKN_OPERATOR_TILDE";	
+		return "TKN_OPERATOR_TILDE";
+	case TKN_OPERATOR_MODULO:
+		return "TKN_OPERATOR_MODULO";
 
 	/*********************
 	* LITERALS

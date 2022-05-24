@@ -87,6 +87,9 @@ typedef enum
 	/// @brief ~
 	TKN_OPERATOR_TILDE,
 
+	/// @brief %
+	TKN_OPERATOR_MODULO,
+
 	/*********************
 	* LITERALS
 	*********************/
