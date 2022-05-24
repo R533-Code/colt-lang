@@ -46,6 +46,25 @@ bool StringIsEmpty(const String* str)
 	return str->size == 1;
 }
 
+String StringCopy(const String* str)
+{
+	String strc;
+	if (str->size > STRING_SMALL_BUFFER_OPTIMIZATION)
+	{
+		strc.ptr = safe_malloc(strc.size = str->size);
+		strc.capacity = strc.size;
+		memcpy(strc.ptr, str->ptr, strc.size);
+		return strc;
+	}
+	else
+	{
+		strc.capacity = STRING_SMALL_BUFFER_OPTIMIZATION;
+		strc.ptr = strc.buffer;
+		memcpy(strc.ptr, str->ptr, strc.size = str->size);
+		return strc;
+	}
+}
+
 bool StringIsStackAllocated(const String* str)
 {
 	return str->capacity == STRING_SMALL_BUFFER_OPTIMIZATION;

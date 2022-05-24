@@ -55,6 +55,11 @@ uint64_t StringSize(const String* str);
 /// @param str True if empty
 bool StringIsEmpty(const String* str);
 
+/// @brief Create a copy of a String
+/// @param str The string to copy
+/// @return The copy of the String
+String StringCopy(const String* str);
+
 /// @brief Checks if a string is using its stack-allocated buffer
 /// @param str The string for which to check
 bool StringIsStackAllocated(const String* str);
