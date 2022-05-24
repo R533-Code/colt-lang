@@ -28,7 +28,9 @@ typedef struct
 	char current_char;
 
 	/// @brief The last parsed identifier
-	String parsed_identifier;
+	StringView parsed_identifier;
+	/// @brief The last parsed string literal, which is also used as a temporary buffer
+	String parsed_string;
 	/// @brief The last parsed double literal
 	double parsed_double;
 	/// @brief The last parsed unsigned integer literal
@@ -48,8 +50,13 @@ void ScannerFree(Scanner* scan);
 
 /// @brief Returns the parsed identifier
 /// @param scan The scanner from which to get the value
-/// @return A StringView of the 
+/// @return A StringView of the identifier
 StringView ScannerGetIdentifier(const Scanner* scan);
+
+/// @brief Returns a copy of the last parsed string literal
+/// @param scan The scanner from which to get the value
+/// @return A copy of the String
+String ScannerGetString(const Scanner* scan);
 
 /// @brief Returns the parsed double/float
 /// @param scan The scanner from which to get the value

@@ -11,18 +11,22 @@ void ScannerInit(Scanner* scan, StringView to_scan)
 	scan->view = to_scan;
 	scan->current_line = 1; //the line number starts at 1
 	scan->current_char = ' ';
-	StringInit(&scan->parsed_identifier);
+	StringInit(&scan->parsed_string);
 }
 
 void ScannerFree(Scanner* scan)
 {
-	StringFree(&scan->parsed_identifier);
+	StringFree(&scan->parsed_string);
 }
 
 StringView ScannerGetIdentifier(const Scanner* scan)
 {
-	//FIXME: we should copy the string
-	return StringToStringView(&scan->parsed_identifier);
+	return scan->parsed_identifier;
+}
+
+String ScannerGetString(const Scanner* scan)
+{
+	return StringCopy(&scan->parsed_string);
 }
 
 double ScannerGetDouble(const Scanner* scan)
@@ -158,17 +162,12 @@ void impl_scanner_print_error(const Scanner* scan, const char* error, ...)
 	if (*newline == '\n')
 		line_end--; // - 1 as we don't want the \n included
 
-	//This offset variable allows to fix highlighting issues:
-	//When the lexeme is not the last one, we need to remove 1 from the size of the lexeme.
-	//But if it's the last one, doing this results in a character getting chopped off.
-	int offset = (impl_peek_next_char(scan, 0) == EOF ? 0 : 1);
-
 	//To highlight the error lexeme, we need to break down the line in 3 parts:
 	//The part before the error, the error, and the part after the error
 	fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED"%.*s"CONSOLE_COLOR_RESET"%.*s\n",
 		(uint32_t)(scan->lexeme_begin - line_begin), scan->view.start + line_begin,
-		(uint32_t)(scan->offset - scan->lexeme_begin - offset), scan->view.start + scan->lexeme_begin,
-		(uint32_t)(line_end > (scan->offset - 1 - offset) ? line_end - (scan->offset - 1 - offset) : 0), scan->view.start + scan->offset - offset
+		(uint32_t)(scan->offset - 1 - scan->lexeme_begin), scan->view.start + scan->lexeme_begin,
+		(uint32_t)(line_end > (scan->offset - 2) ? line_end - (scan->offset - 2) : 0), scan->view.start + scan->offset - 1
 	);
 }
 
@@ -224,23 +223,27 @@ char impl_peek_next_char(const Scanner* scan, uint64_t offset)
 Token impl_scanner_handle_identifier(Scanner* scan)
 {
 	//Clear the string
-	StringClear(&scan->parsed_identifier);
-	StringAppendChar(&scan->parsed_identifier, scan->current_char);
+	StringClear(&scan->parsed_string);
+	StringAppendChar(&scan->parsed_string, scan->current_char);
 	
+	scan->parsed_identifier.start = scan->view.start + scan->offset - 1;
+
 	scan->current_char = impl_get_next_char(scan);
 	while (isalnum(scan->current_char) || scan->current_char == '_')
 	{
-		StringAppendChar(&scan->parsed_identifier, scan->current_char);
+		StringAppendChar(&scan->parsed_string, scan->current_char);
 		scan->current_char = impl_get_next_char(scan);
-	}	
-	return impl_token_identifier_or_keyword(&scan->parsed_identifier);
+	}
+	
+	scan->parsed_identifier.end = scan->view.start + scan->offset - 1;
+	return impl_token_identifier_or_keyword(&scan->parsed_string);
 }
 
 Token impl_scanner_handle_digit(Scanner* scan)
 {
 	//Clear the string
-	StringClear(&scan->parsed_identifier);
-	StringAppendChar(&scan->parsed_identifier, scan->current_char);
+	StringClear(&scan->parsed_string);
+	StringAppendChar(&scan->parsed_string, scan->current_char);
 
 	if (scan->current_char == '0') //Could be 0x, 0b, 0o
 	{
@@ -266,7 +269,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 
 		scan->current_char = impl_parse_alnum(scan);
 
-		if (scan->parsed_identifier.size == 2) //Contains only the '0'
+		if (scan->parsed_string.size == 2) //Contains only the '0'
 		{
 			const char* range_str;
 			switch (scan->current_char)
@@ -294,7 +297,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 	if (scan->current_char == '.' && isdigit(impl_peek_next_char(scan, 0)))
 	{
 		isfloat = true;
-		StringAppendChar(&scan->parsed_identifier, scan->current_char);
+		StringAppendChar(&scan->parsed_string, scan->current_char);
 
 		//Parse as many digits as possible
 		scan->current_char = impl_parse_digits(scan);
@@ -304,12 +307,12 @@ Token impl_scanner_handle_digit(Scanner* scan)
 	if (scan->current_char == 'e' && (after_e == '+' || after_e == '-' || isdigit(after_e)))
 	{
 		isfloat = true;
-		StringAppendChar(&scan->parsed_identifier, scan->current_char);
+		StringAppendChar(&scan->parsed_string, scan->current_char);
 		scan->current_char = impl_get_next_char(scan);
 		if (scan->current_char == '+') //skip the + after the exponent
 			scan->current_char = impl_get_next_char(scan);
 
-		StringAppendChar(&scan->parsed_identifier, scan->current_char);
+		StringAppendChar(&scan->parsed_string, scan->current_char);
 		
 		//Parse as many digits as possible
 		scan->current_char = impl_parse_digits(scan);
@@ -323,14 +326,14 @@ Token impl_scanner_handle_digit(Scanner* scan)
 
 Token impl_scanner_handle_string(Scanner* scan)
 {
-	StringClear(&scan->parsed_identifier);
+	StringClear(&scan->parsed_string);
 	
 	//Consume the "
 	scan->current_char = impl_get_next_char(scan);
 
 	while (scan->current_char != '"' && scan->current_char != '\n' && scan->current_char != EOF)
 	{
-		StringAppendChar(&scan->parsed_identifier, scan->current_char);
+		StringAppendChar(&scan->parsed_string, scan->current_char);
 		scan->current_char = impl_get_next_char(scan);
 	}
 
@@ -443,8 +446,8 @@ Token impl_scanner_handle_dot(Scanner* scan)
 	if (isdigit(impl_peek_next_char(scan, 0)))
 	{
 		//Clear the string
-		StringClear(&scan->parsed_identifier);
-		StringAppendChar(&scan->parsed_identifier, scan->current_char);
+		StringClear(&scan->parsed_string);
+		StringAppendChar(&scan->parsed_string, scan->current_char);
 
 		scan->current_char = impl_parse_digits(scan);
 
@@ -452,12 +455,12 @@ Token impl_scanner_handle_dot(Scanner* scan)
 		// [0-9]+(.[0-9]+)?e[+-][0-9]+ is a float
 		if (scan->current_char == 'e' && (after_e == '+' || after_e == '-' || isdigit(after_e)))
 		{
-			StringAppendChar(&scan->parsed_identifier, scan->current_char);
+			StringAppendChar(&scan->parsed_string, scan->current_char);
 			scan->current_char = impl_get_next_char(scan);
 			if (scan->current_char == '+') //skip the + after the exponent
 				scan->current_char = impl_get_next_char(scan);
 
-			StringAppendChar(&scan->parsed_identifier, scan->current_char);
+			StringAppendChar(&scan->parsed_string, scan->current_char);
 
 			//Parse as many digits as possible
 			scan->current_char = impl_parse_digits(scan);
@@ -564,8 +567,8 @@ Token impl_token_identifier_or_keyword(const String* string)
 Token impl_token_str_to_double(Scanner* scan)
 {
 	char* end;
-	double value = strtod(scan->parsed_identifier.ptr, &end);
-	if (end != scan->parsed_identifier.ptr + scan->parsed_identifier.size - 1)
+	double value = strtod(scan->parsed_string.ptr, &end);
+	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
 		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing floating point literal.", *end);
 		return TKN_ERROR;
@@ -583,9 +586,9 @@ Token impl_token_str_to_double(Scanner* scan)
 Token impl_token_str_to_uinteger(Scanner* scan, int base)
 {
 	char* end;
-	uint64_t value = strtoull(scan->parsed_identifier.ptr, &end, base);
+	uint64_t value = strtoull(scan->parsed_string.ptr, &end, base);
 	
-	if (end != scan->parsed_identifier.ptr + scan->parsed_identifier.size - 1)
+	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
 		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing integer literal.", *end);
 		return TKN_ERROR;
@@ -605,7 +608,7 @@ char impl_parse_alnum(Scanner* scan)
 	char next_char = impl_get_next_char(scan);
 	while (isalnum(next_char))
 	{
-		StringAppendChar(&scan->parsed_identifier, next_char);
+		StringAppendChar(&scan->parsed_string, next_char);
 		next_char = impl_get_next_char(scan);
 	}
 	return next_char;
@@ -616,7 +619,7 @@ char impl_parse_digits(Scanner* scan)
 	char next_char = impl_get_next_char(scan);
 	while (isdigit(next_char))
 	{
-		StringAppendChar(&scan->parsed_identifier, next_char);
+		StringAppendChar(&scan->parsed_string, next_char);
 		next_char = impl_get_next_char(scan);
 	}
 	return next_char;
