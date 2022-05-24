@@ -220,6 +220,13 @@ char impl_peek_next_char(const Scanner* scan, uint64_t offset)
 	return EOF;
 }
 
+char impl_rewind_char(Scanner* scan)
+{
+	colti_assert(scan->offset > 1, "Never rewind if already at the beginning of the string!");
+	//- 1 as the offset points to the NEXT character, not the current one
+	return scan->view.start[--scan->offset - 1];
+}
+
 Token impl_scanner_handle_identifier(Scanner* scan)
 {
 	//Clear the string
@@ -294,13 +301,24 @@ Token impl_scanner_handle_digit(Scanner* scan)
 
 	bool isfloat = false;
 	// [0-9]+ followed by a .[0-9] is a float
-	if (scan->current_char == '.' && isdigit(impl_peek_next_char(scan, 0)))
+	if (scan->current_char == '.')
 	{
-		isfloat = true;
-		StringAppendChar(&scan->parsed_string, scan->current_char);
-
-		//Parse as many digits as possible
-		scan->current_char = impl_parse_digits(scan);
+		scan->current_char = impl_get_next_char(scan);
+		if (isdigit(scan->current_char))
+		{
+			isfloat = true;
+			StringAppendChar(&scan->parsed_string, scan->current_char);
+			
+			//Parse as many digits as possible
+			scan->current_char = impl_parse_digits(scan);
+		}
+		else
+		{
+			//The dot is not followed by a digit, this is not a float,
+			//but rather should be the dot followed by an identifier for a function call
+			scan->current_char = impl_rewind_char(scan);
+			return impl_token_str_to_uinteger(scan, 10);
+		}
 	}
 	char after_e = impl_peek_next_char(scan, 0);
 	// [0-9]+(.[0-9]+)?e[+-][0-9]+ is a float
@@ -443,10 +461,12 @@ Token impl_scanner_handle_slash(Scanner* scan)
 
 Token impl_scanner_handle_dot(Scanner* scan)
 {
-	if (isdigit(impl_peek_next_char(scan, 0)))
+	scan->current_char = impl_get_next_char(scan);
+	if (isdigit(scan->current_char))
 	{
 		//Clear the string
 		StringClear(&scan->parsed_string);
+		StringAppendChar(&scan->parsed_string, '.');
 		StringAppendChar(&scan->parsed_string, scan->current_char);
 
 		scan->current_char = impl_parse_digits(scan);
@@ -468,7 +488,10 @@ Token impl_scanner_handle_dot(Scanner* scan)
 		return impl_token_str_to_double(scan);
 	}
 	else
+	{
+		//scan->current_char = impl_get_next_char(scan);
 		return TKN_DOT;
+	}
 }
 
 Token impl_scanner_handle_less(Scanner* scan)

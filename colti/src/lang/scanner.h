@@ -105,6 +105,11 @@ char impl_get_next_char(Scanner* scan);
 /// @return The character or EOF if no more characters are available
 char impl_peek_next_char(const Scanner* scan, uint64_t offset);
 
+/// @brief Rewinds one character before the current one
+/// @param scan The scanner to rewind
+/// @return The character pointed to after rewinding
+char impl_rewind_char(Scanner* scan);
+
 /// @brief Handles an identifier case, searching for if it's a keyword or not
 /// @param scan The scanner from which to get the identifier
 /// @return The Token representing the identifier
