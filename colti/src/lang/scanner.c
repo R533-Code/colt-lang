@@ -37,12 +37,14 @@ uint64_t ScannerGetInt(const Scanner* scan)
 
 Token ScannerGetNextToken(Scanner* scan)
 {
+	//We skip spaces
 	while (isspace(scan->current_char))
 	{
 		if (scan->current_char == '\n')
 			scan->current_line += 1;
 		scan->current_char = impl_get_next_char(scan);
 	}
+
 	//we store the current offset, which is the beginning of the current lexeme
 	scan->lexeme_begin = scan->offset - 1;
 
@@ -52,19 +54,7 @@ Token ScannerGetNextToken(Scanner* scan)
 		return impl_scanner_handle_digit(scan);
 	
 	switch (scan->current_char)
-	{
-	case '{':
-		return TKN_LEFT_CURLY;
-	case '}':
-		return TKN_RIGHT_CURLY;
-	case '(':
-		return TKN_LEFT_PAREN;
-	case ')':
-		return TKN_RIGHT_PAREN;
-	case '[':
-		return TKN_LEFT_SQUARE;
-	case ']':
-		return TKN_RIGHT_SQUARE;
+	{	
 	case '+':
 		return impl_scanner_handle_plus(scan);
 	case '-':
@@ -79,15 +69,34 @@ Token ScannerGetNextToken(Scanner* scan)
 		return impl_scanner_handle_less(scan);
 	case '>':
 		return impl_scanner_handle_greater(scan);
-	case ',':
-		return TKN_COMMA;
 	case ':':
-		if (impl_peek_next_char(scan, 0) == '>')
+		scan->current_char = impl_get_next_char(scan);
+		if (scan->current_char == '>')
 		{
-			scan->offset++; //consume the '>'
 			return TKN_OPERATOR_COLON_GREATER;
 		}
 		return TKN_COLON;
+	case ',':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_COMMA;
+	case '{':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_LEFT_CURLY;
+	case '}':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_RIGHT_CURLY;
+	case '(':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_LEFT_PAREN;
+	case ')':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_RIGHT_PAREN;
+	case '[':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_LEFT_SQUARE;
+	case ']':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_RIGHT_SQUARE;
 	case ';':
 		scan->current_char = impl_get_next_char(scan);
 		return TKN_SEMICOLON;
