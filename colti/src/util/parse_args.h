@@ -79,22 +79,26 @@ CommandLineArgument impl_string_to_arg(const char* str);
 /// @brief Handles the -v or --version logic, and exits
 /// @param argc The argument count
 /// @param argv The argument values
-void impl_version(int argc, const char** argv);
+/// @param offset The current argument count 
+void impl_version(int argc, const char** argv, uint64_t offset);
 
 /// @brief Handles the -d or --disassemble logic, and exits
 /// @param argc The argument count
 /// @param argv The argument values
-void impl_disassemble(int argc, const char** argv);
+/// @param offset The current argument count
+void impl_disassemble(int argc, const char** argv, uint64_t offset);
 
 /// @brief Handles the -h or --help logic, and exits
 /// @param argc The argument count
 /// @param argv The argument values
-void impl_help(int argc, const char** argv);
+/// @param offset The current argument count
+void impl_help(int argc, const char** argv, uint64_t offset);
 
 /// @brief Handles the -e or --enum logic and exits
 /// @param argc The argument count
 /// @param argv The argument values
-void impl_enum(int argc, const char** argv);
+/// @param offset The current argument count
+void impl_enum(int argc, const char** argv, uint64_t offset);
 
 /// @brief Handles the -o or --out logic, returns a valid path or exits
 /// @param argc The argument count
@@ -113,13 +117,15 @@ const char* impl_byte_out(int argc, const char** argv, size_t current_argc);
 /// @brief Handles the --test-color and exits
 /// @param argc The argument count
 /// @param argv The argument values
-void impl_test_color(int argc, const char** argv);
+/// /// @param offset The current argument count
+void impl_test_color(int argc, const char** argv, uint64_t offset);
 
 /// @brief Prints an error that is caused by an invalid combination of arguments.
 /// Expects at least that argc is 2.
 /// @param argc The argument count
 /// @param argv The argument values
-void impl_print_invalid_combination(int argc, const char** argv);
+/// @param offset The current argument count
+void impl_print_invalid_combination(int argc, const char** argv, uint64_t offset);
 
 /// @brief Prints the help of '-d' or '--disassemble'
 void impl_help_disassemble();

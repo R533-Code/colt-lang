@@ -18,15 +18,15 @@ ParseResult ParseArguments(int argc, const char** argv)
 			{
 				//Even though all the impl_{ARG} do not return, break to silence warnings
 			break; case ARG_HELP:
-				impl_help(argc, argv);
+				impl_help(argc, argv, i);
 			break; case ARG_ENUM:
-				impl_enum(argc, argv);
+				impl_enum(argc, argv, i);
 			break; case ARG_VERSION:
-				impl_version(argc, argv);
+				impl_version(argc, argv, i);
 			break; case ARG_DISASSEMBLE:
-				impl_disassemble(argc, argv);
+				impl_disassemble(argc, argv, i);
 			break; case ARG_TEST_COLOR_CONSOLE:
-				impl_test_color(argc, argv);
+				impl_test_color(argc, argv, i);
 			break; case ARG_EXEC_OUTPUT:
 				//As the function will read 1 argument more, we need to update i
 				result.file_path_out = impl_exec_out(argc, argv, ++i);
@@ -136,7 +136,7 @@ CommandLineArgument impl_string_to_arg(const char* str)
 	return ARG_INVALID;
 }
 
-void impl_version(int argc, const char** argv)
+void impl_version(int argc, const char** argv, uint64_t offset)
 {
 	if (argc == 2)
 	{
@@ -146,12 +146,12 @@ void impl_version(int argc, const char** argv)
 	}
 	else
 	{
-		impl_print_invalid_combination(argc, argv);
+		impl_print_invalid_combination(argc, argv, offset);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 }
 
-void impl_disassemble(int argc, const char** argv)
+void impl_disassemble(int argc, const char** argv, uint64_t offset)
 {
 	if (argc == 3)
 	{
@@ -175,12 +175,12 @@ void impl_disassemble(int argc, const char** argv)
 	}
 	else
 	{
-		impl_print_invalid_combination(argc, argv);
+		impl_print_invalid_combination(argc, argv, offset);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 }
 
-void impl_help(int argc, const char** argv)
+void impl_help(int argc, const char** argv, uint64_t offset)
 {
 	if (argc == 2)
 	{
@@ -209,19 +209,19 @@ void impl_help(int argc, const char** argv)
 		break; case ARG_BYTE_CODE_OUTPUT:
 			impl_help_byte_out();
 		break; default:
-			impl_print_invalid_combination(argc, argv);
+			impl_print_invalid_combination(argc, argv, offset);
 			exit(EXIT_USER_INVALID_INPUT);
 		}
 		exit(EXIT_NO_FAILURE);
 	}
 	else
 	{
-		impl_print_invalid_combination(argc, argv);
+		impl_print_invalid_combination(argc, argv, offset);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 }
 
-void impl_enum(int argc, const char** argv)
+void impl_enum(int argc, const char** argv, uint64_t offset)
 {
 	if (argc == 2)
 	{
@@ -239,7 +239,7 @@ void impl_enum(int argc, const char** argv)
 	}
 	else
 	{
-		impl_print_invalid_combination(argc, argv);
+		impl_print_invalid_combination(argc, argv, offset);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 }
@@ -276,11 +276,11 @@ const char* impl_byte_out(int argc, const char** argv, size_t current_argc)
 	}
 }
 
-void impl_test_color(int argc, const char** argv)
+void impl_test_color(int argc, const char** argv, uint64_t offset)
 {
 	if (argc > 2)
 	{
-		impl_print_invalid_combination(argc, argv);
+		impl_print_invalid_combination(argc, argv, offset);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 	int n;
@@ -295,14 +295,14 @@ void impl_test_color(int argc, const char** argv)
 	exit(EXIT_NO_FAILURE);
 }
 
-void impl_print_invalid_combination(int argc, const char** argv)
+void impl_print_invalid_combination(int argc, const char** argv, uint64_t offset)
 {
 	//TODO: add offset
 	colti_assert(argc >= 2, "Expected 'argc' greater or equal to 2!");
 	
 	//We can not use print_error_format here as it adds a '\n' at the end
-	printf(CONSOLE_FOREGROUND_BRIGHT_RED"Error: "CONSOLE_COLOR_RESET"Invalid argument combination for '%s'", argv[1]);
-	if (argc > 2)
+	printf(CONSOLE_FOREGROUND_BRIGHT_RED"Error: "CONSOLE_COLOR_RESET"Invalid argument combination for '%s'", argv[offset]);
+	if (argc > offset)
 	{
 		fputc(':', stdout);
 		for (size_t i = 2; i < argc; i++)
