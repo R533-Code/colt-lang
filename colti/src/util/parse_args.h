@@ -35,6 +35,7 @@ typedef struct
 	const char* byte_code_out;
 } ParseResult;
 
+/// @brief Enum representing valid arguments
 typedef enum
 {
 	/// @brief -h, or --help
