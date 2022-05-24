@@ -136,6 +136,9 @@ void impl_scanner_print_error(const Scanner* scan, const char* error, ...)
 		}
 		newline--;
 	}
+	//if we stand at the end of the line, we don't want to print the newline
+	if (*newline == '\n')
+		line_begin++;
 
 	//starts with the size of the string from the beginning of the line till the end of the whole string.
 	size_t line_end = scan->view.end - newline;
@@ -150,6 +153,9 @@ void impl_scanner_print_error(const Scanner* scan, const char* error, ...)
 		}
 		newline++;
 	}
+	//if we stand at the end of the line, we don't want to print the newline
+	if (*newline == '\n')
+		line_end--;
 
 	//This offset variable allows to fix highlighting issues:
 	//When the lexeme is not the last one, we need to remove 1 from the size of the lexeme.
@@ -161,7 +167,7 @@ void impl_scanner_print_error(const Scanner* scan, const char* error, ...)
 	fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED"%.*s"CONSOLE_COLOR_RESET"%.*s\n",
 		(uint32_t)(scan->lexeme_begin - line_begin), scan->view.start + line_begin,
 		(uint32_t)(scan->offset - scan->lexeme_begin - offset), scan->view.start + scan->lexeme_begin,
-		(uint32_t)(line_end - scan->offset + offset), scan->view.end - (line_end - scan->offset) - offset
+		(uint32_t)(line_end - scan->offset - offset), scan->view.start + scan->offset - offset
 	);
 }
 
