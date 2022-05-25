@@ -265,13 +265,16 @@ Token impl_scanner_handle_digit(Scanner* scan)
 		break; case 'o': //OCTAL	
 			base = 8;
 		break; default:
-			if (!isdigit(scan->current_char) && scan->current_char != '.')
+			if (isdigit(scan->current_char) || scan->current_char == '.')
+			{
+				//We recurse now that we have popped the leading 0
+				return ScannerGetNextToken(scan);
+			}
+			else
 			{
 				scan->parsed_uinteger = 0;
 				return TKN_INTEGER;
 			}
-			else //We recurse now that we have popped the leading 0
-				return impl_scanner_handle_digit(scan);
 		}
 
 		scan->current_char = impl_parse_alnum(scan);
