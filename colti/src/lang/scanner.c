@@ -307,6 +307,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 		if (isdigit(scan->current_char))
 		{
 			isfloat = true;
+			StringAppendChar(&scan->parsed_string, '.');
 			StringAppendChar(&scan->parsed_string, scan->current_char);
 			
 			//Parse as many digits as possible
