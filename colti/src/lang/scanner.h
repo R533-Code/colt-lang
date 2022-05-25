@@ -3,7 +3,10 @@
 * As the Scanner does not need to modify the input string, it takes in
 * a StringView.
 * The Scanner also handles error printing through `impl_scanner_print_error`.
-* The Scanner's string to integer can handles binary integers `0b`, decimal integers `0x`, octal integers `0o`.
+* The Scanner's string to integer conversion handles binary integers `0b`, decimal integers `0x`, octal integers `0o`.
+* As identifiers are never modified when extracted from source code, they are stored
+* as a StringView. On the other hand, string literals are stored as String,
+* and should be freed using `StringFree`.
 */
 
 #ifndef HG_COLTI_SCANNER
