@@ -97,17 +97,21 @@ namespace colti::code
 		/// @brief Gets a quad word from the offset specified, aligning the access
 		/// @param offset The offset should point to the OP_IMMEDIATE_QWORD
 		/// @return The quad word at that offset
-		QWORD getQWORD(uint64_t& offset) noexcept;
+		QWORD getQWORD(uint64_t& offset) noexcept;		
 
 		/// @brief Heap allocates 'size' MORE bytes to the current capacity of the Chunk
 		/// @param more_byte_capacity The count of bytes to add to the capacity
-		void reserve_more(size_t more_byte_capacity) noexcept;
+		void reserveMore(size_t more_byte_capacity) noexcept;
 
 		/// @brief Serializes a chunk to a file
 		/// @param path The path to the file to which to serialize
 		void serialize(const char* path) noexcept;
 
-	private: //IMPLEMENTATION HELPERS
+	private:
+		/**********************************
+		IMPLEMENTATION HELPERS
+		**********************************/
+
 		/// @brief Doubles the capacity of a chunk
 		void impl_chunk_grow_double() noexcept;
 
@@ -118,33 +122,29 @@ namespace colti::code
 		/// @brief Appends a byte at the end of the chunk
 		/// @param byte The byte to append
 		void impl_chunk_write_byte(uint8_t byte) noexcept;
+
+	public: //STATIC UNSAFE HELPERS
+
+		/// @brief Extracts a BYTE from a pointer and updates the location pointed by that pointer
+		/// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_BYTE (not checked)
+		/// @return BYTE union representing the read byte
+		static BYTE unsafe_get_byte(uint8_t*& ptr) noexcept;
+
+		/// @brief Extracts a WORD from a pointer and updates the location pointed by that pointer
+		/// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_WORD (not checked)
+		/// @return WORD union representing the read word
+		static WORD unsafe_get_word(uint8_t*& ptr) noexcept;
+
+		/// @brief Extracts a DWORD from a pointer and updates the location pointed by that pointer
+		/// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_DWORD (not checked)
+		/// @return DWORD union representing the read word
+		static DWORD unsafe_get_dword(uint8_t*& ptr) noexcept;
+
+		/// @brief Extracts a QWORD from a pointer and updates the location pointed by that pointer
+		/// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_QWORD(not checked)
+		/// @return QWORD union representing the read word
+		static QWORD unsafe_get_qword(uint8_t*& ptr) noexcept;
 	};
 }
-
-
-
-/**********************************
-IMPLEMENTATION HELPERS
-**********************************/
-
-/// @brief Extracts a BYTE from a pointer and updates the location pointed by that pointer
-/// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_BYTE (not checked)
-/// @return BYTE union representing the read byte
-BYTE unsafe_get_byte(uint8_t** ptr);
-
-/// @brief Extracts a WORD from a pointer and updates the location pointed by that pointer
-/// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_WORD (not checked)
-/// @return WORD union representing the read word
-WORD unsafe_get_word(uint8_t** ptr);
-
-/// @brief Extracts a DWORD from a pointer and updates the location pointed by that pointer
-/// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_DWORD (not checked)
-/// @return DWORD union representing the read word
-DWORD unsafe_get_dword(uint8_t** ptr);
-
-/// @brief Extracts a QWORD from a pointer and updates the location pointed by that pointer
-/// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_QWORD(not checked)
-/// @return QWORD union representing the read word
-QWORD unsafe_get_qword(uint8_t** ptr);
 
 #endif //HG_COLTI_CHUNK

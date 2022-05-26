@@ -185,7 +185,7 @@ namespace colti::code
 		return return_val;
 	}
 
-	void Chunk::reserve(size_t more_byte_capacity) noexcept
+	void Chunk::reserveMore(size_t more_byte_capacity) noexcept
 	{
 		this->impl_chunk_grow_size(more_byte_capacity);
 	}
@@ -237,39 +237,39 @@ namespace colti::code
 		this->code[this->count] = byte;
 		++this->count;
 	}
-}
 
-BYTE unsafe_get_byte(uint8_t** ptr)
-{
-	BYTE return_val;
-	return_val.ui8 = *(*ptr);
-	*ptr += sizeof(uint8_t);
-	return return_val;
-}
+	BYTE Chunk::unsafe_get_byte(uint8_t*& ptr) noexcept
+	{
+		BYTE return_val;
+		return_val.ui8 = *(ptr);
+		ptr += sizeof(uint8_t);
+		return return_val;
+	}
 
-WORD unsafe_get_word(uint8_t** ptr)
-{
-	*ptr += (uint64_t)(*ptr) & 1; //read past padding
-	WORD return_val;
-	return_val.ui16 = *((uint16_t*)*ptr);
-	*ptr += sizeof(int32_t);
-	return return_val;
-}
+	WORD Chunk::unsafe_get_word(uint8_t*& ptr) noexcept
+	{
+		ptr += reinterpret_cast<uint8_t*>(static_cast<uint64_t>(ptr) & 1); //read past padding
+		WORD return_val;
+		return_val.ui16 = *(reinterpret_cast<uint16_t*>(ptr));
+		ptr += sizeof(int32_t);
+		return return_val;
+	}
 
-DWORD unsafe_get_dword(uint8_t** ptr)
-{
-	*ptr += (uint64_t)(*ptr) % 4; //read past padding
-	DWORD return_val;
-	return_val.ui32 = *((uint32_t*)*ptr);
-	*ptr += sizeof(int32_t);
-	return return_val;
-}
+	DWORD Chunk::unsafe_get_dword(uint8_t*& ptr) noexcept
+	{
+		ptr += reinterpret_cast<uint8_t*>(static_cast<uint64_t>(ptr) % 4); //read past padding
+		DWORD return_val;
+		return_val.ui32 = *(reinterpret_cast<uint32_t*>(ptr));
+		ptr += sizeof(int32_t);
+		return return_val;
+	}
 
-QWORD unsafe_get_qword(uint8_t** ptr)
-{
-	*ptr += (uint64_t)(*ptr) % 8; //read past padding
-	QWORD return_val;
-	return_val.ui64 = *((uint64_t*)*ptr);
-	*ptr += sizeof(int64_t);
-	return return_val;
+	QWORD Chunk::unsafe_get_qword(uint8_t*& ptr) noexcept
+	{
+		ptr += reinterpret_cast<uint8_t*>(static_cast<uint64_t>(ptr) % 8); //read past padding
+		QWORD return_val;
+		return_val.ui64 = *(reinterpret_cast<uint64_t*>(ptr));
+		ptr += sizeof(int64_t);
+		return return_val;
+	}
 }
