@@ -6,11 +6,11 @@
 
 namespace colti::code
 {
-	Chunk::Chunk()
+	Chunk::Chunk() noexcept
 		: capacity(32), count(0), code(safe_malloc(32))
 	{}
 
-	Chunk::~Chunk()
+	Chunk::~Chunk() noexcept
 	{
 		safe_free(chunk->code);
 		//Most functions that take a Chunk* check for if the capacity is 0,
@@ -20,7 +20,7 @@ namespace colti::code
 		DO_IF_DEBUG_BUILD(chunk->capacity = 0);
 	}
 
-	Chunk::Chunk(const char* path)
+	Chunk::Chunk(const char* path) noexcept
 		: capacity(0), count(0), code(nullptr)
 	{
 		FILE* file = fopen(path, "rb");
@@ -45,7 +45,7 @@ namespace colti::code
 		}
 	}
 
-	void Chunk::printBytes()
+	void Chunk::printBytes() noexcept
 	{
 		for (uint32_t i = 0; i < this->count; i++)
 		{
@@ -55,30 +55,31 @@ namespace colti::code
 		printf("\n");
 	}
 
-	void Chunk::writeOpCode(OpCode code)
+	void Chunk::writeOpCode(OpCode code) noexcept
 	{
 		this->impl_chunk_write_byte(static_cast<uint8_t>(code));
 	}
 
-	void Chunk::writeOperand(OperandType type)
+	void Chunk::writeOperand(OperandType type) noexcept
 	{
 		this->impl_chunk_write_byte(static_cast<uint8_t>(type));
 	}
 
-	void Chunk::writeBytes(const uint8_t* const bytes, uint32_t size)
+	void Chunk::writeBytes(const uint8_t* const bytes, uint32_t size) noexcept
 	{
+		colti_assert(bytes != nullptr, "bytes cannot be null!");
 		if (!(this->count + size < this->capacity)) //Grow if needed
 			this->impl_chunk_grow_size(size);
 		memcpy(this->code, bytes, size);
 		this->count += size;
 	}
 
-	void Chunk::writeBYTE(BYTE byte)
+	void Chunk::writeBYTE(BYTE byte) noexcept
 	{
 		this->impl_chunk_write_byte(byte.ui8);
 	}
 
-	void Chunk::writeWORD(WORD value)
+	void Chunk::writeWORD(WORD value) noexcept
 	{
 		//We need to pad if needed
 		uint64_t offset = static_cast<uint64_t>((this->code + this->count) & 1); //same as % 2
@@ -94,7 +95,7 @@ namespace colti::code
 		this->count += sizeof(uint16_t);
 	}
 
-	void Chunk::writeDWORD(DWORD value)
+	void Chunk::writeDWORD(DWORD value) noexcept
 	{
 		uint64_t offset = static_cast<uint64_t>((this->code + this->count) % 4);
 		if (!(this->count + offset + sizeof(uint32_t) < this->capacity)) //Grow if needed
@@ -109,7 +110,7 @@ namespace colti::code
 		this->count += sizeof(uint32_t);
 	}
 
-	void Chunk::writeQWORD(QWORD value)
+	void Chunk::writeQWORD(QWORD value) noexcept
 	{
 		uint64_t offset = static_cast<uint64_t>((this->code + this->count) % 8);
 		if (!(this->count + offset + sizeof(uint64_t) < this->capacity)) //Grow if needed
@@ -124,7 +125,7 @@ namespace colti::code
 		this->count += sizeof(uint64_t);
 	}
 
-	BYTE Chunk::getBYTE(uint64_t& offset)
+	BYTE Chunk::getBYTE(uint64_t& offset) noexcept
 	{
 		colti_assert(this->code[offset] == OP_IMMEDIATE_BYTE, "'offset' should point to an OP_IMMEDIATE_BYTE!");
 		offset += 1;
@@ -132,7 +133,7 @@ namespace colti::code
 		return byte;
 	}
 
-	WORD Chunk::getWORD(uint64_t& offset)
+	WORD Chunk::getWORD(uint64_t& offset) noexcept
 	{
 		colti_assert(this->code[offset] == OP_IMMEDIATE_WORD, "'offset' should point to an OP_IMMEDIATE_WORD!");
 
@@ -143,13 +144,13 @@ namespace colti::code
 		local_offset += static_cast<uint64_t>((this->code + local_offset) & 1);
 
 		//Extract the int16 from the bytes
-		WORD return_val = { .ui16 = *(int16_t*)(this->code + local_offset) };
+		WORD return_val = { .ui16 = *static_cast<int16_t*>(this->code + local_offset) };
 		//Update the value of the offset
 		offset = local_offset + sizeof(int16_t);
 		return return_val;
 	}
 	
-	DWORD Chunk::getDWORD(uint64_t& offset)
+	DWORD Chunk::getDWORD(uint64_t& offset) noexcept
 	{
 		colti_assert(this->code[offset] == OP_IMMEDIATE_DWORD, "'offset' should point to an OP_IMMEDIATE_DWORD!");
 
@@ -161,13 +162,13 @@ namespace colti::code
 
 
 		DWORD return_val;
-		return_val.ui32 = *(int32_t*)(this->code + local_offset);
+		return_val.ui32 = *static_cast<int32_t*>(this->code + local_offset);
 		//Update the value of the offset
 		offset = local_offset + sizeof(int32_t);
 		return return_val;
 	}
 
-	QWORD Chunk::getQWORD(uint64_t& offset)
+	QWORD Chunk::getQWORD(uint64_t& offset) noexcept
 	{
 		colti_assert(this->code[offset] == OP_IMMEDIATE_QWORD, "'offset' should point to an OP_IMMEDIATE_QWORD!");
 
@@ -178,18 +179,18 @@ namespace colti::code
 		local_offset += static_cast<uint64_t>((this->code + local_offset) % 8);
 
 		QWORD return_val;
-		return_val.ui64 = *(int64_t*)(this->code + local_offset);
+		return_val.ui64 = *static_cast<int64_t*>(this->code + local_offset);
 		//Update the value of the offset
 		offset = local_offset + sizeof(int64_t);
 		return return_val;
 	}
 
-	void Chunk::reserve(size_t more_byte_capacity)
+	void Chunk::reserve(size_t more_byte_capacity) noexcept
 	{
 		this->impl_chunk_grow_size(more_byte_capacity);
 	}
 
-	void Chunk::serialize(const char* path)
+	void Chunk::serialize(const char* path) noexcept
 	{
 		FILE* file = fopen(path, "wb");
 		if (file == NULL)
@@ -200,6 +201,41 @@ namespace colti::code
 		//Write the binary code
 		fwrite(chunk->code, sizeof(char), chunk->count, file);
 		fclose(file);
+	}
+
+	void Chunk::impl_this_grow_double() noexcept
+	{
+		colti_assert(this->capacity != 0, "Chunk capacity was 0! Be sure to call ChunkInit for any Chunk you create!");
+
+		//Allocate double the capacity
+		uint8_t* ptr = static_cast<uint8_t*>(safe_malloc(this->capacity *= 2));
+		//Copy byte-code to new location
+		memcpy(ptr, this->code, this->count);
+		
+		safe_free(this->code);
+		this->code = ptr;
+	}
+
+	void Chunk::impl_this_grow_size(size_t size) noexcept
+	{
+		colti_assert(size != 0, "Tried to augment the capacity of a Chunk by 0!");
+		colti_assert(this->capacity != 0, "Chunk capacity was 0! Be sure to call ChunkInit for any Chunk you create!");
+
+		//Allocate the new capacity
+		uint8_t* ptr = static_cast<uint8_t*>(safe_malloc(this->capacity += size));
+		//Copy byte-code to new location
+		memcpy(ptr, this->code, this->count);
+
+		safe_free(this->code);
+		this->code = ptr;
+	}
+
+	void Chunk::impl_this_write_byte(uint8_t byte) noexcept
+	{
+		if (this->count == this->capacity) //Grow if needed
+			impl_this_grow_double(this);
+		this->code[this->count] = byte;
+		++this->count;
 	}
 }
 
@@ -236,39 +272,4 @@ QWORD unsafe_get_qword(uint8_t** ptr)
 	return_val.ui64 = *((uint64_t*)*ptr);
 	*ptr += sizeof(int64_t);
 	return return_val;
-}
-
-void impl_chunk_grow_double(Chunk* chunk)
-{
-	colti_assert(chunk->capacity != 0, "Chunk capacity was 0! Be sure to call ChunkInit for any Chunk you create!");
-
-	//Allocate double the capacity
-	uint8_t* ptr = (uint8_t*)safe_malloc(chunk->capacity *= 2);
-	//Copy byte-code to new location
-	memcpy(ptr, chunk->code, chunk->count);
-	
-	safe_free(chunk->code);
-	chunk->code = ptr;
-}
-
-void impl_chunk_grow_size(Chunk* chunk, size_t size)
-{
-	colti_assert(size != 0, "Tried to augment the capacity of a Chunk by 0!");
-	colti_assert(chunk->capacity != 0, "Chunk capacity was 0! Be sure to call ChunkInit for any Chunk you create!");
-
-	//Allocate the new capacity
-	uint8_t* ptr = (uint8_t*)safe_malloc(chunk->capacity += size);
-	//Copy byte-code to new location
-	memcpy(ptr, chunk->code, chunk->count);
-
-	safe_free(chunk->code);
-	chunk->code = ptr;
-}
-
-void impl_chunk_write_byte(Chunk* chunk, uint8_t byte)
-{
-	if (chunk->count == chunk->capacity) //Grow if needed
-		impl_chunk_grow_double(chunk);
-	chunk->code[chunk->count] = byte;
-	++chunk->count;
 }

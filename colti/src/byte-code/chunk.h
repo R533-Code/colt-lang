@@ -35,77 +35,89 @@ namespace colti::code
 	public: //CONSTRUCTORS AND DESTRUCTOR
 		
 		/// @brief Zero-initializes a chunk
-		Chunk();
+		Chunk() noexcept;
 
 		/// @brief De-serializes a chunk from a file
 		/// @param path The path to the file from which to de-serialize
-		Chunk(const char* path);
+		Chunk(const char* path) noexcept;
 
 		/// @brief Frees memory used by a chunk
-		~Chunk();
+		~Chunk() noexcept;
 
 	public: //METHODS
 
 		/// @brief Prints the byte content of a Chunk
-		void printBytes();
+		void printBytes() noexcept;
 
 		/// @brief Appends an OpCode to the end of the chunk
 		/// @param code The byte to append
-		void writeOpCode(OpCode code);
+		void writeOpCode(OpCode code) noexcept;
 
 		/// @brief Appends multiple bytes to the end of a chunk
 		/// @param bytes The array of bytes from which to copy the bytes
 		/// @param size The number of bytes to copy from 'bytes'
-		void writeBytes(const uint8_t* const bytes, uint64_t size);
+		void writeBytes(const uint8_t* const bytes, uint64_t size) noexcept;
 
 
 		/// @brief Appends an OperandType to the end of the chunk
 		/// @param type The type to append
-		void writeOperand(OperandType type);
+		void writeOperand(OperandType type) noexcept;
 
 		/// @brief Appends a BYTE to the end of the chunk
 		/// @param byte The byte to append
-		void writeBYTE(BYTE value);
+		void writeBYTE(BYTE value) noexcept;
 
 		/// @brief Writes a WORD to the end of a chunk, padding if necessary
 		/// @param value The value to write
-		void writeWORD(WORD value);
+		void writeWORD(WORD value) noexcept;
 
 		/// @brief Writes a DWORD to the end of a chunk, padding if necessary
 		/// @param value The value to write
-		void writeDWORD(DWORD value);
+		void writeDWORD(DWORD value) noexcept;
 		
 		/// @brief Writes a QWORD to the end of a chunk, padding if necessary
 		/// @param value The value to write
-		void writeQWORD(QWORD value);
+		void writeQWORD(QWORD value) noexcept;
 	
 		/// @brief Gets a byte from the offset specified
 		/// @param offset The offset should point to the OP_IMMEDIATE_BYTE, is modified by this function
 		/// @return The byte at that offset
-		BYTE getBYTE(uint64_t& offset);
+		BYTE getBYTE(uint64_t& offset) noexcept;
 
 		/// @brief Gets a word from the offset specified, aligning the access
 		/// @param offset The offset should point to the OP_IMMEDIATE_WORD, is modified by this function
 		/// @return The word at that offset
-		WORD getWORD(uint64_t& offset);
+		WORD getWORD(uint64_t& offset) noexcept;
 
 		/// @brief Gets a double word from the offset specified, aligning the access
 		/// @param offset The offset should point to the OP_IMMEDIATE_DWORD
 		/// @return The double word at that offset
-		DWORD getDWORD(uint64_t& offset);
+		DWORD getDWORD(uint64_t& offset) noexcept;
 
 		/// @brief Gets a quad word from the offset specified, aligning the access
 		/// @param offset The offset should point to the OP_IMMEDIATE_QWORD
 		/// @return The quad word at that offset
-		QWORD getQWORD(uint64_t& offset);
+		QWORD getQWORD(uint64_t& offset) noexcept;
 
 		/// @brief Heap allocates 'size' MORE bytes to the current capacity of the Chunk
 		/// @param more_byte_capacity The count of bytes to add to the capacity
-		void reserve_more(size_t more_byte_capacity);
+		void reserve_more(size_t more_byte_capacity) noexcept;
 
 		/// @brief Serializes a chunk to a file
 		/// @param path The path to the file to which to serialize
-		void serialize(const char* path);		
+		void serialize(const char* path) noexcept;
+
+	private: //IMPLEMENTATION HELPERS
+		/// @brief Doubles the capacity of a chunk
+		void impl_chunk_grow_double() noexcept;
+
+		/// @brief Augments the capacity of a chunk by 'size'
+		/// @param size The capacity to add
+		void impl_chunk_grow_size(size_t size) noexcept;
+
+		/// @brief Appends a byte at the end of the chunk
+		/// @param byte The byte to append
+		void impl_chunk_write_byte(uint8_t byte) noexcept;
 	};
 }
 
@@ -134,19 +146,5 @@ DWORD unsafe_get_dword(uint8_t** ptr);
 /// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_QWORD(not checked)
 /// @return QWORD union representing the read word
 QWORD unsafe_get_qword(uint8_t** ptr);
-
-/// @brief Doubles the capacity of a chunk
-/// @param chunk The chunk to modify
-void impl_chunk_grow_double(Chunk* chunk);
-
-/// @brief Augments the capacity of a chunk by 'size'
-/// @param chunk The chunk to modify
-/// @param size The capacity to add
-void impl_chunk_grow_size(Chunk* chunk, size_t size);
-
-/// @brief Appends a byte at the end of the chunk
-/// @param chunk The chunk to modify
-/// @param byte The byte to append
-void impl_chunk_write_byte(Chunk* chunk, uint8_t byte);
 
 #endif //HG_COLTI_CHUNK
