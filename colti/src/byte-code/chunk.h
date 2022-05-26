@@ -18,104 +18,98 @@
 #include "common.h"
 #include "byte_code.h" //Contains the byte-code enum
 
-/// @brief Represents a stream of instructions
-typedef struct
+namespace colti::code
 {
-	/// @brief Number of items pointed to
-	uint64_t count;
-	/// @brief Capacity of the current allocated code_buffer
-	uint64_t capacity;
 
-	/// @brief Pointer to the beginning of the byte-code
-	uint8_t* code;
-} Chunk;
+	/// @brief Represents a stream of instructions
+	class Chunk
+	{
+		/// @brief Number of items pointed to
+		uint64_t count;
+		/// @brief Capacity of the current allocated code_buffer
+		uint64_t capacity;
 
-/// @brief Prints the byte content of a Chunk
-/// @param chunk The chunk whose content to print
-void ChunkPrintBytes(const Chunk* chunk);
+		/// @brief Pointer to the beginning of the byte-code
+		uint8_t* code;
 
-/// @brief Zero-initializes a chunk
-/// @param chunk The chunk to initialize
-void ChunkInit(Chunk* chunk);
+	public: //CONSTRUCTORS AND DESTRUCTOR
+		
+		/// @brief Zero-initializes a chunk
+		Chunk();
 
-/// @brief Appends an OpCode to the end of the chunk
-/// @param chunk The chunk to append to
-/// @param code The byte to append
-void ChunkWriteOpCode(Chunk* chunk, OpCode code);
+		/// @brief De-serializes a chunk from a file
+		/// @param path The path to the file from which to de-serialize
+		Chunk(const char* path);
 
-/// @brief Appends an OperandType to the end of the chunk
-/// @param chunk The chunk to append to
-/// @param type The type to append
-void ChunkWriteOperand(Chunk* chunk, OperandType type);
+		/// @brief Frees memory used by a chunk
+		~Chunk();
 
-/// @brief Appends a byte to the end of the chunk
-/// @param chunk The chunk to append to
-/// @param byte The byte to append
-void ChunkWriteBYTE(Chunk* chunk, BYTE byte);
+	public: //METHODS
 
-/// @brief Appends multiple bytes to the end of a chunk
-/// @param chunk The chunk to append to
-/// @param bytes The array of bytes from which to copy the bytes
-/// @param size The number of bytes to copy from 'bytes'
-void ChunkWriteBytes(Chunk* chunk, const uint8_t* const bytes, uint32_t size);
+		/// @brief Prints the byte content of a Chunk
+		void printBytes();
 
-/// @brief Writes an int16 to the end of a chunk, padding if necessary
-/// @param chunk The chunk to append to
-/// @param value The value to write
-void ChunkWriteWORD(Chunk* chunk, WORD value);
+		/// @brief Appends an OpCode to the end of the chunk
+		/// @param code The byte to append
+		void writeOpCode(OpCode code);
 
-/// @brief Writes an int32 to the end of a chunk, padding if necessary
-/// @param chunk The chunk to append to
-/// @param value The value to write
-void ChunkWriteDWORD(Chunk* chunk, DWORD value);
+		/// @brief Appends multiple bytes to the end of a chunk
+		/// @param bytes The array of bytes from which to copy the bytes
+		/// @param size The number of bytes to copy from 'bytes'
+		void writeBytes(const uint8_t* const bytes, uint64_t size);
 
-/// @brief Writes an int64 to the end of a chunk, padding if necessary
-/// @param chunk The chunk to append to
-/// @param value The value to write
-void ChunkWriteQWORD(Chunk* chunk, QWORD value);
 
-/// @brief Gets a byte from the offset specified
-/// @param chunk The chunk to get the value from
-/// @param offset The offset should point to the OP_IMMEDIATE_BYTE, is modified by this function
-/// @return The byte at that offset
-BYTE ChunkGetBYTE(const Chunk* chunk, uint64_t* offset);
+		/// @brief Appends an OperandType to the end of the chunk
+		/// @param type The type to append
+		void writeOperand(OperandType type);
 
-/// @brief Gets a word from the offset specified, aligning the access
-/// @param chunk The chunk to get the value from
-/// @param offset The offset should point to the OP_IMMEDIATE_WORD, is modified by this function
-/// @return The word at that offset
-WORD ChunkGetWORD(const Chunk* chunk, uint64_t* offset);
+		/// @brief Appends a BYTE to the end of the chunk
+		/// @param byte The byte to append
+		void writeBYTE(BYTE value);
 
-/// @brief Gets a double word from the offset specified, aligning the access
-/// @param chunk The chunk to get the value from
-/// @param offset The offset should point to the OP_IMMEDIATE_DWORD
-/// @return The double word at that offset
-DWORD ChunkGetDWORD(const Chunk* chunk, uint64_t* offset);
+		/// @brief Writes a WORD to the end of a chunk, padding if necessary
+		/// @param value The value to write
+		void writeWORD(WORD value);
 
-/// @brief Gets a quad word from the offset specified, aligning the access
-/// @param chunk The chunk to get the value from
-/// @param offset The offset should point to the OP_IMMEDIATE_QWORD
-/// @return The quad word at that offset
-QWORD ChunkGetQWORD(const Chunk* chunk, uint64_t* offset);
+		/// @brief Writes a DWORD to the end of a chunk, padding if necessary
+		/// @param value The value to write
+		void writeDWORD(DWORD value);
+		
+		/// @brief Writes a QWORD to the end of a chunk, padding if necessary
+		/// @param value The value to write
+		void writeQWORD(QWORD value);
+	
+		/// @brief Gets a byte from the offset specified
+		/// @param offset The offset should point to the OP_IMMEDIATE_BYTE, is modified by this function
+		/// @return The byte at that offset
+		BYTE getBYTE(uint64_t& offset);
 
-/// @brief Frees memory used by a chunk
-/// @param chunk The chunk to free
-void ChunkFree(Chunk* chunk);
+		/// @brief Gets a word from the offset specified, aligning the access
+		/// @param offset The offset should point to the OP_IMMEDIATE_WORD, is modified by this function
+		/// @return The word at that offset
+		WORD getWORD(uint64_t& offset);
 
-/// @brief Heap allocates 'size' MORE bytes to the current capacity of the Chunk
-/// @param chunk The chunk to modify
-/// @param more_byte_capacity The count of bytes to add to the capacity
-void ChunkReserve(Chunk* chunk, size_t more_byte_capacity);
+		/// @brief Gets a double word from the offset specified, aligning the access
+		/// @param offset The offset should point to the OP_IMMEDIATE_DWORD
+		/// @return The double word at that offset
+		DWORD getDWORD(uint64_t& offset);
 
-/// @brief Serializes a chunk to a file
-/// @param chunk The chunk to serialize
-/// @param path The path to the file to which to serialize
-void ChunkSerialize(const Chunk* chunk, const char* path);
+		/// @brief Gets a quad word from the offset specified, aligning the access
+		/// @param offset The offset should point to the OP_IMMEDIATE_QWORD
+		/// @return The quad word at that offset
+		QWORD getQWORD(uint64_t& offset);
 
-/// @brief De-serializes a chunk from a file
-/// @param path The path to the file from which to de-serialize
-/// @return The de-serialized chunk
-Chunk ChunkDeserialize(const char* path);
+		/// @brief Heap allocates 'size' MORE bytes to the current capacity of the Chunk
+		/// @param more_byte_capacity The count of bytes to add to the capacity
+		void reserve_more(size_t more_byte_capacity);
+
+		/// @brief Serializes a chunk to a file
+		/// @param path The path to the file to which to serialize
+		void serialize(const char* path);		
+	};
+}
+
+
 
 /**********************************
 IMPLEMENTATION HELPERS
