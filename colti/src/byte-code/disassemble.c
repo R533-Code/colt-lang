@@ -4,120 +4,127 @@
 
 #include "disassemble.h"
 
-void ChunkDisassemble(const Chunk* chunk, const char* name)
+namespace colti::code
 {
-	printf("============ %s ============\n", name);
+	void disassemble(const Chunk& chunk, const char* name) noexcept
+	{
+		printf("============ %s ============\n", name);
 
-	if (chunk->count == 0)
-	{
-		printf("!EMPTY CHUNK!");
-		return;
-	}
-	for (uint64_t offset = 0; offset < chunk->count;)
-	{
-		offset = impl_chunk_print_code(chunk, offset);
+		if (chunk.count == 0)
+		{
+			printf("!EMPTY CHUNK!");
+			return;
+		}
+		for (uint64_t offset = 0; offset < chunk.count;)
+		{
+			offset = impl_chunk_print_code(chunk, offset);
+		}
 	}
 }
 
-uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
+namespace colti::code::details
 {
-	printf("%04"PRIu64" ", offset);
 
-	uint8_t instruction = chunk->code[offset];
-	switch (instruction)
+	uint64_t impl_chunk_print_code(const Chunk& chunk, uint64_t offset) noexcept
 	{
-		/******************************************************/
+		printf("%04"PRIu64" ", offset);
 
-	case OP_IMMEDIATE_BYTE:
-		colti_assert(offset + 1 <= chunk->count, "Missing byte after OP_IMMEDIATE_BYTE!");
-		impl_print_hex_instruction("OP_IMMEDIATE_BYTE", ChunkGetBYTE(chunk, &offset).ui8);
-		return offset;
+		uint8_t instruction = chunk.code[offset];
+		switch (instruction)
+		{
+			/******************************************************/
 
-	case OP_IMMEDIATE_WORD:
-		colti_assert(offset + ((uint64_t)(chunk->code + offset) & 1) + sizeof(int16_t) <= chunk->count, "Missing int16 after OP_IMMEDIATE_WORD");
-		impl_print_hex_instruction("OP_IMMEDIATE_WORD", ChunkGetWORD(chunk, &offset).ui16);
-		return offset;
+		case OP_IMMEDIATE_BYTE:
+			colti_assert(offset + 1 <= chunk.count, "Missing byte after OP_IMMEDIATE_BYTE!");
+			impl_print_hex_instruction("OP_IMMEDIATE_BYTE", ChunkGetBYTE(chunk, &offset).ui8);
+			return offset;
 
-	case OP_IMMEDIATE_DWORD:
-		colti_assert(offset + ((uint64_t)(chunk->code + offset) % 4) + sizeof(int32_t) <= chunk->count, "Missing int32 after OP_IMMEDIATE_DWORD");
-		impl_print_hex_instruction("OP_IMMEDIATE_DWORD", ChunkGetDWORD(chunk, &offset).ui32);
-		return offset;
+		case OP_IMMEDIATE_WORD:
+			colti_assert(offset + ((uint64_t)(chunk.code + offset) & 1) + sizeof(int16_t) <= chunk.count, "Missing int16 after OP_IMMEDIATE_WORD");
+			impl_print_hex_instruction("OP_IMMEDIATE_WORD", ChunkGetWORD(chunk, &offset).ui16);
+			return offset;
 
-	case OP_IMMEDIATE_QWORD:
-		colti_assert(offset + ((uint64_t)(chunk->code + offset) % 8) + sizeof(int64_t) <= chunk->count, "Missing int64 after OP_IMMEDIATE_QWORD");
-		impl_print_hex_instruction("OP_IMMEDIATE_QWORD", ChunkGetQWORD(chunk, &offset).ui64);
-		return offset;
+		case OP_IMMEDIATE_DWORD:
+			colti_assert(offset + ((uint64_t)(chunk.code + offset) % 4) + sizeof(int32_t) <= chunk.count, "Missing int32 after OP_IMMEDIATE_DWORD");
+			impl_print_hex_instruction("OP_IMMEDIATE_DWORD", ChunkGetDWORD(chunk, &offset).ui32);
+			return offset;
 
-		/******************************************************/
+		case OP_IMMEDIATE_QWORD:
+			colti_assert(offset + ((uint64_t)(chunk.code + offset) % 8) + sizeof(int64_t) <= chunk.count, "Missing int64 after OP_IMMEDIATE_QWORD");
+			impl_print_hex_instruction("OP_IMMEDIATE_QWORD", ChunkGetQWORD(chunk, &offset).ui64);
+			return offset;
 
-	case OP_NEGATE:
-		return impl_print_operand_instruction("OP_NEGATE", chunk->code[offset + 1], offset);
+			/******************************************************/
 
-	case OP_ADD:
-		return impl_print_operand_instruction("OP_ADD", chunk->code[offset + 1], offset);
-	case OP_SUBTRACT:
-		return impl_print_operand_instruction("OP_SUBTRACT", chunk->code[offset + 1], offset);
-	case OP_MULTIPLY:
-		return impl_print_operand_instruction("OP_MULTIPLY", chunk->code[offset + 1], offset);
-	case OP_DIVIDE:
-		return impl_print_operand_instruction("OP_DIVIDE", chunk->code[offset + 1], offset);
+		case OP_NEGATE:
+			return impl_print_operand_instruction("OP_NEGATE", chunk.code[offset + 1], offset);
 
-		/******************************************************/
+		case OP_ADD:
+			return impl_print_operand_instruction("OP_ADD", chunk.code[offset + 1], offset);
+		case OP_SUBTRACT:
+			return impl_print_operand_instruction("OP_SUBTRACT", chunk.code[offset + 1], offset);
+		case OP_MULTIPLY:
+			return impl_print_operand_instruction("OP_MULTIPLY", chunk.code[offset + 1], offset);
+		case OP_DIVIDE:
+			return impl_print_operand_instruction("OP_DIVIDE", chunk.code[offset + 1], offset);
 
-	case OP_PRINT:
-		return impl_print_operand_instruction("OP_PRINT", chunk->code[offset + 1], offset);
+			/******************************************************/
 
-		/******************************************************/
+		case OP_PRINT:
+			return impl_print_operand_instruction("OP_PRINT", chunk.code[offset + 1], offset);
 
-	case OP_RETURN:
-		return impl_print_simple_instruction("OP_RETURN", offset);
+			/******************************************************/
 
-	default:
-		printf("UNKOWN OPCODE: '%d'\n", instruction);
+		case OP_RETURN:
+			return impl_print_simple_instruction("OP_RETURN", offset);
+
+		default:
+			printf("UNKOWN OPCODE: '%d'\n", instruction);
+			return offset + 1;
+		}
+	}
+
+	uint64_t impl_print_simple_instruction(const char* name, uint64_t offset) noexcept
+	{
+		printf("%s\n", name);
 		return offset + 1;
 	}
-}
 
-uint64_t impl_print_simple_instruction(const char* name, uint64_t offset)
-{
-	printf("%s\n", name);
-	return offset + 1;
-}
-
-uint64_t impl_print_byte_instruction(const char* name, uint8_t byte, uint64_t offset)
-{
-	printf("%s '%d'\n", name, byte);
-	return offset + 2;
-}
-
-uint64_t impl_print_operand_instruction(const char* name, uint8_t byte, uint64_t offset)
-{
-	const char* operand;
-	switch (byte)
+	uint64_t impl_print_byte_instruction(const char* name, uint8_t byte, uint64_t offset) noexcept
 	{
-	break; case OPERAND_COLTI_BOOL:		operand = "BOOL";
-	break; case OPERAND_COLTI_DOUBLE:	operand = "DOUBLE";
-	break; case OPERAND_COLTI_FLOAT:	operand = "FLOAT";
-	break; case OPERAND_COLTI_I8:		operand = "INT8";
-	break; case OPERAND_COLTI_I16:		operand = "INT16";
-	break; case OPERAND_COLTI_I32:		operand = "INT32";
-	break; case OPERAND_COLTI_I64:		operand = "INT64";
-	break; case OPERAND_COLTI_UI8:		operand = "UINT8";
-	break; case OPERAND_COLTI_UI16:		operand = "UINT16";
-	break; case OPERAND_COLTI_UI32:		operand = "UINT32";
-	break; case OPERAND_COLTI_UI64:		operand = "UINT64";
-	break; default:						operand = "UNKOWN";
+		printf("%s '%d'\n", name, byte);
+		return offset + 2;
 	}
-	printf("%s '%s'\n", name, operand);
-	return offset + 2;
-}
 
-void impl_print_int_instruction(const char* name, int64_t value)
-{
-	printf("%s '%"PRId64"'", name, value);
-}
+	uint64_t impl_print_operand_instruction(const char* name, uint8_t byte, uint64_t offset) noexcept
+	{
+		const char* operand;
+		switch (byte)
+		{
+		break; case OPERAND_COLTI_BOOL:		operand = "BOOL";
+		break; case OPERAND_COLTI_DOUBLE:	operand = "DOUBLE";
+		break; case OPERAND_COLTI_FLOAT:	operand = "FLOAT";
+		break; case OPERAND_COLTI_I8:		operand = "INT8";
+		break; case OPERAND_COLTI_I16:		operand = "INT16";
+		break; case OPERAND_COLTI_I32:		operand = "INT32";
+		break; case OPERAND_COLTI_I64:		operand = "INT64";
+		break; case OPERAND_COLTI_UI8:		operand = "UINT8";
+		break; case OPERAND_COLTI_UI16:		operand = "UINT16";
+		break; case OPERAND_COLTI_UI32:		operand = "UINT32";
+		break; case OPERAND_COLTI_UI64:		operand = "UINT64";
+		break; default:						operand = "UNKOWN";
+		}
+		printf("%s '%s'\n", name, operand);
+		return offset + 2;
+	}
 
-void impl_print_hex_instruction(const char* name, uint64_t value)
-{
-	printf("%s '0x%"PRIX64"'\n", name, value);
+	void impl_print_int_instruction(const char* name, int64_t value) noexcept
+	{
+		printf("%s '%"PRId64"'", name, value);
+	}
+
+	void impl_print_hex_instruction(const char* name, uint64_t value) noexcept
+	{
+		printf("%s '0x%"PRIX64"'\n", name, value);
+	}
 }
