@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(Colt-Interpreter VERSION 0.0.6.1 LANGUAGES C)
+project(Colt-Interpreter VERSION 0.0.6.1 LANGUAGES C++)
 
 file(GLOB_RECURSE ColtiHeaders "colti/src/*.h")
-file(GLOB_RECURSE ColtiUnits "colti/src/*.c")
+file(GLOB_RECURSE ColtiUnits "colti/src/*.cpp")
 
 add_executable(colti
 	${ColtiHeaders} ${ColtiUnits}
