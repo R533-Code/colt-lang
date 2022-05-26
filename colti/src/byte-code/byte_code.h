@@ -15,7 +15,7 @@
 
 #include "common.h"
 
-namespace colti::byte_code
+namespace colti::code
 {
 	/// @brief Represents an instruction to be executed by the VM
 	enum class OpCode

@@ -4,7 +4,7 @@
 
 #include "byte_code.h"
 
-namespace colti::byte_code
+namespace colti::code
 {
 	QWORD OpCode_Negate(QWORD value, OperandType type)
 	{
