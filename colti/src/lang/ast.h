@@ -37,6 +37,6 @@ IMPLEMENTATION HELPERS
 
 void impl_expr_free(Expr* expr);
 
-void impl_op_precedence(const AST* ast, Token token);
+int impl_op_precedence(const AST* ast, Token token);
 
 #endif //HG_COLTI_AST
