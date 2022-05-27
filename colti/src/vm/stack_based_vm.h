@@ -14,53 +14,54 @@
 #include "byte-code/chunk.h"
 #include "values/colti_floating_value.h"
 
-/// @brief VM containing a stack
-typedef struct
+
+namespace colti::vm
 {
-	/// @brief The pointer to the stack's top.
-	/// Points to where the next push should be written.
-	QWORD* stack_top;
-	/// @brief The stack-allocated stack
-	QWORD stack[256];
-} StackVM;
+	/// @brief VM containing a stack
+	class StackVM
+	{
+		/// @brief The pointer to the stack's top.
+		/// Points to where the next push should be written.
+		QWORD* stack_top;
+		/// @brief The stack-allocated stack
+		QWORD stack[256];
 
-/// @brief Initializes a StackVM
-/// @param vm The virtual machine to initialize
-void StackVMInit(StackVM* vm);
+	public: //CONSTRUCTORS AND DESTRUCTORS
+		/// @brief Initializes a StackVM
+		StackVM() noexcept;
 
-/// @brief Frees the resources used by a StackVM
-/// @param vm The virtual machine to modify
-void StackVMFree(StackVM* vm);
+		/// @brief Frees the resources used by a StackVM
+		~StackVM() noexcept;
 
-/// @brief Pushes a QWORD on the top the stack of a StackVM
-/// @param vm The virtual machine to modify
-/// @param value The value to push
-void StackVMPush(StackVM* vm, QWORD value);
+	public:
+		/// @brief Pushes a QWORD on the top the stack of a StackVM
+		/// @param value The value to push
+		void push(QWORD value) noexcept;
 
-/// @brief returns the top of a StackVM
-/// @param vm The virtual machine to modify
-/// @return The top of the stack
-QWORD StackVMTop(StackVM* vm);
+		/// @brief Pops and returns the top of a StackVM
+		/// @return The popped QWORD
+		QWORD pop() noexcept;
 
-/// @brief Pops and returns the top of a StackVM
-/// @param vm The virtual machine to modify
-/// @return The popped QWORD
-QWORD StackVMPop(StackVM* vm);
+		/// @brief returns the top of a StackVM
+		/// @return The top of the stack
+		QWORD& top() noexcept;
 
-/// @brief Check if a stack of a StackVM is empty
-/// @param vm The virtual machine for which to check
-/// @return True if the stack was empty
-bool StackVMIsEmpty(const StackVM* vm);
+		/// @brief Check if a stack of a StackVM is empty
+		/// @return True if the stack was empty
+		bool isEmpty() const noexcept;
+	
+		/// @brief Returns the number of QWORD pushed on the stack of a StackVM
+		/// @return The count of QWORD pushed
+		uint64_t size() const noexcept;
 
-/// @brief Returns the number of QWORD pushed on the stack of a StackVM
-/// @param vm The virtual machine for which to check
-/// @return The count of QWORD pushed
-uint64_t StackVMSize(const StackVM* vm);
+		/// @brief Runs code contained in a Chunk using an initialized StackVM
+		/// @param chunk The chunk containing the code to run
+		/// @return The result of the interpretation
+		InterpretResult run(const Chunk& chunk) noexcept;
+	};
+}
 
-/// @brief Runs code contained in a Chunk using an initialized StackVM
-/// @param vm The virtual machine in which to run
-/// @param chunk The chunk containing the code to run
-/// @return The result of the interpretation
-InterpretResult StackVMRun(StackVM* vm, Chunk* chunk);
+
+
 
 #endif //HG_COLTI_STACK_BASED_VM
