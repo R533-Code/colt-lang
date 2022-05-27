@@ -50,11 +50,6 @@ typedef enum
 	/// @brief >=
 	TKN_OPERATOR_GREATER_EQUAL,
 
-	/// @brief <:
-	TKN_OPERATOR_LESS_COLON,
-	/// @brief :>
-	TKN_OPERATOR_COLON_GREATER,
-
 	/// @brief =
 	TKN_OPERATOR_EQUAL,
 	/// @brief ==
@@ -89,6 +84,11 @@ typedef enum
 
 	/// @brief %
 	TKN_OPERATOR_MODULO,
+
+	/// @brief <:
+	TKN_OPERATOR_LESS_COLON,
+	/// @brief :>
+	TKN_OPERATOR_COLON_GREATER,
 
 	/*********************
 	* LITERALS
