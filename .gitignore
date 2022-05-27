@@ -8,3 +8,5 @@ highlighted_codes.html
 docs
 # PYTHON OUTPUT
 __pycache__
+# VSCODE
+.vscode
