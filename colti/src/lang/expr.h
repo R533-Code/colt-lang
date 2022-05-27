@@ -2,6 +2,7 @@
 #define HG_COLTI_EXPR
 
 #include "common.h"
+#include "token.h"
 
 typedef struct
 {
