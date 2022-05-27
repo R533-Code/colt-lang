@@ -2,7 +2,7 @@
 
 void ASTInit(AST* ast, StringView to_parse)
 {
-
+	ScannerInit(&ast->scan, to_parse);
 }
 
 void ASTFree(AST* ast)
@@ -13,6 +13,12 @@ void ASTFree(AST* ast)
 	DO_IF_DEBUG_BUILD(
 		ast->expr = NULL;
 	);
+}
+
+bool ASTParse(AST* ast)
+{
+
+	return false;
 }
 
 /************************************
@@ -51,4 +57,28 @@ void impl_expr_free(Expr* expr)
 	break; default:
 		colti_assert(false, "Expression identifier was invalid!");
 	}
+}
+
+int impl_op_precedence(const AST* ast, Token token)
+{
+	static const int operator_precedence_table[] = 
+	{
+		4, 1, 14,
+		4, 1, 14,
+		3, 14,
+		3, 14,
+		6, 5, 6,
+		6, 5, 6,
+		14, 7,
+		2, 7,
+		8, 14, 11,
+		10, 14, 12,
+		9, 14,
+		2, 3
+	};
+	
+	if (token < TKN_OPERATOR_LESS_COLON)
+		return operator_precedence_table[token];
+	impl_scanner_print_error(&ast->scan, "Expected an operator!");
+	return -1;
 }
