@@ -570,8 +570,8 @@ Token impl_token_identifier_or_keyword(const String* string)
 	break; case 'f':
 		if (strcmp(str, "for") == 0)
 			return TKN_KEYWORD_FOR;
-		else if (strcmp(str, "true") == 0)
-			return TKN_TRUE;
+		else if (strcmp(str, "false") == 0)
+			return TKN_FALSE;
 	break; case 'g':
 		if (strcmp(str, "goto") == 0)
 			return TKN_KEYWORD_GOTO;
