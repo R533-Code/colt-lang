@@ -17,7 +17,9 @@ void ASTFree(AST* ast)
 
 bool ASTParse(AST* ast)
 {
-
+	ast->current = ScannerGetNextToken(&ast->scan);
+	if (ast->expr = impl_binary_expr(ast, 0))
+		return true;
 	return false;
 }
 
@@ -63,22 +65,71 @@ int impl_op_precedence(const AST* ast, Token token)
 {
 	static const int operator_precedence_table[] = 
 	{
-		4, 1, 14,
-		4, 1, 14,
-		3, 14,
-		3, 14,
-		6, 5, 6,
-		6, 5, 6,
-		14, 7,
-		2, 7,
-		8, 14, 11,
-		10, 14, 12,
-		9, 14,
-		2, 3
+		10, 13, 0,
+		10, 13, 0,
+		11, 0,
+		11, 0,
+		8, 9, 8,
+		8, 9, 8,
+		0, 7,
+		12, 7,
+		6, 0, 3,
+		4, 0, 2,
+		5, 0,
+		12, 11
 	};
-	
+	colti_assert(token >= 0, "Token should be greater or equal to 0!");
 	if (token < TKN_OPERATOR_LESS_COLON)
 		return operator_precedence_table[token];
 	impl_scanner_print_error(&ast->scan, "Expected an operator!");
 	return -1;
+}
+
+Expr* impl_binary_expr(AST* ast, int op_precedence)
+{
+	Expr* left;
+	Token token_type;
+	
+	left = impl_primary_expr(ast);
+	
+	token_type = ast->current;
+	if (token_type == TKN_EOF)
+		return left;
+
+	while (impl_op_precedence(ast, token_type) > op_precedence)
+	{
+		//Read the next token
+		ast->current = ScannerGetNextToken(&ast->scan);
+
+		Expr* right = impl_binary_expr(ast, impl_op_precedence(ast, token_type));
+
+		left = make_binary_expr(left, token_type, right);
+
+		token_type = ast->current;
+		if (token_type == TKN_EOF)
+			return left;
+	}
+
+	return left;
+}
+
+Expr* impl_primary_expr(AST* ast)
+{
+	Expr* primary;
+	QWORD value;
+
+	switch (ast->current)
+	{
+	break; case TKN_INTEGER:
+		value.ui64 = ScannerGetInt(&ast->scan);
+		primary = make_literal_expr(value, COLTI_UINT64);
+	break; case TKN_DOUBLE:
+		value.d = ScannerGetDouble(&ast->scan);
+		primary = make_literal_expr(value, COLTI_DOUBLE);
+	break; default:
+		impl_scanner_print_error(&ast->scan, "Expected an expression!");
+		break;
+	}
+	ast->current = ScannerGetNextToken(&ast->scan);
+	return primary;
 }
