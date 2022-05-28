@@ -15,6 +15,8 @@ typedef struct
 	Expr* expr;
 	/// @brief The scanner providing the lexemes for the AST
 	Scanner scan;
+	/// @brief The current token from the scanner
+	Token current;
 } AST;
 
 /// @brief Initializes an AST
@@ -38,5 +40,9 @@ IMPLEMENTATION HELPERS
 void impl_expr_free(Expr* expr);
 
 int impl_op_precedence(const AST* ast, Token token);
+
+Expr* impl_binary_expr(AST* ast, int op_precedence);
+
+Expr* impl_primary_expr(AST* ast);
 
 #endif //HG_COLTI_AST
