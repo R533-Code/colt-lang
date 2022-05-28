@@ -26,7 +26,7 @@ Expr* make_literal_expr(QWORD value, OperandType type)
 		}
 	);
 
-	return ptr;
+	return (Expr*)ptr;
 }
 
 Expr* make_unary_expr(Token unary_operator, Expr* child)
@@ -50,10 +50,10 @@ Expr* make_unary_expr(Token unary_operator, Expr* child)
 	);
 
 	ptr->expr_operator = unary_operator;
-	return ptr;
+	return (Expr*)ptr;
 }
 
 Expr* make_binary_expr(Expr* lhs, Token binary_operator, Expr* rhs)
 {
-	
+	return NULL;
 }
