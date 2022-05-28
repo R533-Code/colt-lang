@@ -12,6 +12,7 @@
 #include "chunk.h"
 
 #include "lang/scanner.h"
+#include "lang/ast.h"
 
 //VMs
 #include "vm/stack_based_vm.h"
