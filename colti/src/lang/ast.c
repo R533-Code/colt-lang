@@ -130,9 +130,14 @@ Expr* impl_primary_expr(AST* ast)
 	break; case TKN_DOUBLE:
 		value.d = ScannerGetDouble(&ast->scan);
 		primary = make_literal_expr(value, COLTI_DOUBLE);
+	break; case TKN_TRUE:
+		value.b = true;
+		primary = make_literal_expr(value, COLTI_BOOL);
+	break; case TKN_FALSE:
+		value.b = false;
+		primary = make_literal_expr(value, COLTI_BOOL);
 	break; default:
 		impl_scanner_print_error(&ast->scan, "Expected an expression!");
-		break;
 	}
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	return primary;
