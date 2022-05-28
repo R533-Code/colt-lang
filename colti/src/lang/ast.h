@@ -37,12 +37,30 @@ bool ASTParse(AST* ast);
 IMPLEMENTATION HELPERS
 ************************************/
 
+/// @brief Recursively frees an expression.
+/// As some expressions (such as BinaryExp and UnaryExpr) possess
+/// leafs which are themselves expression, we need to recursively free
+/// an expression.
+/// @param expr The expression to free
 void impl_expr_free(Expr* expr);
 
+/// @brief Returns the precedence of an operator, and prints an error if the token is not an operator
+/// @param ast The AST use to print an error
+/// @param token The token to get the precedence of
+/// @return A value between 0-13 (with 13 being the highest precedence) or -1 if an error has been detected
 int impl_op_precedence(const AST* ast, Token token);
 
+/// @brief Parses a binary expression or a primary expression.
+/// FIXME: add valid tokens
+/// @param ast The AST from which to parse
+/// @param op_precedence The current operator precedence (which when first call should be 0)
+/// @return An Expr* representing either a binary or primary expression
 Expr* impl_binary_expr(AST* ast, int op_precedence);
 
+/// @brief Parses a primary expression (which can be a UnaryExpr, LiteralExpr or (...)).
+/// FIXME: add valid tokens
+/// @param ast The AST from which to parse
+/// @return An Expr* representing the parsed expression
 Expr* impl_primary_expr(AST* ast);
 
 #endif //HG_COLTI_AST
