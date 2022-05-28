@@ -102,6 +102,10 @@ typedef enum
 	TKN_INTEGER,
 	/// @brief [-+]?[0-9]*.[0-9]+(e[-+][0-9]+)
 	TKN_DOUBLE,
+	/// @brief true
+	TKN_TRUE,
+	/// @brief false
+	TKN_FALSE,
 
 	/*********************
 	* KEYWORDS
