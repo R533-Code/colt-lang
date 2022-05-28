@@ -1,21 +1,45 @@
+/** @file expr.h
+* Contains skeleton of classes representing AST expressions.
+* This header contains the struct Expr, which represents an unspecialized expression
+* (as if it were a base class), whose members are in every expression-like struct.
+* This allows to pass Expr*, regardless of the actual expression type.
+* To be able to cast the Expr* to its actual type, a field 'identifier' (ExprIdentifier)
+* contains actual expression type.
+* 
+* As all expression have a type, as with 'identifier', the 'expr_type' (which contains
+* the actual type of the Colt expression) is a field contained in every expression struct.
+* This is done to avoid the hassle of converting the Expr* to its actual expression-type,
+* as this information is useless when just checking for the type of another expression.
+*/
+
 #ifndef HG_COLTI_EXPR
 #define HG_COLTI_EXPR
 
 #include "common.h"
 #include "token.h"
 
+/// @brief Represents a type, which is a name and an ID
 typedef struct
 {
 	StringView name;
 	uint64_t type_id;
 } Type;
 
+/// @brief Represent the type of the expression holden by an Expr*.
+/// As C does not have inheritance, every expression class contains
+/// an 'identifier' member at the same layout location. By using this
+/// information, we can cast that pointer to the right expression struct.
 typedef enum
 {
+	/// @brief Variable expression
 	EXPR_VAR,
+	/// @brief Function expression
 	EXPR_FN,
+	/// @brief UnaryExpr type
 	EXPR_UNARY,
+	/// @brief BinaryExpr type
 	EXPR_BINARY,
+	/// @brief LiteralExpr type
 	EXPR_LITERAL
 } ExprIdentifier;
 

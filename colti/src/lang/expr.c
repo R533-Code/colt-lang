@@ -1,3 +1,6 @@
+/** @file expr.c
+* Contains the definitions of the functions declared in 'expr.h'
+*/
 #include "ast.h"
 
 Expr* make_literal_expr(QWORD value, OperandType type)
