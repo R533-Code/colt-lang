@@ -123,14 +123,32 @@ Expr* make_binary_expr(Expr* lhs, Token binary_operator, Expr* rhs);
 IMPLEMENTATION HELPER
 *******************************/
 
+/// @brief Returns the type that should be returned by an operator taking 'lhs' and 'rhs'
+/// @param lhs The left hand side of the operator
+/// @param binary_operator The token representing the operator
+/// @param rhs The right hand side of the operator
+/// @return The Type of the operator, or an outputs an error
 Type impl_operator_type(Type lhs, Token binary_operator, Type rhs);
 
+/// @brief Returns the best suitable built-in type for 2 types
+/// @param lhs The first type
+/// @param rhs The second type
+/// @return The intersection of the types
 Type impl_builtin_inter_type(Type lhs, Type rhs);
 
+/// @brief Check if a type is a built-in signed integer
+/// @param type The type_id to check for
+/// @return True if the type is a signed integer
 bool impl_is_type_int(OperandType type);
 
+/// @brief Check if a type is a built-in unsigned integer
+/// @param type The type_id to check for
+/// @return True if the type is a unsigned integer
 bool impl_is_type_uint(OperandType type);
 
+/// @brief Check if a type is a built-in floating point type
+/// @param type The type_id to check for
+/// @return True if the type is a ColtiFloat/ColtiDouble
 bool impl_is_type_floating(OperandType type);
 
 #endif //HG_COLTI_EXPR
