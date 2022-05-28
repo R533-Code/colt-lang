@@ -1,3 +1,7 @@
+/** @file ast.c
+* Contains the definitions of the functions declared in 'ast.h'
+*/
+
 #include "ast.h"
 
 void ASTInit(AST* ast, StringView to_parse)
@@ -17,7 +21,7 @@ void ASTFree(AST* ast)
 
 bool ASTParse(AST* ast)
 {
-	ast->current = ScannerGetNextToken(&ast->scan);
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	if (ast->expr = impl_binary_expr(ast, 0))
 		return true;
 	return false;
@@ -92,20 +96,20 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 	
 	left = impl_primary_expr(ast);
 	
-	token_type = ast->current;
+	token_type = ast->current_tkn;
 	if (token_type == TKN_EOF)
 		return left;
 
 	while (impl_op_precedence(ast, token_type) > op_precedence)
 	{
 		//Read the next token
-		ast->current = ScannerGetNextToken(&ast->scan);
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
 		Expr* right = impl_binary_expr(ast, impl_op_precedence(ast, token_type));
 
 		left = make_binary_expr(left, token_type, right);
 
-		token_type = ast->current;
+		token_type = ast->current_tkn;
 		if (token_type == TKN_EOF)
 			return left;
 	}
@@ -118,7 +122,7 @@ Expr* impl_primary_expr(AST* ast)
 	Expr* primary;
 	QWORD value;
 
-	switch (ast->current)
+	switch (ast->current_tkn)
 	{
 	break; case TKN_INTEGER:
 		value.ui64 = ScannerGetInt(&ast->scan);
@@ -130,6 +134,6 @@ Expr* impl_primary_expr(AST* ast)
 		impl_scanner_print_error(&ast->scan, "Expected an expression!");
 		break;
 	}
-	ast->current = ScannerGetNextToken(&ast->scan);
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	return primary;
 }

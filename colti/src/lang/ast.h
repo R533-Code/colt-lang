@@ -1,3 +1,14 @@
+/** @file ast.h
+* Abstract Syntax Tree for Colt.
+* The AST is responsible of producing a valid representation of a program,
+* or fail to do so, reporting the errors.
+* The AST, as for the Scanner contains a 'current_tkn' field, which is the NEXT
+* token to consume.
+* The AST uses Pratt's parsing for operator precedence.
+*
+* The AST contains a Scanner, which it uses to break and extract lexemes from a StringView.
+*/
+
 #ifndef HG_COLTI_AST
 #define HG_COLTI_AST
 
@@ -15,8 +26,8 @@ typedef struct
 	Expr* expr;
 	/// @brief The scanner providing the lexemes for the AST
 	Scanner scan;
-	/// @brief The current token from the scanner
-	Token current;
+	/// @brief The next token to consume from the scanner
+	Token current_tkn;
 } AST;
 
 /// @brief Initializes an AST
@@ -53,7 +64,7 @@ int impl_op_precedence(const AST* ast, Token token);
 /// @brief Parses a binary expression or a primary expression.
 /// FIXME: add valid tokens
 /// @param ast The AST from which to parse
-/// @param op_precedence The current operator precedence (which when first call should be 0)
+/// @param op_precedence The current_tkn operator precedence (which when first call should be 0)
 /// @return An Expr* representing either a binary or primary expression
 Expr* impl_binary_expr(AST* ast, int op_precedence);
 
