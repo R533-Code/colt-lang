@@ -25,6 +25,22 @@ void debug_scan(StringView view)
 	ScannerFree(&scan);
 }
 
+void debug_ast(StringView view)
+{
+	if (view.end - view.start > 1)
+	{
+		AST ast;
+		ASTInit(&ast, view);
+
+		if (ASTParse(&ast))
+		{
+			fputs(CONSOLE_FOREGROUND_BRIGHT_GREEN"Successfully created an AST!\n"CONSOLE_COLOR_RESET, stdout);
+		}
+
+		ASTFree(&ast);
+	}
+}
+
 int main(int argc, const char** argv)
 {
 	ParseResult args = ParseArguments(argc, argv);
@@ -32,16 +48,16 @@ int main(int argc, const char** argv)
 	{
 		while (!feof(stdin))
 		{
-			printf(CONSOLE_FOREGROUND_BRIGHT_MAGENTA"> "CONSOLE_COLOR_RESET);
+			fputs(CONSOLE_FOREGROUND_BRIGHT_MAGENTA"> "CONSOLE_COLOR_RESET, stdout);
 			String line = StringGetLine();
-			debug_scan(StringToStringView(&line));
+			debug_ast(StringToStringView(&line));
 			StringFree(&line);
 		}
 	}
 	else
 	{
 		String file_content = StringGetFileContent(args.file_path_in);
-		debug_scan(StringToStringView(&file_content));
+		debug_ast(StringToStringView(&file_content));
 		StringFree(&file_content);
 	}
 	DUMP_MEMORY_LEAKS();
