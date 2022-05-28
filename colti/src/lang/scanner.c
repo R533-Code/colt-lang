@@ -570,6 +570,8 @@ Token impl_token_identifier_or_keyword(const String* string)
 	break; case 'f':
 		if (strcmp(str, "for") == 0)
 			return TKN_KEYWORD_FOR;
+		else if (strcmp(str, "true") == 0)
+			return TKN_TRUE;
 	break; case 'g':
 		if (strcmp(str, "goto") == 0)
 			return TKN_KEYWORD_GOTO;
@@ -582,6 +584,9 @@ Token impl_token_identifier_or_keyword(const String* string)
 	break; case 's':
 		if (strcmp(str, "switch") == 0)
 			return TKN_KEYWORD_SWITCH;
+	break; case 't':
+		if (strcmp(str, "true") == 0)
+			return TKN_TRUE;
 	break; case 'w':
 		if (strcmp(str, "while") == 0)
 			return TKN_KEYWORD_WHILE;
