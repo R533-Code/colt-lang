@@ -67,11 +67,63 @@ Expr* make_binary_expr(Expr* lhs, Token binary_operator, Expr* rhs)
 	ptr->identifier = EXPR_BINARY;
 	
 	ptr->expr_operator = binary_operator;
-	//FIXME: should convert and fix types
-	ptr->expr_type = lhs->expr_type;
+
+	// get the type of the operator knowing the type of its operands
+	// This does not convert any of the values but rather choose the whole expression's type
+	ptr->expr_type = impl_operator_type(lhs->expr_type, binary_operator, rhs->expr_type);
 
 	ptr->lhs = lhs;
 	ptr->rhs = rhs;
 
-	return ptr;
+	return (Expr*)ptr;
+}
+
+Type impl_operator_type(Type lhs, Token binary_operator, Type rhs)
+{
+	//AT LEAST ONE IS NOT BUILT-IN TYPES
+	if (lhs.type_id > COLTI_DOUBLE || rhs.type_id > COLTI_DOUBLE)
+	{
+		//Check operator overloads table
+		colti_assert(false, "NOT IMPLEMENTED YET");
+	}
+	else if (lhs.type_id != rhs.type_id)
+	{
+		return impl_builtin_inter_type(lhs, rhs);
+	}	
+	else //if both are the same
+		return lhs;
+}
+
+Type impl_builtin_inter_type(Type lhs, Type rhs)
+{
+	colti_assert(lhs.type_id <= COLTI_DOUBLE && rhs.type_id <= COLTI_DOUBLE, "Type should be built-in types!");
+	if (lhs.type_id > rhs.type_id)
+		//swap so that the lhs has the lowest type
+		return impl_builtin_inter_type(rhs, lhs);
+
+	if (impl_is_type_int((OperandType)rhs.type_id
+		&& impl_is_type_uint((OperandType)lhs.type_id)))
+	{
+		//We return the biggest integer be it signed or unsigned
+		//The + 4 comes from the fact that unsigned integer ID is - 4
+		//from that of signed integer ID
+		return (lhs.type_id + 4 < rhs.type_id) ? rhs : lhs;
+	}
+	else //We return the greater type
+		return rhs;
+}
+
+bool impl_is_type_int(OperandType type)
+{
+	return type < COLTI_FLOAT && type > COLTI_UINT64;
+}
+
+bool impl_is_type_uint(OperandType type)
+{
+	return type < COLTI_INT8 && type > COLTI_BOOL;
+}
+
+bool impl_is_type_floating(OperandType type)
+{
+	return type == COLTI_FLOAT || type == COLTI_DOUBLE;
 }

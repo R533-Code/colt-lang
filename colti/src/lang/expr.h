@@ -119,4 +119,18 @@ Expr* make_unary_expr(Token unary_operator, Expr* child);
 /// @return A pointer to a heap allocated BinaryExpr
 Expr* make_binary_expr(Expr* lhs, Token binary_operator, Expr* rhs);
 
+/*******************************
+IMPLEMENTATION HELPER
+*******************************/
+
+Type impl_operator_type(Type lhs, Token binary_operator, Type rhs);
+
+Type impl_builtin_inter_type(Type lhs, Type rhs);
+
+bool impl_is_type_int(OperandType type);
+
+bool impl_is_type_uint(OperandType type);
+
+bool impl_is_type_floating(OperandType type);
+
 #endif //HG_COLTI_EXPR
