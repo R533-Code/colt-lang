@@ -3,7 +3,9 @@
 Expr* make_literal_expr(QWORD value, OperandType type)
 {
 	LiteralExpr* ptr = safe_malloc(sizeof(LiteralExpr));
+	//type for casting
 	ptr->identifier = EXPR_LITERAL;
+	
 	ptr->value = value;
 	ptr->expr_type.type_id = type;
 
@@ -32,7 +34,9 @@ Expr* make_literal_expr(QWORD value, OperandType type)
 Expr* make_unary_expr(Token unary_operator, Expr* child)
 {
 	UnaryExpr* ptr = safe_malloc(sizeof(UnaryExpr));
+	//type for casting
 	ptr->identifier = EXPR_UNARY;
+	
 	ptr->expr_type = child->expr_type;
 	ptr->child = child;
 	
@@ -55,5 +59,16 @@ Expr* make_unary_expr(Token unary_operator, Expr* child)
 
 Expr* make_binary_expr(Expr* lhs, Token binary_operator, Expr* rhs)
 {
-	return NULL;
+	BinaryExpr* ptr = safe_malloc(sizeof(BinaryExpr));
+	//type for casting
+	ptr->identifier = EXPR_BINARY;
+	
+	ptr->expr_operator = binary_operator;
+	//FIXME: should convert and fix types
+	ptr->expr_type = lhs->expr_type;
+
+	ptr->lhs = lhs;
+	ptr->rhs = rhs;
+
+	return ptr;
 }
