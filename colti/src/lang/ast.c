@@ -126,18 +126,20 @@ Expr* impl_primary_expr(AST* ast)
 	{
 	break; case TKN_INTEGER:
 		value.ui64 = ScannerGetInt(&ast->scan);
-		primary = make_literal_expr(value, COLTI_UINT64);
+		primary = make_literal_expr(value, ColtUInt64);
 	break; case TKN_DOUBLE:
 		value.d = ScannerGetDouble(&ast->scan);
-		primary = make_literal_expr(value, COLTI_DOUBLE);
+		primary = make_literal_expr(value, ColtDouble);
 	break; case TKN_TRUE:
 		value.b = true;
-		primary = make_literal_expr(value, COLTI_BOOL);
+		primary = make_literal_expr(value, ColtBool);
 	break; case TKN_FALSE:
 		value.b = false;
-		primary = make_literal_expr(value, COLTI_BOOL);
+		primary = make_literal_expr(value, ColtBool);
 	break; default:
 		impl_scanner_print_error(&ast->scan, "Expected an expression!");
+		//FIXME: error handling
+		exit(1);
 	}
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	return primary;
