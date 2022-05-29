@@ -95,17 +95,17 @@ uint64_t impl_print_operand_instruction(const char* name, uint8_t byte, uint64_t
 	const char* operand;
 	switch (byte)
 	{
-	break; case OPERAND_COLTI_BOOL:		operand = "BOOL";
+	break; case COLTI_BOOL_ID:		operand = "BOOL";
 	break; case OPERAND_COLTI_DOUBLE:	operand = "DOUBLE";
 	break; case OPERAND_COLTI_FLOAT:	operand = "FLOAT";
-	break; case OPERAND_COLTI_I8:		operand = "INT8";
-	break; case OPERAND_COLTI_I16:		operand = "INT16";
-	break; case OPERAND_COLTI_I32:		operand = "INT32";
-	break; case OPERAND_COLTI_I64:		operand = "INT64";
-	break; case OPERAND_COLTI_UI8:		operand = "UINT8";
-	break; case OPERAND_COLTI_UI16:		operand = "UINT16";
-	break; case OPERAND_COLTI_UI32:		operand = "UINT32";
-	break; case OPERAND_COLTI_UI64:		operand = "UINT64";
+	break; case COLTI_I8_ID:		operand = "INT8";
+	break; case COLTI_I16_ID:		operand = "INT16";
+	break; case COLTI_I32_ID:		operand = "INT32";
+	break; case COLTI_I64_ID:		operand = "INT64";
+	break; case COLTI_U8_ID:		operand = "UINT8";
+	break; case COLTI_U16_ID:		operand = "UINT16";
+	break; case COLTI_U32_ID:		operand = "UINT32";
+	break; case COLTI_U64_ID:		operand = "UINT64";
 	break; default:						operand = "UNKOWN";
 	}
 	printf("%s '%s'\n", name, operand);

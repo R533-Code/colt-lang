@@ -58,29 +58,29 @@ typedef enum
 typedef enum
 {
 	/// @brief Represents a bool
-	COLTI_BOOL		= OPERAND_COLTI_BOOL,
+	COLTI_BOOL		= COLTI_BOOL_ID,
 	/// @brief Represents a 64-bit double-precision float
 	COLTI_DOUBLE	= OPERAND_COLTI_DOUBLE,
 	/// @brief Represents a 32-bit single-precision float
 	COLTI_FLOAT		= OPERAND_COLTI_FLOAT,
 
 	/// @brief Represents a signed 8-bit integer
-	COLTI_INT8		= OPERAND_COLTI_I8,
+	COLTI_INT8		= COLTI_I8_ID,
 	/// @brief Represents a signed 16-bit integer
-	COLTI_INT16		= OPERAND_COLTI_I16,
+	COLTI_INT16		= COLTI_I16_ID,
 	/// @brief Represents a signed 32-bit integer
-	COLTI_INT32		= OPERAND_COLTI_I32,
+	COLTI_INT32		= COLTI_I32_ID,
 	/// @brief Represents a signed 64-bit integer
-	COLTI_INT64		= OPERAND_COLTI_I64,
+	COLTI_INT64		= COLTI_I64_ID,
 
 	/// @brief Represents an unsigned 8-bit integer
-	COLTI_UINT8		= OPERAND_COLTI_UI8,
+	COLTI_UINT8		= COLTI_U8_ID,
 	/// @brief Represents an unsigned 16-bit integer
-	COLTI_UINT16	= OPERAND_COLTI_UI16,
+	COLTI_UINT16	= COLTI_U16_ID,
 	/// @brief Represents an unsigned 32-bit integer
-	COLTI_UINT32	= OPERAND_COLTI_UI32,
+	COLTI_UINT32	= COLTI_U32_ID,
 	/// @brief Represents an unsigned 64-bit integer
-	COLTI_UINT64	= OPERAND_COLTI_UI64,
+	COLTI_UINT64	= COLTI_U64_ID,
 } OperandType;
 
 /**********************************
