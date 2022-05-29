@@ -27,17 +27,17 @@ typedef struct
 	uint64_t type_id;
 } Type;
 
-static const Type ColtBool		= { .name.start = "bool", .name.end = "bool" + 4, .type_id = COLTI_BOOL };
-static const Type ColtUInt8		= { .name.start = "u8",	 .name.end = "u8" + 2,  .type_id = COLTI_UINT8 };
-static const Type ColtUInt16	= { .name.start = "u16", .name.end = "u16" + 3, .type_id = COLTI_UINT16 };
-static const Type ColtUInt32	= { .name.start = "u32", .name.end = "u32" + 3, .type_id = COLTI_UINT32 };
-static const Type ColtUInt64	= { .name.start = "u64", .name.end = "u64" + 3, .type_id = COLTI_UINT64 };
-static const Type ColtInt8		= { .name.start = "i8",  .name.end = "i8" + 2,  .type_id = COLTI_INT8 };
-static const Type ColtInt16		= { .name.start = "i16", .name.end = "i16" + 3, .type_id = COLTI_INT16 };
-static const Type ColtInt32		= { .name.start = "i32", .name.end = "i32" + 3, .type_id = COLTI_INT32 };
-static const Type ColtInt64		= { .name.start = "i64", .name.end = "i64" + 3, .type_id = COLTI_INT64 };
-static const Type ColtFloat		= { .name.start = "float", .name.end = "float" + 5, .type_id = COLTI_FLOAT };
-static const Type ColtDouble	= { .name.start = "double", .name.end = "double" + 6, .type_id = COLTI_DOUBLE };
+static const Type ColtBool		= { .name.start = "bool",	.name.end = "bool" + 4,		.type_id = COLTI_BOOL };
+static const Type ColtUInt8		= { .name.start = "u8",		.name.end = "u8" + 2,		.type_id = COLTI_UINT8 };
+static const Type ColtUInt16	= { .name.start = "u16",	.name.end = "u16" + 3,		.type_id = COLTI_UINT16 };
+static const Type ColtUInt32	= { .name.start = "u32",	.name.end = "u32" + 3,		.type_id = COLTI_UINT32 };
+static const Type ColtUInt64	= { .name.start = "u64",	.name.end = "u64" + 3,		.type_id = COLTI_UINT64 };
+static const Type ColtInt8		= { .name.start = "i8",		.name.end = "i8" + 2,		.type_id = COLTI_INT8 };
+static const Type ColtInt16		= { .name.start = "i16",	.name.end = "i16" + 3,		.type_id = COLTI_INT16 };
+static const Type ColtInt32		= { .name.start = "i32",	.name.end = "i32" + 3,		.type_id = COLTI_INT32 };
+static const Type ColtInt64		= { .name.start = "i64",	.name.end = "i64" + 3,		.type_id = COLTI_INT64 };
+static const Type ColtFloat		= { .name.start = "float",	.name.end = "float" + 5,	.type_id = COLTI_FLOAT };
+static const Type ColtDouble	= { .name.start = "double", .name.end = "double" + 6,	.type_id = COLTI_DOUBLE };
 
 /// @brief Represent the type of the expression holden by an Expr*.
 /// As C does not have inheritance, every expression class contains
