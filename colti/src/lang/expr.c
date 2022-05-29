@@ -3,17 +3,17 @@
 */
 #include "ast.h"
 
-Expr* make_literal_expr(QWORD value, OperandType type)
+Expr* make_literal_expr(QWORD value, Type type)
 {
 	LiteralExpr* ptr = safe_malloc(sizeof(LiteralExpr));
 	//type for casting
 	ptr->identifier = EXPR_LITERAL;
 	
 	ptr->value = value;
-	ptr->expr_type.type_id = type;
+	ptr->expr_type = type;
 
 	DO_IF_DEBUG_BUILD(
-		switch (type)
+		switch (type.type_id)
 		{
 		case COLTI_BOOL:
 		case COLTI_FLOAT:
