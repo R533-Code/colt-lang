@@ -14,22 +14,22 @@ typedef bool ColtiBool;
 #define OPERAND_COLTI_BOOL 0
 
 /// @brief Unsigned 8 bit integer
-typedef uint8_t ColtiUI8;
+typedef uint8_t ColtiU8;
 /// @brief The operand representing a unsigned 8-bit integer
 #define OPERAND_COLTI_UI8 1
 
 /// @brief Unsigned 16 bit integer
-typedef uint16_t ColtiUI16;
+typedef uint16_t ColtiU16;
 /// @brief The operand representing a unsigned 16-bit integer
 #define OPERAND_COLTI_UI16 2
 
 /// @brief Unsigned 32 bit integer
-typedef uint32_t ColtiUI32;
+typedef uint32_t ColtiU32;
 /// @brief The operand representing a unsigned 32-bit integer
 #define OPERAND_COLTI_UI32 3
 
 /// @brief Unsigned 64 bit integer
-typedef uint64_t ColtiUI64;
+typedef uint64_t ColtiU64;
 /// @brief The operand representing a unsigned 64-bit integer
 #define OPERAND_COLTI_UI64 4
 
