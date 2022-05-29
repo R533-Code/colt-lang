@@ -12,47 +12,63 @@
 typedef bool ColtiBool;
 /// @brief The operand representing a bool
 #define COLTI_BOOL_ID 0
+/// @brief A string representing a Colt bool
+static const char* const ColtBool_str = "bool";
 
 /// @brief Unsigned 8 bit integer
 typedef uint8_t ColtiU8;
 /// @brief The operand representing a unsigned 8-bit integer
 #define COLTI_U8_ID 1
+/// @brief A string representing a Colt unsigned 8-bit integer
+static const char* const ColtU8_str = "u8";
 
 /// @brief Unsigned 16 bit integer
 typedef uint16_t ColtiU16;
 /// @brief The operand representing a unsigned 16-bit integer
 #define COLTI_U16_ID 2
+/// @brief A string representing a Colt unsigned 16-bit integer
+static const char* const ColtU16_str = "u16";
 
 /// @brief Unsigned 32 bit integer
 typedef uint32_t ColtiU32;
 /// @brief The operand representing a unsigned 32-bit integer
 #define COLTI_U32_ID 3
+/// @brief A string representing a Colt unsigned 32-bit integer
+static const char* const ColtU32_str = "u32";
 
 /// @brief Unsigned 64 bit integer
 typedef uint64_t ColtiU64;
 /// @brief The operand representing a unsigned 64-bit integer
 #define COLTI_U64_ID 4
-
+/// @brief A string representing a Colt unsigned 64-bit integer
+static const char* const ColtU64_str = "u64";
 
 /// @brief Signed 8 bit integer
 typedef int8_t ColtiI8;
 /// @brief The operand representing a signed 8-bit integer
 #define COLTI_I8_ID 5
+/// @brief A string representing a Colt signed 8-bit integer
+static const char* const ColtI8_str = "i8";
 
 /// @brief Signed 16 bit integer
 typedef int16_t ColtiI16;
 /// @brief The operand representing a signed 16-bit integer
 #define COLTI_I16_ID 6
+/// @brief A string representing a Colt signed 16-bit integer
+static const char* const ColtI16_str = "i16";
 
 /// @brief Signed 32 bit integer
 typedef int32_t ColtiI32;
 /// @brief The operand representing a signed 32-bit integer
 #define COLTI_I32_ID 7
+/// @brief A string representing a Colt signed 32-bit integer
+static const char* const ColtI32_str = "i32";
 
 /// @brief Signed 64 bit integer
 typedef int64_t ColtiI64;
 /// @brief The operand representing a signed 64-bit integer
 #define COLTI_I64_ID 8
-
+/// @brief A string representing a Colt signed 64-bit integer
+static const char* const ColtI64_str = "i64";
 
 #endif //HG_COLTI_INTEGER_VALUE
