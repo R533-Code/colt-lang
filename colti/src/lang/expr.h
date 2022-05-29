@@ -29,6 +29,8 @@ typedef struct
 	uint64_t byte_size;
 } Type;
 
+//FIXME: MSVC is not optimizing same strings literals: use constants for both .start and .end
+
 /// @brief Type representing a built-in bool
 static const Type ColtBool		= { .name.start = "bool",	.name.end = "bool" + 3,		.type_id = COLTI_BOOL,		.byte_size = sizeof(ColtiBool) };
 /// @brief Type representing a built-in unsigned 8-bit integer
