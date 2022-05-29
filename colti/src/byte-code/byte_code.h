@@ -60,9 +60,9 @@ typedef enum
 	/// @brief Represents a bool
 	COLTI_BOOL		= COLTI_BOOL_ID,
 	/// @brief Represents a 64-bit double-precision float
-	COLTI_DOUBLE	= OPERAND_COLTI_DOUBLE,
+	COLTI_DOUBLE	= COLTI_DOUBLE_ID,
 	/// @brief Represents a 32-bit single-precision float
-	COLTI_FLOAT		= OPERAND_COLTI_FLOAT,
+	COLTI_FLOAT		= COLTI_FLOAT_ID,
 
 	/// @brief Represents a signed 8-bit integer
 	COLTI_INT8		= COLTI_I8_ID,

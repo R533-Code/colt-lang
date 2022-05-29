@@ -96,8 +96,8 @@ uint64_t impl_print_operand_instruction(const char* name, uint8_t byte, uint64_t
 	switch (byte)
 	{
 	break; case COLTI_BOOL_ID:		operand = "BOOL";
-	break; case OPERAND_COLTI_DOUBLE:	operand = "DOUBLE";
-	break; case OPERAND_COLTI_FLOAT:	operand = "FLOAT";
+	break; case COLTI_DOUBLE_ID:	operand = "DOUBLE";
+	break; case COLTI_FLOAT_ID:	operand = "FLOAT";
 	break; case COLTI_I8_ID:		operand = "INT8";
 	break; case COLTI_I16_ID:		operand = "INT16";
 	break; case COLTI_I32_ID:		operand = "INT32";
