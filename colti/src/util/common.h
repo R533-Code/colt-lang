@@ -51,60 +51,60 @@ typedef enum
 /// @brief Represents a Byte, which can be type-punned to a more useful type
 typedef union
 {
-	ColtiBool b; ///< Bool member
-	ColtiI8 i8; ///< 8-bit signed integer
-	ColtiU8 ui8; ///< 8-bit unsigned integer member
+	ColtBool_t b; ///< Bool member
+	ColtI8_t i8; ///< 8-bit signed integer
+	ColtU8_t ui8; ///< 8-bit unsigned integer member
 } BYTE;
 
 /// @brief Represents a Word (2 bytes), which can be type-punned to a more useful type
 typedef union
 {
-	ColtiBool b; ///< Bool member
-	ColtiI8 i8; ///< 8-bit signed integer
-	ColtiU8 ui8; ///< 8-bit unsigned integer member
+	ColtBool_t b; ///< Bool member
+	ColtI8_t i8; ///< 8-bit signed integer
+	ColtU8_t ui8; ///< 8-bit unsigned integer member
 	BYTE byte; ///< BYTE union, which can be used in place of b/i8/ui8
 
-	ColtiI16 i16; ///< 16-bit signed integer
-	ColtiU16 ui16; ///< 16-bit unsigned integer
+	ColtI16_t i16; ///< 16-bit signed integer
+	ColtU16_t ui16; ///< 16-bit unsigned integer
 } WORD;
 
 /// @brief Represents a Double Word (4 bytes), which can be type-punned to a more useful type
 typedef union
 {
-	ColtiBool b; ///< Bool member
-	ColtiI8 i8; ///< 8-bit signed integer
-	ColtiU8 ui8; ///< 8-bit unsigned integer member
+	ColtBool_t b; ///< Bool member
+	ColtI8_t i8; ///< 8-bit signed integer
+	ColtU8_t ui8; ///< 8-bit unsigned integer member
 	BYTE byte; ///< BYTE union, which can be used in place of b/i8/ui8
 
-	ColtiI16 i16; ///< 16-bit signed integer
-	ColtiU16 ui16; ///< 16-bit unsigned integer
+	ColtI16_t i16; ///< 16-bit signed integer
+	ColtU16_t ui16; ///< 16-bit unsigned integer
 	WORD word; ///< WORD union, which can be used in place of i16/ui16
 
-	ColtiFloat f; ///< 32-bit float
-	ColtiI32 i32; ///< 32-bit signed integer
-	ColtiU32 ui32; ///< 32-bit unsigned integer
+	ColtFloat_t f; ///< 32-bit float
+	ColtI32_t i32; ///< 32-bit signed integer
+	ColtU32_t ui32; ///< 32-bit unsigned integer
 } DWORD;
 
 /// @brief Represents a Quad Word (8 bytes), which can be type-punned to a more useful type
 typedef union
 {
-	ColtiBool b; ///< Bool member
-	ColtiI8 i8; ///< 8-bit signed integer
-	ColtiU8 ui8; ///< 8-bit unsigned integer member
+	ColtBool_t b; ///< Bool member
+	ColtI8_t i8; ///< 8-bit signed integer
+	ColtU8_t ui8; ///< 8-bit unsigned integer member
 	BYTE byte; ///< BYTE union, which can be used in place of b/i8/ui8
 
-	ColtiI16 i16; ///< 16-bit signed integer
-	ColtiU16 ui16; ///< 16-bit unsigned integer
+	ColtI16_t i16; ///< 16-bit signed integer
+	ColtU16_t ui16; ///< 16-bit unsigned integer
 	WORD word; ///< WORD union, which can be used in place of i16/ui16
 	
-	ColtiFloat f; ///< 32-bit float
-	ColtiI32 i32; ///< 32-bit signed integer
-	ColtiU32 ui32; ///< 32-bit unsigned integer
+	ColtFloat_t f; ///< 32-bit float
+	ColtI32_t i32; ///< 32-bit signed integer
+	ColtU32_t ui32; ///< 32-bit unsigned integer
 	DWORD dword; ///< DWORD union, which can be used if place of f/i32/ui32
 
-	ColtiDouble d; ///< 64-bit float
-	ColtiI64 i64; ///< 64-bit signed integer
-	ColtiU64 ui64; ///< 64-bit unsigned integer
+	ColtDouble_t d; ///< 64-bit float
+	ColtI64_t i64; ///< 64-bit signed integer
+	ColtU64_t ui64; ///< 64-bit unsigned integer
 } QWORD;
 
 
