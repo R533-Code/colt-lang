@@ -52,6 +52,7 @@ int main(int argc, const char** argv)
 		{
 			fputs(CONSOLE_FOREGROUND_BRIGHT_MAGENTA"> "CONSOLE_COLOR_RESET, stdout);
 			String line = StringGetLine();
+			debug_scan(StringToStringView(&line));
 			debug_ast(StringToStringView(&line));
 			StringFree(&line);
 		}
@@ -59,6 +60,7 @@ int main(int argc, const char** argv)
 	else
 	{
 		String file_content = StringGetFileContent(args.file_path_in);
+		debug_scan(StringToStringView(&file_content));
 		debug_ast(StringToStringView(&file_content));
 		StringFree(&file_content);
 	}
