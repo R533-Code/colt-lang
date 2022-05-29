@@ -10,3 +10,5 @@ docs
 __pycache__
 # VSCODE
 .vscode
+# VENDOR (for now)
+vendor
