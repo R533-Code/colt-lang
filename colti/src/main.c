@@ -34,7 +34,9 @@ void debug_ast(StringView view)
 
 		if (ASTParse(&ast))
 		{
-			printf(CONSOLE_FOREGROUND_BRIGHT_GREEN"Successfully created an AST! Type of expression: %.*s!\n"CONSOLE_COLOR_RESET, (uint32_t)(ast.expr->expr_type.name.end - ast.expr->expr_type.name.start), ast.expr->expr_type.name.start);
+			printf(CONSOLE_FOREGROUND_BRIGHT_GREEN"Successfully created an AST!\n"
+				"Type of expression: %.*s!\n"CONSOLE_COLOR_RESET, (uint32_t)(ast.expr->expr_type.name.end - ast.expr->expr_type.name.start),
+				ast.expr->expr_type.name.start);
 		}
 
 		ASTFree(&ast);
