@@ -25,19 +25,32 @@ typedef struct
 	StringView name;
 	/// @brief The ID of the Type
 	uint64_t type_id;
+	/// @brief The size in memory of the Type
+	uint64_t byte_size;
 } Type;
 
-static const Type ColtBool		= { .name.start = "bool",	.name.end = "bool" + 4,		.type_id = COLTI_BOOL };
-static const Type ColtUInt8		= { .name.start = "u8",		.name.end = "u8" + 2,		.type_id = COLTI_UINT8 };
-static const Type ColtUInt16	= { .name.start = "u16",	.name.end = "u16" + 3,		.type_id = COLTI_UINT16 };
-static const Type ColtUInt32	= { .name.start = "u32",	.name.end = "u32" + 3,		.type_id = COLTI_UINT32 };
-static const Type ColtUInt64	= { .name.start = "u64",	.name.end = "u64" + 3,		.type_id = COLTI_UINT64 };
-static const Type ColtInt8		= { .name.start = "i8",		.name.end = "i8" + 2,		.type_id = COLTI_INT8 };
-static const Type ColtInt16		= { .name.start = "i16",	.name.end = "i16" + 3,		.type_id = COLTI_INT16 };
-static const Type ColtInt32		= { .name.start = "i32",	.name.end = "i32" + 3,		.type_id = COLTI_INT32 };
-static const Type ColtInt64		= { .name.start = "i64",	.name.end = "i64" + 3,		.type_id = COLTI_INT64 };
-static const Type ColtFloat		= { .name.start = "float",	.name.end = "float" + 5,	.type_id = COLTI_FLOAT };
-static const Type ColtDouble	= { .name.start = "double", .name.end = "double" + 6,	.type_id = COLTI_DOUBLE };
+/// @brief Type representing a built-in bool
+static const Type ColtBool		= { .name.start = "bool",	.name.end = "bool" + 4,		.type_id = COLTI_BOOL,		.byte_size = sizeof(ColtiBool) };
+/// @brief Type representing a built-in unsigned 8-bit integer
+static const Type ColtUInt8		= { .name.start = "u8",		.name.end = "u8" + 2,		.type_id = COLTI_UINT8,		.byte_size = sizeof(ColtiU8) };
+/// @brief Type representing a built-in unsigned 16-bit integer
+static const Type ColtUInt16	= { .name.start = "u16",	.name.end = "u16" + 3,		.type_id = COLTI_UINT16,	.byte_size = sizeof(ColtiU16) };
+/// @brief Type representing a built-in unsigned 32-bit integer
+static const Type ColtUInt32	= { .name.start = "u32",	.name.end = "u32" + 3,		.type_id = COLTI_UINT32,	.byte_size = sizeof(ColtiU32) };
+/// @brief Type representing a built-in unsigned 64-bit integer
+static const Type ColtUInt64	= { .name.start = "u64",	.name.end = "u64" + 3,		.type_id = COLTI_UINT64,	.byte_size = sizeof(ColtiU64) };
+/// @brief Type representing a built-in signed 8-bit integer
+static const Type ColtInt8		= { .name.start = "i8",		.name.end = "i8" + 2,		.type_id = COLTI_INT8,		.byte_size = sizeof(ColtiI8) };
+/// @brief Type representing a built-in signed 16-bit integer
+static const Type ColtInt16		= { .name.start = "i16",	.name.end = "i16" + 3,		.type_id = COLTI_INT16,		.byte_size = sizeof(ColtiI16) };
+/// @brief Type representing a built-in signed 32-bit integer
+static const Type ColtInt32		= { .name.start = "i32",	.name.end = "i32" + 3,		.type_id = COLTI_INT32,		.byte_size = sizeof(ColtiI32) };
+/// @brief Type representing a built-in signed 64-bit integer
+static const Type ColtInt64		= { .name.start = "i64",	.name.end = "i64" + 3,		.type_id = COLTI_INT64,		.byte_size = sizeof(ColtiI64) };
+/// @brief Type representing a built-in float
+static const Type ColtFloat		= { .name.start = "float",	.name.end = "float" + 5,	.type_id = COLTI_FLOAT,		.byte_size = sizeof(ColtiFloat) };
+/// @brief Type representing a built-in double
+static const Type ColtDouble	= { .name.start = "double", .name.end = "double" + 6,	.type_id = COLTI_DOUBLE,	.byte_size = sizeof(ColtiDouble) };
 
 /// @brief Represent the type of the expression holden by an Expr*.
 /// As C does not have inheritance, every expression class contains
