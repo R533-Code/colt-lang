@@ -26,7 +26,7 @@ void ChunkWriteOpCode(Chunk* chunk, OpCode code)
 	impl_chunk_write_byte(chunk, (uint8_t)code);
 }
 
-void ChunkWriteOperand(Chunk* chunk, OperandType type)
+void ChunkWriteOperand(Chunk* chunk, BuiltinTypeID type)
 {
 	impl_chunk_write_byte(chunk, (uint8_t)type);
 }

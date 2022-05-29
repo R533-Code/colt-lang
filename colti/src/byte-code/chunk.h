@@ -43,10 +43,10 @@ void ChunkInit(Chunk* chunk);
 /// @param code The byte to append
 void ChunkWriteOpCode(Chunk* chunk, OpCode code);
 
-/// @brief Appends an OperandType to the end of the chunk
+/// @brief Appends an BuiltinTypeID to the end of the chunk
 /// @param chunk The chunk to append to
 /// @param type The type to append
-void ChunkWriteOperand(Chunk* chunk, OperandType type);
+void ChunkWriteOperand(Chunk* chunk, BuiltinTypeID type);
 
 /// @brief Appends a byte to the end of the chunk
 /// @param chunk The chunk to append to

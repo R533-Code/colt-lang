@@ -3,7 +3,7 @@
 * The OpCode enum represents an Operation Code, which describes an operation
 * to be done by the interpreter.
 * These byte-codes are usually followed by operands giving more informations about
-* what to do. For example, OP_NEGATE should be followed by an OperandType,
+* what to do. For example, OP_NEGATE should be followed by an BuiltinTypeID,
 * which describes the actual type of the QWORD to negate.
 * To abstract away the OpCode, how they and their operands are stored,
 * helper function of the form OpCode_{OP_CODE_NAME} are written, which expects
@@ -58,30 +58,30 @@ typedef enum
 typedef enum
 {
 	/// @brief Represents a bool
-	COLTI_BOOL		= COLTI_BOOL_ID,
+	ID_COLT_BOOL		= COLTI_BOOL_ID,
 	/// @brief Represents a 64-bit double-precision float
-	COLTI_DOUBLE	= COLTI_DOUBLE_ID,
+	ID_COLT_DOUBLE		= COLTI_DOUBLE_ID,
 	/// @brief Represents a 32-bit single-precision float
-	COLTI_FLOAT		= COLTI_FLOAT_ID,
+	ID_COLT_FLOAT		= COLTI_FLOAT_ID,
 
 	/// @brief Represents a signed 8-bit integer
-	COLTI_INT8		= COLTI_I8_ID,
+	ID_COLT_I8			= COLTI_I8_ID,
 	/// @brief Represents a signed 16-bit integer
-	COLTI_INT16		= COLTI_I16_ID,
+	ID_COLT_I16			= COLTI_I16_ID,
 	/// @brief Represents a signed 32-bit integer
-	COLTI_INT32		= COLTI_I32_ID,
+	ID_COLT_I32			= COLTI_I32_ID,
 	/// @brief Represents a signed 64-bit integer
-	COLTI_INT64		= COLTI_I64_ID,
+	ID_COLT_I64			= COLTI_I64_ID,
 
 	/// @brief Represents an unsigned 8-bit integer
-	COLTI_UINT8		= COLTI_U8_ID,
+	ID_COLT_U8			= COLTI_U8_ID,
 	/// @brief Represents an unsigned 16-bit integer
-	COLTI_UINT16	= COLTI_U16_ID,
+	ID_COLT_U16			= COLTI_U16_ID,
 	/// @brief Represents an unsigned 32-bit integer
-	COLTI_UINT32	= COLTI_U32_ID,
+	ID_COLT_U32			= COLTI_U32_ID,
 	/// @brief Represents an unsigned 64-bit integer
-	COLTI_UINT64	= COLTI_U64_ID,
-} OperandType;
+	ID_COLT_U64			= COLTI_U64_ID,
+} BuiltinTypeID;
 
 /**********************************
 BYTE-CODE RUNNING
@@ -91,46 +91,46 @@ BYTE-CODE RUNNING
 /// @param value The QWORD on which to operate
 /// @param type The type to which to cast the QWORD
 /// @return The modified QWORD
-QWORD OpCode_Negate(QWORD value, OperandType type);
+QWORD OpCode_Negate(QWORD value, BuiltinTypeID type);
 
 /// @brief Casts 'value' from 'from' to 'to'
 /// @param value The QWORD on which to operate
 /// @param from The type of the QWORD
 /// @param to The type to which to cast the QWORD
 /// @return The modified QWORD
-QWORD OpCode_Convert(QWORD value, OperandType from, OperandType to);
+QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to);
 
 /// @brief Casts 2 QWORD and return their sums
 /// @param left The left hand side
 /// @param right The right hand side
 /// @param type The type of the QWORDs
 /// @return The sum of the QWORDs
-QWORD OpCode_Sum(QWORD left, QWORD right, OperandType type);
+QWORD OpCode_Sum(QWORD left, QWORD right, BuiltinTypeID type);
 
 /// @brief Casts 2 QWORD and return their difference
 /// @param left The left hand side
 /// @param right The right hand side
 /// @param type The type of the QWORDs
 /// @return The difference of the QWORDs
-QWORD OpCode_Difference(QWORD left, QWORD right, OperandType type);
+QWORD OpCode_Difference(QWORD left, QWORD right, BuiltinTypeID type);
 
 /// @brief Casts 2 QWORD and return their multiplication
 /// @param left The left hand side
 /// @param right The right hand side
 /// @param type The type of the QWORDs
 /// @return The multiplication of the QWORDs
-QWORD OpCode_Multiply(QWORD left, QWORD right, OperandType type);
+QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type);
 
 /// @brief Casts 2 QWORD and return their division
 /// @param left The left hand side
 /// @param right The right hand side
 /// @param type The type of the QWORDs
 /// @return The division of the QWORDs
-QWORD OpCode_Divide(QWORD left, QWORD right, OperandType type);
+QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type);
 
 /// @brief Casts 'value' to 'type' then prints its value, for DEBUG purposes
 /// @param value The QWORD to print
 /// @param type The type of the QWORD
-void OpCode_Print(QWORD value, OperandType type);
+void OpCode_Print(QWORD value, BuiltinTypeID type);
 
 #endif //HG_COLTI_BYTE_CODE

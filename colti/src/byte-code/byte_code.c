@@ -4,7 +4,7 @@
 
 #include "byte_code.h"
 
-QWORD OpCode_Negate(QWORD value, OperandType type)
+QWORD OpCode_Negate(QWORD value, BuiltinTypeID type)
 {
 	QWORD result;
 	switch (type)
@@ -20,12 +20,12 @@ QWORD OpCode_Negate(QWORD value, OperandType type)
 	return result;
 }
 
-QWORD OpCode_Convert(QWORD value, OperandType from, OperandType to)
+QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 {
 	colti_assert(false, "Still not implemented!");
 }
 
-QWORD OpCode_Sum(QWORD left, QWORD right, OperandType type)
+QWORD OpCode_Sum(QWORD left, QWORD right, BuiltinTypeID type)
 {
 	QWORD result;
 	switch (type)
@@ -45,7 +45,7 @@ QWORD OpCode_Sum(QWORD left, QWORD right, OperandType type)
 	return result;
 }
 
-QWORD OpCode_Difference(QWORD left, QWORD right, OperandType type)
+QWORD OpCode_Difference(QWORD left, QWORD right, BuiltinTypeID type)
 {
 	QWORD result;
 	switch (type)
@@ -65,7 +65,7 @@ QWORD OpCode_Difference(QWORD left, QWORD right, OperandType type)
 	return result;
 }
 
-QWORD OpCode_Multiply(QWORD left, QWORD right, OperandType type)
+QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type)
 {
 	QWORD result;
 	switch (type)
@@ -85,7 +85,7 @@ QWORD OpCode_Multiply(QWORD left, QWORD right, OperandType type)
 	return result;
 }
 
-QWORD OpCode_Divide(QWORD left, QWORD right, OperandType type)
+QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type)
 {
 	QWORD result;
 	switch (type)
@@ -105,7 +105,7 @@ QWORD OpCode_Divide(QWORD left, QWORD right, OperandType type)
 	return result;
 }
 
-void OpCode_Print(QWORD value, OperandType type)
+void OpCode_Print(QWORD value, BuiltinTypeID type)
 {
 	switch (type)
 	{

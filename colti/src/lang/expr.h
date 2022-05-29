@@ -31,27 +31,27 @@ typedef struct
 
 
 /// @brief Type representing a built-in bool
-static const Type ColtBool		= { .name.start = ColtBool_str,		.name.end = ColtBool_str + 4,		.type_id = COLTI_BOOL,		.byte_size = sizeof(ColtBool_t) };
+static const Type ColtBool		= { .name.start = ColtBool_str,		.name.end = ColtBool_str + 4,		.type_id = ID_COLT_BOOL,		.byte_size = sizeof(ColtBool_t) };
 /// @brief Type representing a built-in unsigned 8-bit integer
-static const Type ColtUInt8		= { .name.start = ColtU8_str,		.name.end = ColtU8_str + 3,			.type_id = COLTI_UINT8,		.byte_size = sizeof(ColtU8_t) };
+static const Type ColtUInt8		= { .name.start = ColtU8_str,		.name.end = ColtU8_str + 3,			.type_id = ID_COLT_U8,		.byte_size = sizeof(ColtU8_t) };
 /// @brief Type representing a built-in unsigned 16-bit integer
-static const Type ColtUInt16	= { .name.start = ColtU16_str,		.name.end = ColtU16_str + 3,		.type_id = COLTI_UINT16,	.byte_size = sizeof(ColtU16_t) };
+static const Type ColtUInt16	= { .name.start = ColtU16_str,		.name.end = ColtU16_str + 3,		.type_id = ID_COLT_U16,	.byte_size = sizeof(ColtU16_t) };
 /// @brief Type representing a built-in unsigned 32-bit integer
-static const Type ColtUInt32	= { .name.start = ColtU32_str,		.name.end = ColtU32_str + 3,		.type_id = COLTI_UINT32,	.byte_size = sizeof(ColtU32_t) };
+static const Type ColtUInt32	= { .name.start = ColtU32_str,		.name.end = ColtU32_str + 3,		.type_id = ID_COLT_U32,	.byte_size = sizeof(ColtU32_t) };
 /// @brief Type representing a built-in unsigned 64-bit integer
-static const Type ColtUInt64	= { .name.start = ColtU64_str,		.name.end = ColtU64_str + 3,		.type_id = COLTI_UINT64,	.byte_size = sizeof(ColtU64_t) };
+static const Type ColtUInt64	= { .name.start = ColtU64_str,		.name.end = ColtU64_str + 3,		.type_id = ID_COLT_U64,	.byte_size = sizeof(ColtU64_t) };
 /// @brief Type representing a built-in signed 8-bit integer
-static const Type ColtInt8		= { .name.start = ColtI8_str,		.name.end = ColtI8_str + 2,			.type_id = COLTI_INT8,		.byte_size = sizeof(ColtI8_t) };
+static const Type ColtInt8		= { .name.start = ColtI8_str,		.name.end = ColtI8_str + 2,			.type_id = ID_COLT_I8,		.byte_size = sizeof(ColtI8_t) };
 /// @brief Type representing a built-in signed 16-bit integer
-static const Type ColtInt16		= { .name.start = ColtI16_str,		.name.end = ColtI16_str + 3,		.type_id = COLTI_INT16,		.byte_size = sizeof(ColtI16_t) };
+static const Type ColtInt16		= { .name.start = ColtI16_str,		.name.end = ColtI16_str + 3,		.type_id = ID_COLT_I16,		.byte_size = sizeof(ColtI16_t) };
 /// @brief Type representing a built-in signed 32-bit integer
-static const Type ColtInt32		= { .name.start = ColtI32_str,		.name.end = ColtI32_str + 3,		.type_id = COLTI_INT32,		.byte_size = sizeof(ColtI32_t) };
+static const Type ColtInt32		= { .name.start = ColtI32_str,		.name.end = ColtI32_str + 3,		.type_id = ID_COLT_I32,		.byte_size = sizeof(ColtI32_t) };
 /// @brief Type representing a built-in signed 64-bit integer
-static const Type ColtInt64		= { .name.start = ColtI64_str,		.name.end = ColtI64_str + 3,		.type_id = COLTI_INT64,		.byte_size = sizeof(ColtI64_t) };
+static const Type ColtInt64		= { .name.start = ColtI64_str,		.name.end = ColtI64_str + 3,		.type_id = ID_COLT_I64,		.byte_size = sizeof(ColtI64_t) };
 /// @brief Type representing a built-in float
-static const Type ColtFloat		= { .name.start = ColtFloat_str,	.name.end = ColtFloat_str + 5,		.type_id = COLTI_FLOAT,		.byte_size = sizeof(ColtFloat_t) };
+static const Type ColtFloat		= { .name.start = ColtFloat_str,	.name.end = ColtFloat_str + 5,		.type_id = ID_COLT_FLOAT,		.byte_size = sizeof(ColtFloat_t) };
 /// @brief Type representing a built-in double
-static const Type ColtDouble	= { .name.start = ColtDouble_str,	.name.end = ColtDouble_str + 6,		.type_id = COLTI_DOUBLE,	.byte_size = sizeof(ColtDouble_t) };
+static const Type ColtDouble	= { .name.start = ColtDouble_str,	.name.end = ColtDouble_str + 6,		.type_id = ID_COLT_DOUBLE,	.byte_size = sizeof(ColtDouble_t) };
 
 /// @brief Represent the type of the expression holden by an Expr*.
 /// As C does not have inheritance, every expression class contains
@@ -167,16 +167,16 @@ Type impl_builtin_inter_type(Type lhs, Type rhs);
 /// @brief Check if a type is a built-in signed integer
 /// @param type The type_id to check for
 /// @return True if the type is a signed integer
-bool impl_is_type_int(OperandType type);
+bool impl_is_type_int(BuiltinTypeID type);
 
 /// @brief Check if a type is a built-in unsigned integer
 /// @param type The type_id to check for
 /// @return True if the type is a unsigned integer
-bool impl_is_type_uint(OperandType type);
+bool impl_is_type_uint(BuiltinTypeID type);
 
 /// @brief Check if a type is a built-in floating point type
 /// @param type The type_id to check for
 /// @return True if the type is a ColtFloat_t/ColtDouble_t
-bool impl_is_type_floating(OperandType type);
+bool impl_is_type_floating(BuiltinTypeID type);
 
 #endif //HG_COLTI_EXPR

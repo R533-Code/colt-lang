@@ -15,17 +15,17 @@ Expr* make_literal_expr(QWORD value, Type type)
 	DO_IF_DEBUG_BUILD(
 		switch (type.type_id)
 		{
-		case COLTI_BOOL:
-		case COLTI_FLOAT:
-		case COLTI_DOUBLE:
-		case COLTI_INT8:
-		case COLTI_INT16:
-		case COLTI_INT32:
-		case COLTI_INT64:
-		case COLTI_UINT8:
-		case COLTI_UINT16:
-		case COLTI_UINT32:
-		case COLTI_UINT64:
+		case ID_COLT_BOOL:
+		case ID_COLT_FLOAT:
+		case ID_COLT_DOUBLE:
+		case ID_COLT_I8:
+		case ID_COLT_I16:
+		case ID_COLT_I32:
+		case ID_COLT_I64:
+		case ID_COLT_U8:
+		case ID_COLT_U16:
+		case ID_COLT_U32:
+		case ID_COLT_U64:
 		break; default:
 			colti_assert(false, "'type' was not a valid type!");
 		}
@@ -81,7 +81,7 @@ Expr* make_binary_expr(Expr* lhs, Token binary_operator, Expr* rhs)
 Type impl_operator_type(Type lhs, Token binary_operator, Type rhs)
 {
 	//AT LEAST ONE IS NOT BUILT-IN TYPES
-	if (lhs.type_id > COLTI_DOUBLE || rhs.type_id > COLTI_DOUBLE)
+	if (lhs.type_id > ID_COLT_DOUBLE || rhs.type_id > ID_COLT_DOUBLE)
 	{
 		//Check operator overloads table
 		colti_assert(false, "NOT IMPLEMENTED YET");
@@ -96,13 +96,13 @@ Type impl_operator_type(Type lhs, Token binary_operator, Type rhs)
 
 Type impl_builtin_inter_type(Type lhs, Type rhs)
 {
-	colti_assert(lhs.type_id <= COLTI_DOUBLE && rhs.type_id <= COLTI_DOUBLE, "Type should be built-in types!");
+	colti_assert(lhs.type_id <= ID_COLT_DOUBLE && rhs.type_id <= ID_COLT_DOUBLE, "Type should be built-in types!");
 	if (lhs.type_id > rhs.type_id)
 		//swap so that the lhs has the lowest type
 		return impl_builtin_inter_type(rhs, lhs);
 
-	if (impl_is_type_int((OperandType)rhs.type_id
-		&& impl_is_type_uint((OperandType)lhs.type_id)))
+	if (impl_is_type_int((BuiltinTypeID)rhs.type_id
+		&& impl_is_type_uint((BuiltinTypeID)lhs.type_id)))
 	{
 		//We return the biggest integer be it signed or unsigned
 		//The + 4 comes from the fact that unsigned integer ID is - 4
@@ -113,17 +113,17 @@ Type impl_builtin_inter_type(Type lhs, Type rhs)
 		return rhs;
 }
 
-bool impl_is_type_int(OperandType type)
+bool impl_is_type_int(BuiltinTypeID type)
 {
-	return type < COLTI_FLOAT && type > COLTI_UINT64;
+	return type < ID_COLT_FLOAT && type > ID_COLT_U64;
 }
 
-bool impl_is_type_uint(OperandType type)
+bool impl_is_type_uint(BuiltinTypeID type)
 {
-	return type < COLTI_INT8 && type > COLTI_BOOL;
+	return type < ID_COLT_I8 && type > ID_COLT_BOOL;
 }
 
-bool impl_is_type_floating(OperandType type)
+bool impl_is_type_floating(BuiltinTypeID type)
 {
-	return type == COLTI_FLOAT || type == COLTI_DOUBLE;
+	return type == ID_COLT_FLOAT || type == ID_COLT_DOUBLE;
 }

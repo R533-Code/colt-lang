@@ -82,8 +82,8 @@ InterpretResult StackVMRun(StackVM* vm, Chunk* chunk)
 		break; case OP_CONVERT:
 		{
 			colti_assert(!StackVMIsEmpty(vm), "Stack should contain at least 1 items!");
-			OperandType from = *(ip++);
-			OperandType to = *(ip++);
+			BuiltinTypeID from = *(ip++);
+			BuiltinTypeID to = *(ip++);
 			StackVMPush(vm, OpCode_Convert(StackVMPop(vm), from, to));
 		}
 
