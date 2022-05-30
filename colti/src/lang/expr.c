@@ -87,6 +87,44 @@ Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, StringView lin
 	return (Expr*)ptr;
 }
 
+void freeExpr(Expr* ptr)
+{
+	switch (ptr->identifier)
+	{
+	break; case EXPR_VAR:
+	{
+		//TODO: when implemented
+	}
+	break; case EXPR_FN:
+	{
+		//TODO: when implemented
+	}
+	break; case EXPR_UNARY:
+	{
+		UnaryExpr* uexpr = (UnaryExpr*)ptr;
+		//we need to recurse to free expressions of expressions
+		impl_expr_free(uexpr->child);
+		safe_free(uexpr);
+	}
+	break; case EXPR_BINARY:
+	{
+		BinaryExpr* bexpr = (BinaryExpr*)ptr;
+		//we need to recurse to free expressions of expressions
+		impl_expr_free(bexpr->lhs);
+		impl_expr_free(bexpr->rhs);
+		safe_free(bexpr);
+	}
+	break; case EXPR_LITERAL:
+		safe_free(ptr);
+	break; default:
+		colti_assert(false, "Expression identifier was invalid!");
+	}
+}
+
+/*******************************
+IMPLEMENTATION HELPER
+*******************************/
+
 Type impl_operator_type(Type lhs, Token binary_operator, Type rhs)
 {
 	//AT LEAST ONE IS NOT BUILT-IN TYPES

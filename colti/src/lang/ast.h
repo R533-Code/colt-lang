@@ -48,13 +48,6 @@ bool ASTParse(AST* ast);
 IMPLEMENTATION HELPERS
 ************************************/
 
-/// @brief Recursively frees an expression.
-/// As some expressions (such as BinaryExp and UnaryExpr) possess
-/// leafs which are themselves expression, we need to recursively free
-/// an expression.
-/// @param expr The expression to free
-void impl_expr_free(Expr* expr);
-
 /// @brief Returns the precedence of an operator, and prints an error if the token is not an operator
 /// @param ast The AST use to print an error
 /// @param token The token to get the precedence of
