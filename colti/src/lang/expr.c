@@ -3,7 +3,7 @@
 */
 #include "ast.h"
 
-Expr* make_literal_expr(QWORD value, Type type, StringView line, StringView lexeme)
+Expr* makeLiteralExpr(QWORD value, Type type, StringView line, StringView lexeme)
 {
 	LiteralExpr* ptr = safe_malloc(sizeof(LiteralExpr));
 	//type for casting
@@ -37,7 +37,7 @@ Expr* make_literal_expr(QWORD value, Type type, StringView line, StringView lexe
 	return (Expr*)ptr;
 }
 
-Expr* make_unary_expr(Token unary_operator, Expr* child, StringView line, StringView lexeme)
+Expr* makeUnaryExpr(Token unary_operator, Expr* child, StringView line, StringView lexeme)
 {
 	UnaryExpr* ptr = safe_malloc(sizeof(UnaryExpr));
 	//type for casting
@@ -66,7 +66,7 @@ Expr* make_unary_expr(Token unary_operator, Expr* child, StringView line, String
 	return (Expr*)ptr;
 }
 
-Expr* make_binary_expr(Expr* lhs, Token binary_operator, Expr* rhs, StringView line, StringView lexeme)
+Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, StringView line, StringView lexeme)
 {
 	BinaryExpr* ptr = safe_malloc(sizeof(BinaryExpr));
 	//type for casting
