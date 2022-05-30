@@ -7,7 +7,9 @@ void debug_scan(StringView view)
 	Token tkn = ScannerGetNextToken(&scan);
 	do
 	{
-		StringViewPrint(ScannerGetCurrentLexeme(&scan));
+		/*StringViewPrint(ScannerGetCurrentLine(&scan));
+		fputc('|', stdout);
+		StringViewPrint(ScannerGetCurrentLexeme(&scan));*/
 		switch (tkn)
 		{
 		break; case TKN_DOUBLE:

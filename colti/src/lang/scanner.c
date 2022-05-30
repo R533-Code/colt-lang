@@ -114,12 +114,46 @@ Token ScannerGetNextToken(Scanner* scan)
 	return TKN_EOF;
 }
 
-StringView ScannerGetCurrentLine(Scanner* scan)
+StringView ScannerGetCurrentLine(const Scanner* scan)
 {
-	//return StringView();
+	size_t line_begin = 0;
+	//set the searching pointer to before the lexeme, and start searching backwards
+	//for the first '\n', which would be the beginning of the newline.
+	const char* newline = scan->view.start + scan->lexeme_begin;
+	while (newline != scan->view.start)
+	{
+		if (*newline == '\n')
+		{
+			line_begin = newline - scan->view.start;
+			break;
+		}
+		newline--;
+	}
+	if (*newline == '\n')
+		line_begin++; // + 1 as we don't want the \n to be included
+
+	//starts with the size of the string from the beginning of the line till the end of the whole string.
+	size_t line_end = scan->view.end - newline;
+
+	newline = scan->view.start + scan->lexeme_begin;
+
+	while (newline != scan->view.end)
+	{
+		if (*newline == '\n')
+		{
+			line_end = newline - scan->view.start;
+			break;
+		}
+		newline++;
+	}
+
+	StringView strv;
+	strv.start = scan->view.start + line_begin;
+	strv.end = scan->view.start + line_end;
+	return strv;
 }
 
-StringView ScannerGetCurrentLexeme(Scanner* scan)
+StringView ScannerGetCurrentLexeme(const Scanner* scan)
 {
 	StringView strv;
 	strv.start = scan->view.start + scan->lexeme_begin;
