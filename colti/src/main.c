@@ -7,18 +7,19 @@ void debug_scan(StringView view)
 	Token tkn = ScannerGetNextToken(&scan);
 	do
 	{
+		StringViewPrint(ScannerGetCurrentLexeme(&scan));
 		switch (tkn)
 		{
 		break; case TKN_DOUBLE:
-			printf("%s: %g\n", TokenToString(tkn), scan.parsed_double);
+			printf(": %s: %g\n", TokenToString(tkn), scan.parsed_double);
 		break; case TKN_INTEGER:
-			printf("%s: %"PRIu64"\n", TokenToString(tkn), scan.parsed_uinteger);
+			printf(": %s: %"PRIu64"\n", TokenToString(tkn), scan.parsed_uinteger);
 		break; case TKN_IDENTIFIER:
-			printf("%s: %s\n", TokenToString(tkn), scan.parsed_string.ptr);
+			printf(": %s: %s\n", TokenToString(tkn), scan.parsed_string.ptr);
 		break; case TKN_STRING:
-			printf("%s: %s\n", TokenToString(tkn), scan.parsed_string.ptr);
+			printf(": %s: %s\n", TokenToString(tkn), scan.parsed_string.ptr);
 		break; default:
-			printf("%s\n", TokenToString(tkn));
+			printf(": %s\n", TokenToString(tkn));
 		}
 		tkn = ScannerGetNextToken(&scan);
 	} while (tkn != TKN_EOF);
