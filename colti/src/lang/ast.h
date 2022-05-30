@@ -67,8 +67,14 @@ Expr* impl_binary_expr(AST* ast, int op_precedence);
 /// @return An Expr* representing the parsed expression
 Expr* impl_primary_expr(AST* ast);
 
+/// @brief Parses a unary expression
+/// @param ast The AST from which to parse
+/// @return An Expr* representing the parsed expression
 Expr* impl_unary_expr(AST* ast);
 
+/// @brief Parses a parenthesis expression, verifying it is well enclosed
+/// @param ast The AST from which to parse
+/// @return An Expr* representing the parsed expression
 Expr* impl_paren_expr(AST* ast);
 
 #endif //HG_COLTI_AST
