@@ -66,6 +66,9 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 	if (token_type == TKN_EOF)
 		return left;
 
+	StringView lexeme_strv = ScannerGetCurrentLexeme(&ast->scan);
+	StringView line_strv = ScannerGetCurrentLine(&ast->scan);
+
 	while (impl_op_precedence(ast, token_type) > op_precedence)
 	{
 		//Read the next token
@@ -74,8 +77,8 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 		Expr* right = impl_binary_expr(ast, impl_op_precedence(ast, token_type));
 
 		left = makeBinaryExpr(left, token_type, right,
-			ScannerGetCurrentLine(&ast->scan), 
-			ScannerGetCurrentLexeme(&ast->scan));
+			line_strv,
+			lexeme_strv);
 
 		token_type = ast->current_tkn;
 		if (token_type == TKN_EOF)
