@@ -52,25 +52,37 @@ int impl_op_precedence(const AST* ast, Token token)
 	if (token < TKN_OPERATOR_LESS_COLON)
 		return operator_precedence_table[token];
 	impl_scanner_print_error(&ast->scan, "Expected an operator!");
-	return -1;
+	return 100;
 }
 
 Expr* impl_binary_expr(AST* ast, int op_precedence)
 {
+	if (op_precedence == 100)
+	{
+		//TODO: error
+	}
+
 	Expr* left;
 	Token token_type;
 	
 	left = impl_primary_expr(ast);
 	
 	token_type = ast->current_tkn;
-	if (token_type == TKN_EOF)
+	if (token_type == TKN_EOF || token_type == TKN_RIGHT_PAREN || token_type == TKN_SEMICOLON)
 		return left;
 
 	StringView lexeme_strv = ScannerGetCurrentLexeme(&ast->scan);
 	StringView line_strv = ScannerGetCurrentLine(&ast->scan);
 
-	while (impl_op_precedence(ast, token_type) > op_precedence)
+	int precedence = impl_op_precedence(ast, token_type);
+	
+	while (precedence > op_precedence)
 	{
+		if (precedence == 100)
+		{
+			//TODO: error
+		}
+
 		//Read the next token
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
@@ -81,8 +93,10 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 			lexeme_strv);
 
 		token_type = ast->current_tkn;
-		if (token_type == TKN_EOF)
+		if (token_type == TKN_EOF || token_type == TKN_RIGHT_PAREN || token_type == TKN_SEMICOLON)
 			return left;
+
+		precedence = impl_op_precedence(ast, token_type);
 	}
 
 	return left;

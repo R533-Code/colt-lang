@@ -51,7 +51,7 @@ IMPLEMENTATION HELPERS
 /// @brief Returns the precedence of an operator, and prints an error if the token is not an operator
 /// @param ast The AST use to print an error
 /// @param token The token to get the precedence of
-/// @return A value between 0-13 (with 13 being the highest precedence) or -1 if an error has been detected
+/// @return A value between 0-13 (with 13 being the highest precedence) or 100 if an error has been detected
 int impl_op_precedence(const AST* ast, Token token);
 
 /// @brief Parses a binary expression or a primary expression.
