@@ -115,6 +115,18 @@ Expr* impl_primary_expr(AST* ast)
 		primary = makeLiteralExpr(value, ColtBool,
 			ScannerGetCurrentLine(&ast->scan),
 			ScannerGetCurrentLexeme(&ast->scan));
+	break; //UNARY OPERATORS:
+	case TKN_OPERATOR_MINUS:
+	case TKN_OPERATOR_PLUS:
+	case TKN_OPERATOR_TILDE:
+	case TKN_OPERATOR_BANG:
+		primary = impl_unary_expr(ast);
+	break; case TKN_LEFT_PAREN:
+		primary = impl_binary_expr(ast, 0);
+		if (ast->current_tkn != TKN_RIGHT_PAREN)
+			impl_scanner_print_error(&ast->scan, "Expected ')'!");
+		///FIXME: error handling
+		exit(1);
 	break; default:
 		impl_scanner_print_error(&ast->scan, "Expected an expression!");
 		//FIXME: error handling
@@ -122,4 +134,18 @@ Expr* impl_primary_expr(AST* ast)
 	}
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	return primary;
+}
+
+Expr* impl_unary_expr(AST* ast)
+{
+	//As C function argument order is not guaranteed
+	StringView lexeme_strv = ScannerGetCurrentLexeme(&ast->scan);
+	StringView line_strv = ScannerGetCurrentLine(&ast->scan);
+	Token tkn = ast->current_tkn;
+	
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+
+	return makeUnaryExpr(tkn, impl_primary_expr(ast),
+		line_strv,
+		lexeme_strv);
 }
