@@ -40,6 +40,25 @@ void debug_ast(StringView view)
 			printf(CONSOLE_FOREGROUND_BRIGHT_GREEN"Successfully created an AST!\n"
 				"Type of expression: %.*s!\n"CONSOLE_COLOR_RESET, (uint32_t)(ast.expr->expr_type.name.end - ast.expr->expr_type.name.start),
 				ast.expr->expr_type.name.start);
+			fputs(CONSOLE_FOREGROUND_BRIGHT_BLUE"Generating byte-code...\n"CONSOLE_COLOR_RESET, stdout);
+			
+			Chunk chunk;
+			ChunkInit(&chunk);
+
+			if (generateByteCode(&chunk, ast.expr))
+			{
+				StackVM vm;
+				StackVMInit(&vm);
+				StackVMRun(&vm, &chunk);
+				StackVMFree(&vm);
+				fputs(CONSOLE_FOREGROUND_BRIGHT_GREEN"Successfully run VM!\n"CONSOLE_COLOR_RESET, stdout);
+			}
+			else
+			{
+				print_error_string("Couldn't generate byte-code...");
+			}
+
+			ChunkFree(&chunk);
 		}
 
 		ASTFree(&ast);
