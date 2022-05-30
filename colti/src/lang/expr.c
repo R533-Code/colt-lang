@@ -103,15 +103,15 @@ void freeExpr(Expr* ptr)
 	{
 		UnaryExpr* uexpr = (UnaryExpr*)ptr;
 		//we need to recurse to free expressions of expressions
-		impl_expr_free(uexpr->child);
+		freeExpr(uexpr->child);
 		safe_free(uexpr);
 	}
 	break; case EXPR_BINARY:
 	{
 		BinaryExpr* bexpr = (BinaryExpr*)ptr;
 		//we need to recurse to free expressions of expressions
-		impl_expr_free(bexpr->lhs);
-		impl_expr_free(bexpr->rhs);
+		freeExpr(bexpr->lhs);
+		freeExpr(bexpr->rhs);
 		safe_free(bexpr);
 	}
 	break; case EXPR_LITERAL:
