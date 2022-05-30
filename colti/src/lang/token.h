@@ -140,7 +140,7 @@ typedef enum
 
 	/// @brief ,
 	TKN_COMMA,
-	/// @brief .
+	/// @brief '.'
 	TKN_DOT,
 	/// @brief :
 	TKN_COLON,
