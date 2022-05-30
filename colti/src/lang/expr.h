@@ -17,7 +17,7 @@
 
 #include "common.h"
 #include "token.h"
-
+#include "type.h"
 /// @brief Represents a type, which is a name and an ID
 typedef struct
 {
