@@ -4,9 +4,15 @@ Contains the Colt Compiler and Interpreter, which are both still in early develo
 An interpreter in development for the `colt` language.
 Uses byte-code, and a stack-based virtual machine.
 
-## TODO:
-- [ ] Add AST
-- [ ] Add basic code generation
+## Implemented Features:
+- [X] Scanner, which breaks a string into lexemes
+  - [ ] Fix floating-point and integer literals
+- [X] AST, which represents expressions in a tree-like structure
+  - [ ] Error reporting
+  - [ ] Type conversions and warnings
+- [ ] `generateByteCode` function, which generate byte-code from an AST
+  - [ ] Implement more operations
+  - [ ] Implement more byte-code
 
 ## Error Codes:
 - 0: Successful
