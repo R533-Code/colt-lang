@@ -14,6 +14,8 @@
 #include "lang/scanner.h"
 #include "lang/ast.h"
 
+#include "byte-code/byte_code_generator.h"
+
 //VMs
 #include "vm/stack_based_vm.h"
 
