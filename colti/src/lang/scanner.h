@@ -76,6 +76,16 @@ uint64_t ScannerGetInt(const Scanner* scan);
 /// @return A Token representing the parsed lexeme, or TKN_EOF if there are no more lexemes
 Token ScannerGetNextToken(Scanner* scan);
 
+/// @brief Returns a StringView over the current line being parsed
+/// @param scan The scanner from which to get the line
+/// @return A StringView of the current line, without any newline character at the beginning or the end
+StringView ScannerGetCurrentLine(Scanner* scan);
+
+/// @brief Returns a StringView over the current lexeme parsed lexeme
+/// @param scan The scanner from which to get the lexeme
+/// @return A StringView of the lexeme
+StringView ScannerGetCurrentLexeme(Scanner* scan);
+
 /**********************************
 IMPLEMENTATION HELPERS
 **********************************/

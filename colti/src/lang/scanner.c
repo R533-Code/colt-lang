@@ -114,6 +114,19 @@ Token ScannerGetNextToken(Scanner* scan)
 	return TKN_EOF;
 }
 
+StringView ScannerGetCurrentLine(Scanner* scan)
+{
+	//return StringView();
+}
+
+StringView ScannerGetCurrentLexeme(Scanner* scan)
+{
+	StringView strv;
+	strv.start = scan->view.start + scan->lexeme_begin;
+	strv.end = scan->view.start + scan->offset - 1;
+	return strv;
+}
+
 /**********************************
 IMPLEMENTATION HELPERS
 **********************************/
