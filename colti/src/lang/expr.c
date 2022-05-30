@@ -3,7 +3,7 @@
 */
 #include "ast.h"
 
-Expr* makeLiteralExpr(QWORD value, Type type, StringView line, StringView lexeme)
+Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line, StringView lexeme)
 {
 	LiteralExpr* ptr = safe_malloc(sizeof(LiteralExpr));
 	//type for casting
@@ -12,6 +12,7 @@ Expr* makeLiteralExpr(QWORD value, Type type, StringView line, StringView lexeme
 	ptr->value = value;
 	ptr->expr_type = type;
 
+	ptr->line_nb = line_nb;
 	ptr->line = line;
 	ptr->lexeme = lexeme;
 
@@ -37,7 +38,7 @@ Expr* makeLiteralExpr(QWORD value, Type type, StringView line, StringView lexeme
 	return (Expr*)ptr;
 }
 
-Expr* makeUnaryExpr(Token unary_operator, Expr* child, StringView line, StringView lexeme)
+Expr* makeUnaryExpr(Token unary_operator, Expr* child, uint64_t line_nb, StringView line, StringView lexeme)
 {
 	UnaryExpr* ptr = safe_malloc(sizeof(UnaryExpr));
 	//type for casting
@@ -46,6 +47,7 @@ Expr* makeUnaryExpr(Token unary_operator, Expr* child, StringView line, StringVi
 	ptr->expr_type = child->expr_type;
 	ptr->child = child;
 	
+	ptr->line_nb = line_nb;
 	ptr->line = line;
 	ptr->lexeme = lexeme;
 
@@ -66,7 +68,7 @@ Expr* makeUnaryExpr(Token unary_operator, Expr* child, StringView line, StringVi
 	return (Expr*)ptr;
 }
 
-Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, StringView line, StringView lexeme)
+Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, uint64_t line_nb, StringView line, StringView lexeme)
 {
 	BinaryExpr* ptr = safe_malloc(sizeof(BinaryExpr));
 	//type for casting
@@ -81,6 +83,7 @@ Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, StringView lin
 	ptr->lhs = lhs;
 	ptr->rhs = rhs;
 
+	ptr->line_nb = line_nb;
 	ptr->line = line;
 	ptr->lexeme = lexeme;
 

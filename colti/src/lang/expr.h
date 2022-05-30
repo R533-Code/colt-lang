@@ -44,6 +44,8 @@ typedef enum
 /// actual type. 'expr_type' is the Colt type of the expression.
 typedef struct
 {
+	/// @brief The line number
+	uint64_t line_nb;
 	/// @brief The line from which the expression was created
 	StringView line;
 	/// @brief The lexeme representing the expression
@@ -59,6 +61,8 @@ typedef struct
 /// and the expression to which the operator is applied
 typedef struct
 {
+	/// @brief The line number
+	uint64_t line_nb;
 	/// @brief The line from which the expression was created
 	StringView line;
 	/// @brief The lexeme representing the expression
@@ -78,6 +82,8 @@ typedef struct
 /// on which the operator is applied
 typedef struct
 {
+	/// @brief The line number
+	uint64_t line_nb;
 	/// @brief The line from which the expression was created
 	StringView line;
 	/// @brief The lexeme representing the expression
@@ -98,6 +104,8 @@ typedef struct
 /// A LiteralExpr can contain literal integer, floating point, string, or boolean
 typedef struct
 {
+	/// @brief The line number
+	uint64_t line_nb;
 	/// @brief The line from which the expression was created
 	StringView line;
 	/// @brief The lexeme representing the expression
@@ -114,20 +122,20 @@ typedef struct
 /// @param value The value of the literal expression
 /// @param type The type of the literal expression
 /// @return A pointer to a heap allocated LiteralExpr 
-Expr* makeLiteralExpr(QWORD value, Type type, StringView line, StringView lexeme);
+Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line, StringView lexeme);
 
 /// @brief Allocates a new unary expression on the heap, initializing it
 /// @param unary_operator The operator of the unary expression (+, -, !, @, ~)
 /// @param child The expression on which the apply the unary operator
 /// @return A pointer to a heap allocated UnaryExpr
-Expr* makeUnaryExpr(Token unary_operator, Expr* child, StringView line, StringView lexeme);
+Expr* makeUnaryExpr(Token unary_operator, Expr* child, uint64_t line_nb, StringView line, StringView lexeme);
 
 /// @brief Allocates a new binary expression on the heap initializing it
 /// @param lhs The left hand side of the operator
 /// @param binary_operator The operator
 /// @param rhs The right hand side of the operator
 /// @return A pointer to a heap allocated BinaryExpr
-Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, StringView line, StringView lexeme);
+Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, uint64_t line_nb, StringView line, StringView lexeme);
 
 /// @brief Recursively frees a heap-allocated expression.
 /// As an Expr* can be a BinaryExpr, or an expression with child expression,
