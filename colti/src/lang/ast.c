@@ -73,7 +73,9 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 
 		Expr* right = impl_binary_expr(ast, impl_op_precedence(ast, token_type));
 
-		left = makeBinaryExpr(left, token_type, right);
+		left = makeBinaryExpr(left, token_type, right,
+			ScannerGetCurrentLine(&ast->scan), 
+			ScannerGetCurrentLexeme(&ast->scan));
 
 		token_type = ast->current_tkn;
 		if (token_type == TKN_EOF)
@@ -92,16 +94,24 @@ Expr* impl_primary_expr(AST* ast)
 	{
 	break; case TKN_INTEGER:
 		value.ui64 = ScannerGetInt(&ast->scan);
-		primary = makeLiteralExpr(value, ColtUInt64);
+		primary = makeLiteralExpr(value, ColtUInt64,
+			ScannerGetCurrentLine(&ast->scan),
+			ScannerGetCurrentLexeme(&ast->scan));
 	break; case TKN_DOUBLE:
 		value.d = ScannerGetDouble(&ast->scan);
-		primary = makeLiteralExpr(value, ColtDouble);
+		primary = makeLiteralExpr(value, ColtDouble,
+			ScannerGetCurrentLine(&ast->scan),
+			ScannerGetCurrentLexeme(&ast->scan));
 	break; case TKN_TRUE:
 		value.b = true;
-		primary = makeLiteralExpr(value, ColtBool);
+		primary = makeLiteralExpr(value, ColtBool,
+			ScannerGetCurrentLine(&ast->scan),
+			ScannerGetCurrentLexeme(&ast->scan));
 	break; case TKN_FALSE:
 		value.b = false;
-		primary = makeLiteralExpr(value, ColtBool);
+		primary = makeLiteralExpr(value, ColtBool,
+			ScannerGetCurrentLine(&ast->scan),
+			ScannerGetCurrentLexeme(&ast->scan));
 	break; default:
 		impl_scanner_print_error(&ast->scan, "Expected an expression!");
 		//FIXME: error handling
