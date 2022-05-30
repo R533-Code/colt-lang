@@ -18,40 +18,6 @@
 #include "common.h"
 #include "token.h"
 #include "type.h"
-/// @brief Represents a type, which is a name and an ID
-typedef struct
-{
-	/// @brief The name of the Type
-	StringView name;
-	/// @brief The ID of the Type
-	uint64_t type_id;
-	/// @brief The size in memory of the Type
-	uint64_t byte_size;
-} Type;
-
-
-/// @brief Type representing a built-in bool
-static const Type ColtBool		= { .name.start = ColtBool_str,		.name.end = ColtBool_str + 4,		.type_id = ID_COLT_BOOL,		.byte_size = sizeof(ColtBool_t) };
-/// @brief Type representing a built-in unsigned 8-bit integer
-static const Type ColtUInt8		= { .name.start = ColtU8_str,		.name.end = ColtU8_str + 3,			.type_id = ID_COLT_U8,			.byte_size = sizeof(ColtU8_t) };
-/// @brief Type representing a built-in unsigned 16-bit integer
-static const Type ColtUInt16	= { .name.start = ColtU16_str,		.name.end = ColtU16_str + 3,		.type_id = ID_COLT_U16,			.byte_size = sizeof(ColtU16_t) };
-/// @brief Type representing a built-in unsigned 32-bit integer
-static const Type ColtUInt32	= { .name.start = ColtU32_str,		.name.end = ColtU32_str + 3,		.type_id = ID_COLT_U32,			.byte_size = sizeof(ColtU32_t) };
-/// @brief Type representing a built-in unsigned 64-bit integer
-static const Type ColtUInt64	= { .name.start = ColtU64_str,		.name.end = ColtU64_str + 3,		.type_id = ID_COLT_U64,			.byte_size = sizeof(ColtU64_t) };
-/// @brief Type representing a built-in signed 8-bit integer
-static const Type ColtInt8		= { .name.start = ColtI8_str,		.name.end = ColtI8_str + 2,			.type_id = ID_COLT_I8,			.byte_size = sizeof(ColtI8_t) };
-/// @brief Type representing a built-in signed 16-bit integer
-static const Type ColtInt16		= { .name.start = ColtI16_str,		.name.end = ColtI16_str + 3,		.type_id = ID_COLT_I16,			.byte_size = sizeof(ColtI16_t) };
-/// @brief Type representing a built-in signed 32-bit integer
-static const Type ColtInt32		= { .name.start = ColtI32_str,		.name.end = ColtI32_str + 3,		.type_id = ID_COLT_I32,			.byte_size = sizeof(ColtI32_t) };
-/// @brief Type representing a built-in signed 64-bit integer
-static const Type ColtInt64		= { .name.start = ColtI64_str,		.name.end = ColtI64_str + 3,		.type_id = ID_COLT_I64,			.byte_size = sizeof(ColtI64_t) };
-/// @brief Type representing a built-in float
-static const Type ColtFloat		= { .name.start = ColtFloat_str,	.name.end = ColtFloat_str + 5,		.type_id = ID_COLT_FLOAT,		.byte_size = sizeof(ColtFloat_t) };
-/// @brief Type representing a built-in double
-static const Type ColtDouble	= { .name.start = ColtDouble_str,	.name.end = ColtDouble_str + 6,		.type_id = ID_COLT_DOUBLE,		.byte_size = sizeof(ColtDouble_t) };
 
 /// @brief Represent the type of the expression holden by an Expr*.
 /// As C does not have inheritance, every expression class contains
@@ -78,6 +44,10 @@ typedef enum
 /// actual type. 'expr_type' is the Colt type of the expression.
 typedef struct
 {
+	/// @brief The line from which the expression was created
+	StringView line;
+	/// @brief The lexeme representing the expression
+	StringView lexeme;
 	/// @brief Allows to cast the expression to the right expression type
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on its content
@@ -89,6 +59,10 @@ typedef struct
 /// and the expression to which the operator is applied
 typedef struct
 {
+	/// @brief The line from which the expression was created
+	StringView line;
+	/// @brief The lexeme representing the expression
+	StringView lexeme;
 	/// @brief should be EXPR_UNARY
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on its content
@@ -104,6 +78,10 @@ typedef struct
 /// on which the operator is applied
 typedef struct
 {
+	/// @brief The line from which the expression was created
+	StringView line;
+	/// @brief The lexeme representing the expression
+	StringView lexeme;
 	/// @brief should be EXPR_BINARY
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on its content
@@ -120,6 +98,10 @@ typedef struct
 /// A LiteralExpr can contain literal integer, floating point, string, or boolean
 typedef struct
 {
+	/// @brief The line from which the expression was created
+	StringView line;
+	/// @brief The lexeme representing the expression
+	StringView lexeme;
 	/// @brief should be EXPR_LITERAL
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on the type of 'value'
@@ -132,20 +114,20 @@ typedef struct
 /// @param value The value of the literal expression
 /// @param type The type of the literal expression
 /// @return A pointer to a heap allocated LiteralExpr 
-Expr* make_literal_expr(QWORD value, Type type);
+Expr* make_literal_expr(QWORD value, Type type, StringView line, StringView lexeme);
 
 /// @brief Allocates a new unary expression on the heap, initializing it
 /// @param unary_operator The operator of the unary expression (+, -, !, @, ~)
 /// @param child The expression on which the apply the unary operator
 /// @return A pointer to a heap allocated UnaryExpr
-Expr* make_unary_expr(Token unary_operator, Expr* child);
+Expr* make_unary_expr(Token unary_operator, Expr* child, StringView line, StringView lexeme);
 
 /// @brief Allocates a new binary expression on the heap initializing it
 /// @param lhs The left hand side of the operator
 /// @param binary_operator The operator
 /// @param rhs The right hand side of the operator
 /// @return A pointer to a heap allocated BinaryExpr
-Expr* make_binary_expr(Expr* lhs, Token binary_operator, Expr* rhs);
+Expr* make_binary_expr(Expr* lhs, Token binary_operator, Expr* rhs, StringView line, StringView lexeme);
 
 /*******************************
 IMPLEMENTATION HELPER

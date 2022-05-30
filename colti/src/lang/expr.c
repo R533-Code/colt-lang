@@ -3,7 +3,7 @@
 */
 #include "ast.h"
 
-Expr* make_literal_expr(QWORD value, Type type)
+Expr* make_literal_expr(QWORD value, Type type, StringView line, StringView lexeme)
 {
 	LiteralExpr* ptr = safe_malloc(sizeof(LiteralExpr));
 	//type for casting
@@ -11,6 +11,9 @@ Expr* make_literal_expr(QWORD value, Type type)
 	
 	ptr->value = value;
 	ptr->expr_type = type;
+
+	ptr->line = line;
+	ptr->lexeme = lexeme;
 
 	DO_IF_DEBUG_BUILD(
 		switch (type.type_id)
@@ -34,7 +37,7 @@ Expr* make_literal_expr(QWORD value, Type type)
 	return (Expr*)ptr;
 }
 
-Expr* make_unary_expr(Token unary_operator, Expr* child)
+Expr* make_unary_expr(Token unary_operator, Expr* child, StringView line, StringView lexeme)
 {
 	UnaryExpr* ptr = safe_malloc(sizeof(UnaryExpr));
 	//type for casting
@@ -43,6 +46,9 @@ Expr* make_unary_expr(Token unary_operator, Expr* child)
 	ptr->expr_type = child->expr_type;
 	ptr->child = child;
 	
+	ptr->line = line;
+	ptr->lexeme = lexeme;
+
 	DO_IF_DEBUG_BUILD(
 		switch (unary_operator)
 		{
@@ -60,7 +66,7 @@ Expr* make_unary_expr(Token unary_operator, Expr* child)
 	return (Expr*)ptr;
 }
 
-Expr* make_binary_expr(Expr* lhs, Token binary_operator, Expr* rhs)
+Expr* make_binary_expr(Expr* lhs, Token binary_operator, Expr* rhs, StringView line, StringView lexeme)
 {
 	BinaryExpr* ptr = safe_malloc(sizeof(BinaryExpr));
 	//type for casting
@@ -74,6 +80,9 @@ Expr* make_binary_expr(Expr* lhs, Token binary_operator, Expr* rhs)
 
 	ptr->lhs = lhs;
 	ptr->rhs = rhs;
+
+	ptr->line = line;
+	ptr->lexeme = lexeme;
 
 	return (Expr*)ptr;
 }
