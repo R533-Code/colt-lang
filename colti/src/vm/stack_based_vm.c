@@ -92,30 +92,30 @@ InterpretResult StackVMRun(StackVM* vm, Chunk* chunk)
 		break; case OP_ADD:
 		{
 			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
-			QWORD val1 = StackVMPop(vm);
-			QWORD val2 = StackVMPop(vm);
-			StackVMPush(vm, OpCode_Sum(val1, val2, *(ip++)));
+			QWORD rhs = StackVMPop(vm); //pop in the opposite order
+			QWORD lhs = StackVMPop(vm);
+			StackVMPush(vm, OpCode_Sum(lhs, rhs, *(ip++)));
 		}
 		break; case OP_SUBTRACT:
 		{
 			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
-			QWORD val1 = StackVMPop(vm);
-			QWORD val2 = StackVMPop(vm);
-			StackVMPush(vm, OpCode_Difference(val1, val2, *(ip++)));
+			QWORD rhs = StackVMPop(vm);
+			QWORD lhs = StackVMPop(vm);
+			StackVMPush(vm, OpCode_Difference(lhs, rhs, *(ip++)));
 		}
 		break; case OP_MULTIPLY:
 		{
 			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
-			QWORD val1 = StackVMPop(vm);
-			QWORD val2 = StackVMPop(vm);
-			StackVMPush(vm, OpCode_Multiply(val1, val2, *(ip++)));
+			QWORD rhs = StackVMPop(vm);
+			QWORD lhs = StackVMPop(vm);
+			StackVMPush(vm, OpCode_Multiply(lhs, rhs, *(ip++)));
 		}
 		break; case OP_DIVIDE:
 		{
 			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
-			QWORD val1 = StackVMPop(vm);
-			QWORD val2 = StackVMPop(vm);
-			StackVMPush(vm, OpCode_Divide(val1, val2, *(ip++)));
+			QWORD rhs = StackVMPop(vm);
+			QWORD lhs = StackVMPop(vm);
+			StackVMPush(vm, OpCode_Divide(lhs, rhs, *(ip++)));
 		}
 		/******************************************************/
 
