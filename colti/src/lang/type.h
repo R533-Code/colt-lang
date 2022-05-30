@@ -1,3 +1,10 @@
+/** @file type.h
+* Contains a struct representing a Colt Type.
+* A Type has a name, an ID and a size in memory.
+* For user defined types, more fields are to be required, like memory layout...
+* This header also contains const Type representing each built-in type.
+*/
+
 #ifndef HG_COLTI_TYPE
 #define HG_COLTI_TYPE
 
