@@ -79,12 +79,12 @@ Token ScannerGetNextToken(Scanner* scan);
 /// @brief Returns a StringView over the current line being parsed
 /// @param scan The scanner from which to get the line
 /// @return A StringView of the current line, without any newline character at the beginning or the end
-StringView ScannerGetCurrentLine(Scanner* scan);
+StringView ScannerGetCurrentLine(const Scanner* scan);
 
 /// @brief Returns a StringView over the current lexeme parsed lexeme
 /// @param scan The scanner from which to get the lexeme
 /// @return A StringView of the lexeme
-StringView ScannerGetCurrentLexeme(Scanner* scan);
+StringView ScannerGetCurrentLexeme(const Scanner* scan);
 
 /**********************************
 IMPLEMENTATION HELPERS
