@@ -121,12 +121,18 @@ typedef struct
 /// @brief Allocates a new literal expression on the heap, initializing it
 /// @param value The value of the literal expression
 /// @param type The type of the literal expression
-/// @return A pointer to a heap allocated LiteralExpr 
+/// @param line_nb The line number from which the expression is extracted
+/// @param line A StringView over the line containing the expression
+/// @param lexeme A StringView over the lexeme representing the expression
+/// @return A pointer to a heap allocated LiteralExpr
 Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line, StringView lexeme);
 
 /// @brief Allocates a new unary expression on the heap, initializing it
 /// @param unary_operator The operator of the unary expression (+, -, !, @, ~)
 /// @param child The expression on which the apply the unary operator
+/// @param line_nb The line number from which the expression is extracted
+/// @param line A StringView over the line containing the expression
+/// @param lexeme A StringView over the lexeme representing the expression
 /// @return A pointer to a heap allocated UnaryExpr
 Expr* makeUnaryExpr(Token unary_operator, Expr* child, uint64_t line_nb, StringView line, StringView lexeme);
 
@@ -134,6 +140,9 @@ Expr* makeUnaryExpr(Token unary_operator, Expr* child, uint64_t line_nb, StringV
 /// @param lhs The left hand side of the operator
 /// @param binary_operator The operator
 /// @param rhs The right hand side of the operator
+/// @param line_nb The line number from which the expression is extracted
+/// @param line A StringView over the line containing the expression
+/// @param lexeme A StringView over the lexeme representing the expression
 /// @return A pointer to a heap allocated BinaryExpr
 Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, uint64_t line_nb, StringView line, StringView lexeme);
 
