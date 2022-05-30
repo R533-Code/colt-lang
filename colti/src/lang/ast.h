@@ -69,4 +69,6 @@ Expr* impl_primary_expr(AST* ast);
 
 Expr* impl_unary_expr(AST* ast);
 
+Expr* impl_paren_expr(AST* ast);
+
 #endif //HG_COLTI_AST
