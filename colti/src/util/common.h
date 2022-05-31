@@ -5,6 +5,14 @@
 #ifndef HG_COLTI_COMMON
 #define HG_COLTI_COMMON
 
+#include "colti_config.h"
+
+#ifdef COLTI_MSVC
+	//We don't want warnings when using 'fopen'
+	#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+
 #include <stdint.h>
 #include <inttypes.h>
 #include <stdbool.h>
@@ -21,7 +29,6 @@
 
 #include <string.h>
 
-#include "colti_config.h"
 #include "memory.h"
 #include "console_colors.h"
 #include "values/colti_floating_value.h"
