@@ -172,7 +172,10 @@ Type impl_operator_type(Type lhs, Token binary_operator, Type rhs)
 Type impl_builtin_inter_type(Type lhs, Type rhs)
 {
 	colti_assert(lhs.type_id <= ID_COLT_DOUBLE && rhs.type_id <= ID_COLT_DOUBLE, "Type should be built-in types!");
-	if (lhs.type_id > rhs.type_id)
+	
+	uint64_t real_lhs = impl_is_type_int(lhs.type_id) ? lhs.type_id - 4 : lhs.type_id;
+	uint64_t real_rhs = impl_is_type_int(rhs.type_id) ? rhs.type_id - 4 : rhs.type_id;
+	if (real_lhs > real_rhs)
 		//swap so that the lhs has the lowest type
 		return impl_builtin_inter_type(rhs, lhs);
 
