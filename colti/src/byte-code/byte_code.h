@@ -137,12 +137,31 @@ QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type);
 /// @return The division of the QWORDs
 QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type);
 
+/// @brief Casts 2 QWORD and return their bitwise AND
+/// @param left The left hand side
+/// @param right The right hand side
+/// @param type The type of the QWORDs
+/// @return The bitwise AND of the QWORDs
 QWORD OpCode_BitAND(QWORD left, QWORD right, BuiltinTypeID type);
 
+/// @brief Casts 2 QWORD and return their bitwise OR
+/// @param left The left hand side
+/// @param right The right hand side
+/// @param type The type of the QWORDs
+/// @return The bitwise OR of the QWORDs
 QWORD OpCode_BitOR(QWORD left, QWORD right, BuiltinTypeID type);
 
+/// @brief Casts 2 QWORD and return their bitwise XOR
+/// @param left The left hand side
+/// @param right The right hand side
+/// @param type The type of the QWORDs
+/// @return The bitwise XOR of the QWORDs
 QWORD OpCode_BitXOR(QWORD left, QWORD right, BuiltinTypeID type);
 
+/// @brief Casts 1 QWORD and return its bitwise NOT
+/// @param value The QWORD to bitwise NOT
+/// @param type The type of the QWORD
+/// @return The bitwise NOT of the QWORD
 QWORD OpCode_BitNOT(QWORD value, BuiltinTypeID type);
 
 /// @brief Casts 'value' to 'type' then prints its value, for DEBUG purposes
