@@ -64,6 +64,7 @@ void ast_enter_panic_mode(AST* ast)
 	{
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	}
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 }
 
 /************************************
@@ -103,7 +104,9 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 	Token token_type;
 	
 	left = impl_primary_expr(ast);
-	
+	if (!left)
+		return NULL;
+
 	token_type = ast->current_tkn;
 
 	switch (token_type)
@@ -125,9 +128,6 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 	
 	while (precedence > op_precedence)
 	{
-		if (precedence == 100) //token was not an operator: error
-			return left; // we don't want memory leaks
-
 		//Read the next token
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
