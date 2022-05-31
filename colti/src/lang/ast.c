@@ -132,7 +132,7 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
 		Expr* right = impl_binary_expr(ast, impl_op_precedence(ast, token_type));
-		if (!right)
+		if (!right) //propagate error
 			return left; // we don't want memory leaks
 
 
@@ -146,6 +146,7 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 				left = makeConvertExpr(left, cnv, left->line_nb, left->line, left->lexeme);
 		}
 
+		//Pratt's parsing, which allows operators priority
 		left = makeBinaryExpr(left, token_type, right,
 			line_nb,
 			line_strv,
