@@ -105,10 +105,8 @@ const char* TokenToString(Token tkn)
 		return "TKN_FLOAT";
 	case TKN_DOUBLE:
 		return "TKN_DOUBLE";
-	case TKN_TRUE:
-		return "TKN_TRUE";
-	case TKN_FALSE:
-		return "TKN_FALSE";
+	case TKN_BOOL:
+		return "TKN_BOOL";
 
 	/*********************
 	* KEYWORDS

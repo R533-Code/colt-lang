@@ -118,10 +118,8 @@ typedef enum
 	TKN_FLOAT,
 	/// @brief [-+]?[0-9]*.[0-9]+(e[-+][0-9]+)[dD]?
 	TKN_DOUBLE,
-	/// @brief true
-	TKN_TRUE,
-	/// @brief false
-	TKN_FALSE,
+	/// @brief true|false
+	TKN_BOOL,
 
 	/*********************
 	* KEYWORDS
