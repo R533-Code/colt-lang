@@ -6,6 +6,7 @@
 
 void ASTInit(AST* ast, StringView to_parse)
 {
+	ast->error_nb = 0;
 	ScannerInit(&ast->scan, to_parse);
 }
 
@@ -22,16 +23,47 @@ void ASTFree(AST* ast)
 bool ASTParse(AST* ast)
 {
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
-	if (ast->expr = impl_binary_expr(ast, 0))
-		return true;
-	return false;
+	ast->expr = impl_binary_expr(ast, 0);
+	if (ast->error_nb != 0)
+		return false;
+	return true;
+}
+
+void ast_gen_error(AST* ast, const char* format, ...)
+{
+	//update error number
+	ast->error_nb++;
+
+	StringView current_line = ScannerGetCurrentLine(&ast->scan);
+	StringView current_lexeme = ScannerGetCurrentLexeme(&ast->scan);
+	while (ast->current_tkn != TKN_EOF && ast->current_tkn != TKN_COLON)
+	{
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+	}
+	
+	fprintf(stderr, CONSOLE_FOREGROUND_BRIGHT_RED "Error: "
+		CONSOLE_COLOR_RESET "On line %"PRIu64": ", ast->scan.current_line);
+	//prints the error
+	va_list args;
+	va_start(args, format);
+	vfprintf(stderr, format, args);
+	va_end(args);
+	fputc('\n', stderr);
+
+	//To highlight the error lexeme, we need to break down the line in 3 parts:
+	//The part before the error, the error, and the part after the error
+	fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED"%.*s"CONSOLE_COLOR_RESET"%.*s\n",
+		(uint32_t)(current_lexeme.start - current_line.start), current_line.start,
+		(uint32_t)(current_lexeme.end - current_lexeme.start), current_lexeme.start,
+		(uint32_t)(current_line.end - current_lexeme.end), current_lexeme.end
+	);
 }
 
 /************************************
 IMPLEMENTATION HELPERS
 ************************************/
 
-int impl_op_precedence(const AST* ast, Token token)
+int impl_op_precedence(AST* ast, Token token)
 {
 	static const int operator_precedence_table[] = 
 	{
@@ -51,16 +83,14 @@ int impl_op_precedence(const AST* ast, Token token)
 	colti_assert(token >= 0, "Token should be greater or equal to 0!");
 	if (token < TKN_OPERATOR_LESS_COLON)
 		return operator_precedence_table[token];
-	impl_scanner_print_error(&ast->scan, "Expected an operator!");
+	ast_gen_error(ast, "Expected an operator!");
 	return 100;
 }
 
 Expr* impl_binary_expr(AST* ast, int op_precedence)
 {
 	if (op_precedence == 100)
-	{
-		//TODO: error
-	}
+		return NULL;
 
 	Expr* left;
 	Token token_type;
@@ -80,14 +110,16 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 	while (precedence > op_precedence)
 	{
 		if (precedence == 100)
-		{
-			//TODO: error
-		}
+			return left; // we don't want memory leaks
 
 		//Read the next token
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
 		Expr* right = impl_binary_expr(ast, impl_op_precedence(ast, token_type));
+		if (!right)
+			return left; // we don't want memory leaks
+
+
 		//HANDLE CONVERSIONS
 		if (right->expr_type.type_id != left->expr_type.type_id)
 		{
@@ -180,9 +212,8 @@ Expr* impl_primary_expr(AST* ast)
 		/**************** ERROR ****************/
 
 	break; default:
-		impl_scanner_print_error(&ast->scan, "Expected an expression!");
-		//FIXME: error handling
-		exit(1);
+		ast_gen_error(ast, "Expected an expression!");
+		return NULL;
 	}
 	primary = makeLiteralExpr(value, type,
 		ast->scan.current_line,
@@ -213,9 +244,7 @@ Expr* impl_paren_expr(AST* ast)
 	Expr* ret = impl_binary_expr(ast, 0);
 	if (ast->current_tkn != TKN_RIGHT_PAREN)
 	{
-		impl_scanner_print_error(&ast->scan, "Expected ')'!");
-		///FIXME: error handling
-		exit(1);
+		ast_gen_error(ast, "Expected a closing parenthesis ')'!");		
 	}
 	
 	return ret;

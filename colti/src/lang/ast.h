@@ -26,8 +26,6 @@ typedef struct
 	Expr* expr;
 	/// @brief The scanner providing the lexemes for the AST
 	Scanner scan;
-	/// @brief Flag which allows
-	bool panic_mode;
 	/// @brief The number of errors encountered
 	uint16_t error_nb;
 	/// @brief The next token to consume from the scanner
@@ -52,11 +50,13 @@ bool ASTParse(AST* ast);
 IMPLEMENTATION HELPERS
 ************************************/
 
+void ast_gen_error(AST* ast, const char* format, ...);
+
 /// @brief Returns the precedence of an operator, and prints an error if the token is not an operator
 /// @param ast The AST use to print an error
 /// @param token The token to get the precedence of
 /// @return A value between 0-13 (with 13 being the highest precedence) or 100 if an error has been detected
-int impl_op_precedence(const AST* ast, Token token);
+int impl_op_precedence(AST* ast, Token token);
 
 /// @brief Parses a binary expression or a primary expression.
 /// FIXME: add valid tokens
