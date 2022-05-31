@@ -92,6 +92,9 @@ Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, uint64_t line_
 
 void freeExpr(Expr* ptr)
 {
+	if (ptr == NULL)
+		return;
+
 	switch (ptr->identifier)
 	{
 	break; case EXPR_VAR:
