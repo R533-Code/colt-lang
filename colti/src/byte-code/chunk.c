@@ -33,7 +33,7 @@ void ChunkWriteOperand(Chunk* chunk, BuiltinTypeID type)
 
 void ChunkWriteBYTE(Chunk* chunk, BYTE byte)
 {
-	impl_chunk_write_byte(chunk, byte.ui8);
+	impl_chunk_write_byte(chunk, byte.u8);
 }
 
 void ChunkWriteBytes(Chunk* chunk, const uint8_t* const bytes, uint32_t size)
@@ -94,7 +94,7 @@ BYTE ChunkGetBYTE(const Chunk* chunk, uint64_t* offset)
 {
 	colti_assert(chunk->code[*offset] == OP_IMMEDIATE_BYTE, "'offset' should point to an OP_IMMEDIATE_BYTE!");
 	*offset += 1;
-	BYTE byte = { .ui8 = chunk->code[(*offset)++] };
+	BYTE byte = { .u8 = chunk->code[(*offset)++] };
 	return byte;
 }
 
@@ -207,7 +207,7 @@ Chunk ChunkDeserialize(const char* path)
 BYTE unsafe_get_byte(uint8_t** ptr)
 {
 	BYTE return_val;
-	return_val.ui8 = *(*ptr);
+	return_val.u8 = *(*ptr);
 	*ptr += sizeof(uint8_t);
 	return return_val;
 }

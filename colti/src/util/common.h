@@ -60,7 +60,7 @@ typedef union
 {
 	ColtBool_t b; ///< Bool member
 	ColtI8_t i8; ///< 8-bit signed integer
-	ColtU8_t ui8; ///< 8-bit unsigned integer member
+	ColtU8_t u8; ///< 8-bit unsigned integer member
 } BYTE;
 
 /// @brief Represents a Word (2 bytes), which can be type-punned to a more useful type
@@ -68,8 +68,8 @@ typedef union
 {
 	ColtBool_t b; ///< Bool member
 	ColtI8_t i8; ///< 8-bit signed integer
-	ColtU8_t ui8; ///< 8-bit unsigned integer member
-	BYTE byte; ///< BYTE union, which can be used in place of b/i8/ui8
+	ColtU8_t u8; ///< 8-bit unsigned integer member
+	BYTE byte; ///< BYTE union, which can be used in place of b/i8/u8
 
 	ColtI16_t i16; ///< 16-bit signed integer
 	ColtU16_t u16; ///< 16-bit unsigned integer
@@ -80,8 +80,8 @@ typedef union
 {
 	ColtBool_t b; ///< Bool member
 	ColtI8_t i8; ///< 8-bit signed integer
-	ColtU8_t ui8; ///< 8-bit unsigned integer member
-	BYTE byte; ///< BYTE union, which can be used in place of b/i8/ui8
+	ColtU8_t u8; ///< 8-bit unsigned integer member
+	BYTE byte; ///< BYTE union, which can be used in place of b/i8/u8
 
 	ColtI16_t i16; ///< 16-bit signed integer
 	ColtU16_t u16; ///< 16-bit unsigned integer
@@ -97,8 +97,8 @@ typedef union
 {
 	ColtBool_t b; ///< Bool member
 	ColtI8_t i8; ///< 8-bit signed integer
-	ColtU8_t ui8; ///< 8-bit unsigned integer member
-	BYTE byte; ///< BYTE union, which can be used in place of b/i8/ui8
+	ColtU8_t u8; ///< 8-bit unsigned integer member
+	BYTE byte; ///< BYTE union, which can be used in place of b/i8/u8
 
 	ColtI16_t i16; ///< 16-bit signed integer
 	ColtU16_t u16; ///< 16-bit unsigned integer

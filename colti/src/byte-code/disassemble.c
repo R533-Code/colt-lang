@@ -30,7 +30,7 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 
 	case OP_IMMEDIATE_BYTE:
 		colti_assert(offset + 1 <= chunk->count, "Missing byte after OP_IMMEDIATE_BYTE!");
-		impl_print_hex_instruction("OP_IMMEDIATE_BYTE", ChunkGetBYTE(chunk, &offset).ui8);
+		impl_print_hex_instruction("OP_IMMEDIATE_BYTE", ChunkGetBYTE(chunk, &offset).u8);
 		return offset;
 
 	case OP_IMMEDIATE_WORD:

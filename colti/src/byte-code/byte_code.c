@@ -169,7 +169,7 @@ QWORD OpCode_Sum(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I16_ID:		result.i16 = left.i16 + right.i16;
 	break; case COLTI_I32_ID:		result.i32 = left.i32 + right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 + right.i64;
-	break; case COLTI_U8_ID:		result.ui8 = left.ui8 + right.ui8;
+	break; case COLTI_U8_ID:		result.u8 = left.u8 + right.u8;
 	break; case COLTI_U16_ID:		result.u16 = left.u16 + right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 + right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 + right.u64;
@@ -189,7 +189,7 @@ QWORD OpCode_Difference(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I16_ID:		result.i16 = left.i16 - right.i16;
 	break; case COLTI_I32_ID:		result.i32 = left.i32 - right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 - right.i64;
-	break; case COLTI_U8_ID:		result.ui8 = left.ui8 - right.ui8;
+	break; case COLTI_U8_ID:		result.u8 = left.u8 - right.u8;
 	break; case COLTI_U16_ID:		result.u16 = left.u16 - right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 - right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 - right.u64;
@@ -209,7 +209,7 @@ QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I16_ID:		result.i16 = left.i16 * right.i16;
 	break; case COLTI_I32_ID:		result.i32 = left.i32 * right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 * right.i64;
-	break; case COLTI_U8_ID:		result.ui8 = left.ui8 * right.ui8;
+	break; case COLTI_U8_ID:		result.u8 = left.u8 * right.u8;
 	break; case COLTI_U16_ID:		result.u16 = left.u16 * right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 * right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 * right.u64;
@@ -229,7 +229,7 @@ QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I16_ID:		result.i16 = left.i16 / right.i16;
 	break; case COLTI_I32_ID:		result.i32 = left.i32 / right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 / right.i64;
-	break; case COLTI_U8_ID:		result.ui8 = left.ui8 / right.ui8;
+	break; case COLTI_U8_ID:		result.u8 = left.u8 / right.u8;
 	break; case COLTI_U16_ID:		result.u16 = left.u16 / right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 / right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 / right.u64;
@@ -249,7 +249,7 @@ QWORD OpCode_BitAND(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I16_ID:		result.i16 = left.i16 & right.i16;
 	break; case COLTI_I32_ID:		result.i32 = left.i32 & right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 & right.i64;
-	break; case COLTI_U8_ID:		result.ui8 = left.ui8 & right.ui8;
+	break; case COLTI_U8_ID:		result.u8 = left.u8 & right.u8;
 	break; case COLTI_U16_ID:		result.u16 = left.u16 & right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 & right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 & right.u64;
@@ -267,7 +267,7 @@ QWORD OpCode_BitOR(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I16_ID:		result.i16 = left.i16 | right.i16;
 	break; case COLTI_I32_ID:		result.i32 = left.i32 | right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 | right.i64;
-	break; case COLTI_U8_ID:		result.ui8 = left.ui8 | right.ui8;
+	break; case COLTI_U8_ID:		result.u8 = left.u8 | right.u8;
 	break; case COLTI_U16_ID:		result.u16 = left.u16 | right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 | right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 | right.u64;
@@ -285,7 +285,7 @@ QWORD OpCode_BitXOR(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I16_ID:		result.i16 = left.i16 ^ right.i16;
 	break; case COLTI_I32_ID:		result.i32 = left.i32 ^ right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 ^ right.i64;
-	break; case COLTI_U8_ID:		result.ui8 = left.ui8 ^ right.ui8;
+	break; case COLTI_U8_ID:		result.u8 = left.u8 ^ right.u8;
 	break; case COLTI_U16_ID:		result.u16 = left.u16 ^ right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 ^ right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 ^ right.u64;
@@ -303,7 +303,7 @@ QWORD OpCode_BitNOT(QWORD value, BuiltinTypeID type)
 	break; case COLTI_I16_ID:		result.i16 = ~value.i16;
 	break; case COLTI_I32_ID:		result.i32 = ~value.i32;
 	break; case COLTI_I64_ID:		result.i64 = ~value.i64;
-	break; case COLTI_U8_ID:		result.ui8 = ~value.ui8;
+	break; case COLTI_U8_ID:		result.u8 = ~value.u8;
 	break; case COLTI_U16_ID:		result.u16 = ~value.u16;
 	break; case COLTI_U32_ID:		result.u32 = ~value.u32;
 	break; case COLTI_U64_ID:		result.u64 = ~value.u64;
@@ -317,11 +317,11 @@ void OpCode_Print(QWORD value, BuiltinTypeID type)
 	switch (type)
 	{
 	break; case COLTI_BOOL_ID:		printf("%s", value.b ? "true\n" : "false\n");
-	break; case COLTI_I8_ID:		printf("%"PRId8"\n", value.ui8);
+	break; case COLTI_I8_ID:		printf("%"PRId8"\n", value.u8);
 	break; case COLTI_I16_ID:		printf("%"PRId16"\n", value.u16);
 	break; case COLTI_I32_ID:		printf("%"PRId32"\n", value.u32);
 	break; case COLTI_I64_ID:		printf("%"PRId64"\n", value.u64);
-	break; case COLTI_U8_ID:		printf("%"PRIu8"\n", value.ui8);
+	break; case COLTI_U8_ID:		printf("%"PRIu8"\n", value.u8);
 	break; case COLTI_U16_ID:		printf("%"PRIu16"\n", value.u16);
 	break; case COLTI_U32_ID:		printf("%"PRIu32"\n", value.u32);
 	break; case COLTI_U64_ID:		printf("%"PRIu64"\n", value.u64);
