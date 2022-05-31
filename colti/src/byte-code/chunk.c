@@ -217,7 +217,7 @@ WORD unsafe_get_word(uint8_t** ptr)
 	*ptr += (uint64_t)(*ptr) & 1; //read past padding
 	WORD return_val;
 	return_val.u16 = *((uint16_t*)*ptr);
-	*ptr += sizeof(int32_t);
+	*ptr += sizeof(int16_t);
 	return return_val;
 }
 
