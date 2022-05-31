@@ -119,40 +119,64 @@ Expr* impl_primary_expr(AST* ast)
 	//Zero initialize value. This is a really important step,
 	//as it allows faster conversions in OpCode_Convert
 	QWORD value = { .u64 = 0 };
+	Type type;
 
 	switch (ast->current_tkn)
 	{
+	break; case TKN_I8:
+		value.i8 = ast->scan.parsed_value.i8;
+		type = ColtInt8;
+	break; case TKN_I16:
+		value.i16 = ast->scan.parsed_value.i16;
+		type = ColtInt16;
+	break; case TKN_I32:
+		value.i32 = ast->scan.parsed_value.i32;
+		type = ColtInt32;
+	break; case TKN_I64:
+		value.i64 = ast->scan.parsed_value.i64;
+		type = ColtInt64;
+	break; case TKN_U8:
+		value.u8 = ast->scan.parsed_value.u8;
+		type = ColtUInt8;
+	break; case TKN_U16:
+		value.u16 = ast->scan.parsed_value.u16;
+		type = ColtUInt16;
+	break; case TKN_U32:
+		value.u32 = ast->scan.parsed_value.u32;
+		type = ColtUInt32;
 	break; case TKN_U64:
 		value.u64 = ast->scan.parsed_value.u64;
-		primary = makeLiteralExpr(value, ColtUInt64,
-			ast->scan.current_line,
-			ScannerGetCurrentLine(&ast->scan),
-			ScannerGetCurrentLexeme(&ast->scan));
+		type = ColtUInt64;
+	break; case TKN_FLOAT:
+		value.f = ast->scan.parsed_value.f;
+		type = ColtFloat;
 	break; case TKN_DOUBLE:
 		value.d = ast->scan.parsed_value.d;
-		primary = makeLiteralExpr(value, ColtDouble,
-			ast->scan.current_line,
-			ScannerGetCurrentLine(&ast->scan),
-			ScannerGetCurrentLexeme(&ast->scan));
+		type = ColtDouble;
 	break; case TKN_BOOL:
 		value.b = ast->scan.parsed_value.b;
-		primary = makeLiteralExpr(value, ColtBool,
-			ast->scan.current_line,
-			ScannerGetCurrentLine(&ast->scan),
-			ScannerGetCurrentLexeme(&ast->scan));
+		type = ColtBool;
 	break; //UNARY OPERATORS:
 	case TKN_OPERATOR_MINUS:
 	case TKN_OPERATOR_PLUS:
 	case TKN_OPERATOR_TILDE:
 	case TKN_OPERATOR_BANG:
 		primary = impl_unary_expr(ast);
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+		return primary;
 	break; case TKN_LEFT_PAREN:
 		primary = impl_paren_expr(ast);
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+		return primary;
 	break; default:
 		impl_scanner_print_error(&ast->scan, "Expected an expression!");
 		//FIXME: error handling
 		exit(1);
 	}
+	primary = makeLiteralExpr(value, type,
+		ast->scan.current_line,
+		ScannerGetCurrentLine(&ast->scan),
+		ScannerGetCurrentLexeme(&ast->scan));
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	return primary;
 }
