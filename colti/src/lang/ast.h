@@ -60,7 +60,9 @@ void ast_gen_error(AST* ast, const char* format, ...);
 /// @param ast The AST whose tokens to consume
 void ast_enter_panic_mode(AST* ast);
 
-/// @brief Returns the precedence of an operator, and prints an error if the token is not an operator
+/// @brief Returns the precedence of an operator, and prints an error if the token is not an operator.
+/// Returns 100 if the token is not an operator. While other values could have been chosen,
+/// to cut down error handling code size, a value greater than 13 was needed.
 /// @param ast The AST use to print an error
 /// @param token The token to get the precedence of
 /// @return A value between 0-13 (with 13 being the highest precedence) or 100 if an error has been detected
