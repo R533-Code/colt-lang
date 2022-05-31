@@ -787,7 +787,7 @@ Token impl_token_str_to_float(Scanner* scan)
 		return TKN_ERROR;
 	}
 	scan->parsed_value.d = value;
-	return TKN_DOUBLE;
+	return TKN_FLOAT;
 }
 
 Token impl_scanner_get_integral_suffix(Scanner* scan)
