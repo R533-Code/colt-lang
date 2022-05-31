@@ -23,4 +23,6 @@ bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr);
 
 bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr);
 
+bool impl_gen_code_convert(Chunk* chunk, const ConvertExpr* ptr);
+
 #endif //HG_COLTI_BYTE_CODE_GENERATOR

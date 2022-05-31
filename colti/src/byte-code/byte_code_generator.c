@@ -28,6 +28,8 @@ bool impl_gen_byte_code(Chunk* chunk, const Expr* expr)
 		return impl_gen_code_binary(chunk, (const BinaryExpr*)expr);
 	break; case EXPR_LITERAL:
 		return impl_gen_code_literal(chunk, (const LiteralExpr*)expr);
+	break; case EXPR_CONVERT:
+		return impl_gen_code_convert(chunk, (const ConvertExpr*)expr);
 	}
 	return true;
 }
@@ -113,5 +115,14 @@ bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr)
 		colti_assert(false, "Type ID should be of that of a built-in type!");
 		return false;
 	}
+	return true;
+}
+
+bool impl_gen_code_convert(Chunk* chunk, const ConvertExpr* ptr)
+{
+	impl_gen_byte_code(chunk, ptr->child);
+	ChunkWriteOpCode(chunk, OP_CONVERT);
+	ChunkWriteOperand(chunk, ptr->child->expr_type.type_id);
+	ChunkWriteOperand(chunk, ptr->expr_type.type_id);	
 	return true;
 }
