@@ -44,7 +44,7 @@ ParseResult ParseArguments(int argc, const char** argv)
 		}
 	}
 	//If the user passed an -o or -b, an input file SHOULD BE SPECIFIED
-	if ((result.file_path_out != NULL || result.byte_code_out != NULL) && result.file_path_in == NULL)
+	if ((result.file_path_out != NULL) && result.file_path_in == NULL)
 	{
 		print_error_string("No input file!");
 		exit(EXIT_USER_INVALID_INPUT);
