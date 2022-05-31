@@ -114,6 +114,12 @@ char impl_peek_next_char(const Scanner* scan, uint64_t offset);
 /// @return The character pointed to after rewinding
 char impl_rewind_char(Scanner* scan);
 
+/// @brief Rewinds 'nb' character before the current one
+/// @param scan The scanner to rewind
+/// @param nb The number of character to rewind
+/// @return The character pointed to after rewinding
+char impl_rewind_chars(Scanner* scan, uint64_t nb);
+
 /// @brief Handles an identifier case, searching for if it's a keyword or not
 /// @param scan The scanner from which to get the identifier
 /// @return The Token representing the identifier
@@ -203,6 +209,11 @@ Token impl_token_str_to_double(Scanner* scan);
 /// @param scan The scanner to modify
 /// @return TKN_FLOAT or TKN_ERROR if an error is encountered
 Token impl_token_str_to_float(Scanner* scan);
+
+/// @brief Read more character, determining what type is the integral literal
+/// @param scan The scanner from which to read the next character
+/// @return TKN_U(8|16|32|64) if [uU]($1), or TKN_U(8|16|32|64) if [iI]($1), defaults to TKN_I32
+Token impl_scanner_get_integral_suffix(Scanner* scan);
 
 /// @brief Converts a scanner's identifier string to an int of base 'base'.
 /// @param scan The scanner to modify

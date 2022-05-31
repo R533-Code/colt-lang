@@ -273,9 +273,16 @@ char impl_peek_next_char(const Scanner* scan, uint64_t offset)
 
 char impl_rewind_char(Scanner* scan)
 {
-	colti_assert(scan->offset > 1, "Never rewind if already at the beginning of the string!");
+	colti_assert(scan->offset > 1, "Should at least call impl_get_next_char 1 times before");
 	//- 1 as the offset points to the NEXT character, not the current one
 	return scan->view.start[--scan->offset - 1];
+}
+
+char impl_rewind_chars(Scanner* scan, uint64_t nb)
+{
+	colti_assert(scan->offset > 1, "Should at least call impl_get_next_char 'nb' times before!");
+	//- 1 as the offset points to the NEXT character, not the current one
+	return scan->view.start[(scan->offset -= nb) - 1];
 }
 
 Token impl_scanner_handle_identifier(Scanner* scan)
@@ -761,6 +768,94 @@ Token impl_token_str_to_float(Scanner* scan)
 	return TKN_DOUBLE;
 }
 
+Token impl_scanner_get_integral_suffix(Scanner* scan)
+{
+	switch (tolower(scan->current_char))
+	{
+	break; case 'u':		
+		switch (scan->current_char = impl_get_next_char(scan))
+		{
+		break; case '8':
+			scan->current_char = impl_get_next_char(scan);
+			return TKN_U8;
+		break; case '1':
+			scan->current_char = impl_get_next_char(scan);
+			if (scan->current_char == '6')
+			{
+				scan->current_char = impl_get_next_char(scan);
+				return TKN_U16;
+			}
+			else
+			{
+				scan->current_char = impl_rewind_chars(scan, 2);
+			}
+		break; case '3':
+			scan->current_char = impl_get_next_char(scan);
+			if (scan->current_char == '2')
+			{
+				scan->current_char = impl_get_next_char(scan);
+				return TKN_U16;
+			}
+			else
+			{
+				scan->current_char = impl_rewind_chars(scan, 2);
+			}
+		break; case '6':
+			scan->current_char = impl_get_next_char(scan);
+			if (scan->current_char == '4')
+			{
+				scan->current_char = impl_get_next_char(scan);
+				return TKN_U16;
+			}
+			else
+			{
+				scan->current_char = impl_rewind_chars(scan, 2);
+			}
+		}
+	break; case 'i':
+		switch (scan->current_char = impl_get_next_char(scan))
+		{
+		break; case '8':
+			scan->current_char = impl_get_next_char(scan);
+			return TKN_I8;
+		break; case '1':
+			scan->current_char = impl_get_next_char(scan);
+			if (scan->current_char == '6')
+			{
+				scan->current_char = impl_get_next_char(scan);
+				return TKN_I16;
+			}
+			else
+			{
+				scan->current_char = impl_rewind_chars(scan, 2);
+			}
+		break; case '3':
+			scan->current_char = impl_get_next_char(scan);
+			if (scan->current_char == '2')
+			{
+				scan->current_char = impl_get_next_char(scan);
+				return TKN_I16;
+			}
+			else
+			{
+				scan->current_char = impl_rewind_chars(scan, 2);
+			}
+		break; case '6':
+			scan->current_char = impl_get_next_char(scan);
+			if (scan->current_char == '4')
+			{
+				scan->current_char = impl_get_next_char(scan);
+				return TKN_I16;
+			}
+			else
+			{
+				scan->current_char = impl_rewind_chars(scan, 2);
+			}
+		}
+	}
+	return TKN_I32;
+}
+
 Token impl_token_str_to_u64(Scanner* scan, int base)
 {
 	char* end;
@@ -851,7 +946,7 @@ Token impl_token_str_to_u16(Scanner* scan, int base)
 		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'u16' literal.", *end);
 		return TKN_ERROR;
 	}
-	else if ((value > USHRT_MAX) && errno == ERANGE)
+	else if ((value > USHRT_MAX) || errno == ERANGE)
 	{
 		errno = 0;
 		impl_scanner_print_error(scan, "Unsigned integer literal is not representable in a 'u16'.");
@@ -871,7 +966,7 @@ Token impl_token_str_to_i16(Scanner* scan, int base)
 		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'i16' literal.", *end);
 		return TKN_ERROR;
 	}
-	else if ((value > SHRT_MAX || value < SHRT_MIN) && errno == ERANGE)
+	else if ((value > SHRT_MAX || value < SHRT_MIN) || errno == ERANGE)
 	{
 		errno = 0;
 		impl_scanner_print_error(scan, "Signed integer literal is not representable in a 'i16'.");
@@ -891,13 +986,13 @@ Token impl_token_str_to_u8(Scanner* scan, int base)
 		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'u8' literal.", *end);
 		return TKN_ERROR;
 	}
-	else if ((value > USHRT_MAX) && errno == ERANGE)
+	else if ((value > UCHAR_MAX) || errno == ERANGE)
 	{
 		errno = 0;
 		impl_scanner_print_error(scan, "Unsigned integer literal is not representable in a 'u8'.");
 		return TKN_ERROR;
 	}
-	scan->parsed_value.u8 = (uint16_t)value;
+	scan->parsed_value.u8 = (uint8_t)value;
 	return TKN_U8;
 }
 
@@ -911,7 +1006,7 @@ Token impl_token_str_to_i8(Scanner* scan, int base)
 		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'i8' literal.", *end);
 		return TKN_ERROR;
 	}
-	else if ((value > SHRT_MAX || value < SHRT_MIN) && errno == ERANGE)
+	else if ((value > CHAR_MAX || value < CHAR_MIN) || errno == ERANGE)
 	{
 		errno = 0;
 		impl_scanner_print_error(scan, "Signed integer literal is not representable in a 'i8'.");
