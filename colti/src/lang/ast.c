@@ -96,7 +96,7 @@ int impl_op_precedence(AST* ast, Token token)
 
 Expr* impl_binary_expr(AST* ast, int op_precedence)
 {
-	if (op_precedence == 100)
+	if (op_precedence == 100) //token was not an operator: error
 		return NULL;
 
 	Expr* left;
@@ -105,8 +105,17 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 	left = impl_primary_expr(ast);
 	
 	token_type = ast->current_tkn;
-	if (token_type == TKN_EOF || token_type == TKN_RIGHT_PAREN || token_type == TKN_SEMICOLON)
+
+	switch (token_type)
+	{
+	case TKN_ERROR:
+		ast_enter_panic_mode(ast);
+		//fall-through done on purpose
+	case TKN_EOF:
+	case TKN_RIGHT_PAREN:
+	case TKN_SEMICOLON:
 		return left;
+	}
 
 	uint64_t line_nb = ast->scan.current_line;
 	StringView lexeme_strv = ScannerGetCurrentLexeme(&ast->scan);
@@ -116,7 +125,7 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 	
 	while (precedence > op_precedence)
 	{
-		if (precedence == 100)
+		if (precedence == 100) //token was not an operator: error
 			return left; // we don't want memory leaks
 
 		//Read the next token
@@ -143,8 +152,17 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 			lexeme_strv);
 
 		token_type = ast->current_tkn;
-		if (token_type == TKN_EOF || token_type == TKN_RIGHT_PAREN || token_type == TKN_SEMICOLON)
+		
+		switch (token_type)
+		{
+		case TKN_ERROR:
+			ast_enter_panic_mode(ast);
+			//fall-through done on purpose
+		case TKN_EOF:
+		case TKN_RIGHT_PAREN:
+		case TKN_SEMICOLON:
 			return left;
+		}
 
 		precedence = impl_op_precedence(ast, token_type);
 	}
