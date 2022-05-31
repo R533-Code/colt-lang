@@ -123,6 +123,8 @@ Expr* impl_primary_expr(AST* ast)
 
 	switch (ast->current_tkn)
 	{
+		/**************** LITERALS ****************/
+
 	break; case TKN_I8:
 		value.i8 = ast->scan.parsed_value.i8;
 		type = ColtInt8;
@@ -156,7 +158,10 @@ Expr* impl_primary_expr(AST* ast)
 	break; case TKN_BOOL:
 		value.b = ast->scan.parsed_value.b;
 		type = ColtBool;
-	break; //UNARY OPERATORS:
+	break;
+	
+		/**************** UNARY OPERATORS ****************/
+	
 	case TKN_OPERATOR_MINUS:
 	case TKN_OPERATOR_PLUS:
 	case TKN_OPERATOR_TILDE:
@@ -164,10 +169,16 @@ Expr* impl_primary_expr(AST* ast)
 		primary = impl_unary_expr(ast);
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		return primary;
+
+		/**************** PARENTHESIS ****************/
+
 	break; case TKN_LEFT_PAREN:
 		primary = impl_paren_expr(ast);
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		return primary;
+	
+		/**************** ERROR ****************/
+
 	break; default:
 		impl_scanner_print_error(&ast->scan, "Expected an expression!");
 		//FIXME: error handling
