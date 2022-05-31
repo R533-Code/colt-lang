@@ -29,14 +29,9 @@ String ScannerGetString(const Scanner* scan)
 	return StringCopy(&scan->parsed_string);
 }
 
-double ScannerGetDouble(const Scanner* scan)
+QWORD ScannerGetParsedQWORD(const Scanner* scan)
 {
-	return scan->parsed_double;
-}
-
-uint64_t ScannerGetInt(const Scanner* scan)
-{
-	return scan->parsed_uinteger;
+	return scan->parsed_value;
 }
 
 Token ScannerGetNextToken(Scanner* scan)
@@ -328,8 +323,8 @@ Token impl_scanner_handle_digit(Scanner* scan)
 			}
 			else
 			{
-				scan->parsed_uinteger = 0;
-				return TKN_INTEGER;
+				scan->parsed_value.u64 = 0;
+				return TKN_U64;
 			}
 		}
 
@@ -352,7 +347,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 			impl_scanner_print_error(scan, "'0%c' should be followed by characters in range %s!", scan->current_char, range_str);
 			return TKN_ERROR;
 		}
-		return impl_token_str_to_uinteger(scan, base);
+		return impl_token_str_to_u64(scan, base);
 	}
 
 	//Parse as many digits as possible
@@ -377,7 +372,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 			//The dot is not followed by a digit, this is not a float,
 			//but rather should be the dot followed by an identifier for a function call
 			scan->current_char = impl_rewind_char(scan);
-			return impl_token_str_to_uinteger(scan, 10);
+			return impl_token_str_to_u64(scan, 10);
 		}
 	}
 	char after_e = impl_peek_next_char(scan, 0);
@@ -399,7 +394,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 	if (isfloat)
 		return impl_token_str_to_double(scan);
 	else
-		return impl_token_str_to_uinteger(scan, 10);
+		return impl_token_str_to_u64(scan, 10);
 }
 
 Token impl_scanner_handle_string(Scanner* scan)
@@ -634,15 +629,15 @@ Token impl_scanner_handle_xor(Scanner* scan)
 	}
 }
 
-Token impl_token_identifier_or_keyword(const String* string)
+Token impl_token_identifier_or_keyword(Scanner* scan)
 {
-	const char* str = string->ptr;
+	const char* str = scan->parsed_string.ptr;
 	
 	//TODO: optimize better using len
 	//size - 1 as we don't care about comparing the NUL terminator
 	//size_t len = string->size - 1;
 	
-	if (string->size == 2)
+	if (scan->parsed_string.size == 2)
 		return TKN_IDENTIFIER;
 
 	//Table of keywords
@@ -672,7 +667,10 @@ Token impl_token_identifier_or_keyword(const String* string)
 		if (strcmp(str, "for") == 0)
 			return TKN_KEYWORD_FOR;
 		else if (strcmp(str, "false") == 0)
-			return TKN_FALSE;
+		{
+			scan->parsed_value.b = false;
+			return TKN_BOOL;
+		}
 	break; case 'g':
 		if (strcmp(str, "goto") == 0)
 			return TKN_KEYWORD_GOTO;
@@ -687,7 +685,10 @@ Token impl_token_identifier_or_keyword(const String* string)
 			return TKN_KEYWORD_SWITCH;
 	break; case 't':
 		if (strcmp(str, "true") == 0)
-			return TKN_TRUE;
+		{
+			scan->parsed_value.b = true;
+			return TKN_BOOL;
+		}
 	break; case 'w':
 		if (strcmp(str, "while") == 0)
 			return TKN_KEYWORD_WHILE;
@@ -712,11 +713,11 @@ Token impl_token_str_to_double(Scanner* scan)
 		impl_scanner_print_error(scan, "Floating point literal is not representable.");
 		return TKN_ERROR;
 	}
-	scan->parsed_double = value;
+	scan->parsed_value.d = value;
 	return TKN_DOUBLE;
 }
 
-Token impl_token_str_to_uinteger(Scanner* scan, int base)
+Token impl_token_str_to_u64(Scanner* scan, int base)
 {
 	char* end;
 	uint64_t value = strtoull(scan->parsed_string.ptr, &end, base);
@@ -732,8 +733,8 @@ Token impl_token_str_to_uinteger(Scanner* scan, int base)
 		impl_scanner_print_error(scan, "Integer literal is not representable.");
 		return TKN_ERROR;
 	}
-	scan->parsed_uinteger = value;
-	return TKN_INTEGER;
+	scan->parsed_value.u64 = value;
+	return TKN_U64;
 }
 
 char impl_parse_alnum(Scanner* scan)

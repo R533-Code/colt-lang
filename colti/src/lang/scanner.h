@@ -19,6 +19,13 @@
 /// @brief Struct responsible of breaking a string into lexemes
 typedef struct
 {
+	/// @brief The last parsed identifier
+	StringView parsed_identifier;
+	/// @brief The last parsed string literal, which is also used as a temporary buffer
+	String parsed_string;
+	/// @brief Last parsed integer/bool/double/float
+	QWORD parsed_value;
+
 	/// @brief The string to scan
 	StringView view;
 	/// @brief The offset to the current character from the string
@@ -29,17 +36,6 @@ typedef struct
 	uint64_t current_line;
 	/// @brief The current char, which is the one to parse next
 	char current_char;
-
-	/// @brief The last parsed identifier
-	StringView parsed_identifier;
-	/// @brief The last parsed string literal, which is also used as a temporary buffer
-	String parsed_string;
-	/// @brief The last parsed double literal
-	double parsed_double;
-	/// @brief The last parsed unsigned integer literal
-	uint64_t parsed_uinteger;
-	/// @brief The last parsed signed integer literal
-	int64_t parsed_integer;
 } Scanner;
 
 /// @brief Initializes a Scanner
@@ -61,15 +57,10 @@ StringView ScannerGetIdentifier(const Scanner* scan);
 /// @return A copy of the String
 String ScannerGetString(const Scanner* scan);
 
-/// @brief Returns the parsed double/float
+/// @brief Returns the last parsed double/float/integral as a QWORD
 /// @param scan The scanner from which to get the value
-/// @return The value stored in parsed_double
-double ScannerGetDouble(const Scanner* scan);
-
-/// @brief Returns the parsed integer/char
-/// @param scan The scanner from which to get the value
-/// @return The value stored in parsed_uinteger
-uint64_t ScannerGetInt(const Scanner* scan);
+/// @return The QWORD representing the last parsed literal
+QWORD ScannerGetParsedQWORD(const Scanner* scan);
 
 /// @brief Get the next token from a scanner.
 /// @param scan The scanner from which to get the value
@@ -188,10 +179,11 @@ Token impl_scanner_handle_or(Scanner* scan);
 /// @return Token representing the parsed lexeme
 Token impl_scanner_handle_xor(Scanner* scan);
 
-/// @brief Handles comparisons for determining if an identifier is a keyword
-/// @param string The string to compare
+/// @brief Handles comparisons for determining if an identifier is a keyword.
+/// This function also handles bool literals, which are a special type of keywords.
+/// @param scan The scanner whose 'parsed_string' is to compare
 /// @return A Token representing a keyword, or TKN_IDENTIFIER
-Token impl_token_identifier_or_keyword(const String* string);
+Token impl_token_identifier_or_keyword(const Scanner* scan);
 
 /// @brief Converts a scanner's identifier string to a double.
 /// This function also stores the result in the scanner's 'parsed_double',
@@ -205,8 +197,8 @@ Token impl_token_str_to_double(Scanner* scan);
 /// 'parsed_uinteger' and handles any error.
 /// @param scan The scanner to modify
 /// @param base The base of the int to parse
-/// @return TKN_INTEGER or TKN_ERROR if an error is encountered
-Token impl_token_str_to_uinteger(Scanner* scan, int base);
+/// @return TKN_U64 or TKN_ERROR if an error is encountered
+Token impl_token_str_to_u64(Scanner* scan, int base);
 
 /// @brief Adds characters to the scanner's identifier string while they are alpha or digits
 /// @param scan The scanner to modify
