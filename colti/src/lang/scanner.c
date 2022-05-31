@@ -816,7 +816,7 @@ Token impl_scanner_get_integral_suffix(Scanner* scan)
 			if (scan->current_char == '2')
 			{
 				scan->current_char = impl_get_next_char(scan);
-				return TKN_U16;
+				return TKN_U32;
 			}
 			else
 			{
@@ -827,7 +827,7 @@ Token impl_scanner_get_integral_suffix(Scanner* scan)
 			if (scan->current_char == '4')
 			{
 				scan->current_char = impl_get_next_char(scan);
-				return TKN_U16;
+				return TKN_U64;
 			}
 			else
 			{
@@ -856,7 +856,7 @@ Token impl_scanner_get_integral_suffix(Scanner* scan)
 			if (scan->current_char == '2')
 			{
 				scan->current_char = impl_get_next_char(scan);
-				return TKN_I16;
+				return TKN_I32;
 			}
 			else
 			{
@@ -867,7 +867,7 @@ Token impl_scanner_get_integral_suffix(Scanner* scan)
 			if (scan->current_char == '4')
 			{
 				scan->current_char = impl_get_next_char(scan);
-				return TKN_I16;
+				return TKN_I64;
 			}
 			else
 			{
