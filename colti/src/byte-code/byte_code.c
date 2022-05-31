@@ -53,6 +53,8 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		case COLTI_I16_ID:
 		case COLTI_I32_ID:
 		case COLTI_I64_ID:
+			ret.f = (float)value.i64;
+			break;
 		case COLTI_U8_ID:
 		case COLTI_U16_ID:
 		case COLTI_U32_ID:
@@ -72,6 +74,8 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		case COLTI_I16_ID:
 		case COLTI_I32_ID:
 		case COLTI_I64_ID:
+			ret.d = (double)value.i64;
+			break;
 		case COLTI_U8_ID:
 		case COLTI_U16_ID:
 		case COLTI_U32_ID:
