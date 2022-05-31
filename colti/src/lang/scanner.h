@@ -173,6 +173,21 @@ Token impl_scanner_handle_less(Scanner* scan);
 /// @return Token representing the parsed lexeme
 Token impl_scanner_handle_greater(Scanner* scan);
 
+/// @brief Handles &, &=, &&
+/// @param scan The scanner from which to parse
+/// @return Token representing the parsed lexeme
+Token impl_scanner_handle_and(Scanner* scan);
+
+/// @brief Handles |, |=, ||
+/// @param scan The scanner from which to parse
+/// @return Token representing the parsed lexeme
+Token impl_scanner_handle_or(Scanner* scan);
+
+/// @brief Handles ^, ^=
+/// @param scan The scanner from which to parse
+/// @return Token representing the parsed lexeme
+Token impl_scanner_handle_xor(Scanner* scan);
+
 /// @brief Handles comparisons for determining if an identifier is a keyword
 /// @param string The string to compare
 /// @return A Token representing a keyword, or TKN_IDENTIFIER

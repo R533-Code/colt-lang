@@ -73,6 +73,12 @@ Token ScannerGetNextToken(Scanner* scan)
 		return impl_scanner_handle_less(scan);
 	case '>':
 		return impl_scanner_handle_greater(scan);
+	case '&':
+		return impl_scanner_handle_and(scan);
+	case '|':
+		return impl_scanner_handle_or(scan);
+	case '^':
+		return impl_scanner_handle_xor(scan);
 	case '"':
 		return impl_scanner_handle_string(scan);
 	case ':':
@@ -82,6 +88,9 @@ Token ScannerGetNextToken(Scanner* scan)
 			return TKN_OPERATOR_COLON_GREATER;
 		}
 		return TKN_COLON;
+	case '~':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_TILDE;
 	case ',':
 		scan->current_char = impl_get_next_char(scan);
 		return TKN_COMMA;
@@ -577,6 +586,51 @@ Token impl_scanner_handle_greater(Scanner* scan)
 		return TKN_OPERATOR_GREATER_GREATER;
 	break; default:
 		return TKN_OPERATOR_GREATER;
+	}
+}
+
+Token impl_scanner_handle_and(Scanner* scan)
+{
+	scan->current_char = impl_get_next_char(scan);
+	switch (scan->current_char)
+	{
+	break; case '=':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_AND_EQUAL;
+	break; case '&':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_AND_AND;
+	break; default:
+		return TKN_OPERATOR_AND;
+	}
+}
+
+Token impl_scanner_handle_or(Scanner* scan)
+{
+	scan->current_char = impl_get_next_char(scan);
+	switch (scan->current_char)
+	{
+	break; case '=':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_OR_EQUAL;
+	break; case '|':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_OR_OR;
+	break; default:
+		return TKN_OPERATOR_OR;
+	}
+}
+
+Token impl_scanner_handle_xor(Scanner* scan)
+{
+	scan->current_char = impl_get_next_char(scan);
+	switch (scan->current_char)
+	{
+	break; case '=':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_XOR_EQUAL;	
+	break; default:
+		return TKN_OPERATOR_XOR;
 	}
 }
 
