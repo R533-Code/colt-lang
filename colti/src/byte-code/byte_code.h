@@ -137,6 +137,14 @@ QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type);
 /// @return The division of the QWORDs
 QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type);
 
+QWORD OpCode_BitAND(QWORD left, QWORD right, BuiltinTypeID type);
+
+QWORD OpCode_BitOR(QWORD left, QWORD right, BuiltinTypeID type);
+
+QWORD OpCode_BitXOR(QWORD left, QWORD right, BuiltinTypeID type);
+
+QWORD OpCode_BitNOT(QWORD value, BuiltinTypeID type);
+
 /// @brief Casts 'value' to 'type' then prints its value, for DEBUG purposes
 /// @param value The QWORD to print
 /// @param type The type of the QWORD
