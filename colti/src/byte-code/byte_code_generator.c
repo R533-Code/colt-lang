@@ -110,6 +110,11 @@ bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr)
 		ChunkWriteOpCode(chunk, OP_IMMEDIATE_WORD);
 		ChunkWriteWORD(chunk, ptr->value.word);
 		break;
+	case ID_COLT_I8:
+	case ID_COLT_U8:
+		ChunkWriteOpCode(chunk, OP_IMMEDIATE_BYTE);
+		ChunkWriteBYTE(chunk, ptr->value.byte);
+		break;
 
 	default:
 		colti_assert(false, "Type ID should be of that of a built-in type!");
