@@ -6,7 +6,7 @@ Uses byte-code, and a stack-based virtual machine.
 
 ## Implemented Features:
 - [X] Scanner, which breaks a string into lexemes
-  - [ ] Fix floating-point and integer literals
+  - [X] Fix floating-point and integer literals
 - [X] AST, which represents expressions in a tree-like structure
   - [ ] Error reporting
   - [ ] Type conversions and warnings
