@@ -392,7 +392,17 @@ Token impl_scanner_handle_digit(Scanner* scan)
 	}
 
 	if (isfloat)
-		return impl_token_str_to_double(scan);
+	{
+		switch (impl_scanner_get_floating_suffix(scan))
+		{
+		break; case TKN_FLOAT:
+			return impl_token_str_to_float(scan);
+		break; case TKN_DOUBLE:
+			return impl_token_str_to_double(scan);
+		break; default:
+			colti_assert(false, "Should never happen!");
+		}
+	}
 	else
 		return impl_token_str_to_u64(scan, 10);
 }
@@ -698,6 +708,21 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 	return TKN_IDENTIFIER;
 }
 
+Token impl_scanner_get_floating_suffix(Scanner* scan)
+{
+	switch (tolower(scan->current_char))
+	{
+	break; case 'f':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_FLOAT;
+	break; case 'd':
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_DOUBLE;
+	break; default:
+		return TKN_DOUBLE;
+	}
+}
+
 Token impl_token_str_to_double(Scanner* scan)
 {
 	char* end;
@@ -710,7 +735,26 @@ Token impl_token_str_to_double(Scanner* scan)
 	else if (value == HUGE_VAL && errno == ERANGE)
 	{
 		errno = 0;
-		impl_scanner_print_error(scan, "Floating point literal is not representable.");
+		impl_scanner_print_error(scan, "'double' literal is not representable!");
+		return TKN_ERROR;
+	}
+	scan->parsed_value.d = value;
+	return TKN_DOUBLE;
+}
+
+Token impl_token_str_to_float(Scanner* scan)
+{
+	char* end;
+	double value = strtof(scan->parsed_string.ptr, &end);
+	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
+	{
+		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing floating point literal.", *end);
+		return TKN_ERROR;
+	}
+	else if (value == HUGE_VALF && errno == ERANGE)
+	{
+		errno = 0;
+		impl_scanner_print_error(scan, "'float' literal is not representable!");
 		return TKN_ERROR;
 	}
 	scan->parsed_value.d = value;
@@ -724,17 +768,157 @@ Token impl_token_str_to_u64(Scanner* scan, int base)
 	
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing integer literal.", *end);
+		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'u64' literal.", *end);
 		return TKN_ERROR;
 	}
 	else if (value == ULLONG_MAX && errno == ERANGE)
 	{
 		errno = 0;
-		impl_scanner_print_error(scan, "Integer literal is not representable.");
+		impl_scanner_print_error(scan, "Unsigned integer literal is not representable in a 'u64'.");
 		return TKN_ERROR;
 	}
 	scan->parsed_value.u64 = value;
 	return TKN_U64;
+}
+
+Token impl_token_str_to_i64(Scanner* scan, int base)
+{
+	char* end;
+	int64_t value = strtoll(scan->parsed_string.ptr, &end, base);
+
+	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
+	{
+		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'i64' literal.", *end);
+		return TKN_ERROR;
+	}
+	else if (value == LLONG_MAX && errno == ERANGE)
+	{
+		errno = 0;
+		impl_scanner_print_error(scan, "Signed integer literal is not representable in a 'i64'.");
+		return TKN_ERROR;
+	}
+	scan->parsed_value.i64 = value;
+	return TKN_I64;
+}
+
+Token impl_token_str_to_u32(Scanner* scan, int base)
+{
+	char* end;
+	uint32_t value = strtoul(scan->parsed_string.ptr, &end, base);
+
+	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
+	{
+		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'u32' literal.", *end);
+		return TKN_ERROR;
+	}
+	else if (value == ULONG_MAX && errno == ERANGE)
+	{
+		errno = 0;
+		impl_scanner_print_error(scan, "Unsigned integer literal is not representable in a 'u32'.");
+		return TKN_ERROR;
+	}
+	scan->parsed_value.u32 = value;
+	return TKN_U32;
+}
+
+Token impl_token_str_to_i32(Scanner* scan, int base)
+{
+	char* end;
+	int32_t value = strtol(scan->parsed_string.ptr, &end, base);
+
+	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
+	{
+		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'i32' literal.", *end);
+		return TKN_ERROR;
+	}
+	else if (value == LONG_MAX && errno == ERANGE)
+	{
+		errno = 0;
+		impl_scanner_print_error(scan, "Signed integer literal is not representable in a 'i32'.");
+		return TKN_ERROR;
+	}
+	scan->parsed_value.i32 = value;
+	return TKN_I32;
+}
+
+Token impl_token_str_to_u16(Scanner* scan, int base)
+{
+	char* end;
+	uint32_t value = strtoul(scan->parsed_string.ptr, &end, base);
+
+	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
+	{
+		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'u16' literal.", *end);
+		return TKN_ERROR;
+	}
+	else if ((value > USHRT_MAX) && errno == ERANGE)
+	{
+		errno = 0;
+		impl_scanner_print_error(scan, "Unsigned integer literal is not representable in a 'u16'.");
+		return TKN_ERROR;
+	}
+	scan->parsed_value.u16 = (uint16_t)value;
+	return TKN_U16;
+}
+
+Token impl_token_str_to_i16(Scanner* scan, int base)
+{
+	char* end;
+	int32_t value = strtol(scan->parsed_string.ptr, &end, base);
+
+	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
+	{
+		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'i16' literal.", *end);
+		return TKN_ERROR;
+	}
+	else if ((value > SHRT_MAX || value < SHRT_MIN) && errno == ERANGE)
+	{
+		errno = 0;
+		impl_scanner_print_error(scan, "Signed integer literal is not representable in a 'i16'.");
+		return TKN_ERROR;
+	}
+	scan->parsed_value.i16 = (int16_t)value;
+	return TKN_I16;
+}
+
+Token impl_token_str_to_u8(Scanner* scan, int base)
+{
+	char* end;
+	uint32_t value = strtoul(scan->parsed_string.ptr, &end, base);
+
+	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
+	{
+		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'u8' literal.", *end);
+		return TKN_ERROR;
+	}
+	else if ((value > USHRT_MAX) && errno == ERANGE)
+	{
+		errno = 0;
+		impl_scanner_print_error(scan, "Unsigned integer literal is not representable in a 'u8'.");
+		return TKN_ERROR;
+	}
+	scan->parsed_value.u8 = (uint16_t)value;
+	return TKN_U8;
+}
+
+Token impl_token_str_to_i8(Scanner* scan, int base)
+{
+	char* end;
+	int32_t value = strtol(scan->parsed_string.ptr, &end, base);
+
+	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
+	{
+		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'i8' literal.", *end);
+		return TKN_ERROR;
+	}
+	else if ((value > SHRT_MAX || value < SHRT_MIN) && errno == ERANGE)
+	{
+		errno = 0;
+		impl_scanner_print_error(scan, "Signed integer literal is not representable in a 'i8'.");
+		return TKN_ERROR;
+	}
+	scan->parsed_value.i8 = (int8_t)value;
+	return TKN_I8;
 }
 
 char impl_parse_alnum(Scanner* scan)

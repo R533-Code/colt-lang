@@ -185,6 +185,11 @@ Token impl_scanner_handle_xor(Scanner* scan);
 /// @return A Token representing a keyword, or TKN_IDENTIFIER
 Token impl_token_identifier_or_keyword(const Scanner* scan);
 
+/// @brief Read more character, determining if the literal is a float or double
+/// @param scan The scanner from which to read the next character
+/// @return TKN_FLOAT if [fF], else TKN_DOUBLE [dD]
+Token impl_scanner_get_floating_suffix(Scanner* scan);
+
 /// @brief Converts a scanner's identifier string to a double.
 /// This function also stores the result in the scanner's 'parsed_double',
 /// and handles any error.
@@ -192,13 +197,60 @@ Token impl_token_identifier_or_keyword(const Scanner* scan);
 /// @return TKN_DOUBLE or TKN_ERROR if an error is encountered
 Token impl_token_str_to_double(Scanner* scan);
 
+/// @brief Converts a scanner's identifier string to a float.
+/// This function also stores the result in the scanner's 'parsed_double',
+/// and handles any error.
+/// @param scan The scanner to modify
+/// @return TKN_FLOAT or TKN_ERROR if an error is encountered
+Token impl_token_str_to_float(Scanner* scan);
+
 /// @brief Converts a scanner's identifier string to an int of base 'base'.
-/// This function also stores the result of the conversion in the scanner's
-/// 'parsed_uinteger' and handles any error.
 /// @param scan The scanner to modify
 /// @param base The base of the int to parse
 /// @return TKN_U64 or TKN_ERROR if an error is encountered
 Token impl_token_str_to_u64(Scanner* scan, int base);
+
+/// @brief Converts a scanner's identifier string to an int of base 'base'.
+/// @param scan The scanner to modify
+/// @param base The base of the int to parse
+/// @return TKN_U32 or TKN_ERROR if an error is encountered
+Token impl_token_str_to_u32(Scanner* scan, int base);
+
+/// @brief Converts a scanner's identifier string to an int of base 'base'.
+/// @param scan The scanner to modify
+/// @param base The base of the int to parse
+/// @return TKN_U16 or TKN_ERROR if an error is encountered
+Token impl_token_str_to_u16(Scanner* scan, int base);
+
+/// @brief Converts a scanner's identifier string to an int of base 'base'.
+/// @param scan The scanner to modify
+/// @param base The base of the int to parse
+/// @return TKN_U8 or TKN_ERROR if an error is encountered
+Token impl_token_str_to_u8(Scanner* scan, int base);
+
+/// @brief Converts a scanner's identifier string to an int of base 'base'.
+/// @param scan The scanner to modify
+/// @param base The base of the int to parse
+/// @return TKN_I64 or TKN_ERROR if an error is encountered
+Token impl_token_str_to_i64(Scanner* scan, int base);
+
+/// @brief Converts a scanner's identifier string to an int of base 'base'.
+/// @param scan The scanner to modify
+/// @param base The base of the int to parse
+/// @return TKN_I32 or TKN_ERROR if an error is encountered
+Token impl_token_str_to_i32(Scanner* scan, int base);
+
+/// @brief Converts a scanner's identifier string to an int of base 'base'.
+/// @param scan The scanner to modify
+/// @param base The base of the int to parse
+/// @return TKN_I16 or TKN_ERROR if an error is encountered
+Token impl_token_str_to_i16(Scanner* scan, int base);
+
+/// @brief Converts a scanner's identifier string to an int of base 'base'.
+/// @param scan The scanner to modify
+/// @param base The base of the int to parse
+/// @return TKN_I8 or TKN_ERROR if an error is encountered
+Token impl_token_str_to_i8(Scanner* scan, int base);
 
 /// @brief Adds characters to the scanner's identifier string while they are alpha or digits
 /// @param scan The scanner to modify
