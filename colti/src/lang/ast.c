@@ -116,7 +116,9 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 Expr* impl_primary_expr(AST* ast)
 {
 	Expr* primary;
-	QWORD value;
+	//Zero initialize value. This is a really important step,
+	//as it allows faster conversions in OpCode_Convert
+	QWORD value = { .ui64 = 0 };
 
 	switch (ast->current_tkn)
 	{
