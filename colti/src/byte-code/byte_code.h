@@ -46,6 +46,15 @@ typedef enum
 	//DON'T KNOW
 	OP_MODULO,
 
+	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their bitwise AND
+	OP_BIT_AND,
+	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their bitwise OR
+	OP_BIT_OR,
+	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their bitwise XOR
+	OP_BIT_XOR,
+	/// @brief Specifies that the next byte is an operand to which to cast a QWORD before doing its bitwise NOT
+	OP_BIT_NOT,
+
 	/// @brief Specifies that the next byte is an operand to which to cast a QWORD before printing it (for debug purposes)
 	OP_PRINT,
 
