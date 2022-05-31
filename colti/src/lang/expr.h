@@ -165,6 +165,8 @@ Expr* makeUnaryExpr(Token unary_operator, Expr* child, uint64_t line_nb, StringV
 /// @return A pointer to a heap allocated BinaryExpr
 Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, uint64_t line_nb, StringView line, StringView lexeme);
 
+Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView line, StringView lexeme);
+
 /// @brief Recursively frees a heap-allocated expression.
 /// As an Expr* can be a BinaryExpr, or an expression with child expression,
 /// we cannot just free the pointer received from a make...Expr.
