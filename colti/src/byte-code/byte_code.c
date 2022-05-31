@@ -4,6 +4,29 @@
 
 #include "byte_code.h"
 
+const char* BuiltinTypeIDToString(BuiltinTypeID id)
+{
+	switch (id)
+	{
+	break; case ID_COLT_BOOL:		return "bool";
+	break; case ID_COLT_DOUBLE:		return "double";
+	break; case ID_COLT_FLOAT:		return "float";
+	break; case ID_COLT_I8:			return "i8";
+	break; case ID_COLT_I16:		return "i16";
+	break; case ID_COLT_I32:		return "i32";
+	break; case ID_COLT_I64:		return "i64";
+	break; case ID_COLT_U8:			return "u8";
+	break; case ID_COLT_U16:		return "u16";
+	break; case ID_COLT_U32:		return "u32";
+	break; case ID_COLT_U64:		return "u64";
+	break; default:					return "UNKOWN";
+	}
+}
+
+/**********************************
+BYTE-CODE RUNNING
+**********************************/
+
 QWORD OpCode_Negate(QWORD value, BuiltinTypeID type)
 {
 	QWORD result;

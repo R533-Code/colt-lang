@@ -92,6 +92,11 @@ typedef enum
 	ID_COLT_U64			= COLTI_U64_ID,
 } BuiltinTypeID;
 
+/// @brief Converts a built-in type ID to a const char*
+/// @param id The ID to convert
+/// @return const char* representing the ID or UNKNOWN
+const char* BuiltinTypeIDToString(BuiltinTypeID id);
+
 /**********************************
 BYTE-CODE RUNNING
 **********************************/
