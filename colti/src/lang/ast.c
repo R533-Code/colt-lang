@@ -122,26 +122,20 @@ Expr* impl_primary_expr(AST* ast)
 
 	switch (ast->current_tkn)
 	{
-	break; case TKN_INTEGER:
-		value.u64 = ScannerGetInt(&ast->scan);
+	break; case TKN_U64:
+		value.u64 = ast->scan.parsed_value.u64;
 		primary = makeLiteralExpr(value, ColtUInt64,
 			ast->scan.current_line,
 			ScannerGetCurrentLine(&ast->scan),
 			ScannerGetCurrentLexeme(&ast->scan));
 	break; case TKN_DOUBLE:
-		value.d = ScannerGetDouble(&ast->scan);
+		value.d = ast->scan.parsed_value.d;
 		primary = makeLiteralExpr(value, ColtDouble,
 			ast->scan.current_line,
 			ScannerGetCurrentLine(&ast->scan),
 			ScannerGetCurrentLexeme(&ast->scan));
-	break; case TKN_TRUE:
-		value.b = true;
-		primary = makeLiteralExpr(value, ColtBool,
-			ast->scan.current_line,
-			ScannerGetCurrentLine(&ast->scan),
-			ScannerGetCurrentLexeme(&ast->scan));
-	break; case TKN_FALSE:
-		value.b = false;
+	break; case TKN_BOOL:
+		value.b = ast->scan.parsed_value.b;
 		primary = makeLiteralExpr(value, ColtBool,
 			ast->scan.current_line,
 			ScannerGetCurrentLine(&ast->scan),
