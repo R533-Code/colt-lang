@@ -50,7 +50,15 @@ bool ASTParse(AST* ast);
 IMPLEMENTATION HELPERS
 ************************************/
 
+/// @brief Prints an error and enters panic mode
+/// @param ast The AST from which to extract the current line and lexeme
+/// @param format The error (printf format)
+/// @param ... The arguments to format
 void ast_gen_error(AST* ast, const char* format, ...);
+
+/// @brief Consumes token until an TKN_EOF or TKN_SEMICOLON is hit
+/// @param ast The AST whose tokens to consume
+void ast_enter_panic_mode(AST* ast);
 
 /// @brief Returns the precedence of an operator, and prints an error if the token is not an operator
 /// @param ast The AST use to print an error
@@ -59,14 +67,12 @@ void ast_gen_error(AST* ast, const char* format, ...);
 int impl_op_precedence(AST* ast, Token token);
 
 /// @brief Parses a binary expression or a primary expression.
-/// FIXME: add valid tokens
 /// @param ast The AST from which to parse
 /// @param op_precedence The current_tkn operator precedence (which when first call should be 0)
 /// @return An Expr* representing either a binary or primary expression
 Expr* impl_binary_expr(AST* ast, int op_precedence);
 
 /// @brief Parses a primary expression (which can be a UnaryExpr, LiteralExpr or (...)).
-/// FIXME: add valid tokens
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression
 Expr* impl_primary_expr(AST* ast);

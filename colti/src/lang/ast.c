@@ -36,10 +36,10 @@ void ast_gen_error(AST* ast, const char* format, ...)
 
 	StringView current_line = ScannerGetCurrentLine(&ast->scan);
 	StringView current_lexeme = ScannerGetCurrentLexeme(&ast->scan);
-	while (ast->current_tkn != TKN_EOF && ast->current_tkn != TKN_COLON)
-	{
-		ast->current_tkn = ScannerGetNextToken(&ast->scan);
-	}
+	
+	//We clear all the token till we hit an EOF or ';'
+	//This allows to clear an expression that is wrong
+	ast_enter_panic_mode(ast);
 	
 	fprintf(stderr, CONSOLE_FOREGROUND_BRIGHT_RED "Error: "
 		CONSOLE_COLOR_RESET "On line %"PRIu64": ", ast->scan.current_line);
@@ -57,6 +57,14 @@ void ast_gen_error(AST* ast, const char* format, ...)
 		(uint32_t)(current_lexeme.end - current_lexeme.start), current_lexeme.start,
 		(uint32_t)(current_line.end - current_lexeme.end), current_lexeme.end
 	);
+}
+
+void ast_enter_panic_mode(AST* ast)
+{
+	while (ast->current_tkn != TKN_EOF && ast->current_tkn != TKN_SEMICOLON)
+	{
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+	}
 }
 
 /************************************
