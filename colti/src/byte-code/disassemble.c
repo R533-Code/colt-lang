@@ -87,41 +87,39 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 		return impl_print_simple_instruction("OP_RETURN", offset);
 
 	default:
-		printf("UNKOWN OPCODE: '%d'\n", instruction);
+		printf(CONSOLE_FOREGROUND_BRIGHT_RED "UNKOWN OPCODE: '%d'\n"
+			CONSOLE_COLOR_RESET, instruction);
 		return offset + 1;
 	}
 }
 
 uint64_t impl_print_simple_instruction(const char* name, uint64_t offset)
 {
-	printf("%s\n", name);
+	printf(CONSOLE_FOREGROUND_GREEN "%-20s\n"
+		CONSOLE_COLOR_RESET, name);
 	return offset + 1;
-}
-
-uint64_t impl_print_byte_instruction(const char* name, uint8_t byte, uint64_t offset)
-{
-	printf("%s '%d'\n", name, byte);
-	return offset + 2;
 }
 
 uint64_t impl_print_operand_instruction(const char* name, uint8_t byte, uint64_t offset)
 {
-	printf("%s '%s'\n", name, BuiltinTypeIDToString(byte));
+	printf(CONSOLE_FOREGROUND_BRIGHT_MAGENTA "%-20s "
+		CONSOLE_FOREGROUND_CYAN "'%s'\n"
+		CONSOLE_COLOR_RESET, name, BuiltinTypeIDToString(byte));
 	return offset + 2;
 }
 
 uint64_t impl_print_2operand_instruction(const char* name, uint8_t first, uint8_t second, uint64_t offset)
 {
-	printf("%s '%s', '%s'\n", name, BuiltinTypeIDToString(first), BuiltinTypeIDToString(second));
+	printf(CONSOLE_FOREGROUND_YELLOW "%-20s "
+		CONSOLE_FOREGROUND_CYAN "'%s'" CONSOLE_COLOR_RESET ", "
+		CONSOLE_FOREGROUND_CYAN "'%s'\n"
+		CONSOLE_COLOR_RESET, name, BuiltinTypeIDToString(first), BuiltinTypeIDToString(second));
 	return offset + 3;
-}
-
-void impl_print_int_instruction(const char* name, int64_t value)
-{
-	printf("%s '%"PRId64"'", name, value);
 }
 
 void impl_print_hex_instruction(const char* name, uint64_t value)
 {
-	printf("%s '0x%"PRIX64"'\n", name, value);
+	printf(CONSOLE_FOREGROUND_BRIGHT_BLUE "%-20s "
+		CONSOLE_FOREGROUND_BRIGHT_GREEN "'0x%"PRIX64"'\n"
+		CONSOLE_COLOR_RESET, name, value);
 }
