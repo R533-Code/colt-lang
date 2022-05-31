@@ -91,7 +91,7 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 		//HANDLE CONVERSIONS
 		if (right->expr_type.type_id != left->expr_type.type_id)
 		{
-			Type cnv = impl_operator_type(left->expr_type, token_type, right->expr_type);
+			Type cnv = impl_builtin_inter_type(left->expr_type, right->expr_type);
 			if (right->expr_type.type_id != cnv.type_id)
 				right = makeConvertExpr(right, cnv, right->line_nb, right->line, right->lexeme);
 			if (left->expr_type.type_id != cnv.type_id)
