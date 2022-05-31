@@ -330,8 +330,8 @@ Token impl_scanner_handle_digit(Scanner* scan)
 			}
 			else
 			{
-				scan->parsed_value.u64 = 0;
-				return TKN_U64;
+				scan->parsed_value.i32 = 0;
+				return TKN_I32;
 			}
 		}
 
@@ -402,16 +402,38 @@ Token impl_scanner_handle_digit(Scanner* scan)
 	{
 		switch (impl_scanner_get_floating_suffix(scan))
 		{
-		break; case TKN_FLOAT:
+		case TKN_FLOAT:
 			return impl_token_str_to_float(scan);
-		break; case TKN_DOUBLE:
+		case TKN_DOUBLE:
 			return impl_token_str_to_double(scan);
-		break; default:
+		default:
 			colti_assert(false, "Should never happen!");
 		}
 	}
 	else
-		return impl_token_str_to_u64(scan, 10);
+	{
+		switch (impl_scanner_get_integral_suffix(scan))
+		{
+		case TKN_I8:
+			return impl_token_str_to_i8(scan, 10);
+		case TKN_I16:
+			return impl_token_str_to_i16(scan, 10);
+		case TKN_I32:
+			return impl_token_str_to_i32(scan, 10);
+		case TKN_I64:
+			return impl_token_str_to_i64(scan, 10);
+		case TKN_U8:
+			return impl_token_str_to_u8(scan, 10);
+		case TKN_U16:
+			return impl_token_str_to_u16(scan, 10);
+		case TKN_U32:
+			return impl_token_str_to_u32(scan, 10);
+		case TKN_U64:
+			return impl_token_str_to_u64(scan, 10);
+		default:
+			colti_assert(false, "Should never happen!");
+		}
+	}
 }
 
 Token impl_scanner_handle_string(Scanner* scan)
