@@ -56,7 +56,7 @@ IMPLEMENTATION HELPERS
 /// @param ... The arguments to format
 void ast_gen_error(AST* ast, const char* format, ...);
 
-/// @brief Consumes token until an TKN_EOF or TKN_SEMICOLON is hit
+/// @brief Consumes token until an TKN_EOF or TKN_SEMICOLON is hit, and update error counter
 /// @param ast The AST whose tokens to consume
 void ast_enter_panic_mode(AST* ast);
 

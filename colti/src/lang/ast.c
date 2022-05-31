@@ -31,14 +31,12 @@ bool ASTParse(AST* ast)
 
 void ast_gen_error(AST* ast, const char* format, ...)
 {
-	//update error number
-	ast->error_nb++;
-
 	StringView current_line = ScannerGetCurrentLine(&ast->scan);
 	StringView current_lexeme = ScannerGetCurrentLexeme(&ast->scan);
 	
 	//We clear all the token till we hit an EOF or ';'
 	//This allows to clear an expression that is wrong
+	//also updates error number
 	ast_enter_panic_mode(ast);
 	
 	fprintf(stderr, CONSOLE_FOREGROUND_BRIGHT_RED "Error: "
@@ -61,6 +59,7 @@ void ast_gen_error(AST* ast, const char* format, ...)
 
 void ast_enter_panic_mode(AST* ast)
 {
+	ast->error_nb++;
 	while (ast->current_tkn != TKN_EOF && ast->current_tkn != TKN_SEMICOLON)
 	{
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
@@ -218,6 +217,10 @@ Expr* impl_primary_expr(AST* ast)
 		return primary;
 	
 		/**************** ERROR ****************/
+
+	break; case TKN_ERROR:
+		ast_enter_panic_mode(ast);
+		return NULL;
 
 	break; default:
 		ast_gen_error(ast, "Expected an expression!");
