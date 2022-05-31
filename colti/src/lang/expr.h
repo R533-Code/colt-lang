@@ -165,6 +165,13 @@ Expr* makeUnaryExpr(Token unary_operator, Expr* child, uint64_t line_nb, StringV
 /// @return A pointer to a heap allocated BinaryExpr
 Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, uint64_t line_nb, StringView line, StringView lexeme);
 
+/// @brief Allocates a new convert expression on the heap, initializing it
+/// @param expr The expression to cast
+/// @param convert_to The Type to which to cast to
+/// @param line_nb The line number from which the expression is extracted
+/// @param line A StringView over the line containing the expression
+/// @param lexeme A StringView over the lexeme representing the expression
+/// @return A pointer to a heap allocated ConvertExpr
 Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView line, StringView lexeme);
 
 /// @brief Recursively frees a heap-allocated expression.
