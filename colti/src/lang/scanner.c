@@ -792,6 +792,7 @@ Token impl_token_str_to_float(Scanner* scan)
 
 Token impl_scanner_get_integral_suffix(Scanner* scan)
 {
+	//finite automata
 	switch (tolower(scan->current_char))
 	{
 	break; case 'u':		
