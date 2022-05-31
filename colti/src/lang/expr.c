@@ -76,9 +76,8 @@ Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, uint64_t line_
 	
 	ptr->expr_operator = binary_operator;
 
-	// get the type of the operator knowing the type of its operands
-	// This does not convert any of the values but rather choose the whole expression's type
-	ptr->expr_type = impl_operator_type(lhs->expr_type, binary_operator, rhs->expr_type);
+	colti_assert(rhs->expr_type.type_id == lhs->expr_type.type_id, "Type should match!");
+	ptr->expr_type = lhs->expr_type; //should be the same as rhs->expr_type
 
 	ptr->lhs = lhs;
 	ptr->rhs = rhs;

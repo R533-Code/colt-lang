@@ -88,6 +88,15 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
 		Expr* right = impl_binary_expr(ast, impl_op_precedence(ast, token_type));
+		//HANDLE CONVERSIONS
+		if (right->expr_type.type_id != left->expr_type.type_id)
+		{
+			Type cnv = impl_operator_type(left->expr_type, token_type, right->expr_type);
+			if (right->expr_type.type_id != cnv.type_id)
+				right = makeConvertExpr(right, cnv, right->line_nb, right->line, right->lexeme);
+			if (left->expr_type.type_id != cnv.type_id)
+				left = makeConvertExpr(left, cnv, left->line_nb, left->line, left->lexeme);
+		}
 
 		left = makeBinaryExpr(left, token_type, right,
 			line_nb,
