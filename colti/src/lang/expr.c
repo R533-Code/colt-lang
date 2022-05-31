@@ -90,6 +90,22 @@ Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, uint64_t line_
 	return (Expr*)ptr;
 }
 
+Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView line, StringView lexeme)
+{
+	ConvertExpr* ptr = safe_malloc(sizeof(BinaryExpr));
+	//type for casting
+	ptr->identifier = EXPR_CONVERT;
+	
+	ptr->expr_type = convert_to;
+	ptr->child = expr;
+
+	ptr->line_nb = line_nb;
+	ptr->line = line;
+	ptr->lexeme = lexeme;
+
+	return (Expr*)ptr;
+}
+
 void freeExpr(Expr* ptr)
 {
 	if (ptr == NULL)
