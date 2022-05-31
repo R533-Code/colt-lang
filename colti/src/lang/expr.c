@@ -191,6 +191,11 @@ bool impl_is_type_uint(BuiltinTypeID type)
 	return type < ID_COLT_I8 && type > ID_COLT_BOOL;
 }
 
+bool impl_is_type_integral(BuiltinTypeID type)
+{
+	return type > ID_COLT_BOOL && type < ID_COLT_FLOAT;
+}
+
 bool impl_is_type_floating(BuiltinTypeID type)
 {
 	return type == ID_COLT_FLOAT || type == ID_COLT_DOUBLE;

@@ -197,8 +197,13 @@ bool impl_is_type_int(BuiltinTypeID type);
 
 /// @brief Check if a type is a built-in unsigned integer
 /// @param type The type_id to check for
-/// @return True if the type is a unsigned integer
+/// @return True if the type is an unsigned integer
 bool impl_is_type_uint(BuiltinTypeID type);
+
+/// @brief Checks if a type is a built-in integer regardless of its sign
+/// @param type The type_id to check for
+/// @return True if the type is an unsigned/signed integer
+bool impl_is_type_integral(BuiltinTypeID type);
 
 /// @brief Check if a type is a built-in floating point type
 /// @param type The type_id to check for
