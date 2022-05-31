@@ -27,7 +27,7 @@ typedef struct
 	/// @brief The scanner providing the lexemes for the AST
 	Scanner scan;
 	/// @brief The number of errors encountered
-	uint16_t error_nb;
+	uint8_t error_nb;
 	/// @brief The next token to consume from the scanner
 	Token current_tkn;
 } AST;
