@@ -10,9 +10,10 @@ Uses byte-code, and a stack-based virtual machine.
 - [X] AST, which represents expressions in a tree-like structure
   - [ ] Error reporting
   - [ ] Type conversions and warnings
-- [ ] `generateByteCode` function, which generate byte-code from an AST
-  - [ ] Implement more operations
-  - [ ] Implement more byte-code
+- [X] `generateByteCode` function, which generate byte-code from an AST
+  - [X] Implement more operations
+  - [X] Implement more byte-code
+  - [ ] Implement variables
 
 ## Error Codes:
 - 0: Successful
