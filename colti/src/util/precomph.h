@@ -24,7 +24,7 @@
 #include "util/parse_args.h"
 
 //DEBUGING UTILITIES
-#if defined(COLTI_WINDOWS) && defined(COLTI_DEBUG_BUILD)
+#if defined(COLTI_MSVC) && defined(COLTI_DEBUG_BUILD)
 	#define _CRTDBG_MAP_ALLOC
 	#include <crtdbg.h> //Contains _CrtDumpMemoryLeaks()
 	#define DUMP_MEMORY_LEAKS() do { \
