@@ -22,7 +22,115 @@ QWORD OpCode_Negate(QWORD value, BuiltinTypeID type)
 
 QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 {
-	colti_assert(false, "Still not implemented!");
+	//zeroes the memory
+	QWORD ret = { .ui64 = 0 };
+
+	switch (to)
+	{
+	break; case ID_COLT_BOOL:
+		switch (from)
+		{
+		case COLTI_I8_ID:
+		case COLTI_I16_ID:
+		case COLTI_I32_ID:
+		case COLTI_I64_ID:
+		case COLTI_U8_ID:
+		case COLTI_U16_ID:
+		case COLTI_U32_ID:
+		case COLTI_U64_ID:
+			ret.b = (value.ui64 != 0);
+		break; case COLTI_FLOAT_ID:
+			ret.b = (value.f != 0);
+		break; case COLTI_DOUBLE_ID:
+			ret.b = (value.d != 0);
+		break; default:
+			colti_assert(false, "Invalid operand for OP_CONVERT!");
+		}
+	break; case ID_COLT_FLOAT:
+		switch (from)
+		{
+		case COLTI_I8_ID:
+		case COLTI_I16_ID:
+		case COLTI_I32_ID:
+		case COLTI_I64_ID:
+		case COLTI_U8_ID:
+		case COLTI_U16_ID:
+		case COLTI_U32_ID:
+		case COLTI_U64_ID:
+			ret.f = (float)value.ui64;
+		break; case COLTI_BOOL_ID:
+			ret.f = (value.b == 0 ? 0.0f : 1.0f);
+		break; case COLTI_DOUBLE_ID:
+			ret.f = (float)value.d;
+		break; default:
+			colti_assert(false, "Invalid operand for OP_CONVERT!");
+		}
+	break; case ID_COLT_DOUBLE:
+		switch (from)
+		{
+		case COLTI_I8_ID:
+		case COLTI_I16_ID:
+		case COLTI_I32_ID:
+		case COLTI_I64_ID:
+		case COLTI_U8_ID:
+		case COLTI_U16_ID:
+		case COLTI_U32_ID:
+		case COLTI_U64_ID:
+			ret.d = (double)value.ui64;
+		break; case COLTI_BOOL_ID:
+			ret.d = (value.b == 0 ? 0.0 : 1.0);
+		break; case COLTI_FLOAT_ID:
+			ret.d = (double)value.f;
+		break; default:
+			colti_assert(false, "Invalid operand for OP_CONVERT!");
+		}
+	break;
+	case ID_COLT_I8:
+	case ID_COLT_I16:
+	case ID_COLT_I32:
+	case ID_COLT_I64:
+		switch (from)
+		{
+		case COLTI_U8_ID:
+		case COLTI_U16_ID:
+		case COLTI_U32_ID:
+		case COLTI_U64_ID:
+			ret.i64 = (int64_t)value.ui64;
+		break; case COLTI_BOOL_ID:
+			ret.i64 = (value.b == 0 ? 0 : 1);
+		break; case COLTI_FLOAT_ID:
+			ret.i64 = (int64_t)value.f;
+		break; case COLTI_DOUBLE_ID:
+			ret.i64 = (int64_t)value.d;
+		break; default:
+			colti_assert(false, "Invalid operand for OP_CONVERT!");
+		}
+	break;
+	case ID_COLT_U8:
+	case ID_COLT_U16:
+	case ID_COLT_U32:
+	case ID_COLT_U64:
+		switch (from)
+		{
+		case COLTI_I8_ID:
+		case COLTI_I16_ID:
+		case COLTI_I32_ID:
+		case COLTI_I64_ID:
+			ret.ui64 = (uint64_t)value.i64;
+		break; case COLTI_BOOL_ID:
+			ret.ui64 = (value.b == 0 ? 0 : 1);
+		break; case COLTI_FLOAT_ID:
+			ret.ui64 = (uint64_t)value.f;
+		break; case COLTI_DOUBLE_ID:
+			ret.ui64 = (uint64_t)value.d;
+		break; default:
+			colti_assert(false, "Invalid operand for OP_CONVERT!");
+		}
+	break; default:
+		colti_assert(false, "Invalid operand to convert to for OP_CONVERT!");
+	}
+	
+	return ret;
 }
 
 QWORD OpCode_Sum(QWORD left, QWORD right, BuiltinTypeID type)
