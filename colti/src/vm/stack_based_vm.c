@@ -117,6 +117,33 @@ InterpretResult StackVMRun(StackVM* vm, Chunk* chunk)
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_Divide(lhs, rhs, *(ip++)));
 		}
+		break; case OP_BIT_AND:
+		{
+			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			QWORD rhs = StackVMPop(vm);
+			QWORD lhs = StackVMPop(vm);
+			StackVMPush(vm, OpCode_BitAND(lhs, rhs, *(ip++)));
+		}
+		break; case OP_BIT_OR:
+		{
+			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			QWORD rhs = StackVMPop(vm);
+			QWORD lhs = StackVMPop(vm);
+			StackVMPush(vm, OpCode_BitOR(lhs, rhs, *(ip++)));
+		}
+		break; case OP_BIT_XOR:
+		{
+			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			QWORD rhs = StackVMPop(vm);
+			QWORD lhs = StackVMPop(vm);
+			StackVMPush(vm, OpCode_BitXOR(lhs, rhs, *(ip++)));
+		}
+		break; case OP_BIT_NOT:
+		{
+			colti_assert(StackVMSize(vm) >= 1, "Stack should contain at least 2 items!");
+			QWORD value = StackVMPop(vm);
+			StackVMPush(vm, OpCode_BitNOT(value, *(ip++)));
+		}
 		/******************************************************/
 
 		break; case OP_PRINT:
