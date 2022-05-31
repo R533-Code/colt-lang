@@ -758,7 +758,7 @@ Token impl_token_str_to_double(Scanner* scan)
 	double value = strtod(scan->parsed_string.ptr, &end);
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing floating point literal.", *end);
+		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'double' literal.", *end);
 		return TKN_ERROR;
 	}
 	else if (value == HUGE_VAL && errno == ERANGE)
@@ -774,10 +774,10 @@ Token impl_token_str_to_double(Scanner* scan)
 Token impl_token_str_to_float(Scanner* scan)
 {
 	char* end;
-	double value = strtof(scan->parsed_string.ptr, &end);
+	float value = strtof(scan->parsed_string.ptr, &end);
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing floating point literal.", *end);
+		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'float' literal.", *end);
 		return TKN_ERROR;
 	}
 	else if (value == HUGE_VALF && errno == ERANGE)
@@ -786,7 +786,7 @@ Token impl_token_str_to_float(Scanner* scan)
 		impl_scanner_print_error(scan, "'float' literal is not representable!");
 		return TKN_ERROR;
 	}
-	scan->parsed_value.d = value;
+	scan->parsed_value.f = value;
 	return TKN_FLOAT;
 }
 
