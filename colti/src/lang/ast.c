@@ -118,12 +118,12 @@ Expr* impl_primary_expr(AST* ast)
 	Expr* primary;
 	//Zero initialize value. This is a really important step,
 	//as it allows faster conversions in OpCode_Convert
-	QWORD value = { .ui64 = 0 };
+	QWORD value = { .u64 = 0 };
 
 	switch (ast->current_tkn)
 	{
 	break; case TKN_INTEGER:
-		value.ui64 = ScannerGetInt(&ast->scan);
+		value.u64 = ScannerGetInt(&ast->scan);
 		primary = makeLiteralExpr(value, ColtUInt64,
 			ast->scan.current_line,
 			ScannerGetCurrentLine(&ast->scan),

@@ -109,7 +109,7 @@ WORD ChunkGetWORD(const Chunk* chunk, uint64_t* offset)
 	local_offset += ((uint64_t)(chunk->code + local_offset) & 1);
 
 	//Extract the int16 from the bytes
-	WORD return_val = { .ui16 = *(int16_t*)(chunk->code + local_offset) };
+	WORD return_val = { .u16 = *(int16_t*)(chunk->code + local_offset) };
 	//Update the value of the offset
 	*offset = local_offset + sizeof(int16_t);
 	return return_val;
@@ -127,7 +127,7 @@ DWORD ChunkGetDWORD(const Chunk* chunk, uint64_t* offset)
 
 
 	DWORD return_val;
-	return_val.ui32 = *(int32_t*)(chunk->code + local_offset);
+	return_val.u32 = *(int32_t*)(chunk->code + local_offset);
 	//Update the value of the offset
 	*offset = local_offset + sizeof(int32_t);
 	return return_val;
@@ -144,7 +144,7 @@ QWORD ChunkGetQWORD(const Chunk* chunk, uint64_t* offset)
 	local_offset += (uint64_t)(chunk->code + local_offset) % 8;
 
 	QWORD return_val;
-	return_val.ui64 = *(int64_t*)(chunk->code + local_offset);
+	return_val.u64 = *(int64_t*)(chunk->code + local_offset);
 	//Update the value of the offset
 	*offset = local_offset + sizeof(int64_t);
 	return return_val;
@@ -216,7 +216,7 @@ WORD unsafe_get_word(uint8_t** ptr)
 {
 	*ptr += (uint64_t)(*ptr) & 1; //read past padding
 	WORD return_val;
-	return_val.ui16 = *((uint16_t*)*ptr);
+	return_val.u16 = *((uint16_t*)*ptr);
 	*ptr += sizeof(int32_t);
 	return return_val;
 }
@@ -225,7 +225,7 @@ DWORD unsafe_get_dword(uint8_t** ptr)
 {
 	*ptr += (uint64_t)(*ptr) % 4; //read past padding
 	DWORD return_val;
-	return_val.ui32 = *((uint32_t*)*ptr);
+	return_val.u32 = *((uint32_t*)*ptr);
 	*ptr += sizeof(int32_t);
 	return return_val;
 }
@@ -234,7 +234,7 @@ QWORD unsafe_get_qword(uint8_t** ptr)
 {
 	*ptr += (uint64_t)(*ptr) % 8; //read past padding
 	QWORD return_val;
-	return_val.ui64 = *((uint64_t*)*ptr);
+	return_val.u64 = *((uint64_t*)*ptr);
 	*ptr += sizeof(int64_t);
 	return return_val;
 }

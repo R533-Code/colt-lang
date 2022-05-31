@@ -46,7 +46,7 @@ QWORD OpCode_Negate(QWORD value, BuiltinTypeID type)
 QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 {
 	//zeroes the memory
-	QWORD ret = { .ui64 = 0 };
+	QWORD ret = { .u64 = 0 };
 
 	switch (to)
 	{
@@ -61,7 +61,7 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		case COLTI_U16_ID:
 		case COLTI_U32_ID:
 		case COLTI_U64_ID:
-			ret.b = (value.ui64 != 0);
+			ret.b = (value.u64 != 0);
 		break; case COLTI_FLOAT_ID:
 			ret.b = (value.f != 0);
 		break; case COLTI_DOUBLE_ID:
@@ -82,7 +82,7 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		case COLTI_U16_ID:
 		case COLTI_U32_ID:
 		case COLTI_U64_ID:
-			ret.f = (float)value.ui64;
+			ret.f = (float)value.u64;
 		break; case COLTI_BOOL_ID:
 			ret.f = (value.b == 0 ? 0.0f : 1.0f);
 		break; case COLTI_DOUBLE_ID:
@@ -103,7 +103,7 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		case COLTI_U16_ID:
 		case COLTI_U32_ID:
 		case COLTI_U64_ID:
-			ret.d = (double)value.ui64;
+			ret.d = (double)value.u64;
 		break; case COLTI_BOOL_ID:
 			ret.d = (value.b == 0 ? 0.0 : 1.0);
 		break; case COLTI_FLOAT_ID:
@@ -122,7 +122,7 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		case COLTI_U16_ID:
 		case COLTI_U32_ID:
 		case COLTI_U64_ID:
-			ret.i64 = (int64_t)value.ui64;
+			ret.i64 = (int64_t)value.u64;
 		break; case COLTI_BOOL_ID:
 			ret.i64 = (value.b == 0 ? 0 : 1);
 		break; case COLTI_FLOAT_ID:
@@ -143,13 +143,13 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		case COLTI_I16_ID:
 		case COLTI_I32_ID:
 		case COLTI_I64_ID:
-			ret.ui64 = (uint64_t)value.i64;
+			ret.u64 = (uint64_t)value.i64;
 		break; case COLTI_BOOL_ID:
-			ret.ui64 = (value.b == 0 ? 0 : 1);
+			ret.u64 = (value.b == 0 ? 0 : 1);
 		break; case COLTI_FLOAT_ID:
-			ret.ui64 = (uint64_t)value.f;
+			ret.u64 = (uint64_t)value.f;
 		break; case COLTI_DOUBLE_ID:
-			ret.ui64 = (uint64_t)value.d;
+			ret.u64 = (uint64_t)value.d;
 		break; default:
 			colti_assert(false, "Invalid operand for OP_CONVERT!");
 		}
@@ -170,9 +170,9 @@ QWORD OpCode_Sum(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I32_ID:		result.i32 = left.i32 + right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 + right.i64;
 	break; case COLTI_U8_ID:		result.ui8 = left.ui8 + right.ui8;
-	break; case COLTI_U16_ID:		result.ui16 = left.ui16 + right.ui16;
-	break; case COLTI_U32_ID:		result.ui32 = left.ui32 + right.ui32;
-	break; case COLTI_U64_ID:		result.ui64 = left.ui64 + right.ui64;
+	break; case COLTI_U16_ID:		result.u16 = left.u16 + right.u16;
+	break; case COLTI_U32_ID:		result.u32 = left.u32 + right.u32;
+	break; case COLTI_U64_ID:		result.u64 = left.u64 + right.u64;
 	break; case COLTI_FLOAT_ID:	result.f = left.f + right.f;
 	break; case COLTI_DOUBLE_ID:	result.d = left.d + right.d;
 	break; default: colti_assert(false, "Invalid operand for OP_ADD!");
@@ -190,9 +190,9 @@ QWORD OpCode_Difference(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I32_ID:		result.i32 = left.i32 - right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 - right.i64;
 	break; case COLTI_U8_ID:		result.ui8 = left.ui8 - right.ui8;
-	break; case COLTI_U16_ID:		result.ui16 = left.ui16 - right.ui16;
-	break; case COLTI_U32_ID:		result.ui32 = left.ui32 - right.ui32;
-	break; case COLTI_U64_ID:		result.ui64 = left.ui64 - right.ui64;
+	break; case COLTI_U16_ID:		result.u16 = left.u16 - right.u16;
+	break; case COLTI_U32_ID:		result.u32 = left.u32 - right.u32;
+	break; case COLTI_U64_ID:		result.u64 = left.u64 - right.u64;
 	break; case COLTI_FLOAT_ID:	result.f = left.f - right.f;
 	break; case COLTI_DOUBLE_ID:	result.d = left.d - right.d;
 	break; default: colti_assert(false, "Invalid operand for OP_SUBTRACT!");
@@ -210,9 +210,9 @@ QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I32_ID:		result.i32 = left.i32 * right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 * right.i64;
 	break; case COLTI_U8_ID:		result.ui8 = left.ui8 * right.ui8;
-	break; case COLTI_U16_ID:		result.ui16 = left.ui16 * right.ui16;
-	break; case COLTI_U32_ID:		result.ui32 = left.ui32 * right.ui32;
-	break; case COLTI_U64_ID:		result.ui64 = left.ui64 * right.ui64;
+	break; case COLTI_U16_ID:		result.u16 = left.u16 * right.u16;
+	break; case COLTI_U32_ID:		result.u32 = left.u32 * right.u32;
+	break; case COLTI_U64_ID:		result.u64 = left.u64 * right.u64;
 	break; case COLTI_FLOAT_ID:	result.f = left.f * right.f;
 	break; case COLTI_DOUBLE_ID:	result.d = left.d * right.d;
 	break; default: colti_assert(false, "Invalid operand for OP_MULTIPLY!");
@@ -230,9 +230,9 @@ QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I32_ID:		result.i32 = left.i32 / right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 / right.i64;
 	break; case COLTI_U8_ID:		result.ui8 = left.ui8 / right.ui8;
-	break; case COLTI_U16_ID:		result.ui16 = left.ui16 / right.ui16;
-	break; case COLTI_U32_ID:		result.ui32 = left.ui32 / right.ui32;
-	break; case COLTI_U64_ID:		result.ui64 = left.ui64 / right.ui64;
+	break; case COLTI_U16_ID:		result.u16 = left.u16 / right.u16;
+	break; case COLTI_U32_ID:		result.u32 = left.u32 / right.u32;
+	break; case COLTI_U64_ID:		result.u64 = left.u64 / right.u64;
 	break; case COLTI_FLOAT_ID:	result.f = left.f / right.f;
 	break; case COLTI_DOUBLE_ID:	result.d = left.d / right.d;
 	break; default: colti_assert(false, "Invalid operand for OP_DIVIDE!");
@@ -250,9 +250,9 @@ QWORD OpCode_BitAND(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I32_ID:		result.i32 = left.i32 & right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 & right.i64;
 	break; case COLTI_U8_ID:		result.ui8 = left.ui8 & right.ui8;
-	break; case COLTI_U16_ID:		result.ui16 = left.ui16 & right.ui16;
-	break; case COLTI_U32_ID:		result.ui32 = left.ui32 & right.ui32;
-	break; case COLTI_U64_ID:		result.ui64 = left.ui64 & right.ui64;
+	break; case COLTI_U16_ID:		result.u16 = left.u16 & right.u16;
+	break; case COLTI_U32_ID:		result.u32 = left.u32 & right.u32;
+	break; case COLTI_U64_ID:		result.u64 = left.u64 & right.u64;
 	break; default: colti_assert(false, "Invalid operand for OP_BIT_AND!");
 	}
 	return result;
@@ -268,9 +268,9 @@ QWORD OpCode_BitOR(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I32_ID:		result.i32 = left.i32 | right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 | right.i64;
 	break; case COLTI_U8_ID:		result.ui8 = left.ui8 | right.ui8;
-	break; case COLTI_U16_ID:		result.ui16 = left.ui16 | right.ui16;
-	break; case COLTI_U32_ID:		result.ui32 = left.ui32 | right.ui32;
-	break; case COLTI_U64_ID:		result.ui64 = left.ui64 | right.ui64;
+	break; case COLTI_U16_ID:		result.u16 = left.u16 | right.u16;
+	break; case COLTI_U32_ID:		result.u32 = left.u32 | right.u32;
+	break; case COLTI_U64_ID:		result.u64 = left.u64 | right.u64;
 	break; default: colti_assert(false, "Invalid operand for OP_BIT_OR!");
 	}
 	return result;
@@ -286,9 +286,9 @@ QWORD OpCode_BitXOR(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_I32_ID:		result.i32 = left.i32 ^ right.i32;
 	break; case COLTI_I64_ID:		result.i64 = left.i64 ^ right.i64;
 	break; case COLTI_U8_ID:		result.ui8 = left.ui8 ^ right.ui8;
-	break; case COLTI_U16_ID:		result.ui16 = left.ui16 ^ right.ui16;
-	break; case COLTI_U32_ID:		result.ui32 = left.ui32 ^ right.ui32;
-	break; case COLTI_U64_ID:		result.ui64 = left.ui64 ^ right.ui64;
+	break; case COLTI_U16_ID:		result.u16 = left.u16 ^ right.u16;
+	break; case COLTI_U32_ID:		result.u32 = left.u32 ^ right.u32;
+	break; case COLTI_U64_ID:		result.u64 = left.u64 ^ right.u64;
 	break; default: colti_assert(false, "Invalid operand for OP_BIT_XOR!");
 	}
 	return result;
@@ -304,9 +304,9 @@ QWORD OpCode_BitNOT(QWORD value, BuiltinTypeID type)
 	break; case COLTI_I32_ID:		result.i32 = ~value.i32;
 	break; case COLTI_I64_ID:		result.i64 = ~value.i64;
 	break; case COLTI_U8_ID:		result.ui8 = ~value.ui8;
-	break; case COLTI_U16_ID:		result.ui16 = ~value.ui16;
-	break; case COLTI_U32_ID:		result.ui32 = ~value.ui32;
-	break; case COLTI_U64_ID:		result.ui64 = ~value.ui64;
+	break; case COLTI_U16_ID:		result.u16 = ~value.u16;
+	break; case COLTI_U32_ID:		result.u32 = ~value.u32;
+	break; case COLTI_U64_ID:		result.u64 = ~value.u64;
 	break; default: colti_assert(false, "Invalid operand for OP_BIT_NOT!");
 	}
 	return result;
@@ -318,13 +318,13 @@ void OpCode_Print(QWORD value, BuiltinTypeID type)
 	{
 	break; case COLTI_BOOL_ID:		printf("%s", value.b ? "true\n" : "false\n");
 	break; case COLTI_I8_ID:		printf("%"PRId8"\n", value.ui8);
-	break; case COLTI_I16_ID:		printf("%"PRId16"\n", value.ui16);
-	break; case COLTI_I32_ID:		printf("%"PRId32"\n", value.ui32);
-	break; case COLTI_I64_ID:		printf("%"PRId64"\n", value.ui64);
+	break; case COLTI_I16_ID:		printf("%"PRId16"\n", value.u16);
+	break; case COLTI_I32_ID:		printf("%"PRId32"\n", value.u32);
+	break; case COLTI_I64_ID:		printf("%"PRId64"\n", value.u64);
 	break; case COLTI_U8_ID:		printf("%"PRIu8"\n", value.ui8);
-	break; case COLTI_U16_ID:		printf("%"PRIu16"\n", value.ui16);
-	break; case COLTI_U32_ID:		printf("%"PRIu32"\n", value.ui32);
-	break; case COLTI_U64_ID:		printf("%"PRIu64"\n", value.ui64);
+	break; case COLTI_U16_ID:		printf("%"PRIu16"\n", value.u16);
+	break; case COLTI_U32_ID:		printf("%"PRIu32"\n", value.u32);
+	break; case COLTI_U64_ID:		printf("%"PRIu64"\n", value.u64);
 	break; case COLTI_FLOAT_ID:	printf("%g\n", value.f);
 	break; case COLTI_DOUBLE_ID:	printf("%g\n", value.d);
 	break; default: colti_assert(false, "Invalid operand for OP_PRINT!");

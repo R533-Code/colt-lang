@@ -35,17 +35,17 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 
 	case OP_IMMEDIATE_WORD:
 		colti_assert(offset + ((uint64_t)(chunk->code + offset) & 1) + sizeof(int16_t) <= chunk->count, "Missing int16 after OP_IMMEDIATE_WORD");
-		impl_print_hex_instruction("OP_IMMEDIATE_WORD", ChunkGetWORD(chunk, &offset).ui16);
+		impl_print_hex_instruction("OP_IMMEDIATE_WORD", ChunkGetWORD(chunk, &offset).u16);
 		return offset;
 
 	case OP_IMMEDIATE_DWORD:
 		colti_assert(offset + ((uint64_t)(chunk->code + offset) % 4) + sizeof(int32_t) <= chunk->count, "Missing int32 after OP_IMMEDIATE_DWORD");
-		impl_print_hex_instruction("OP_IMMEDIATE_DWORD", ChunkGetDWORD(chunk, &offset).ui32);
+		impl_print_hex_instruction("OP_IMMEDIATE_DWORD", ChunkGetDWORD(chunk, &offset).u32);
 		return offset;
 
 	case OP_IMMEDIATE_QWORD:
 		colti_assert(offset + ((uint64_t)(chunk->code + offset) % 8) + sizeof(int64_t) <= chunk->count, "Missing int64 after OP_IMMEDIATE_QWORD");
-		impl_print_hex_instruction("OP_IMMEDIATE_QWORD", ChunkGetQWORD(chunk, &offset).ui64);
+		impl_print_hex_instruction("OP_IMMEDIATE_QWORD", ChunkGetQWORD(chunk, &offset).u64);
 		return offset;
 
 		/******************************************************/

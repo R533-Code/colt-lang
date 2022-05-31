@@ -72,7 +72,7 @@ typedef union
 	BYTE byte; ///< BYTE union, which can be used in place of b/i8/ui8
 
 	ColtI16_t i16; ///< 16-bit signed integer
-	ColtU16_t ui16; ///< 16-bit unsigned integer
+	ColtU16_t u16; ///< 16-bit unsigned integer
 } WORD;
 
 /// @brief Represents a Double Word (4 bytes), which can be type-punned to a more useful type
@@ -84,12 +84,12 @@ typedef union
 	BYTE byte; ///< BYTE union, which can be used in place of b/i8/ui8
 
 	ColtI16_t i16; ///< 16-bit signed integer
-	ColtU16_t ui16; ///< 16-bit unsigned integer
-	WORD word; ///< WORD union, which can be used in place of i16/ui16
+	ColtU16_t u16; ///< 16-bit unsigned integer
+	WORD word; ///< WORD union, which can be used in place of i16/u16
 
 	ColtFloat_t f; ///< 32-bit float
 	ColtI32_t i32; ///< 32-bit signed integer
-	ColtU32_t ui32; ///< 32-bit unsigned integer
+	ColtU32_t u32; ///< 32-bit unsigned integer
 } DWORD;
 
 /// @brief Represents a Quad Word (8 bytes), which can be type-punned to a more useful type
@@ -101,17 +101,17 @@ typedef union
 	BYTE byte; ///< BYTE union, which can be used in place of b/i8/ui8
 
 	ColtI16_t i16; ///< 16-bit signed integer
-	ColtU16_t ui16; ///< 16-bit unsigned integer
-	WORD word; ///< WORD union, which can be used in place of i16/ui16
+	ColtU16_t u16; ///< 16-bit unsigned integer
+	WORD word; ///< WORD union, which can be used in place of i16/u16
 	
 	ColtFloat_t f; ///< 32-bit float
 	ColtI32_t i32; ///< 32-bit signed integer
-	ColtU32_t ui32; ///< 32-bit unsigned integer
-	DWORD dword; ///< DWORD union, which can be used if place of f/i32/ui32
+	ColtU32_t u32; ///< 32-bit unsigned integer
+	DWORD dword; ///< DWORD union, which can be used if place of f/i32/u32
 
 	ColtDouble_t d; ///< 64-bit float
 	ColtI64_t i64; ///< 64-bit signed integer
-	ColtU64_t ui64; ///< 64-bit unsigned integer
+	ColtU64_t u64; ///< 64-bit unsigned integer
 } QWORD;
 
 
