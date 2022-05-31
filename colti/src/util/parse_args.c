@@ -49,11 +49,6 @@ ParseResult ParseArguments(int argc, const char** argv)
 		print_error_string("No input file!");
 		exit(EXIT_USER_INVALID_INPUT);
 	}
-	//If the user did not pass an -o, choose a default output
-	if (result.file_path_out == NULL && result.file_path_in != NULL)
-	{
-		result.file_path_out = "a.out"; //Keeping the tradition alive
-	}	
 	return result;
 }
 
