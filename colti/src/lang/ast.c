@@ -198,8 +198,8 @@ Expr* impl_primary_expr(AST* ast)
 	case TKN_OPERATOR_PLUS:
 	case TKN_OPERATOR_TILDE:
 	case TKN_OPERATOR_BANG:
+		//there is no need updating token as a unary expression's internal already does that
 		primary = impl_unary_expr(ast);
-		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		return primary;
 
 		/**************** PARENTHESIS ****************/
@@ -232,7 +232,11 @@ Expr* impl_unary_expr(AST* ast)
 	
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
-	return makeUnaryExpr(tkn, impl_primary_expr(ast),
+	Expr* child = impl_primary_expr(ast);
+	if (!child)
+		return NULL; //propagate the error
+
+	return makeUnaryExpr(tkn, child,
 		ast->scan.current_line,
 		line_strv,
 		lexeme_strv);
