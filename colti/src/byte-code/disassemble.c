@@ -50,6 +50,12 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 
 		/******************************************************/
 
+	case OP_CONVERT:
+		colti_assert(offset + 2 <= chunk->count, "Missing operands of OP_CONVERT!");		
+		return impl_print_2operand_instruction("OP_CONVERT", chunk->code[offset + 1], chunk->code[offset + 2], offset);
+
+		/******************************************************/
+
 	case OP_NEGATE:
 		return impl_print_operand_instruction("OP_NEGATE", chunk->code[offset + 1], offset);
 
@@ -100,24 +106,14 @@ uint64_t impl_print_byte_instruction(const char* name, uint8_t byte, uint64_t of
 
 uint64_t impl_print_operand_instruction(const char* name, uint8_t byte, uint64_t offset)
 {
-	const char* operand;
-	switch (byte)
-	{
-	break; case COLTI_BOOL_ID:		operand = "BOOL";
-	break; case COLTI_DOUBLE_ID:	operand = "DOUBLE";
-	break; case COLTI_FLOAT_ID:	operand = "FLOAT";
-	break; case COLTI_I8_ID:		operand = "INT8";
-	break; case COLTI_I16_ID:		operand = "INT16";
-	break; case COLTI_I32_ID:		operand = "INT32";
-	break; case COLTI_I64_ID:		operand = "INT64";
-	break; case COLTI_U8_ID:		operand = "UINT8";
-	break; case COLTI_U16_ID:		operand = "UINT16";
-	break; case COLTI_U32_ID:		operand = "UINT32";
-	break; case COLTI_U64_ID:		operand = "UINT64";
-	break; default:						operand = "UNKOWN";
-	}
-	printf("%s '%s'\n", name, operand);
+	printf("%s '%s'\n", name, BuiltinTypeIDToString(byte));
 	return offset + 2;
+}
+
+uint64_t impl_print_2operand_instruction(const char* name, uint8_t first, uint8_t second, uint64_t offset)
+{
+	printf("%s '%s', '%s'\n", name, BuiltinTypeIDToString(first), BuiltinTypeIDToString(second));
+	return offset + 3;
 }
 
 void impl_print_int_instruction(const char* name, int64_t value)

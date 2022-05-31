@@ -42,6 +42,14 @@ uint64_t impl_print_byte_instruction(const char* name, uint8_t byte, uint64_t of
 /// @return The current byte offset + 2
 uint64_t impl_print_operand_instruction(const char* name, uint8_t byte, uint64_t offset);
 
+/// @brief Prints a one byte instruction followed by the 2 operands following it
+/// @param name The name of the instruction
+/// @param first The first operand
+/// @param second The second operand
+/// @param offset The current byte offset
+/// @return The current byte offset + 3
+uint64_t impl_print_2operand_instruction(const char* name, uint8_t first, uint8_t second, uint64_t offset);
+
 /// @brief Prints a one byte instruction followed by the int following it.
 /// There is no offset to pass to this function, but rather, the 'value' argument
 /// should be ChunkGetInt[16|32|64](..., &offset).
