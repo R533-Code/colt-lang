@@ -189,7 +189,7 @@ Token impl_scanner_handle_xor(Scanner* scan);
 /// This function also handles bool literals, which are a special type of keywords.
 /// @param scan The scanner whose 'parsed_string' is to compare
 /// @return A Token representing a keyword, or TKN_IDENTIFIER
-Token impl_token_identifier_or_keyword(const Scanner* scan);
+Token impl_token_identifier_or_keyword(Scanner* scan);
 
 /// @brief Read more character, determining if the literal is a float or double
 /// @param scan The scanner from which to read the next character

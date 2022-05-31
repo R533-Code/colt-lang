@@ -301,7 +301,7 @@ Token impl_scanner_handle_identifier(Scanner* scan)
 	}
 	
 	scan->parsed_identifier.end = scan->view.start + scan->offset - 1;
-	return impl_token_identifier_or_keyword(&scan->parsed_string);
+	return impl_token_identifier_or_keyword(scan);
 }
 
 Token impl_scanner_handle_digit(Scanner* scan)
