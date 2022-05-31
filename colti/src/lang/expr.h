@@ -34,7 +34,9 @@ typedef enum
 	/// @brief BinaryExpr type
 	EXPR_BINARY,
 	/// @brief LiteralExpr type
-	EXPR_LITERAL
+	EXPR_LITERAL,
+	/// @brief ConvertExpr type
+	EXPR_CONVERT
 } ExprIdentifier;
 
 /// @brief Represents an unspecialized expression.
@@ -117,6 +119,23 @@ typedef struct
 	/// @brief The literal value
 	QWORD value;
 } LiteralExpr;
+
+/// @brief Represents a conversion expression
+typedef struct
+{
+	/// @brief The line number
+	uint64_t line_nb;
+	/// @brief The line from which the expression was created
+	StringView line;
+	/// @brief The lexeme representing the expression
+	StringView lexeme;
+	/// @brief Allows to cast the expression to the right expression type
+	ExprIdentifier identifier;
+	/// @brief The expression type, which depends on its content
+	Type expr_type;
+	/// @brief The expression to be casted
+	Expr* child;
+} ConvertExpr;
 
 /// @brief Allocates a new literal expression on the heap, initializing it
 /// @param value The value of the literal expression
