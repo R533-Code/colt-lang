@@ -135,6 +135,13 @@ void freeExpr(Expr* ptr)
 		freeExpr(bexpr->rhs);
 		safe_free(bexpr);
 	}
+	break; case EXPR_CONVERT:
+	{
+		ConvertExpr* cexpr = (ConvertExpr*)ptr;
+		//we need to recurse to free expressions of expressions
+		freeExpr(cexpr->child);
+		safe_free(cexpr);
+	}
 	break; case EXPR_LITERAL:
 		safe_free(ptr);
 	break; default:
