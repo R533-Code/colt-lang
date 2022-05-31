@@ -85,8 +85,24 @@ const char* TokenToString(Token tkn)
 		return "TKN_IDENTIFIER";
 	case TKN_STRING:
 		return "TKN_STRING";
-	case TKN_INTEGER:
-		return "TKN_INTEGER";
+	case TKN_U8:
+		return "TKN_U8";
+	case TKN_I8:
+		return "TKN_I8";
+	case TKN_U16:
+		return "TKN_U16";
+	case TKN_I16:
+		return "TKN_I16";
+	case TKN_U32:
+		return "TKN_U32";
+	case TKN_I32:
+		return "TKN_I32";
+	case TKN_U64:
+		return "TKN_U64";
+	case TKN_I64:
+		return "TKN_I64";
+	case TKN_FLOAT:
+		return "TKN_FLOAT";
 	case TKN_DOUBLE:
 		return "TKN_DOUBLE";
 	case TKN_TRUE:

@@ -98,9 +98,25 @@ typedef enum
 	TKN_IDENTIFIER,
 	/// @brief ".*?"
 	TKN_STRING,
-	/// @brief [0-9]+
-	TKN_INTEGER,
-	/// @brief [-+]?[0-9]*.[0-9]+(e[-+][0-9]+)
+	/// @brief [0-9]+[uU]8
+	TKN_U8,
+	/// @brief [0-9]+[iI]8
+	TKN_I8,
+	/// @brief [0-9]+[uU]16
+	TKN_U16,
+	/// @brief [0-9]+[iI]16
+	TKN_I16,
+	/// @brief [0-9]+[uU]32
+	TKN_U32,
+	/// @brief [0-9]+(?:[iI]32)?
+	TKN_I32,
+	/// @brief [0-9]+[uU]64
+	TKN_U64,
+	/// @brief [0-9]+[iI]64
+	TKN_I64,
+	/// @brief [-+]?[0-9]*.[0-9]+(e[-+][0-9]+)[fF]?
+	TKN_FLOAT,
+	/// @brief [-+]?[0-9]*.[0-9]+(e[-+][0-9]+)[dD]?
 	TKN_DOUBLE,
 	/// @brief true
 	TKN_TRUE,
