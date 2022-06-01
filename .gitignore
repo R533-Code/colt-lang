@@ -1,7 +1,7 @@
 # CMAKE FILES
 build/
 # CMAKE CONFIGURED FILE
-colti_config.h
+colt_config.h
 # SCRIPT GENERATED FILE
 highlighted_codes.html
 # DOXYGEN OUTPUT

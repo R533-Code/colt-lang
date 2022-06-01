@@ -1,0 +1,45 @@
+#ifndef COLT_CONFIG
+#define COLT_CONFIG
+
+//Major version of Colt
+#define COLT_VERSION_MAJOR 		${PROJECT_VERSION_MAJOR}
+//Minor version of Colt
+#define COLT_VERSION_MINOR 		${PROJECT_VERSION_MINOR}
+//Patch version of Colt
+#define COLT_VERSION_PATCH 		${PROJECT_VERSION_PATCH}
+//Tweak version of Colt
+#define COLT_VERSION_TWEAK 		${PROJECT_VERSION_TWEAK}
+//The project version as a string
+#define COLT_VERSION_STRING 	"${PROJECT_VERSION}"
+
+#define COLT_OS_STRING			"${IMPL_COLT_OS_STRING}"
+
+#ifdef COLT_DEBUG_BUILD
+	#define COLT_CONFIG_STRING		"Debug"
+#else
+	#define COLT_CONFIG_STRING		"Release"
+#endif
+
+//Determine the current operating system
+#if ${IMPL_COLT_OS_WINDOWS} == 1
+	#define COLT_WINDOWS
+#elif ${IMPL_COLT_OS_APPLE} == 1
+	#define COLT_APPLE
+#elif ${IMPL_COLT_OS_LINUX} == 1
+	#define COLT_LINUX
+#else
+	#error "Unsupported platform!"
+#endif
+
+//Determine the current compiler
+#if ${IMPL_COLT_CLANG} == 1
+	#define COLT_CLANG
+#elif ${IMPL_COLT_GNU} == 1
+	#define COLT_GNU
+#elif ${IMPL_COLT_INTEL} == 1
+	#define COLT_INTEL
+#elif ${IMPL_COLT_MSVC} == 1
+	#define COLT_MSVC
+#endif
+
+#endif //COLT_CONFIG
