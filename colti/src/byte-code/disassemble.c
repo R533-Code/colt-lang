@@ -75,6 +75,18 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 		return impl_print_operand_instruction("OP_BIT_XOR", chunk->code[offset + 1], offset);
 	case OP_BIT_NOT:
 		return impl_print_operand_instruction("OP_BIT_NOT", chunk->code[offset + 1], offset);
+	case OP_CMP_GREATER:
+		return impl_print_operand_instruction("OP_CMP_GREATER", chunk->code[offset + 1], offset);
+	case OP_CMP_GREATER_EQ:
+		return impl_print_operand_instruction("OP_CMP_GREATER_EQ", chunk->code[offset + 1], offset);
+	case OP_CMP_LESS:
+		return impl_print_operand_instruction("OP_CMP_LESS", chunk->code[offset + 1], offset);
+	case OP_CMP_LESS_EQ:
+		return impl_print_operand_instruction("OP_CMP_LESS_EQ", chunk->code[offset + 1], offset);
+	case OP_CMP_EQUAL:
+		return impl_print_operand_instruction("OP_CMP_EQUAL", chunk->code[offset + 1], offset);
+	case OP_CMP_NOT_EQUAL:
+		return impl_print_operand_instruction("OP_CMP_NOT_EQUAL", chunk->code[offset + 1], offset);
 
 		/******************************************************/
 
