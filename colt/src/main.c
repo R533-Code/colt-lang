@@ -64,6 +64,10 @@ void debug_ast(StringView view, const char* byte_out)
 
 			ChunkFree(&chunk);
 		}
+		else
+		{
+			print_error_string("Couldn't create valid uAST!");
+		}
 
 		ASTFree(&ast);
 	}
