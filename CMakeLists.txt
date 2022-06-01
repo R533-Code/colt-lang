@@ -6,10 +6,10 @@ file(GLOB_RECURSE ColtHeaders "colt/src/*.h")
 file(GLOB_RECURSE ColtUnits "colt/src/*.c")
 
 add_executable(colt
-	${ColtiHeaders} ${ColtiUnits}
+	${ColtHeaders} ${ColtUnits}
 )
 
-target_include_directories(colt PUBLIC "${CMAKE_SOURCE_DIR}/colt/src/util" "${CMAKE_SOURCE_DIR}/colti/src/byte-code" "${CMAKE_SOURCE_DIR}/colti/src")
+target_include_directories(colt PUBLIC "${CMAKE_SOURCE_DIR}/colt/src/util" "${CMAKE_SOURCE_DIR}/colt/src/byte-code" "${CMAKE_SOURCE_DIR}/colt/src")
 
 set(VS_STARTUP_PROJECT colt)
 
@@ -17,7 +17,7 @@ target_precompile_headers(colt PUBLIC
 	"$<$<COMPILE_LANGUAGE:C>:${PROJECT_SOURCE_DIR}/colt/src/util/precomph.h>")
 
 # Define COLT_DEBUG_BUILD for debug config
-target_compile_definitions(colt PRIVATE $<$<CONFIG:DEBUG>:COLTI_DEBUG_BUILD>)
+target_compile_definitions(colt PRIVATE $<$<CONFIG:DEBUG>:COLT_DEBUG_BUILD>)
 
 # Useful macros for knowing which compiler is going to compile the code
 set(IMPL_COLT_CLANG 0)
