@@ -2,8 +2,8 @@
 * Contains helper for disassembling chunks, and getting human-readable descriptions of their content.
 */
 
-#ifndef HG_COLTI_DISASSEMBLE
-#define HG_COLTI_DISASSEMBLE
+#ifndef HG_COLT_DISASSEMBLE
+#define HG_COLT_DISASSEMBLE
 
 #include "chunk.h"
 
@@ -50,4 +50,4 @@ uint64_t impl_print_2operand_instruction(const char* name, uint8_t first, uint8_
 /// @param value The int following the instruction
 void impl_print_hex_instruction(const char* name, uint64_t value);
 
-#endif //HG_COLTI_DISASSEMBLE
+#endif //HG_COLT_DISASSEMBLE

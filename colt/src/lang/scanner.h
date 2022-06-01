@@ -9,8 +9,8 @@
 * and should be freed using `StringFree`.
 */
 
-#ifndef HG_COLTI_SCANNER
-#define HG_COLTI_SCANNER
+#ifndef HG_COLT_SCANNER
+#define HG_COLT_SCANNER
 
 #include "common.h"
 #include "structs/struct_string.h"
@@ -276,4 +276,4 @@ char impl_parse_alnum(Scanner* scan);
 /// @param scan The scanner to modify
 char impl_parse_digits(Scanner* scan);
 
-#endif //HG_COLTI_SCANNER
+#endif //HG_COLT_SCANNER

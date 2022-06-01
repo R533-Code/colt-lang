@@ -2,8 +2,8 @@
 * Contains typedefs representing integers and bool values in Colt.
 */
 
-#ifndef HG_COLTI_INTEGER_VALUE
-#define HG_COLTI_INTEGER_VALUE
+#ifndef HG_COLT_INTEGER_VALUE
+#define HG_COLT_INTEGER_VALUE
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -71,4 +71,4 @@ typedef int64_t ColtI64_t;
 /// @brief A string representing a Colt signed 64-bit integer
 static const char ColtI64_str[] = "i64";
 
-#endif //HG_COLTI_INTEGER_VALUE
+#endif //HG_COLT_INTEGER_VALUE

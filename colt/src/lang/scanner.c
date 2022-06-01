@@ -6,7 +6,7 @@
 
 void ScannerInit(Scanner* scan, StringView to_scan)
 {
-	colti_assert(scan != NULL, "Pointer was NULL!");
+	colt_assert(scan != NULL, "Pointer was NULL!");
 	memset(scan, 0, sizeof(Scanner));
 	scan->view = to_scan;
 	scan->current_line = 1; //the line number starts at 1
@@ -275,14 +275,14 @@ char impl_peek_next_char(const Scanner* scan, uint64_t offset)
 
 char impl_rewind_char(Scanner* scan)
 {
-	colti_assert(scan->offset > 1, "Should at least call impl_get_next_char 1 times before");
+	colt_assert(scan->offset > 1, "Should at least call impl_get_next_char 1 times before");
 	//- 1 as the offset points to the NEXT character, not the current one
 	return scan->view.start[--scan->offset - 1];
 }
 
 char impl_rewind_chars(Scanner* scan, uint64_t nb)
 {
-	colti_assert(scan->offset > 1, "Should at least call impl_get_next_char 'nb' times before!");
+	colt_assert(scan->offset > 1, "Should at least call impl_get_next_char 'nb' times before!");
 	//- 1 as the offset points to the NEXT character, not the current one
 	return scan->view.start[(scan->offset -= nb) - 1];
 }
@@ -409,7 +409,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 		case TKN_DOUBLE:
 			return impl_token_str_to_double(scan);
 		default:
-			colti_assert(false, "Should never happen!");
+			colt_assert(false, "Should never happen!");
 		}
 	}
 	else
@@ -433,7 +433,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 		case TKN_U64:
 			return impl_token_str_to_u64(scan, 10);
 		default:
-			colti_assert(false, "Should never happen!");
+			colt_assert(false, "Should never happen!");
 		}
 	}
 }

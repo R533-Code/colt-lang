@@ -69,7 +69,7 @@ IMPLEMENTATION HELPERS
 
 CommandLineArgument impl_string_to_arg(const char* str)
 {
-	colti_assert(strlen(str) > 1, "String size should be greater than 1!");
+	colt_assert(strlen(str) > 1, "String size should be greater than 1!");
 	size_t length = strlen(str);
 	if (str[0] != '-')
 		return ARG_INVALID;
@@ -335,7 +335,7 @@ void impl_test_color(int argc, const char** argv, uint64_t offset)
 void impl_print_invalid_combination(int argc, const char** argv, uint64_t offset)
 {
 	//TODO: add offset
-	colti_assert(argc >= 2, "Expected 'argc' greater or equal to 2!");
+	colt_assert(argc >= 2, "Expected 'argc' greater or equal to 2!");
 	
 	//We can not use print_error_format here as it adds a '\n' at the end
 	printf(CONSOLE_FOREGROUND_BRIGHT_RED"Error: "CONSOLE_COLOR_RESET"Invalid argument combination for '%s'", argv[offset]);

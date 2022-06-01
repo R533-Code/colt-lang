@@ -12,8 +12,8 @@
 * The unsafe_get_... are used for when a pointer is used rather than an offset.
 */
 
-#ifndef HG_COLTI_CHUNK
-#define HG_COLTI_CHUNK
+#ifndef HG_COLT_CHUNK
+#define HG_COLT_CHUNK
 
 #include "common.h"
 #include "byte_code.h" //Contains the byte-code enum
@@ -155,4 +155,4 @@ void impl_chunk_grow_size(Chunk* chunk, size_t size);
 /// @param byte The byte to append
 void impl_chunk_write_byte(Chunk* chunk, uint8_t byte);
 
-#endif //HG_COLTI_CHUNK
+#endif //HG_COLT_CHUNK

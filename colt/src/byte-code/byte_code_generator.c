@@ -23,7 +23,7 @@ IMPLEMENTATION HELPERS
 
 bool impl_gen_byte_code(Chunk* chunk, const Expr* expr)
 {
-	colti_assert(expr != NULL, "Generation should never happen if AST was not valid!");
+	colt_assert(expr != NULL, "Generation should never happen if AST was not valid!");
 	switch (expr->identifier)
 	{
 	break; case EXPR_UNARY:
@@ -52,7 +52,7 @@ bool impl_gen_code_unary(Chunk* chunk, const UnaryExpr* ptr)
 	break; case TKN_OPERATOR_TILDE:
 		//DOES NOT DO ANYTHING
 	break; default:
-		colti_assert(false, "Operator was not unary!");
+		colt_assert(false, "Operator was not unary!");
 		return false;
 	}
 	return true;
@@ -62,7 +62,7 @@ bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr)
 {
 	impl_gen_byte_code(chunk, ptr->lhs);
 	impl_gen_byte_code(chunk, ptr->rhs);
-	colti_assert(ptr->expr_type.type_id <= ID_COLT_DOUBLE, "Type ID should be of that of a built-in type!");
+	colt_assert(ptr->expr_type.type_id <= ID_COLT_DOUBLE, "Type ID should be of that of a built-in type!");
 	switch (ptr->expr_operator)
 	{
 	break; case TKN_OPERATOR_PLUS:
@@ -122,7 +122,7 @@ bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr)
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		return true;
 	break; default:
-		colti_assert(false, "NOT IMPLEMENTED!");
+		colt_assert(false, "NOT IMPLEMENTED!");
 		return false;
 	}
 }
@@ -155,7 +155,7 @@ bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr)
 		ChunkWriteWORD(chunk, ptr->value.word);
 		break;
 	default:
-		colti_assert(false, "Type ID should be of that of a built-in type!");
+		colt_assert(false, "Type ID should be of that of a built-in type!");
 		return false;
 	}
 	return true;

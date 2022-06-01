@@ -7,8 +7,8 @@
 * struct representing a non-owning view over an array of characters.
 */
 
-#ifndef HG_COLTI_STRUCT_STRING
-#define HG_COLTI_STRUCT_STRING
+#ifndef HG_COLT_STRUCT_STRING
+#define HG_COLT_STRUCT_STRING
 
 #include "common.h"
 
@@ -189,4 +189,4 @@ void impl_string_grow_size(String* str, size_t by);
 /// @return The line representing the user input
 char* unsafe_string_getline(size_t* length, size_t* capacity);
 
-#endif //HG_COLTI_STRUCT_STRING
+#endif //HG_COLT_STRUCT_STRING

@@ -23,7 +23,7 @@ void StackVMPush(StackVM* vm, QWORD value)
 
 QWORD StackVMTop(StackVM* vm)
 {
-	colti_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+	colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 	return *(vm->stack_top - 1);
 }
 
@@ -76,12 +76,12 @@ InterpretResult StackVMRun(StackVM* vm, Chunk* chunk)
 		/******************************************************/
 
 		break; case OP_NEGATE:
-			colti_assert(!StackVMIsEmpty(vm), "Stack should contain at least 1 items!");
+			colt_assert(!StackVMIsEmpty(vm), "Stack should contain at least 1 items!");
 			StackVMPush(vm, OpCode_Negate(StackVMPop(vm), *(ip++)));
 
 		break; case OP_CONVERT:
 		{
-			colti_assert(!StackVMIsEmpty(vm), "Stack should contain at least 1 items!");
+			colt_assert(!StackVMIsEmpty(vm), "Stack should contain at least 1 items!");
 			BuiltinTypeID from = *(ip++);
 			BuiltinTypeID to = *(ip++);
 			StackVMPush(vm, OpCode_Convert(StackVMPop(vm), from, to));
@@ -91,97 +91,97 @@ InterpretResult StackVMRun(StackVM* vm, Chunk* chunk)
 
 		break; case OP_ADD:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm); //pop in the opposite order
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_Sum(lhs, rhs, *(ip++)));
 		}
 		break; case OP_SUBTRACT:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_Difference(lhs, rhs, *(ip++)));
 		}
 		break; case OP_MULTIPLY:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_Multiply(lhs, rhs, *(ip++)));
 		}
 		break; case OP_DIVIDE:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_Divide(lhs, rhs, *(ip++)));
 		}
 		break; case OP_BIT_AND:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_BitAND(lhs, rhs, *(ip++)));
 		}
 		break; case OP_BIT_OR:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_BitOR(lhs, rhs, *(ip++)));
 		}
 		break; case OP_BIT_XOR:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_BitXOR(lhs, rhs, *(ip++)));
 		}
 		break; case OP_BIT_NOT:
 		{
-			colti_assert(StackVMSize(vm) >= 1, "Stack should contain at least 1 items!");
+			colt_assert(StackVMSize(vm) >= 1, "Stack should contain at least 1 items!");
 			QWORD value = StackVMPop(vm);
 			StackVMPush(vm, OpCode_BitNOT(value, *(ip++)));
 		}
 		break; case OP_CMP_GREATER:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_Greater(lhs, rhs, *(ip++)));
 		}
 		break; case OP_CMP_GREATER_EQ:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_GreaterEq(lhs, rhs, *(ip++)));
 		}
 		break; case OP_CMP_LESS:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_Less(lhs, rhs, *(ip++)));
 		}
 		break; case OP_CMP_LESS_EQ:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_LessEq(lhs, rhs, *(ip++)));
 		}
 		break; case OP_CMP_EQUAL:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_Equal(lhs, rhs, *(ip++)));
 		}
 		break; case OP_CMP_NOT_EQUAL:
 		{
-			colti_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_NotEqual(lhs, rhs, *(ip++)));
@@ -190,7 +190,7 @@ InterpretResult StackVMRun(StackVM* vm, Chunk* chunk)
 
 		break; case OP_PRINT:
 		{
-			colti_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			OpCode_Print(StackVMTop(vm), *(ip++));
 		}
 		break; case OP_RETURN:

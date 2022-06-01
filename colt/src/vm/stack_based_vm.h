@@ -6,8 +6,8 @@
 * containing the code.
 */
 
-#ifndef HG_COLTI_STACK_BASED_VM
-#define HG_COLTI_STACK_BASED_VM
+#ifndef HG_COLT_STACK_BASED_VM
+#define HG_COLT_STACK_BASED_VM
 
 #include "common.h"
 
@@ -63,4 +63,4 @@ uint64_t StackVMSize(const StackVM* vm);
 /// @return The result of the interpretation
 InterpretResult StackVMRun(StackVM* vm, Chunk* chunk);
 
-#endif //HG_COLTI_STACK_BASED_VM
+#endif //HG_COLT_STACK_BASED_VM

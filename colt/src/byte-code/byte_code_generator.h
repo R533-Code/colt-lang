@@ -6,8 +6,8 @@
 * should only be called when a valid AST is obtained.
 */
 
-#ifndef HG_COLTI_BYTE_CODE_GENERATOR
-#define HG_COLTI_BYTE_CODE_GENERATOR
+#ifndef HG_COLT_BYTE_CODE_GENERATOR
+#define HG_COLT_BYTE_CODE_GENERATOR
 
 #include "byte_code.h"	//byte-code to write
 #include "chunk.h"		//for where to write the byte-code
@@ -53,4 +53,4 @@ bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr);
 /// @return True if no error are encountered
 bool impl_gen_code_convert(Chunk* chunk, const ConvertExpr* ptr);
 
-#endif //HG_COLTI_BYTE_CODE_GENERATOR
+#endif //HG_COLT_BYTE_CODE_GENERATOR

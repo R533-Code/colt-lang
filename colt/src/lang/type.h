@@ -5,8 +5,8 @@
 * This header also contains const Type representing each built-in type.
 */
 
-#ifndef HG_COLTI_TYPE
-#define HG_COLTI_TYPE
+#ifndef HG_COLT_TYPE
+#define HG_COLT_TYPE
 
 #include "common.h"
 #include "values/colti_floating_value.h"
@@ -48,4 +48,4 @@ static const Type ColtFloat = { .name.start = ColtFloat_str,	.name.end = ColtFlo
 /// @brief Type representing a built-in double
 static const Type ColtDouble = { .name.start = ColtDouble_str,	.name.end = ColtDouble_str + 6,		.type_id = ID_COLT_DOUBLE,		.byte_size = sizeof(ColtDouble_t) };
 
-#endif //HG_COLTI_TYPE
+#endif //HG_COLT_TYPE

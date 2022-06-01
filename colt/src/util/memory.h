@@ -2,8 +2,8 @@
 * Contains helper for managing memory allocations.
 */
 
-#ifndef HG_COLTI_MEMORY
-#define HG_COLTI_MEMORY
+#ifndef HG_COLT_MEMORY
+#define HG_COLT_MEMORY
 
 #include "console_colors.h"
 #include <stdio.h>
@@ -19,4 +19,4 @@ void* checked_malloc(size_t size);
 /// @param ptr The pointer to free
 void checked_free(void* ptr);
 
-#endif //HG_COLTI_MEMORY
+#endif //HG_COLT_MEMORY

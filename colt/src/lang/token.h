@@ -2,8 +2,8 @@
 * Contains the tokens that can be returned from the scanner.
 */
 
-#ifndef HG_COLTI_TOKEN
-#define HG_COLTI_TOKEN
+#ifndef HG_COLT_TOKEN
+#define HG_COLT_TOKEN
 
 /// @brief Enum representing individual lexemes of the Colt language
 typedef enum
@@ -186,4 +186,4 @@ typedef enum
 /// @return A string representing the valid Token or UNKNOWN
 const char* TokenToString(Token tkn);
 
-#endif //HG_COLTI_TOKEN
+#endif //HG_COLT_TOKEN

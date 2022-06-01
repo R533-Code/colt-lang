@@ -12,8 +12,8 @@
 * as this information is useless when just checking for the type of another expression.
 */
 
-#ifndef HG_COLTI_EXPR
-#define HG_COLTI_EXPR
+#ifndef HG_COLT_EXPR
+#define HG_COLT_EXPR
 
 #include "common.h"
 #include "token.h"
@@ -218,4 +218,4 @@ bool is_type_integral(BuiltinTypeID type);
 /// @return True if the type is a ColtFloat_t/ColtDouble_t
 bool impl_is_type_floating(BuiltinTypeID type);
 
-#endif //HG_COLTI_EXPR
+#endif //HG_COLT_EXPR

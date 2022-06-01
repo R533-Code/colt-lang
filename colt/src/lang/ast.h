@@ -9,8 +9,8 @@
 * The AST contains a Scanner, which it uses to break and extract lexemes from a StringView.
 */
 
-#ifndef HG_COLTI_AST
-#define HG_COLTI_AST
+#ifndef HG_COLT_AST
+#define HG_COLT_AST
 
 #include "common.h"
 #include "token.h"
@@ -121,4 +121,4 @@ Expr* impl_unary_expr(AST* ast);
 /// @return An Expr* representing the parsed expression
 Expr* impl_paren_expr(AST* ast);
 
-#endif //HG_COLTI_AST
+#endif //HG_COLT_AST

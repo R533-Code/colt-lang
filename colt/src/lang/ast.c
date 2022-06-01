@@ -153,7 +153,7 @@ int impl_op_precedence(AST* ast, Token token)
 		5, 0,
 		12, 11
 	};
-	colti_assert(token >= 0, "Token should be greater or equal to 0!");
+	colt_assert(token >= 0, "Token should be greater or equal to 0!");
 	if (token < TKN_OPERATOR_LESS_COLON)
 		return operator_precedence_table[token];
 	return 100;

@@ -38,7 +38,7 @@ QWORD OpCode_Negate(QWORD value, BuiltinTypeID type)
 	break; case COLTI_I64_ID:		result.i64 = -value.i64;
 	break; case COLTI_FLOAT_ID:	result.f = -value.f;
 	break; case COLTI_DOUBLE_ID:	result.d = -value.d;
-	break; default: colti_assert(false, "Invalid operand for OP_NEGATE!");
+	break; default: colt_assert(false, "Invalid operand for OP_NEGATE!");
 	}
 	return result;
 }
@@ -67,7 +67,7 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		break; case COLTI_DOUBLE_ID:
 			ret.b = (value.d != 0);
 		break; default:
-			colti_assert(false, "Invalid operand for OP_CONVERT!");
+			colt_assert(false, "Invalid operand for OP_CONVERT!");
 		}
 	break; case ID_COLT_FLOAT:
 		switch (from)
@@ -88,7 +88,7 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		break; case COLTI_DOUBLE_ID:
 			ret.f = (float)value.d;
 		break; default:
-			colti_assert(false, "Invalid operand for OP_CONVERT!");
+			colt_assert(false, "Invalid operand for OP_CONVERT!");
 		}
 	break; case ID_COLT_DOUBLE:
 		switch (from)
@@ -109,7 +109,7 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		break; case COLTI_FLOAT_ID:
 			ret.d = (double)value.f;
 		break; default:
-			colti_assert(false, "Invalid operand for OP_CONVERT!");
+			colt_assert(false, "Invalid operand for OP_CONVERT!");
 		}
 	break;
 	case ID_COLT_I8:
@@ -130,7 +130,7 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		break; case COLTI_DOUBLE_ID:
 			ret.i64 = (int64_t)value.d;
 		break; default:
-			colti_assert(false, "Invalid operand for OP_CONVERT!");
+			colt_assert(false, "Invalid operand for OP_CONVERT!");
 		}
 	break;
 	case ID_COLT_U8:
@@ -151,10 +151,10 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		break; case COLTI_DOUBLE_ID:
 			ret.u64 = (uint64_t)value.d;
 		break; default:
-			colti_assert(false, "Invalid operand for OP_CONVERT!");
+			colt_assert(false, "Invalid operand for OP_CONVERT!");
 		}
 	break; default:
-		colti_assert(false, "Invalid operand to convert to for OP_CONVERT!");
+		colt_assert(false, "Invalid operand to convert to for OP_CONVERT!");
 	}
 	
 	return ret;
@@ -175,7 +175,7 @@ QWORD OpCode_Sum(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		result.u64 = left.u64 + right.u64;
 	break; case COLTI_FLOAT_ID:	result.f = left.f + right.f;
 	break; case COLTI_DOUBLE_ID:	result.d = left.d + right.d;
-	break; default: colti_assert(false, "Invalid operand for OP_ADD!");
+	break; default: colt_assert(false, "Invalid operand for OP_ADD!");
 	}
 	return result;
 }
@@ -195,7 +195,7 @@ QWORD OpCode_Difference(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		result.u64 = left.u64 - right.u64;
 	break; case COLTI_FLOAT_ID:	result.f = left.f - right.f;
 	break; case COLTI_DOUBLE_ID:	result.d = left.d - right.d;
-	break; default: colti_assert(false, "Invalid operand for OP_SUBTRACT!");
+	break; default: colt_assert(false, "Invalid operand for OP_SUBTRACT!");
 	}
 	return result;
 }
@@ -215,7 +215,7 @@ QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		result.u64 = left.u64 * right.u64;
 	break; case COLTI_FLOAT_ID:	result.f = left.f * right.f;
 	break; case COLTI_DOUBLE_ID:	result.d = left.d * right.d;
-	break; default: colti_assert(false, "Invalid operand for OP_MULTIPLY!");
+	break; default: colt_assert(false, "Invalid operand for OP_MULTIPLY!");
 	}
 	return result;
 }
@@ -235,7 +235,7 @@ QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		result.u64 = left.u64 / right.u64;
 	break; case COLTI_FLOAT_ID:	result.f = left.f / right.f;
 	break; case COLTI_DOUBLE_ID:	result.d = left.d / right.d;
-	break; default: colti_assert(false, "Invalid operand for OP_DIVIDE!");
+	break; default: colt_assert(false, "Invalid operand for OP_DIVIDE!");
 	}
 	return result;
 }
@@ -253,7 +253,7 @@ QWORD OpCode_BitAND(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U16_ID:		result.u16 = left.u16 & right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 & right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 & right.u64;
-	break; default: colti_assert(false, "Invalid operand for OP_BIT_AND!");
+	break; default: colt_assert(false, "Invalid operand for OP_BIT_AND!");
 	}
 	return result;
 }
@@ -271,7 +271,7 @@ QWORD OpCode_BitOR(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U16_ID:		result.u16 = left.u16 | right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 | right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 | right.u64;
-	break; default: colti_assert(false, "Invalid operand for OP_BIT_OR!");
+	break; default: colt_assert(false, "Invalid operand for OP_BIT_OR!");
 	}
 	return result;
 }
@@ -289,7 +289,7 @@ QWORD OpCode_BitXOR(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U16_ID:		result.u16 = left.u16 ^ right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 ^ right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 ^ right.u64;
-	break; default: colti_assert(false, "Invalid operand for OP_BIT_XOR!");
+	break; default: colt_assert(false, "Invalid operand for OP_BIT_XOR!");
 	}
 	return result;
 }
@@ -307,7 +307,7 @@ QWORD OpCode_BitNOT(QWORD value, BuiltinTypeID type)
 	break; case COLTI_U16_ID:		result.u16 = ~value.u16;
 	break; case COLTI_U32_ID:		result.u32 = ~value.u32;
 	break; case COLTI_U64_ID:		result.u64 = ~value.u64;
-	break; default: colti_assert(false, "Invalid operand for OP_BIT_NOT!");
+	break; default: colt_assert(false, "Invalid operand for OP_BIT_NOT!");
 	}
 	return result;
 }
@@ -327,7 +327,7 @@ QWORD OpCode_Greater(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		result.b = left.u64 > right.u64;
 	break; case COLTI_FLOAT_ID:		result.b = left.f > right.f;
 	break; case COLTI_DOUBLE_ID:	result.b = left.d > right.d;
-	break; default: colti_assert(false, "Invalid operand for OP_CMP_GREATER!");
+	break; default: colt_assert(false, "Invalid operand for OP_CMP_GREATER!");
 	}
 	return result;
 }
@@ -347,7 +347,7 @@ QWORD OpCode_Less(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		result.b = left.u64 < right.u64;
 	break; case COLTI_FLOAT_ID:		result.b = left.f < right.f;
 	break; case COLTI_DOUBLE_ID:	result.b = left.d < right.d;
-	break; default: colti_assert(false, "Invalid operand for OP_CMP_LESS!");
+	break; default: colt_assert(false, "Invalid operand for OP_CMP_LESS!");
 	}
 	return result;
 }
@@ -367,7 +367,7 @@ QWORD OpCode_GreaterEq(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		result.b = left.u64 >= right.u64;
 	break; case COLTI_FLOAT_ID:		result.b = left.f >= right.f;
 	break; case COLTI_DOUBLE_ID:	result.b = left.d >= right.d;
-	break; default: colti_assert(false, "Invalid operand for OP_CMP_GREATER_EQ!");
+	break; default: colt_assert(false, "Invalid operand for OP_CMP_GREATER_EQ!");
 	}
 	return result;
 }
@@ -387,7 +387,7 @@ QWORD OpCode_LessEq(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		result.b = left.u64 <= right.u64;
 	break; case COLTI_FLOAT_ID:		result.b = left.f <= right.f;
 	break; case COLTI_DOUBLE_ID:	result.b = left.d <= right.d;
-	break; default: colti_assert(false, "Invalid operand for OP_CMP_LESS_EQ!");
+	break; default: colt_assert(false, "Invalid operand for OP_CMP_LESS_EQ!");
 	}
 	return result;
 }
@@ -408,7 +408,7 @@ QWORD OpCode_Equal(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		result.b = left.u64 == right.u64;
 	break; case COLTI_FLOAT_ID:		result.b = left.f == right.f;
 	break; case COLTI_DOUBLE_ID:	result.b = left.d == right.d;
-	break; default: colti_assert(false, "Invalid operand for OP_CMP_EQUAL!");
+	break; default: colt_assert(false, "Invalid operand for OP_CMP_EQUAL!");
 	}
 	return result;
 }
@@ -429,7 +429,7 @@ QWORD OpCode_NotEqual(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		result.b = left.u64 != right.u64;
 	break; case COLTI_FLOAT_ID:		result.b = left.f != right.f;
 	break; case COLTI_DOUBLE_ID:	result.b = left.d != right.d;
-	break; default: colti_assert(false, "Invalid operand for OP_CMP_NOT_EQUAL!");
+	break; default: colt_assert(false, "Invalid operand for OP_CMP_NOT_EQUAL!");
 	}
 	return result;
 }
@@ -449,6 +449,6 @@ void OpCode_Print(QWORD value, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		printf("%"PRIu64"\n", value.u64);
 	break; case COLTI_FLOAT_ID:	printf("%g\n", value.f);
 	break; case COLTI_DOUBLE_ID:	printf("%g\n", value.d);
-	break; default: colti_assert(false, "Invalid operand for OP_PRINT!");
+	break; default: colt_assert(false, "Invalid operand for OP_PRINT!");
 	}
 }

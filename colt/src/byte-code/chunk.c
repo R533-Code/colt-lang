@@ -92,7 +92,7 @@ void ChunkWriteQWORD(Chunk* chunk, QWORD value)
 
 BYTE ChunkGetBYTE(const Chunk* chunk, uint64_t* offset)
 {
-	colti_assert(chunk->code[*offset] == OP_IMMEDIATE_BYTE, "'offset' should point to an OP_IMMEDIATE_BYTE!");
+	colt_assert(chunk->code[*offset] == OP_IMMEDIATE_BYTE, "'offset' should point to an OP_IMMEDIATE_BYTE!");
 	*offset += 1;
 	BYTE byte = { .u8 = chunk->code[(*offset)++] };
 	return byte;
@@ -100,7 +100,7 @@ BYTE ChunkGetBYTE(const Chunk* chunk, uint64_t* offset)
 
 WORD ChunkGetWORD(const Chunk* chunk, uint64_t* offset)
 {
-	colti_assert(chunk->code[*offset] == OP_IMMEDIATE_WORD, "'offset' should point to an OP_IMMEDIATE_WORD!");
+	colt_assert(chunk->code[*offset] == OP_IMMEDIATE_WORD, "'offset' should point to an OP_IMMEDIATE_WORD!");
 
 	//Local variable which will be used to store a copy of the offset, than write only one time to *offset
 	//As the offset points to OP_IMMEDIATE_WORD, we also need to add 1
@@ -117,7 +117,7 @@ WORD ChunkGetWORD(const Chunk* chunk, uint64_t* offset)
 
 DWORD ChunkGetDWORD(const Chunk* chunk, uint64_t* offset)
 {
-	colti_assert(chunk->code[*offset] == OP_IMMEDIATE_DWORD, "'offset' should point to an OP_IMMEDIATE_DWORD!");
+	colt_assert(chunk->code[*offset] == OP_IMMEDIATE_DWORD, "'offset' should point to an OP_IMMEDIATE_DWORD!");
 
 	//Local variable which will be used to store a copy of the offset, than write only one time to *offset
 	//As the offset points to OP_IMMEDIATE_DWORD, we also need to add 1
@@ -135,7 +135,7 @@ DWORD ChunkGetDWORD(const Chunk* chunk, uint64_t* offset)
 
 QWORD ChunkGetQWORD(const Chunk* chunk, uint64_t* offset)
 {
-	colti_assert(chunk->code[*offset] == OP_IMMEDIATE_QWORD, "'offset' should point to an OP_IMMEDIATE_QWORD!");
+	colt_assert(chunk->code[*offset] == OP_IMMEDIATE_QWORD, "'offset' should point to an OP_IMMEDIATE_QWORD!");
 
 	//Local variable which will be used to store a copy of the offset, than write only one time to *offset
 	//As the offset points to OP_IMMEDIATE_QWORD, we also need to add 1
@@ -241,7 +241,7 @@ QWORD unsafe_get_qword(uint8_t** ptr)
 
 void impl_chunk_grow_double(Chunk* chunk)
 {
-	colti_assert(chunk->capacity != 0, "Chunk capacity was 0! Be sure to call ChunkInit for any Chunk you create!");
+	colt_assert(chunk->capacity != 0, "Chunk capacity was 0! Be sure to call ChunkInit for any Chunk you create!");
 
 	//Allocate double the capacity
 	uint8_t* ptr = (uint8_t*)safe_malloc(chunk->capacity *= 2);
@@ -254,8 +254,8 @@ void impl_chunk_grow_double(Chunk* chunk)
 
 void impl_chunk_grow_size(Chunk* chunk, size_t size)
 {
-	colti_assert(size != 0, "Tried to augment the capacity of a Chunk by 0!");
-	colti_assert(chunk->capacity != 0, "Chunk capacity was 0! Be sure to call ChunkInit for any Chunk you create!");
+	colt_assert(size != 0, "Tried to augment the capacity of a Chunk by 0!");
+	colt_assert(chunk->capacity != 0, "Chunk capacity was 0! Be sure to call ChunkInit for any Chunk you create!");
 
 	//Allocate the new capacity
 	uint8_t* ptr = (uint8_t*)safe_malloc(chunk->capacity += size);

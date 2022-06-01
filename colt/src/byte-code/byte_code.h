@@ -10,8 +10,8 @@
 * the operands on which to perform the operation, and the operands describing that operation.
 */
 
-#ifndef HG_COLTI_BYTE_CODE
-#define HG_COLTI_BYTE_CODE
+#ifndef HG_COLT_BYTE_CODE
+#define HG_COLT_BYTE_CODE
 
 #include "common.h"
 
@@ -199,4 +199,4 @@ QWORD OpCode_NotEqual(QWORD left, QWORD right, BuiltinTypeID type);
 /// @param type The type of the QWORD
 void OpCode_Print(QWORD value, BuiltinTypeID type);
 
-#endif //HG_COLTI_BYTE_CODE
+#endif //HG_COLT_BYTE_CODE

@@ -31,7 +31,7 @@ Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line,
 		case ID_COLT_U32:
 		case ID_COLT_U64:
 		break; default:
-			colti_assert(false, "'type' was not a valid type!");
+			colt_assert(false, "'type' was not a valid type!");
 		}
 	);
 
@@ -60,7 +60,7 @@ Expr* makeUnaryExpr(Token unary_operator, Expr* child, uint64_t line_nb, StringV
 		case TKN_OPERATOR_MINUS:
 
 		break; default:
-			colti_assert(false, "'unary_operator' was not a valid unary operator!");
+			colt_assert(false, "'unary_operator' was not a valid unary operator!");
 		}
 	);
 
@@ -143,7 +143,7 @@ void freeExpr(Expr* ptr)
 	break; case EXPR_LITERAL:
 		safe_free(ptr);
 	break; default:
-		colti_assert(false, "Expression identifier was invalid!");
+		colt_assert(false, "Expression identifier was invalid!");
 	}
 }
 
@@ -157,7 +157,7 @@ Type impl_operator_type(Type lhs, Token binary_operator, Type rhs)
 	if (lhs.type_id > ID_COLT_DOUBLE || rhs.type_id > ID_COLT_DOUBLE)
 	{
 		//Check operator overloads table
-		colti_assert(false, "NOT IMPLEMENTED YET");
+		colt_assert(false, "NOT IMPLEMENTED YET");
 	}
 	else if (lhs.type_id != rhs.type_id)
 	{
@@ -169,7 +169,7 @@ Type impl_operator_type(Type lhs, Token binary_operator, Type rhs)
 
 Type builtin_inter_type(Type lhs, Type rhs)
 {
-	colti_assert(lhs.type_id <= ID_COLT_DOUBLE && rhs.type_id <= ID_COLT_DOUBLE, "Type should be built-in types!");
+	colt_assert(lhs.type_id <= ID_COLT_DOUBLE && rhs.type_id <= ID_COLT_DOUBLE, "Type should be built-in types!");
 	
 	uint64_t real_lhs = impl_is_type_int(lhs.type_id) ? lhs.type_id - 4 : lhs.type_id;
 	uint64_t real_rhs = impl_is_type_int(rhs.type_id) ? rhs.type_id - 4 : rhs.type_id;

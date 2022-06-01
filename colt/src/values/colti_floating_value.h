@@ -2,8 +2,8 @@
 * Contains typedefs representing floating point values in Colt.
 */
 
-#ifndef HG_COLTI_FLOATING_VALUE
-#define HG_COLTI_FLOATING_VALUE
+#ifndef HG_COLT_FLOATING_VALUE
+#define HG_COLT_FLOATING_VALUE
 
 /// @brief Colti Float (4 bytes single precision float)
 typedef float ColtFloat_t;
@@ -19,4 +19,4 @@ typedef double ColtDouble_t;
 /// @brief A string representing a Colt double-precision float
 static const char ColtDouble_str[] = "double";
 
-#endif //HG_COLTI_FLOATING_VALUE
+#endif //HG_COLT_FLOATING_VALUE

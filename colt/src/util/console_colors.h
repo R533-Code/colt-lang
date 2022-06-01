@@ -8,10 +8,10 @@
 * To remove every colored output, define `COLTI_NO_COLORED_OUTPUT` before including the file.
 */
 
-#ifndef HG_COLTI_CONSOLE_COLORS
-#define HG_COLTI_CONSOLE_COLORS
+#ifndef HG_COLT_CONSOLE_COLORS
+#define HG_COLT_CONSOLE_COLORS
 
-#ifndef COLTI_NO_COLORED_OUTPUT
+#ifndef COLT_NO_COLORED_OUTPUT
 
 /******************************************************
 FOREGROUND COLORS FOR CONSOLE
@@ -147,4 +147,4 @@ OTHER MODIFIERS FOR CONSOLE
 
 #endif
 
-#endif //HG_COLTI_CONSOLE_COLORS
+#endif //HG_COLT_CONSOLE_COLORS
