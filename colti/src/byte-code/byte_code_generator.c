@@ -58,43 +58,69 @@ bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr)
 {
 	impl_gen_byte_code(chunk, ptr->lhs);
 	impl_gen_byte_code(chunk, ptr->rhs);
+	colti_assert(ptr->expr_type.type_id <= ID_COLT_DOUBLE, "Type ID should be of that of a built-in type!");
 	switch (ptr->expr_operator)
 	{
 	break; case TKN_OPERATOR_PLUS:
 		ChunkWriteOpCode(chunk, OP_ADD);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_MINUS:
 		ChunkWriteOpCode(chunk, OP_SUBTRACT);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_STAR:
 		ChunkWriteOpCode(chunk, OP_MULTIPLY);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_SLASH:
 		ChunkWriteOpCode(chunk, OP_DIVIDE);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_AND:
 		ChunkWriteOpCode(chunk, OP_BIT_AND);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_OR:
 		ChunkWriteOpCode(chunk, OP_BIT_OR);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_XOR:
 		ChunkWriteOpCode(chunk, OP_BIT_XOR);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_TILDE:
 		ChunkWriteOpCode(chunk, OP_BIT_NOT);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_GREATER:
 		ChunkWriteOpCode(chunk, OP_CMP_GREATER);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_GREATER_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_GREATER_EQ);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_LESS:
 		ChunkWriteOpCode(chunk, OP_CMP_LESS);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_LESS_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_LESS_EQ);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_EQUAL_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_EQUAL);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		return true;
 	break; case TKN_OPERATOR_BANG_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_NOT_EQUAL);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		return true;
 	break; default:
 		colti_assert(false, "NOT IMPLEMENTED!");
 		return false;
 	}
-	colti_assert(ptr->expr_type.type_id <= ID_COLT_DOUBLE, "Type ID should be of that of a built-in type!");
-	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
-	return true;
 }
 
 bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr)
