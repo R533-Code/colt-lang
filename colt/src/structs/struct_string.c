@@ -283,7 +283,6 @@ String StringGetFileContent(const char* path)
 	String str;
 	str.ptr = safe_malloc(str.capacity = file_size + 1); //+1 for NUL terminator
 	
-#ifndef COLT_WINDOWS
 	str.size = str.capacity;
 
 	rewind(file); //Go back to the beginning of the file
@@ -295,19 +294,6 @@ String StringGetFileContent(const char* path)
 		print_error_format("Could not read all the content of the file at path '%s'!", path);
 		exit(EXIT_OS_RESOURCE_FAILURE);
 	}
-#else
-	fclose(file);
-
-	file = fopen(path, "r"); //Read-Text mode
-	if (file == NULL)
-	{
-		print_error_format("Couldn't open '%s' file!", path);
-		exit(EXIT_OS_RESOURCE_FAILURE);
-	}
-	str.size = fread(str.ptr, sizeof(char), file_size, file);
-	str.size++; //for NUL terminator
-	fclose(file);
-#endif
 
 	//NUL terminate the string
 	str.ptr[str.size - 1] = '\0';
