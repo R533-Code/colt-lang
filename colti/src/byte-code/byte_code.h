@@ -182,6 +182,18 @@ QWORD OpCode_BitXOR(QWORD left, QWORD right, BuiltinTypeID type);
 /// @return The bitwise NOT of the QWORD
 QWORD OpCode_BitNOT(QWORD value, BuiltinTypeID type);
 
+QWORD OpCode_Greater(QWORD left, QWORD right, BuiltinTypeID type);
+
+QWORD OpCode_Less(QWORD left, QWORD right, BuiltinTypeID type);
+
+QWORD OpCode_GreaterEq(QWORD left, QWORD right, BuiltinTypeID type);
+
+QWORD OpCode_LessEq(QWORD left, QWORD right, BuiltinTypeID type);
+
+QWORD OpCode_Equal(QWORD left, QWORD right, BuiltinTypeID type);
+
+QWORD OpCode_NotEqual(QWORD left, QWORD right, BuiltinTypeID type);
+
 /// @brief Casts 'value' to 'type' then prints its value, for DEBUG purposes
 /// @param value The QWORD to print
 /// @param type The type of the QWORD
