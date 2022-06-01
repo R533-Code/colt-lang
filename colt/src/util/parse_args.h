@@ -15,8 +15,8 @@
 * - Add case in ParseArguments
 */
 
-#ifndef HG_COLTI_PARSE_ARGS
-#define HG_COLTI_PARSE_ARGS
+#ifndef HG_COLT_PARSE_ARGS
+#define HG_COLT_PARSE_ARGS
 
 #include "common.h"
 #include "chunk.h"
@@ -159,4 +159,4 @@ void impl_help_run_byte();
 /// @brief Prints the help of '--test-color'
 void impl_help_test_color();
 
-#endif //HG_COLTI_PARSE_ARGS
+#endif //HG_COLT_PARSE_ARGS

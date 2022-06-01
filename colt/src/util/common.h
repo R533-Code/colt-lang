@@ -2,12 +2,12 @@
 * Contains common macros, includes and types used throughout the interpreter.
 */
 
-#ifndef HG_COLTI_COMMON
-#define HG_COLTI_COMMON
+#ifndef HG_COLT_COMMON
+#define HG_COLT_COMMON
 
-#include "colti_config.h"
+#include "colt_config.h"
 
-#ifdef COLTI_MSVC
+#ifdef COLT_MSVC
 	//We don't want warnings when using 'fopen'
 	#define _CRT_SECURE_NO_WARNINGS
 #endif

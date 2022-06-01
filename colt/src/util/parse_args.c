@@ -144,7 +144,7 @@ void impl_version(int argc, const char** argv, uint64_t offset)
 	if (argc == 2)
 	{
 		printf(CONSOLE_BACKGROUND_BRIGHT_MAGENTA CONSOLE_FOREGROUND_BLACK
-			"COLTI v%s ("COLTI_CONFIG_STRING") on %s" CONSOLE_COLOR_RESET "\n", COLTI_VERSION_STRING, COLTI_OS_STRING);
+			"COLTI v%s ("COLT_CONFIG_STRING") on %s" CONSOLE_COLOR_RESET "\n", COLT_VERSION_STRING, COLT_OS_STRING);
 		exit(EXIT_NO_FAILURE);
 	}
 	else
