@@ -55,6 +55,19 @@ typedef enum
 	/// @brief Specifies that the next byte is an operand to which to cast a QWORD before doing its bitwise NOT
 	OP_BIT_NOT,
 
+	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing greater
+	OP_CMP_GREATER,
+	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing less
+	OP_CMP_LESS,
+	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing greater equal
+	OP_CMP_GREATER_EQ,
+	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing less equal
+	OP_CMP_LESS_EQ,
+	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing equal
+	OP_CMP_EQUAL,
+	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing not equal
+	OP_CMP_NOT_EQUAL,
+
 	/// @brief Specifies that the next byte is an operand to which to cast a QWORD before printing it (for debug purposes)
 	OP_PRINT,
 
