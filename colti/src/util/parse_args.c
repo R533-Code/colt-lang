@@ -33,6 +33,8 @@ ParseResult ParseArguments(int argc, const char** argv)
 			break; case ARG_BYTE_CODE_OUTPUT:
 				//As the function will read 1 argument more, we need to update i
 				result.byte_code_out = impl_byte_out(argc, argv, ++i);
+			break; case ARG_RUN_BYTE_CODE:
+				impl_run_byte(argc, argv, i);
 			break; default:
 				print_error_format("Unknown argument '%s'!\nUse '-e' or '--enum' to get the list of valid arguments.", argv[i]);
 				exit(EXIT_USER_INVALID_INPUT);
@@ -87,6 +89,8 @@ CommandLineArgument impl_string_to_arg(const char* str)
 			return ARG_EXEC_OUTPUT;
 		case 'b':
 			return ARG_BYTE_CODE_OUTPUT;
+		case 'r':
+			return ARG_RUN_BYTE_CODE;
 		default:
 			return ARG_INVALID;
 		}
@@ -123,6 +127,10 @@ CommandLineArgument impl_string_to_arg(const char* str)
 		case 'b':
 			if (strcmp(str + 3, "yte-out") == 0)
 				return ARG_BYTE_CODE_OUTPUT;
+			return ARG_INVALID;
+		case 'r':
+			if (strcmp(str + 3, "un") == 0)
+				return ARG_RUN_BYTE_CODE;
 			return ARG_INVALID;
 		default:
 			return ARG_INVALID;
@@ -203,6 +211,8 @@ void impl_help(int argc, const char** argv, uint64_t offset)
 			impl_help_test_color();
 		break; case ARG_BYTE_CODE_OUTPUT:
 			impl_help_byte_out();
+		break; case ARG_RUN_BYTE_CODE:
+			impl_help_run_byte();
 		break; default:
 			impl_print_invalid_combination(argc, argv, offset);
 			exit(EXIT_USER_INVALID_INPUT);
@@ -267,6 +277,38 @@ const char* impl_byte_out(int argc, const char** argv, size_t current_argc)
 	else
 	{
 		print_error_format("Expected a file path, not '%s'!\n", argv[current_argc]);
+		exit(EXIT_USER_INVALID_INPUT);
+	}
+}
+
+void impl_run_byte(int argc, const char** argv, size_t current_argc)
+{
+	if (argc == 3)
+	{
+		if (checkIfValidFile(argv[2]))
+		{
+			Chunk chunk = ChunkDeserialize(argv[2]);
+			StackVM vm;
+			StackVMInit(&vm);
+			StackVMRun(&vm, &chunk);
+			StackVMFree(&vm);
+			ChunkFree(&chunk);
+			exit(EXIT_NO_FAILURE);
+		}
+		else
+		{
+			print_error_format("'%s' is not a valid path!", argv[2]);
+			exit(EXIT_USER_INVALID_INPUT);
+		}
+	}
+	else if (argc == 2)
+	{
+		impl_help_run_byte();
+		exit(EXIT_USER_INVALID_INPUT);
+	}
+	else
+	{
+		impl_print_invalid_combination(argc, argv, current_argc);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 }
@@ -336,6 +378,11 @@ void impl_help_exec_out()
 void impl_help_byte_out()
 {
 	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-b, --byte-out"CONSOLE_COLOR_RESET": Specifies the byte-code output path.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--byte-out"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET);
+}
+
+void impl_help_run_byte()
+{
+	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-r, --run"CONSOLE_COLOR_RESET": Interpret serialized byte-code. To serialize byte-code, use "CONSOLE_FOREGROUND_BRIGHT_CYAN"-b"CONSOLE_COLOR_RESET".\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--run"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET);
 }
 
 void impl_help_test_color()
