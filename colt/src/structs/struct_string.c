@@ -14,8 +14,8 @@ void StringInit(String* str)
 
 void StringFree(String* str)
 {
-	colti_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
-	colti_assert(str->capacity != 0, "Capacity was 0! Check if the buffer wasn't freed twice!");
+	colt_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
+	colt_assert(str->capacity != 0, "Capacity was 0! Check if the buffer wasn't freed twice!");
 	if (str->capacity == STRING_SMALL_BUFFER_OPTIMIZATION)
 		return;
 	safe_free(str->ptr);
@@ -26,7 +26,7 @@ void StringFree(String* str)
 
 void StringPrint(const String* str)
 {
-	colti_assert(str->size != 0, "A string should at least contain a NUL terminator!");
+	colt_assert(str->size != 0, "A string should at least contain a NUL terminator!");
 	printf("%.*s", (int)str->size - 1, str->ptr);
 }
 
@@ -42,7 +42,7 @@ uint64_t StringSize(const String* str)
 
 bool StringIsEmpty(const String* str)
 {
-	colti_assert(str->size != 0, "A string should at least contain a NUL terminator!");
+	colt_assert(str->size != 0, "A string should at least contain a NUL terminator!");
 	return str->size == 1;
 }
 
@@ -72,7 +72,7 @@ bool StringIsStackAllocated(const String* str)
 
 bool StringReplaceChar(String* str, char character, char with)
 {
-	colti_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
+	colt_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
 	for (size_t i = 0; i < str->size; i++)
 	{
 		if (str->ptr[i] == character)
@@ -86,7 +86,7 @@ bool StringReplaceChar(String* str, char character, char with)
 
 uint64_t StringReplaceAllChar(String* str, char character, char with)
 {
-	colti_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
+	colt_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
 	uint64_t nb_of_replace = 0;
 	for (size_t i = 0; i < str->size; i++)
 	{
@@ -101,8 +101,8 @@ uint64_t StringReplaceAllChar(String* str, char character, char with)
 
 bool StringReplaceString(String* str, const char* what, const char* with)
 {
-	colti_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
-	colti_assert(what != NULL && with != NULL, "One of the strings passed was NULL!");
+	colt_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
+	colt_assert(what != NULL && with != NULL, "One of the strings passed was NULL!");
 	
 	size_t what_len = strlen(what);
 	size_t with_len = strlen(with);
@@ -141,8 +141,8 @@ bool StringReplaceString(String* str, const char* what, const char* with)
 
 uint64_t StringReplaceAllString(String* str, const char* what, const char* with)
 {
-	colti_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
-	colti_assert(what != NULL && with != NULL, "One of the strings passed was NULL!");
+	colt_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
+	colt_assert(what != NULL && with != NULL, "One of the strings passed was NULL!");
 
 	size_t what_len = strlen(what);
 	size_t with_len = strlen(with);
@@ -185,8 +185,8 @@ uint64_t StringReplaceAllString(String* str, const char* what, const char* with)
 
 void StringAppendChar(String* str, char what)
 {
-	colti_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
-	colti_assert(str->size != 0, "A string should at least contain a NUL terminator!");
+	colt_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
+	colt_assert(str->size != 0, "A string should at least contain a NUL terminator!");
 	if (str->size == str->capacity)
 		impl_string_grow_double(str);
 	str->ptr[str->size - 1] = what; //Replaced the old NUL by the character
@@ -195,8 +195,8 @@ void StringAppendChar(String* str, char what)
 
 void StringAppendString(String* str, const char* what)
 {
-	colti_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
-	colti_assert(str->size != 0, "A string should at least contain a NUL terminator!");
+	colt_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
+	colt_assert(str->size != 0, "A string should at least contain a NUL terminator!");
 	size_t what_len = strlen(what);
 	if (str->size + what_len > str->capacity)
 		impl_string_grow_size(str, what_len);
@@ -207,7 +207,7 @@ void StringAppendString(String* str, const char* what)
 
 bool StringEqual(const String* lhs, const String* rhs)
 {
-	colti_assert(lhs->ptr != NULL && rhs->ptr != NULL, "Huge bug: a string's buffer was NULL!");
+	colt_assert(lhs->ptr != NULL && rhs->ptr != NULL, "Huge bug: a string's buffer was NULL!");
 	if (lhs->size != rhs->size)
 		return false;
 	//we don't care about comparing the NUL terminator
@@ -216,7 +216,7 @@ bool StringEqual(const String* lhs, const String* rhs)
 
 bool StringContains(const String* str, const char* what)
 {
-	colti_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
+	colt_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
 	size_t what_size = strlen(what);
 
 	for (size_t i = 0; i < str->size - what_size; i++)
@@ -242,7 +242,7 @@ bool StringContains(const String* str, const char* what)
 
 void StringFill(String* str, char character)
 {
-	colti_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
+	colt_assert(str->ptr != NULL, "Huge bug: a string's buffer was NULL!");
 	memset(str->ptr, character, str->size);
 }
 
@@ -283,7 +283,7 @@ String StringGetFileContent(const char* path)
 	String str;
 	str.ptr = safe_malloc(str.capacity = file_size + 1); //+1 for NUL terminator
 	
-#ifndef COLTI_WINDOWS
+#ifndef COLT_WINDOWS
 	str.size = str.capacity;
 
 	rewind(file); //Go back to the beginning of the file
@@ -361,7 +361,7 @@ IMPLEMENTATION HELPERS
 
 void impl_string_grow_double(String* str)
 {
-	colti_assert(str->capacity != 0, "Capacity was 0!");
+	colt_assert(str->capacity != 0, "Capacity was 0!");
 	char* temp = (char*)safe_malloc(str->capacity *= 2);
 	
 	memcpy(temp, str->ptr, str->size);
