@@ -155,6 +155,11 @@ Token impl_scanner_handle_star(Scanner* scan);
 /// @return Token representing the parsed lexeme
 Token impl_scanner_handle_slash(Scanner* scan);
 
+/// @brief Handles = and !=
+/// @param scan The scanner from which to parse
+/// @return Token representing the parsed lexeme
+Token impl_scanner_handle_equal(Scanner* scan);
+
 /// @brief Handles ., which can be a floating point
 /// @param scan The scanner from which to parse
 /// @return Token representing the parsed lexeme

@@ -74,6 +74,8 @@ Token ScannerGetNextToken(Scanner* scan)
 		return impl_scanner_handle_or(scan);
 	case '^':
 		return impl_scanner_handle_xor(scan);
+	case '=':
+		return impl_scanner_handle_equal(scan);
 	case '"':
 		return impl_scanner_handle_string(scan);
 	case ':':
@@ -551,6 +553,17 @@ Token impl_scanner_handle_slash(Scanner* scan)
 	default:
 		return TKN_OPERATOR_SLASH;
 	}
+}
+
+Token impl_scanner_handle_equal(Scanner* scan)
+{
+	scan->current_char = impl_get_next_char(scan);
+	if (scan->current_char == '=')
+	{
+		scan->current_char = impl_get_next_char(scan);
+		return TKN_OPERATOR_EQUAL_EQUAL;
+	}
+	return TKN_OPERATOR_EQUAL;
 }
 
 Token impl_scanner_handle_dot(Scanner* scan)
