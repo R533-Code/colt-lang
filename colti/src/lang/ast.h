@@ -50,6 +50,15 @@ bool ASTParse(AST* ast);
 IMPLEMENTATION HELPERS
 ************************************/
 
+/// @brief Prints a warning
+/// @param ast The AST from which to extract the current line and lexeme
+/// @param line_nb The line number
+/// @param line A StringView over the line
+/// @param lexeme A StringView over the lexeme
+/// @param format The warning (printf format)
+/// @param ... The arguments to format
+void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lexeme, const char* format, ...);
+
 /// @brief Prints an error and enters panic mode
 /// @param ast The AST from which to extract the current line and lexeme
 /// @param format The error (printf format)
