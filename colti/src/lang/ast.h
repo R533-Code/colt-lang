@@ -72,8 +72,24 @@ void ast_gen_error(AST* ast, uint64_t line_nb, StringView line, StringView lexem
 /// @param ast The AST whose tokens to consume
 void ast_enter_panic_mode(AST* ast);
 
+/// @brief Converts two expressions so that their types match
+/// @param lhs A pointer to the left hand side
+/// @param rhs A pointer to the right hand side
 void ast_handle_conversion(Expr** lhs, Expr** rhs);
 
+/// @brief Does the type checking and error handling of built-in operators.
+/// This function returns the return type of built-in operators, handling errors
+/// when operands are not valid for the operator.
+/// This function will return ColtBool on error, but while this might seem counter-intuitive,
+/// as it generates an error, the AST is marked as invalid, meaning the type won't be read.
+/// @param ast The AST from which to generate errors
+/// @param lhs The left hand side of the operator
+/// @param binary_op The token representing the operator
+/// @param rhs The right hand side of the operator
+/// @param line_nb The line number, for when an error is generated
+/// @param line A StringView of the line, for when error is generated
+/// @param lexeme A StringView of the lexeme, for when error is generated
+/// @return The return type of the operator
 Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme);
 
 /// @brief Returns the precedence of an operator, and prints an error if the token is not an operator.
