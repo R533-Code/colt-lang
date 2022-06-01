@@ -4,12 +4,18 @@ Contains the Colt Compiler and Interpreter, which are both still in early develo
 An interpreter in development for the `colt` language.
 Uses byte-code, and a stack-based virtual machine.
 
-## Generating Project and Building:
-You can either manually create a build directory and run CMake:
+## Generating Project:
+You can either manually create a `build` directory and run CMake:
 ```
 mkdir build && cd build && cmake ..
 ```
 Or you can run the `generate_project.py` script.
+
+## Building Executable:
+You can use the `build_colt.py`, or run in the source directory:
+```
+cmake --build build
+```
 
 ## Implemented Features:
 - [X] Scanner, which breaks a string into lexemes
@@ -52,5 +58,5 @@ Or you can run the `generate_project.py` script.
 
 - Enums should be `UPPERCASE_SNAKE`
 
-- When reporting errors, the output should use: `CONSOLE_FOREGROUND_BRIGHT_RED "Error: "CONSOLE_COLOR_RESET` followed by the message
+- When reporting errors, the output should use: `CONSOLE_FOREGROUND_BRIGHT_RED "Error: " CONSOLE_COLOR_RESET` followed by the message
   - If a message is printed before exiting, it should be followed by a newline
