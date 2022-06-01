@@ -1,3 +1,6 @@
+/** @file byte_code_generator.c
+* Contains the definitions of the functions in 'byte_code_generator.h'
+*/
 #include "byte_code_generator.h"
 
 bool generateByteCode(Chunk* chunk, const Expr* expr)
@@ -20,6 +23,7 @@ IMPLEMENTATION HELPERS
 
 bool impl_gen_byte_code(Chunk* chunk, const Expr* expr)
 {
+	colti_assert(expr != NULL, "Generation should never happen if AST was not valid!");
 	switch (expr->identifier)
 	{
 	break; case EXPR_UNARY:
