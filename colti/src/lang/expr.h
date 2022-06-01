@@ -159,11 +159,12 @@ Expr* makeUnaryExpr(Token unary_operator, Expr* child, uint64_t line_nb, StringV
 /// @param lhs The left hand side of the operator
 /// @param binary_operator The operator
 /// @param rhs The right hand side of the operator
+/// @param expr_type The expression type
 /// @param line_nb The line number from which the expression is extracted
 /// @param line A StringView over the line containing the expression
 /// @param lexeme A StringView over the lexeme representing the expression
 /// @return A pointer to a heap allocated BinaryExpr
-Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, uint64_t line_nb, StringView line, StringView lexeme);
+Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, Type expr_type, uint64_t line_nb, StringView line, StringView lexeme);
 
 /// @brief Allocates a new convert expression on the heap, initializing it
 /// @param expr The expression to cast
@@ -195,7 +196,7 @@ Type impl_operator_type(Type lhs, Token binary_operator, Type rhs);
 /// @param lhs The first type
 /// @param rhs The second type
 /// @return The intersection of the types
-Type impl_builtin_inter_type(Type lhs, Type rhs);
+Type builtin_inter_type(Type lhs, Type rhs);
 
 /// @brief Check if a type is a built-in signed integer
 /// @param type The type_id to check for
@@ -210,7 +211,7 @@ bool impl_is_type_uint(BuiltinTypeID type);
 /// @brief Checks if a type is a built-in integer regardless of its sign
 /// @param type The type_id to check for
 /// @return True if the type is an unsigned/signed integer
-bool impl_is_type_integral(BuiltinTypeID type);
+bool is_type_integral(BuiltinTypeID type);
 
 /// @brief Check if a type is a built-in floating point type
 /// @param type The type_id to check for
