@@ -1,6 +1,6 @@
 OUTPUT_DIRECTORY       = @CMAKE_SOURCE_DIR@/docs/
-INPUT                  = @CMAKE_SOURCE_DIR@/README.md @CMAKE_SOURCE_DIR@/colti/src/
-EXCLUDE_PATTERNS	   = */colti_config.h
+INPUT                  = @CMAKE_SOURCE_DIR@/README.md @CMAKE_SOURCE_DIR@/colt/src/
+EXCLUDE_PATTERNS	   = */colt_config.h
 RECURSIVE			   = YES
 
 CREATE_SUBDIRS		   = YES
