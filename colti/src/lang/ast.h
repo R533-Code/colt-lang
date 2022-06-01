@@ -72,6 +72,10 @@ void ast_gen_error(AST* ast, uint64_t line_nb, StringView line, StringView lexem
 /// @param ast The AST whose tokens to consume
 void ast_enter_panic_mode(AST* ast);
 
+void ast_handle_conversion(Expr** lhs, Expr** rhs);
+
+Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme);
+
 /// @brief Returns the precedence of an operator, and prints an error if the token is not an operator.
 /// Returns 100 if the token is not an operator. While other values could have been chosen,
 /// to cut down error handling code size, a value greater than 13 was needed.

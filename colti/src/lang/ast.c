@@ -51,9 +51,6 @@ void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lex
 
 void ast_gen_error(AST* ast, uint64_t line_nb, StringView current_line, StringView current_lexeme, const char* format, ...)
 {
-	StringView current_line = ScannerGetCurrentLine(&ast->scan);
-	StringView current_lexeme = ScannerGetCurrentLexeme(&ast->scan);
-
 	//We clear all the token till we hit an EOF or ';'
 	//This allows to clear an expression that is wrong
 	//also updates error number
@@ -87,6 +84,54 @@ void ast_enter_panic_mode(AST* ast)
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 }
 
+void ast_handle_conversion(Expr** plhs, Expr** prhs)
+{
+	Expr* lhs = *plhs;
+	Expr* rhs = *prhs;
+	if (lhs->expr_type.type_id != rhs->expr_type.type_id)
+	{
+		Type cnv = builtin_inter_type(lhs->expr_type, rhs->expr_type);
+		if (lhs->expr_type.type_id != cnv.type_id)
+			*plhs = makeConvertExpr(lhs, cnv, lhs->line_nb, lhs->line, lhs->lexeme);
+		if (rhs->expr_type.type_id != cnv.type_id)
+			*prhs = makeConvertExpr(rhs, cnv, rhs->line_nb, rhs->line, rhs->lexeme);
+	}
+	return;
+}
+
+Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme)
+{
+	switch (binary_op)
+	{
+	case TKN_OPERATOR_PLUS:
+	case TKN_OPERATOR_MINUS:
+	case TKN_OPERATOR_STAR:
+	case TKN_OPERATOR_SLASH:
+		return lhs;
+	case TKN_OPERATOR_AND:
+	case TKN_OPERATOR_OR:
+	case TKN_OPERATOR_XOR:
+		if (is_type_integral(lhs.type_id) && is_type_integral(rhs.type_id))
+			return lhs;
+		else
+		{
+			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' expects integral operands!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
+			return ColtBool;
+		}
+	case TKN_OPERATOR_GREATER:
+	case TKN_OPERATOR_GREATER_EQUAL:
+	case TKN_OPERATOR_LESS:
+	case TKN_OPERATOR_LESS_EQUAL:
+	case TKN_OPERATOR_EQUAL_EQUAL:
+	case TKN_OPERATOR_BANG_EQUAL:
+		return ColtBool;
+
+	default:
+		//error already outputted by impl_op_precedence 
+		return ColtBool;
+	}
+}
+
 /************************************
 IMPLEMENTATION HELPERS
 ************************************/
@@ -111,7 +156,6 @@ int impl_op_precedence(AST* ast, Token token)
 	colti_assert(token >= 0, "Token should be greater or equal to 0!");
 	if (token < TKN_OPERATOR_LESS_COLON)
 		return operator_precedence_table[token];
-	ast_gen_error(ast, "Expected an operator!");
 	return 100;
 }
 
@@ -159,19 +203,12 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 		if (!right) //propagate error
 			return left; // we don't want memory leaks
 
-
-		//HANDLE CONVERSIONS
-		if (right->expr_type.type_id != left->expr_type.type_id)
-		{
-			Type cnv = impl_builtin_inter_type(left->expr_type, right->expr_type);
-			if (right->expr_type.type_id != cnv.type_id)
-				right = makeConvertExpr(right, cnv, right->line_nb, right->line, right->lexeme);
-			if (left->expr_type.type_id != cnv.type_id)
-				left = makeConvertExpr(left, cnv, left->line_nb, left->line, left->lexeme);
-		}
+		ast_handle_conversion(&left, &right);
+		Type expr_type = ast_operator_return_type(ast, left->expr_type, token_type, right->expr_type,
+			line_nb, line_strv, lexeme_strv);
 
 		//Pratt's parsing, which allows operators priority
-		left = makeBinaryExpr(left, token_type, right,
+		left = makeBinaryExpr(left, token_type, right, expr_type,
 			line_nb,
 			line_strv,
 			lexeme_strv);
