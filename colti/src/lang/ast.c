@@ -118,7 +118,11 @@ int impl_op_precedence(AST* ast, Token token)
 Expr* impl_binary_expr(AST* ast, int op_precedence)
 {
 	if (op_precedence == 100) //token was not an operator: error
+	{
+		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+			"Expected an operator!");
 		return NULL;
+	}
 
 	Expr* left;
 	Token token_type;
@@ -262,7 +266,8 @@ Expr* impl_primary_expr(AST* ast)
 		return NULL;
 
 	break; default:
-		ast_gen_error(ast, "Expected an expression!");
+		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+			"Expected an expression, or a unary operator [+-~!]!");
 		return NULL;
 	}
 	primary = makeLiteralExpr(value, type,
@@ -298,7 +303,8 @@ Expr* impl_paren_expr(AST* ast)
 	Expr* ret = impl_binary_expr(ast, 0);
 	if (ast->current_tkn != TKN_RIGHT_PAREN)
 	{
-		ast_gen_error(ast, "Expected a closing parenthesis ')'!");
+		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+			"Expected a closing parenthesis ')'!");
 	}
 
 	return ret;
