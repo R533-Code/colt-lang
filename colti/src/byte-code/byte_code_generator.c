@@ -76,6 +76,18 @@ bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr)
 		ChunkWriteOpCode(chunk, OP_BIT_XOR);
 	break; case TKN_OPERATOR_TILDE:
 		ChunkWriteOpCode(chunk, OP_BIT_NOT);
+	break; case TKN_OPERATOR_GREATER:
+		ChunkWriteOpCode(chunk, OP_CMP_GREATER);
+	break; case TKN_OPERATOR_GREATER_EQUAL:
+		ChunkWriteOpCode(chunk, OP_CMP_GREATER_EQ);
+	break; case TKN_OPERATOR_LESS:
+		ChunkWriteOpCode(chunk, OP_CMP_LESS);
+	break; case TKN_OPERATOR_LESS_EQUAL:
+		ChunkWriteOpCode(chunk, OP_CMP_LESS_EQ);
+	break; case TKN_OPERATOR_EQUAL_EQUAL:
+		ChunkWriteOpCode(chunk, OP_CMP_EQUAL);
+	break; case TKN_OPERATOR_BANG_EQUAL:
+		ChunkWriteOpCode(chunk, OP_CMP_NOT_EQUAL);
 	break; default:
 		colti_assert(false, "NOT IMPLEMENTED!");
 		return false;
