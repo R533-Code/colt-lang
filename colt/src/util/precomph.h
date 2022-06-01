@@ -2,8 +2,8 @@
 * Precompiled header file containing (mostly) static includes
 */
 
-#ifndef HG_COLTI_PRECOMPH
-#define HG_COLTI_PRECOMPH
+#ifndef HG_COLT_PRECOMPH
+#define HG_COLT_PRECOMPH
 
 // NON-STD INCLUDES
 #include "common.h"
@@ -24,7 +24,7 @@
 #include "util/parse_args.h"
 
 //DEBUGING UTILITIES
-#if defined(COLTI_MSVC) && defined(COLTI_DEBUG_BUILD)
+#if defined(COLT_MSVC) && defined(COLT_DEBUG_BUILD)
 	#define _CRTDBG_MAP_ALLOC
 	#include <crtdbg.h> //Contains _CrtDumpMemoryLeaks()
 	#define DUMP_MEMORY_LEAKS() do { \
@@ -38,4 +38,4 @@
 	#define DUMP_MEMORY_LEAKS() do {} while(0)
 #endif
 
-#endif //HG_COLTI_PRECOMPH
+#endif //HG_COLT_PRECOMPH

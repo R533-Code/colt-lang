@@ -119,8 +119,8 @@ typedef union
 MACRO HELPERS FOR ASSERTION AND ALLOCATIONS
 *******************************************/
 
-#ifdef COLTI_DEBUG_BUILD
-	#ifdef COLTI_WINDOWS
+#ifdef COLT_DEBUG_BUILD
+	#ifdef COLT_WINDOWS
 		/// @brief The current filename, only for debugging purposes (strips path using Windows separator)
 		#define COLTI_CURRENT_FILENAME (strrchr("\\" __FILE__, '\\') + 1)
 	#else
@@ -133,9 +133,9 @@ MACRO HELPERS FOR ASSERTION AND ALLOCATIONS
 #endif
 
 
-#ifdef COLTI_DEBUG_BUILD
+#ifdef COLT_DEBUG_BUILD
 	/// @brief Terminates the program if 'cond' is not true, and in that case prints error with useful debug info
-	#define colti_assert(cond, error) do { \
+	#define colt_assert(cond, error) do { \
 	if (!(cond)) { \
 		printf(CONSOLE_FOREGROUND_BRIGHT_RED "\nAssertion failed from file " CONSOLE_FOREGROUND_BRIGHT_WHITE "\"%s\"" \
 			CONSOLE_FOREGROUND_BRIGHT_RED ", at line " CONSOLE_FOREGROUND_BRIGHT_MAGENTA "%d" \
@@ -154,7 +154,7 @@ MACRO HELPERS FOR ASSERTION AND ALLOCATIONS
 	#define DO_IF_DEBUG_BUILD(what) do { what; } while(0)
 #else
 	/// @brief Asserts a condition only on Debug configuration
-	#define colti_assert(cond, error)
+	#define colt_assert(cond, error)
 	
 	/// @brief Ensures no NULL pointer is returned from a heap allocation
 	#define safe_malloc(size)		checked_malloc(size)
@@ -183,4 +183,4 @@ MACRO HELPERS FOR ASSERTION AND ALLOCATIONS
 /// 'str' should be a compile-time known string.
 #define print_warn_string(str)			fputs(CONSOLE_FOREGROUND_BRIGHT_YELLOW"Warning: "CONSOLE_COLOR_RESET str"\n", stdout)
 
-#endif //HG_COLTI_COMMON
+#endif //HG_COLT_COMMON
