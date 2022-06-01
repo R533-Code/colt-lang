@@ -1,3 +1,11 @@
+/** @file byte_code_generator.h
+* Contains the function responsible of generating byte-code from an expression.
+* The `generateByteCode` functions is responsible of writing byte-code to a Chunk.
+* It does so recursively for all its members and returns true if generation was successful.
+* No checks are performed against NULL pointers. This is why `generateByteCode`
+* should only be called when a valid AST is obtained.
+*/
+
 #ifndef HG_COLTI_BYTE_CODE_GENERATOR
 #define HG_COLTI_BYTE_CODE_GENERATOR
 
@@ -15,14 +23,34 @@ bool generateByteCode(Chunk* chunk, const Expr* expr);
 IMPLEMENTATION HELPERS
 *************************************/
 
+/// @brief Function which dispatches the expression to the write `gen_code_...`
+/// @param chunk The Chunk where to write the byte-code
+/// @param expr The expression to dispatch
+/// @return True
 bool impl_gen_byte_code(Chunk* chunk, const Expr* expr);
 
+/// @brief Generate code necessary for unary operators
+/// @param chunk The Chunk where to write the byte-code
+/// @param ptr The expression to convert to byte-code
+/// @return True if no error are encountered
 bool impl_gen_code_unary(Chunk* chunk, const UnaryExpr* ptr);
 
+/// @brief Generate code necessary for binary operators
+/// @param chunk The Chunk where to write the byte-code
+/// @param ptr The expression to convert to byte-code
+/// @return True if no error are encountered
 bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr);
 
+/// @brief Generate code necessary for literals
+/// @param chunk The Chunk where to write the byte-code
+/// @param ptr The expression to convert to byte-code
+/// @return True if no error are encountered
 bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr);
 
+/// @brief Generate code necessary for built-in conversions
+/// @param chunk The Chunk where to write the byte-code
+/// @param ptr The expression to convert to byte-code
+/// @return True if no error are encountered
 bool impl_gen_code_convert(Chunk* chunk, const ConvertExpr* ptr);
 
 #endif //HG_COLTI_BYTE_CODE_GENERATOR
