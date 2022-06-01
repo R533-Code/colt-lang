@@ -68,16 +68,14 @@ Expr* makeUnaryExpr(Token unary_operator, Expr* child, uint64_t line_nb, StringV
 	return (Expr*)ptr;
 }
 
-Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, uint64_t line_nb, StringView line, StringView lexeme)
+Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, Type expr_type, uint64_t line_nb, StringView line, StringView lexeme)
 {
 	BinaryExpr* ptr = safe_malloc(sizeof(BinaryExpr));
 	//type for casting
 	ptr->identifier = EXPR_BINARY;
 	
 	ptr->expr_operator = binary_operator;
-
-	colti_assert(rhs->expr_type.type_id == lhs->expr_type.type_id, "Type should match!");
-	ptr->expr_type = lhs->expr_type; //should be the same as rhs->expr_type
+	ptr->expr_type = expr_type;
 
 	ptr->lhs = lhs;
 	ptr->rhs = rhs;
@@ -163,13 +161,13 @@ Type impl_operator_type(Type lhs, Token binary_operator, Type rhs)
 	}
 	else if (lhs.type_id != rhs.type_id)
 	{
-		return impl_builtin_inter_type(lhs, rhs);
+		return builtin_inter_type(lhs, rhs);
 	}	
 	else //if both are the same
 		return lhs;
 }
 
-Type impl_builtin_inter_type(Type lhs, Type rhs)
+Type builtin_inter_type(Type lhs, Type rhs)
 {
 	colti_assert(lhs.type_id <= ID_COLT_DOUBLE && rhs.type_id <= ID_COLT_DOUBLE, "Type should be built-in types!");
 	
@@ -177,7 +175,7 @@ Type impl_builtin_inter_type(Type lhs, Type rhs)
 	uint64_t real_rhs = impl_is_type_int(rhs.type_id) ? rhs.type_id - 4 : rhs.type_id;
 	if (real_lhs > real_rhs)
 		//swap so that the lhs has the lowest type
-		return impl_builtin_inter_type(rhs, lhs);
+		return builtin_inter_type(rhs, lhs);
 
 	if (impl_is_type_int((BuiltinTypeID)rhs.type_id
 		&& impl_is_type_uint((BuiltinTypeID)lhs.type_id)))
@@ -201,7 +199,7 @@ bool impl_is_type_uint(BuiltinTypeID type)
 	return type < ID_COLT_I8 && type > ID_COLT_BOOL;
 }
 
-bool impl_is_type_integral(BuiltinTypeID type)
+bool is_type_integral(BuiltinTypeID type)
 {
 	return type > ID_COLT_BOOL && type < ID_COLT_FLOAT;
 }
