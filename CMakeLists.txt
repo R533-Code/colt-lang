@@ -9,6 +9,9 @@ add_executable(colt
 	${ColtHeaders} ${ColtUnits}
 )
 
+# Set default build type to Release
+set(CMAKE_BUILD_TYPE "Release")
+
 target_include_directories(colt PUBLIC "${CMAKE_SOURCE_DIR}/colt/src/util" "${CMAKE_SOURCE_DIR}/colt/src/byte-code" "${CMAKE_SOURCE_DIR}/colt/src")
 
 set(VS_STARTUP_PROJECT colt)
