@@ -49,7 +49,7 @@ void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lex
 	);
 }
 
-void ast_gen_error(AST* ast, const char* format, ...)
+void ast_gen_error(AST* ast, uint64_t line_nb, StringView current_line, StringView current_lexeme, const char* format, ...)
 {
 	StringView current_line = ScannerGetCurrentLine(&ast->scan);
 	StringView current_lexeme = ScannerGetCurrentLexeme(&ast->scan);
