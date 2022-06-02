@@ -107,8 +107,6 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 	case OP_SJUMP_NOT_EQUAL:
 		return impl_print_sjump_instruction("OP_SJUMP_NOT_EQUAL", chunk->code[offset + 1], chunk->code[offset + 2], offset);
 
-
-
 		/******************************************************/
 
 	case OP_PRINT:
@@ -118,6 +116,8 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 
 	case OP_RETURN:
 		return impl_print_simple_instruction("OP_RETURN", offset);
+	case OP_POP:
+		return impl_print_simple_instruction("OP_POP", offset);
 
 	case OP_EXIT:
 		impl_print_hex_instruction("OP_EXIT", ChunkGetQWORD(chunk, &offset).u64);
