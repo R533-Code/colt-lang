@@ -72,11 +72,26 @@ typedef enum
 	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing not equal
 	OP_CMP_NOT_EQUAL,
 
+	/// @brief Short Jump if Greater, two operands, first type to which to cast to compare, second offset to jump to if true
+	OP_SJUMP_GREATER,
+	/// @brief Short Jump if Less, two operands, first type to which to cast to compare, second offset to jump to if true
+	OP_SJUMP_LESS,
+	/// @brief Short Jump if Greater or Equal, two operands, first type to which to cast to compare, second offset to jump to if true
+	OP_SJUMP_GREATER_EQ,
+	/// @brief Short Jump if Less or Equal, two operands, first type to which to cast to compare, second offset to jump to if true
+	OP_SJUMP_LESS_EQ,
+	/// @brief Short Jump if Equal, two operands, first type to which to cast to compare, second offset to jump to if true
+	OP_SJUMP_EQUAL,
+	/// @brief Short Jump if Not Equal, two operands, first type to which to cast to compare, second offset to jump to if true
+	OP_SJUMP_NOT_EQUAL,
+
 	/// @brief Specifies that the next byte is an operand to which to cast a QWORD before printing it (for debug purposes)
 	OP_PRINT,
 
 	//MISCALLENEOUS
 	OP_RETURN,
+	/// @brief Stops interpreting, followed by an u64, which is the exit code
+	OP_EXIT,
 } OpCode;
 
 
