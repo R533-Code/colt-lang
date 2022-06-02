@@ -8,18 +8,18 @@ const char* BuiltinTypeIDToString(BuiltinTypeID id)
 {
 	switch (id)
 	{
-	break; case ID_COLT_BOOL:		return "bool";
-	break; case ID_COLT_DOUBLE:		return "double";
-	break; case ID_COLT_FLOAT:		return "float";
-	break; case ID_COLT_I8:			return "i8";
-	break; case ID_COLT_I16:		return "i16";
-	break; case ID_COLT_I32:		return "i32";
-	break; case ID_COLT_I64:		return "i64";
-	break; case ID_COLT_U8:			return "u8";
-	break; case ID_COLT_U16:		return "u16";
-	break; case ID_COLT_U32:		return "u32";
-	break; case ID_COLT_U64:		return "u64";
-	break; default:					return "UNKOWN";
+	case ID_COLT_BOOL:		return "bool";
+	case ID_COLT_DOUBLE:	return "double";
+	case ID_COLT_FLOAT:		return "float";
+	case ID_COLT_I8:		return "i8";
+	case ID_COLT_I16:		return "i16";
+	case ID_COLT_I32:		return "i32";
+	case ID_COLT_I64:		return "i64";
+	case ID_COLT_U8:		return "u8";
+	case ID_COLT_U16:		return "u16";
+	case ID_COLT_U32:		return "u32";
+	case ID_COLT_U64:		return "u64";
+	default:				return "UNKOWN";
 	}
 }
 
@@ -36,7 +36,7 @@ QWORD OpCode_Negate(QWORD value, BuiltinTypeID type)
 	break; case COLTI_I16_ID:		result.i16 = -value.i16;
 	break; case COLTI_I32_ID:		result.i32 = -value.i32;
 	break; case COLTI_I64_ID:		result.i64 = -value.i64;
-	break; case COLTI_FLOAT_ID:	result.f = -value.f;
+	break; case COLTI_FLOAT_ID:		result.f = -value.f;
 	break; case COLTI_DOUBLE_ID:	result.d = -value.d;
 	break; default: colt_assert(false, "Invalid operand for OP_NEGATE!");
 	}
@@ -173,7 +173,7 @@ QWORD OpCode_Sum(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U16_ID:		result.u16 = left.u16 + right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 + right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 + right.u64;
-	break; case COLTI_FLOAT_ID:	result.f = left.f + right.f;
+	break; case COLTI_FLOAT_ID:		result.f = left.f + right.f;
 	break; case COLTI_DOUBLE_ID:	result.d = left.d + right.d;
 	break; default: colt_assert(false, "Invalid operand for OP_ADD!");
 	}
@@ -193,7 +193,7 @@ QWORD OpCode_Difference(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U16_ID:		result.u16 = left.u16 - right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 - right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 - right.u64;
-	break; case COLTI_FLOAT_ID:	result.f = left.f - right.f;
+	break; case COLTI_FLOAT_ID:		result.f = left.f - right.f;
 	break; case COLTI_DOUBLE_ID:	result.d = left.d - right.d;
 	break; default: colt_assert(false, "Invalid operand for OP_SUBTRACT!");
 	}
@@ -213,7 +213,7 @@ QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U16_ID:		result.u16 = left.u16 * right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 * right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 * right.u64;
-	break; case COLTI_FLOAT_ID:	result.f = left.f * right.f;
+	break; case COLTI_FLOAT_ID:		result.f = left.f * right.f;
 	break; case COLTI_DOUBLE_ID:	result.d = left.d * right.d;
 	break; default: colt_assert(false, "Invalid operand for OP_MULTIPLY!");
 	}
@@ -243,7 +243,7 @@ QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U16_ID:		result.u16 = left.u16 / right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 / right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 / right.u64;
-	break; case COLTI_FLOAT_ID:	result.f = left.f / right.f;
+	break; case COLTI_FLOAT_ID:		result.f = left.f / right.f;
 	break; case COLTI_DOUBLE_ID:	result.d = left.d / right.d;
 	break; default: colt_assert(false, "Invalid operand for OP_DIVIDE!");
 	}
@@ -336,7 +336,7 @@ QWORD OpCode_BitShiftL(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U16_ID:		result.u16 = left.u16 << right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 << right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 << right.u64;
-	break; default: colt_assert(false, "Invalid operand for OP_BIT_XOR!");
+	break; default: colt_assert(false, "Invalid operand for OP_BIT_SHIFT_L!");
 	}
 	return result;
 }
@@ -355,7 +355,7 @@ QWORD OpCode_BitShiftR(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U16_ID:		result.u16 = left.u16 >> right.u16;
 	break; case COLTI_U32_ID:		result.u32 = left.u32 >> right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 >> right.u64;
-	break; default: colt_assert(false, "Invalid operand for OP_BIT_XOR!");
+	break; default: colt_assert(false, "Invalid operand for OP_BIT_SHIFT_R!");
 	}
 	return result;
 }
