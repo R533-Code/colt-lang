@@ -53,4 +53,11 @@ bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr);
 /// @return True if no error are encountered
 bool impl_gen_code_convert(Chunk* chunk, const ConvertExpr* ptr);
 
+/// @brief Generate short jump code to ensure the last pushed operand is 'short_jump' 'cmp_to'
+/// @param chunk The Chunk where to write the byte-code
+/// @param short_jump The short jump OpCode to use
+/// @param cmp_to The value to compare to
+/// @param type The expression's type
+void gen_integral_short_jmp(Chunk* chunk, OpCode short_jump, QWORD cmp_to, BuiltinTypeID type);
+
 #endif //HG_COLT_BYTE_CODE_GENERATOR

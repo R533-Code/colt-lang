@@ -80,26 +80,20 @@ bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr)
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
 	case TKN_OPERATOR_SLASH:
-		//prohibit zero division
+		//prohibit zero division for integers
 		if (is_type_integral((BuiltinTypeID)ptr->expr_type.type_id))
 		{
-			ChunkWriteOpCode(chunk, OP_PUSH_QWORD);
 			QWORD zero = { .u64 = 0 };
-			ChunkWriteQWORD(chunk, zero);
-			ChunkWriteOpCode(chunk, OP_SJUMP_NOT_EQUAL);
-			ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
-			uint64_t offset_pos = chunk->count;
-			//to override by the jump offset
-			ChunkWriteOpCode(chunk, OP_RETURN);
-			ChunkWriteOpCode(chunk, OP_EXIT);
-			QWORD exit_code = { .u64 = 1 };
-			ChunkWriteQWORD(chunk, exit_code);
-			chunk->code[offset_pos] = (uint8_t)(chunk->count - offset_pos);
-			ChunkWriteOpCode(chunk, OP_POP);
+			gen_integral_short_jmp(chunk, OP_SJUMP_NOT_EQUAL, zero, (BuiltinTypeID)ptr->expr_type.type_id);
 		}
 		ChunkWriteOpCode(chunk, OP_DIVIDE);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
+		
+		/****************************************
+		* BITWISE OPCODES
+		****************************************/
+
 	case TKN_OPERATOR_AND:
 		ChunkWriteOpCode(chunk, OP_BIT_AND);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
@@ -117,13 +111,26 @@ bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr)
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
 	case TKN_OPERATOR_GREATER_GREATER:
+	{
+		QWORD zero = { .u64 = 0 };
+		gen_integral_short_jmp(chunk, OP_SJUMP_GREATER_EQ, zero, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		ChunkWriteOpCode(chunk, OP_BIT_SHIFT_R);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		return true;
+	}
 	case TKN_OPERATOR_LESS_LESS:
+	{
+		QWORD zero = { .u64 = 0 };
+		gen_integral_short_jmp(chunk, OP_SJUMP_GREATER_EQ, zero, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		ChunkWriteOpCode(chunk, OP_BIT_SHIFT_L);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		return true;
+	}
+	
+		/****************************************
+		* COMPARISON OPCODES
+		****************************************/
+
 	case TKN_OPERATOR_GREATER:
 		ChunkWriteOpCode(chunk, OP_CMP_GREATER);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
@@ -195,4 +202,28 @@ bool impl_gen_code_convert(Chunk* chunk, const ConvertExpr* ptr)
 	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->child->expr_type.type_id);
 	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);	
 	return true;
+}
+
+void gen_integral_short_jmp(Chunk* chunk, OpCode short_jump, QWORD cmp_to, BuiltinTypeID type)
+{
+	//push the value to compare to
+	ChunkWriteOpCode(chunk, OP_PUSH_QWORD);
+	ChunkWriteQWORD(chunk, cmp_to);
+
+	//write the short jump and the type that follows it
+	ChunkWriteOpCode(chunk, short_jump);
+	ChunkWriteOperand(chunk, type);
+
+	//we store the offset where the jump offset should be written
+	uint64_t offset_pos = chunk->count;
+	//will be overridden by the jump offset
+	ChunkWriteOpCode(chunk, OP_RETURN);
+	ChunkWriteOpCode(chunk, OP_EXIT);
+	QWORD exit_code = { .u64 = 1 };
+	ChunkWriteQWORD(chunk, exit_code);
+	
+	//overwrite the OP_RETURN by the jump offset
+	chunk->code[offset_pos] = (uint8_t)(chunk->count - offset_pos);
+	//pop the value we compared with
+	ChunkWriteOpCode(chunk, OP_POP);
 }
