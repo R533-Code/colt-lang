@@ -42,7 +42,7 @@ uint64_t StackVMSize(const StackVM* vm)
 	return vm->stack_top - vm->stack;
 }
 
-InterpretResult StackVMRun(StackVM* vm, Chunk* chunk)
+uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 {
 	uint8_t* ip = chunk->code;
 	for (;;)
@@ -209,7 +209,9 @@ InterpretResult StackVMRun(StackVM* vm, Chunk* chunk)
 		}
 		break; case OP_RETURN:
 			return INTERPRET_OK;
-
+		break; case OP_EXIT:
+			++ip;
+			return unsafe_get_qword(chunk, &ip).u64;
 		break; default:
 			break;
 		}
