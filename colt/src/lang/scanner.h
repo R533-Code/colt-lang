@@ -268,6 +268,11 @@ Token impl_token_str_to_i16(Scanner* scan, int base);
 /// @return TKN_I8 or TKN_ERROR if an error is encountered
 Token impl_token_str_to_i8(Scanner* scan, int base);
 
+/// @brief Converts a string to the right integer type by checking for suffixes, and stores it
+/// @param scan The scanner to modify
+/// @return A Token representing an integral type
+Token impl_token_str_to_integral(Scanner* scan);
+
 /// @brief Adds characters to the scanner's identifier string while they are alpha or digits
 /// @param scan The scanner to modify
 char impl_parse_alnum(Scanner* scan);

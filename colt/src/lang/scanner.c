@@ -331,10 +331,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 				return ScannerGetNextToken(scan);
 			}
 			else
-			{
-				scan->parsed_value.i32 = 0;
-				return TKN_I32;
-			}
+				impl_token_str_to_integral(scan);
 		}
 
 		scan->current_char = impl_parse_alnum(scan);
@@ -414,27 +411,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 	}
 	else
 	{
-		switch (impl_scanner_get_integral_suffix(scan))
-		{
-		case TKN_I8:
-			return impl_token_str_to_i8(scan, 10);
-		case TKN_I16:
-			return impl_token_str_to_i16(scan, 10);
-		case TKN_I32:
-			return impl_token_str_to_i32(scan, 10);
-		case TKN_I64:
-			return impl_token_str_to_i64(scan, 10);
-		case TKN_U8:
-			return impl_token_str_to_u8(scan, 10);
-		case TKN_U16:
-			return impl_token_str_to_u16(scan, 10);
-		case TKN_U32:
-			return impl_token_str_to_u32(scan, 10);
-		case TKN_U64:
-			return impl_token_str_to_u64(scan, 10);
-		default:
-			colt_assert(false, "Should never happen!");
-		}
+		impl_token_str_to_integral(scan);
 	}
 }
 
@@ -1057,6 +1034,31 @@ Token impl_token_str_to_i8(Scanner* scan, int base)
 	}
 	scan->parsed_value.i8 = (int8_t)value;
 	return TKN_I8;
+}
+
+Token impl_token_str_to_integral(Scanner* scan)
+{
+	switch (impl_scanner_get_integral_suffix(scan))
+	{
+	case TKN_I8:
+		return impl_token_str_to_i8(scan, 10);
+	case TKN_I16:
+		return impl_token_str_to_i16(scan, 10);
+	case TKN_I32:
+		return impl_token_str_to_i32(scan, 10);
+	case TKN_I64:
+		return impl_token_str_to_i64(scan, 10);
+	case TKN_U8:
+		return impl_token_str_to_u8(scan, 10);
+	case TKN_U16:
+		return impl_token_str_to_u16(scan, 10);
+	case TKN_U32:
+		return impl_token_str_to_u32(scan, 10);
+	case TKN_U64:
+		return impl_token_str_to_u64(scan, 10);
+	default:
+		colt_assert(false, "Should never happen!");
+	}
 }
 
 char impl_parse_alnum(Scanner* scan)
