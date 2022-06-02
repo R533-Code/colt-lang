@@ -211,7 +211,7 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			return INTERPRET_OK;
 		break; case OP_EXIT:
 			++ip;
-			return unsafe_get_qword(chunk, &ip).u64;
+			return unsafe_get_qword(&ip).u64;
 		break; default:
 			break;
 		}
