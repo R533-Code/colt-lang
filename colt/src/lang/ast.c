@@ -329,6 +329,7 @@ Expr* impl_unary_expr(AST* ast)
 	//As C function argument order is not guaranteed
 	StringView lexeme_strv = ScannerGetCurrentLexeme(&ast->scan);
 	StringView line_strv = ScannerGetCurrentLine(&ast->scan);
+	//the unary operator
 	Token tkn = ast->current_tkn;
 
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
@@ -336,6 +337,14 @@ Expr* impl_unary_expr(AST* ast)
 	Expr* child = impl_primary_expr(ast);
 	if (!child)
 		return NULL; //propagate the error
+
+	if (is_type_uint(child->expr_type.type_id) && tkn == TKN_OPERATOR_MINUS)
+	{
+		ast_gen_warning(ast, ast->scan.current_line, line_strv, lexeme_strv, "Implicit conversion from '%s' to '%s'!", BuiltinTypeIDToString(child->expr_type.type_id), BuiltinTypeIDToString(child->expr_type.type_id + 4));
+		child = makeConvertExpr(child, type_unsigned_to_signed(child->expr_type.type_id),
+			child->line_nb, child->line, child->lexeme
+		);
+	}
 
 	return makeUnaryExpr(tkn, child,
 		ast->scan.current_line,
