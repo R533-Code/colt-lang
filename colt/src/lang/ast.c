@@ -111,6 +111,8 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 	case TKN_OPERATOR_AND:
 	case TKN_OPERATOR_OR:
 	case TKN_OPERATOR_XOR:
+	case TKN_OPERATOR_GREATER_GREATER:
+	case TKN_OPERATOR_LESS_LESS:
 		if (is_type_integral(lhs.type_id) && is_type_integral(rhs.type_id))
 			return lhs;
 		else
