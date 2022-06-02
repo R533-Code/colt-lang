@@ -223,16 +223,6 @@ QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type)
 QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type)
 {
 	QWORD result;
-
-	if (!is_type_floating(type))
-	{
-		if (right.u64 == 0)
-		{
-			print_error_format("Division by zero is undefined for integers!");
-			exit(EXIT_ASSERTION_FAILURE);
-		}
-	}
-
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = left.i8 / right.i8;
