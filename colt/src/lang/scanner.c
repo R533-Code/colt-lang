@@ -331,7 +331,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 				return ScannerGetNextToken(scan);
 			}
 			else
-				impl_token_str_to_integral(scan);
+				return impl_token_str_to_integral(scan);
 		}
 
 		scan->current_char = impl_parse_alnum(scan);
@@ -410,9 +410,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 		}
 	}
 	else
-	{
-		impl_token_str_to_integral(scan);
-	}
+		return impl_token_str_to_integral(scan);
 }
 
 Token impl_scanner_handle_string(Scanner* scan)
