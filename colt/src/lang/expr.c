@@ -189,22 +189,35 @@ Type builtin_inter_type(Type lhs, Type rhs)
 		return rhs;
 }
 
-bool is_type_int(BuiltinTypeID type)
+bool is_type_int(uint64_t type)
 {
 	return type < ID_COLT_FLOAT && type > ID_COLT_U64;
 }
 
-bool is_type_uint(BuiltinTypeID type)
+bool is_type_uint(uint64_t type)
 {
 	return type < ID_COLT_I8 && type > ID_COLT_BOOL;
 }
 
-bool is_type_integral(BuiltinTypeID type)
+bool is_type_integral(uint64_t type)
 {
 	return type > ID_COLT_BOOL && type < ID_COLT_FLOAT;
 }
 
-bool is_type_floating(BuiltinTypeID type)
+bool is_type_floating(uint64_t type)
 {
 	return type == ID_COLT_FLOAT || type == ID_COLT_DOUBLE;
+}
+
+Type type_unsigned_to_signed(uint64_t type)
+{
+	switch (type)
+	{
+	case COLTI_U8_ID:	return ColtInt8;
+	case COLTI_U16_ID:	return ColtInt16;
+	case COLTI_U32_ID:	return ColtInt32;
+	case COLTI_U64_ID:	return ColtInt64;
+	default:
+		colt_assert(false, "Type ID was not that of an unsigned integer!");
+	}
 }
