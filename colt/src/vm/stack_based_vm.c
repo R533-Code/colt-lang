@@ -202,15 +202,92 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		}
 		/******************************************************/
 
+		break; case OP_SJUMP_GREATER:
+		{
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			QWORD rhs = *(vm->stack_top - 1);
+			QWORD lhs = *(vm->stack_top - 2);
+			if (OpCode_Greater(lhs, rhs, *(ip++)).b)
+			{
+				ip += *ip;
+				continue;
+			}
+			ip++;
+		}
+		break; case OP_SJUMP_GREATER_EQ:
+		{
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			QWORD rhs = *(vm->stack_top - 1);
+			QWORD lhs = *(vm->stack_top - 2);
+			if (OpCode_GreaterEq(lhs, rhs, *(ip++)).b)
+			{
+				ip += *ip;
+				continue;
+			}
+			ip++;
+		}
+		break; case OP_SJUMP_LESS:
+		{
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			QWORD rhs = *(vm->stack_top - 1);
+			QWORD lhs = *(vm->stack_top - 2);
+			if (OpCode_Greater(lhs, rhs, *(ip++)).b)
+			{
+				ip += *ip;
+				continue;
+			}
+			ip++;
+		}
+		break; case OP_SJUMP_LESS_EQ:
+		{
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			QWORD rhs = *(vm->stack_top - 1);
+			QWORD lhs = *(vm->stack_top - 2);
+			if (OpCode_GreaterEq(lhs, rhs, *(ip++)).b)
+			{
+				ip += *ip;
+				continue;
+			}
+			ip++;
+		}
+		break; case OP_SJUMP_EQUAL:
+		{
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			QWORD rhs = *(vm->stack_top - 1);
+			QWORD lhs = *(vm->stack_top - 2);
+			if (OpCode_Equal(lhs, rhs, *(ip++)).b)
+			{
+				ip += *ip;
+				continue;
+			}
+			ip++;
+		}
+		break; case OP_SJUMP_NOT_EQUAL:
+		{
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			QWORD rhs = *(vm->stack_top - 1);
+			QWORD lhs = *(vm->stack_top - 2);
+			if (OpCode_NotEqual(lhs, rhs, *(ip++)).b)
+			{
+				ip += *ip;
+				continue;
+			}
+			ip++;
+		}
+
+		/******************************************************/
+
 		break; case OP_PRINT:
 		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			OpCode_Print(StackVMTop(vm), *(ip++));
 		}
+		break; case OP_POP:
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			StackVMPop(vm);
 		break; case OP_RETURN:
 			return INTERPRET_OK;
 		break; case OP_EXIT:
-			++ip;
 			return unsafe_get_qword(&ip).u64;
 		break; default:
 			break;
