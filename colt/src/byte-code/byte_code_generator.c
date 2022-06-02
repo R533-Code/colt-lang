@@ -80,6 +80,23 @@ bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr)
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
 	case TKN_OPERATOR_SLASH:
+		//prohibit zero division
+		if (is_type_integral((BuiltinTypeID)ptr->expr_type.type_id))
+		{
+			ChunkWriteOpCode(chunk, OP_IMMEDIATE_QWORD);
+			QWORD zero = { .u64 = 0 };
+			ChunkWriteQWORD(chunk, zero);
+			ChunkWriteOpCode(chunk, OP_SJUMP_NOT_EQUAL);
+			ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+			uint64_t offset_pos = chunk->count;
+			//to override by the jump offset
+			ChunkWriteOpCode(chunk, OP_RETURN);
+			ChunkWriteOpCode(chunk, OP_EXIT);
+			QWORD exit_code = { .u64 = 1 };
+			ChunkWriteQWORD(chunk, exit_code);
+			chunk->code[offset_pos] = (uint8_t)(chunk->count - offset_pos);
+			ChunkWriteOpCode(chunk, OP_POP);
+		}
 		ChunkWriteOpCode(chunk, OP_DIVIDE);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
