@@ -201,12 +201,12 @@ Type builtin_inter_type(Type lhs, Type rhs);
 /// @brief Check if a type is a built-in signed integer
 /// @param type The type_id to check for
 /// @return True if the type is a signed integer
-bool impl_is_type_int(BuiltinTypeID type);
+bool is_type_int(BuiltinTypeID type);
 
 /// @brief Check if a type is a built-in unsigned integer
 /// @param type The type_id to check for
 /// @return True if the type is an unsigned integer
-bool impl_is_type_uint(BuiltinTypeID type);
+bool is_type_uint(BuiltinTypeID type);
 
 /// @brief Checks if a type is a built-in integer regardless of its sign
 /// @param type The type_id to check for
@@ -216,6 +216,6 @@ bool is_type_integral(BuiltinTypeID type);
 /// @brief Check if a type is a built-in floating point type
 /// @param type The type_id to check for
 /// @return True if the type is a ColtFloat_t/ColtDouble_t
-bool impl_is_type_floating(BuiltinTypeID type);
+bool is_type_floating(BuiltinTypeID type);
 
 #endif //HG_COLT_EXPR

@@ -171,14 +171,14 @@ Type builtin_inter_type(Type lhs, Type rhs)
 {
 	colt_assert(lhs.type_id <= ID_COLT_DOUBLE && rhs.type_id <= ID_COLT_DOUBLE, "Type should be built-in types!");
 	
-	uint64_t real_lhs = impl_is_type_int(lhs.type_id) ? lhs.type_id - 4 : lhs.type_id;
-	uint64_t real_rhs = impl_is_type_int(rhs.type_id) ? rhs.type_id - 4 : rhs.type_id;
+	uint64_t real_lhs = is_type_int(lhs.type_id) ? lhs.type_id - 4 : lhs.type_id;
+	uint64_t real_rhs = is_type_int(rhs.type_id) ? rhs.type_id - 4 : rhs.type_id;
 	if (real_lhs > real_rhs)
 		//swap so that the lhs has the lowest type
 		return builtin_inter_type(rhs, lhs);
 
-	if (impl_is_type_int((BuiltinTypeID)rhs.type_id
-		&& impl_is_type_uint((BuiltinTypeID)lhs.type_id)))
+	if (is_type_int((BuiltinTypeID)rhs.type_id
+		&& is_type_uint((BuiltinTypeID)lhs.type_id)))
 	{
 		//We return the biggest integer be it signed or unsigned
 		//The + 4 comes from the fact that unsigned integer ID is - 4
@@ -189,12 +189,12 @@ Type builtin_inter_type(Type lhs, Type rhs)
 		return rhs;
 }
 
-bool impl_is_type_int(BuiltinTypeID type)
+bool is_type_int(BuiltinTypeID type)
 {
 	return type < ID_COLT_FLOAT && type > ID_COLT_U64;
 }
 
-bool impl_is_type_uint(BuiltinTypeID type)
+bool is_type_uint(BuiltinTypeID type)
 {
 	return type < ID_COLT_I8 && type > ID_COLT_BOOL;
 }
@@ -204,7 +204,7 @@ bool is_type_integral(BuiltinTypeID type)
 	return type > ID_COLT_BOOL && type < ID_COLT_FLOAT;
 }
 
-bool impl_is_type_floating(BuiltinTypeID type)
+bool is_type_floating(BuiltinTypeID type)
 {
 	return type == ID_COLT_FLOAT || type == ID_COLT_DOUBLE;
 }
