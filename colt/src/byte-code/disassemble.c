@@ -94,6 +94,23 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 
 		/******************************************************/
 
+	case OP_SJUMP_GREATER:
+		return impl_print_sjump_instruction("OP_SJUMP_GREATER", chunk->code[offset + 1], chunk->code[offset + 2], offset);
+	case OP_SJUMP_GREATER_EQ:
+		return impl_print_sjump_instruction("OP_SJUMP_GREATER_EQ", chunk->code[offset + 1], chunk->code[offset + 2], offset);
+	case OP_SJUMP_LESS:
+		return impl_print_sjump_instruction("OP_SJUMP_LESS", chunk->code[offset + 1], chunk->code[offset + 2], offset);
+	case OP_SJUMP_LESS_EQ:
+		return impl_print_sjump_instruction("OP_SJUMP_LESS_EQ", chunk->code[offset + 1], chunk->code[offset + 2], offset);
+	case OP_SJUMP_EQUAL:
+		return impl_print_sjump_instruction("OP_SJUMP_EQUAL", chunk->code[offset + 1], chunk->code[offset + 2], offset);
+	case OP_SJUMP_NOT_EQUAL:
+		return impl_print_sjump_instruction("OP_SJUMP_NOT_EQUAL", chunk->code[offset + 1], chunk->code[offset + 2], offset);
+
+
+
+		/******************************************************/
+
 	case OP_PRINT:
 		return impl_print_operand_instruction("OP_PRINT", chunk->code[offset + 1], offset);
 
@@ -101,6 +118,10 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 
 	case OP_RETURN:
 		return impl_print_simple_instruction("OP_RETURN", offset);
+
+	case OP_EXIT:
+		impl_print_hex_instruction("OP_EXIT", ChunkGetQWORD(chunk, &offset).u64);
+		return offset;
 
 	default:
 		printf(CONSOLE_FOREGROUND_BRIGHT_RED "UNKOWN OPCODE: '%d'\n"
@@ -130,6 +151,15 @@ uint64_t impl_print_2operand_instruction(const char* name, uint8_t first, uint8_
 		CONSOLE_FOREGROUND_CYAN "'%s'" CONSOLE_COLOR_RESET ", "
 		CONSOLE_FOREGROUND_CYAN "'%s'\n"
 		CONSOLE_COLOR_RESET, name, BuiltinTypeIDToString(first), BuiltinTypeIDToString(second));
+	return offset + 3;
+}
+
+uint64_t impl_print_sjump_instruction(const char* name, uint8_t type, uint8_t to_offset, uint64_t offset)
+{
+	printf(CONSOLE_FOREGROUND_YELLOW "%-20s "
+		CONSOLE_FOREGROUND_CYAN "'%s'" CONSOLE_COLOR_RESET ", "
+		CONSOLE_FOREGROUND_CYAN "'%02X'\n"
+		CONSOLE_COLOR_RESET, name, BuiltinTypeIDToString(type), to_offset);
 	return offset + 3;
 }
 
