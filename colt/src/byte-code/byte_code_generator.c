@@ -9,7 +9,7 @@ bool generateByteCode(Chunk* chunk, const Expr* expr)
 	{
 		//FOR DEBUG PURPOSE
 		ChunkWriteOpCode(chunk, OP_PRINT);
-		ChunkWriteOperand(chunk, expr->expr_type.type_id);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)expr->expr_type.type_id);
 		//EXIT
 		ChunkWriteOpCode(chunk, OP_EXIT);
 		QWORD exit_code = { .u64 = 0 };
@@ -175,7 +175,7 @@ bool impl_gen_code_convert(Chunk* chunk, const ConvertExpr* ptr)
 {
 	impl_gen_byte_code(chunk, ptr->child);
 	ChunkWriteOpCode(chunk, OP_CONVERT);
-	ChunkWriteOperand(chunk, ptr->child->expr_type.type_id);
-	ChunkWriteOperand(chunk, ptr->expr_type.type_id);	
+	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->child->expr_type.type_id);
+	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);	
 	return true;
 }
