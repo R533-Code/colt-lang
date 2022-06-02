@@ -144,6 +144,20 @@ InterpretResult StackVMRun(StackVM* vm, Chunk* chunk)
 			QWORD value = StackVMPop(vm);
 			StackVMPush(vm, OpCode_BitNOT(value, *(ip++)));
 		}
+		break; case OP_BIT_SHIFT_L:
+		{
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			QWORD rhs = StackVMPop(vm);
+			QWORD lhs = StackVMPop(vm);
+			StackVMPush(vm, OpCode_BitShiftL(lhs, rhs, *(ip++)));
+		}
+		break; case OP_BIT_SHIFT_R:
+		{
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			QWORD rhs = StackVMPop(vm);
+			QWORD lhs = StackVMPop(vm);
+			StackVMPush(vm, OpCode_BitShiftR(lhs, rhs, *(ip++)));
+		}
 		break; case OP_CMP_GREATER:
 		{
 			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
