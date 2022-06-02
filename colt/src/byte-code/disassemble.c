@@ -159,7 +159,7 @@ uint64_t impl_print_sjump_instruction(const char* name, uint8_t type, uint8_t to
 	printf(CONSOLE_FOREGROUND_YELLOW "%-20s "
 		CONSOLE_FOREGROUND_CYAN "'%s'" CONSOLE_COLOR_RESET ", "
 		CONSOLE_FOREGROUND_CYAN "TO: '%"PRIu64"'\n"
-		CONSOLE_COLOR_RESET, name, BuiltinTypeIDToString(type), offset + to_offset);
+		CONSOLE_COLOR_RESET, name, BuiltinTypeIDToString(type), offset + 2 + to_offset);
 	return offset + 3;
 }
 
