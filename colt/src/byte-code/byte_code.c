@@ -223,6 +223,16 @@ QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type)
 QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type)
 {
 	QWORD result;
+
+	if (!is_type_floating(type))
+	{
+		if (right.u64 == 0)
+		{
+			print_error_format("Division by zero is undefined for integers!");
+			exit(EXIT_ASSERTION_FAILURE);
+		}
+	}
+
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = left.i8 / right.i8;
@@ -308,6 +318,44 @@ QWORD OpCode_BitNOT(QWORD value, BuiltinTypeID type)
 	break; case COLTI_U32_ID:		result.u32 = ~value.u32;
 	break; case COLTI_U64_ID:		result.u64 = ~value.u64;
 	break; default: colt_assert(false, "Invalid operand for OP_BIT_NOT!");
+	}
+	return result;
+}
+
+QWORD OpCode_BitShiftL(QWORD left, QWORD right, BuiltinTypeID type)
+{
+	QWORD result;
+
+	switch (type)
+	{
+	break; case COLTI_I8_ID:		result.i8 = left.i8 << right.i8;
+	break; case COLTI_I16_ID:		result.i16 = left.i16 << right.i16;
+	break; case COLTI_I32_ID:		result.i32 = left.i32 << right.i32;
+	break; case COLTI_I64_ID:		result.i64 = left.i64 << right.i64;
+	break; case COLTI_U8_ID:		result.u8 = left.u8 << right.u8;
+	break; case COLTI_U16_ID:		result.u16 = left.u16 << right.u16;
+	break; case COLTI_U32_ID:		result.u32 = left.u32 << right.u32;
+	break; case COLTI_U64_ID:		result.u64 = left.u64 << right.u64;
+	break; default: colt_assert(false, "Invalid operand for OP_BIT_XOR!");
+	}
+	return result;
+}
+
+QWORD OpCode_BitShiftR(QWORD left, QWORD right, BuiltinTypeID type)
+{
+	QWORD result;
+
+	switch (type)
+	{
+	break; case COLTI_I8_ID:		result.i8 = left.i8 >> right.i8;
+	break; case COLTI_I16_ID:		result.i16 = left.i16 >> right.i16;
+	break; case COLTI_I32_ID:		result.i32 = left.i32 >> right.i32;
+	break; case COLTI_I64_ID:		result.i64 = left.i64 >> right.i64;
+	break; case COLTI_U8_ID:		result.u8 = left.u8 >> right.u8;
+	break; case COLTI_U16_ID:		result.u16 = left.u16 >> right.u16;
+	break; case COLTI_U32_ID:		result.u32 = left.u32 >> right.u32;
+	break; case COLTI_U64_ID:		result.u64 = left.u64 >> right.u64;
+	break; default: colt_assert(false, "Invalid operand for OP_BIT_XOR!");
 	}
 	return result;
 }

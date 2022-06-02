@@ -54,6 +54,10 @@ typedef enum
 	OP_BIT_XOR,
 	/// @brief Specifies that the next byte is an operand to which to cast a QWORD before doing its bitwise NOT
 	OP_BIT_NOT,
+	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their shift left
+	OP_BIT_SHIFT_L,
+	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their shift right
+	OP_BIT_SHIFT_R,
 
 	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing greater
 	OP_CMP_GREATER,
@@ -182,16 +186,50 @@ QWORD OpCode_BitXOR(QWORD left, QWORD right, BuiltinTypeID type);
 /// @return The bitwise NOT of the QWORD
 QWORD OpCode_BitNOT(QWORD value, BuiltinTypeID type);
 
+QWORD OpCode_BitShiftL(QWORD left, QWORD right, BuiltinTypeID type);
+
+QWORD OpCode_BitShiftR(QWORD left, QWORD right, BuiltinTypeID type);
+
+/// @brief Casts 2 QWORD and return a bool from 'greater' comparison
+/// @param left The left hand side of the operator
+/// @param right The right hand side of the operator
+/// @param type The type to which to cast both QWORD
+/// @return Bool representing the 2 QWORD comparison
 QWORD OpCode_Greater(QWORD left, QWORD right, BuiltinTypeID type);
 
+/// @brief Casts 2 QWORD and return a bool from 'less' comparison
+/// @param left The left hand side of the operator
+/// @param right The right hand side of the operator
+/// @param type The type to which to cast both QWORD
+/// @return Bool representing the 2 QWORD comparison
 QWORD OpCode_Less(QWORD left, QWORD right, BuiltinTypeID type);
 
+/// @brief Casts 2 QWORD and return a bool from 'greater or equal' comparison
+/// @param left The left hand side of the operator
+/// @param right The right hand side of the operator
+/// @param type The type to which to cast both QWORD
+/// @return Bool representing the 2 QWORD comparison
 QWORD OpCode_GreaterEq(QWORD left, QWORD right, BuiltinTypeID type);
 
+/// @brief Casts 2 QWORD and return a bool from 'less or equal' comparison
+/// @param left The left hand side of the operator
+/// @param right The right hand side of the operator
+/// @param type The type to which to cast both QWORD
+/// @return Bool representing the 2 QWORD comparison
 QWORD OpCode_LessEq(QWORD left, QWORD right, BuiltinTypeID type);
 
+/// @brief Casts 2 QWORD and return a bool from 'equal' comparison
+/// @param left The left hand side of the operator
+/// @param right The right hand side of the operator
+/// @param type The type to which to cast both QWORD
+/// @return Bool representing the 2 QWORD comparison
 QWORD OpCode_Equal(QWORD left, QWORD right, BuiltinTypeID type);
 
+/// @brief Casts 2 QWORD and return a bool from 'not equal' comparison
+/// @param left The left hand side of the operator
+/// @param right The right hand side of the operator
+/// @param type The type to which to cast both QWORD
+/// @return Bool representing the 2 QWORD comparison
 QWORD OpCode_NotEqual(QWORD left, QWORD right, BuiltinTypeID type);
 
 /// @brief Casts 'value' to 'type' then prints its value, for DEBUG purposes
