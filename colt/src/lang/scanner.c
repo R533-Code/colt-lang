@@ -596,7 +596,6 @@ Token impl_scanner_handle_dot(Scanner* scan)
 	}
 	else
 	{
-		//scan->current_char = impl_get_next_char(scan);
 		return TKN_DOT;
 	}
 }
@@ -1015,6 +1014,8 @@ Token impl_token_str_to_i16(Scanner* scan, int base)
 Token impl_token_str_to_u8(Scanner* scan, int base)
 {
 	char* end;
+	//as no overload can convert a string to an uint8_t, we convert to a long value
+	//then compare that to the range of a uint8_t
 	uint32_t value = strtoul(scan->parsed_string.ptr, &end, base);
 
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
@@ -1022,6 +1023,8 @@ Token impl_token_str_to_u8(Scanner* scan, int base)
 		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'u8' literal.", *end);
 		return TKN_ERROR;
 	}
+	//as we are converting a long, if an ERANGE error is returned, than
+	//the value is of course out of the range of an uint8_t, so ||
 	else if ((value > UCHAR_MAX) || errno == ERANGE)
 	{
 		errno = 0;
@@ -1035,6 +1038,8 @@ Token impl_token_str_to_u8(Scanner* scan, int base)
 Token impl_token_str_to_i8(Scanner* scan, int base)
 {
 	char* end;
+	//as no overload can convert a string to an int8_t, we convert to a long value
+	//then compare that to the range of an int8_t
 	int32_t value = strtol(scan->parsed_string.ptr, &end, base);
 
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
@@ -1042,6 +1047,8 @@ Token impl_token_str_to_i8(Scanner* scan, int base)
 		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'i8' literal.", *end);
 		return TKN_ERROR;
 	}
+	//as we are converting a long, if an ERANGE error is returned, than
+	//the value is of course out of the range of an int8_t, so ||
 	else if ((value > CHAR_MAX || value < CHAR_MIN) || errno == ERANGE)
 	{
 		errno = 0;
