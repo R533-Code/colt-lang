@@ -51,7 +51,8 @@ void ChunkWriteOperand(Chunk* chunk, BuiltinTypeID type);
 /// @brief Appends a byte to the end of the chunk
 /// @param chunk The chunk to append to
 /// @param byte The byte to append
-void ChunkWriteBYTE(Chunk* chunk, BYTE byte);
+/// @return The padding used (which is always 1)
+uint64_t ChunkWriteBYTE(Chunk* chunk, BYTE byte);
 
 /// @brief Appends multiple bytes to the end of a chunk
 /// @param chunk The chunk to append to
@@ -62,17 +63,20 @@ void ChunkWriteBytes(Chunk* chunk, const uint8_t* const bytes, uint32_t size);
 /// @brief Writes an int16 to the end of a chunk, padding if necessary
 /// @param chunk The chunk to append to
 /// @param value The value to write
-void ChunkWriteWORD(Chunk* chunk, WORD value);
+/// @return The padding used
+uint64_t ChunkWriteWORD(Chunk* chunk, WORD value);
 
 /// @brief Writes an int32 to the end of a chunk, padding if necessary
 /// @param chunk The chunk to append to
 /// @param value The value to write
-void ChunkWriteDWORD(Chunk* chunk, DWORD value);
+/// @return The padding used
+uint64_t ChunkWriteDWORD(Chunk* chunk, DWORD value);
 
 /// @brief Writes an int64 to the end of a chunk, padding if necessary
 /// @param chunk The chunk to append to
 /// @param value The value to write
-void ChunkWriteQWORD(Chunk* chunk, QWORD value);
+/// @return The padding used
+uint64_t ChunkWriteQWORD(Chunk* chunk, QWORD value);
 
 /// @brief Gets a byte from the offset specified
 /// @param chunk The chunk to get the value from

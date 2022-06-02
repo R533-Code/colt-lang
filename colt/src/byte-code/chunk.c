@@ -31,9 +31,10 @@ void ChunkWriteOperand(Chunk* chunk, BuiltinTypeID type)
 	impl_chunk_write_byte(chunk, (uint8_t)type);
 }
 
-void ChunkWriteBYTE(Chunk* chunk, BYTE byte)
+uint64_t ChunkWriteBYTE(Chunk* chunk, BYTE byte)
 {
 	impl_chunk_write_byte(chunk, byte.u8);
+	return 1;
 }
 
 void ChunkWriteBytes(Chunk* chunk, const uint8_t* const bytes, uint32_t size)
@@ -44,7 +45,7 @@ void ChunkWriteBytes(Chunk* chunk, const uint8_t* const bytes, uint32_t size)
 	chunk->count += size;
 }
 
-void ChunkWriteWORD(Chunk* chunk, WORD value)
+uint64_t ChunkWriteWORD(Chunk* chunk, WORD value)
 {
 	//We need to pad if needed
 	uint64_t offset = (uint64_t)(chunk->code + chunk->count) & 1; //same as % 2
@@ -58,9 +59,11 @@ void ChunkWriteWORD(Chunk* chunk, WORD value)
 	memcpy(chunk->code + (chunk->count += offset), &value, sizeof(uint16_t));
 	//We already added offset to 'count' ^
 	chunk->count += sizeof(uint16_t);
+
+	return offset;
 }
 
-void ChunkWriteDWORD(Chunk* chunk, DWORD value)
+uint64_t ChunkWriteDWORD(Chunk* chunk, DWORD value)
 {
 	uint64_t offset = (uint64_t)(chunk->code + chunk->count) % 4;
 	if (!(chunk->count + offset + sizeof(uint32_t) < chunk->capacity)) //Grow if needed
@@ -73,9 +76,11 @@ void ChunkWriteDWORD(Chunk* chunk, DWORD value)
 	memcpy(chunk->code + (chunk->count += offset), &value, sizeof(uint32_t));
 	//We already added offset to 'count' ^
 	chunk->count += sizeof(uint32_t);
+	
+	return offset;
 }
 
-void ChunkWriteQWORD(Chunk* chunk, QWORD value)
+uint64_t ChunkWriteQWORD(Chunk* chunk, QWORD value)
 {
 	uint64_t offset = (uint64_t)(chunk->code + chunk->count) % 8;
 	if (!(chunk->count + offset + sizeof(uint64_t) < chunk->capacity)) //Grow if needed
@@ -88,11 +93,11 @@ void ChunkWriteQWORD(Chunk* chunk, QWORD value)
 	memcpy(chunk->code + (chunk->count += offset), &value, sizeof(uint64_t));
 	//We already added offset to 'count' ^
 	chunk->count += sizeof(uint64_t);
+	return offset;
 }
 
 BYTE ChunkGetBYTE(const Chunk* chunk, uint64_t* offset)
 {
-	colt_assert(chunk->code[*offset] == OP_IMMEDIATE_BYTE, "'offset' should point to an OP_IMMEDIATE_BYTE!");
 	*offset += 1;
 	BYTE byte = { .u8 = chunk->code[(*offset)++] };
 	return byte;
@@ -100,8 +105,6 @@ BYTE ChunkGetBYTE(const Chunk* chunk, uint64_t* offset)
 
 WORD ChunkGetWORD(const Chunk* chunk, uint64_t* offset)
 {
-	colt_assert(chunk->code[*offset] == OP_IMMEDIATE_WORD, "'offset' should point to an OP_IMMEDIATE_WORD!");
-
 	//Local variable which will be used to store a copy of the offset, than write only one time to *offset
 	//As the offset points to OP_IMMEDIATE_WORD, we also need to add 1
 	uint64_t local_offset = *offset + 1;
@@ -117,8 +120,6 @@ WORD ChunkGetWORD(const Chunk* chunk, uint64_t* offset)
 
 DWORD ChunkGetDWORD(const Chunk* chunk, uint64_t* offset)
 {
-	colt_assert(chunk->code[*offset] == OP_IMMEDIATE_DWORD, "'offset' should point to an OP_IMMEDIATE_DWORD!");
-
 	//Local variable which will be used to store a copy of the offset, than write only one time to *offset
 	//As the offset points to OP_IMMEDIATE_DWORD, we also need to add 1
 	uint64_t local_offset = *offset + 1;
@@ -135,8 +136,6 @@ DWORD ChunkGetDWORD(const Chunk* chunk, uint64_t* offset)
 
 QWORD ChunkGetQWORD(const Chunk* chunk, uint64_t* offset)
 {
-	colt_assert(chunk->code[*offset] == OP_IMMEDIATE_QWORD, "'offset' should point to an OP_IMMEDIATE_QWORD!");
-
 	//Local variable which will be used to store a copy of the offset, than write only one time to *offset
 	//As the offset points to OP_IMMEDIATE_QWORD, we also need to add 1
 	uint64_t local_offset = *offset + 1;
