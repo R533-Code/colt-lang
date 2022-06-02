@@ -196,6 +196,13 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 
 	while (precedence > op_precedence)
 	{
+		if (precedence == 100) //token was not an operator: error
+		{
+			ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+				"Expected an operator!");
+			return left;
+		}
+
 		//Read the next token
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
