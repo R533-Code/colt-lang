@@ -66,7 +66,7 @@ void debug_ast(StringView view, const char* byte_out)
 		}
 		else
 		{
-			print_error_string("Couldn't create valid uAST!");
+			print_error_string("Couldn't create valid AST!");
 		}
 
 		ASTFree(&ast);
