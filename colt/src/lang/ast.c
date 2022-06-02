@@ -292,7 +292,7 @@ Expr* impl_primary_expr(AST* ast)
 	case TKN_OPERATOR_PLUS:
 	case TKN_OPERATOR_TILDE:
 	case TKN_OPERATOR_BANG:
-		//there is no need updating token as a unary expression's internal already does that
+		//there is no need updating current token as a unary expression's internal already does that
 		primary = impl_unary_expr(ast);
 		return primary;
 
