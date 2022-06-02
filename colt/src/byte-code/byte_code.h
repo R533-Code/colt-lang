@@ -89,6 +89,10 @@ typedef enum
 	OP_PRINT,
 
 	//MISCALLENEOUS
+
+	/// @brief Pops the last immediate value
+	OP_POP,
+	/// @brief Returns execution from a function
 	OP_RETURN,
 	/// @brief Stops interpreting, followed by an u64, which is the exit code
 	OP_EXIT,
