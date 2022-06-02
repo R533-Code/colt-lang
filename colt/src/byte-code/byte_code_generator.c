@@ -11,7 +11,9 @@ bool generateByteCode(Chunk* chunk, const Expr* expr)
 		ChunkWriteOpCode(chunk, OP_PRINT);
 		ChunkWriteOperand(chunk, expr->expr_type.type_id);
 		//EXIT
-		ChunkWriteOpCode(chunk, OP_RETURN);
+		ChunkWriteOpCode(chunk, OP_EXIT);
+		QWORD exit_code = { .u64 = 0 };
+		ChunkWriteQWORD(chunk, exit_code);
 		return true;
 	}
 	return false;
@@ -65,63 +67,71 @@ bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr)
 	colt_assert(ptr->expr_type.type_id <= ID_COLT_DOUBLE, "Type ID should be of that of a built-in type!");
 	switch (ptr->expr_operator)
 	{
-	break; case TKN_OPERATOR_PLUS:
+	case TKN_OPERATOR_PLUS:
 		ChunkWriteOpCode(chunk, OP_ADD);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_MINUS:
+	case TKN_OPERATOR_MINUS:
 		ChunkWriteOpCode(chunk, OP_SUBTRACT);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_STAR:
+	case TKN_OPERATOR_STAR:
 		ChunkWriteOpCode(chunk, OP_MULTIPLY);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_SLASH:
+	case TKN_OPERATOR_SLASH:
 		ChunkWriteOpCode(chunk, OP_DIVIDE);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_AND:
+	case TKN_OPERATOR_AND:
 		ChunkWriteOpCode(chunk, OP_BIT_AND);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_OR:
+	case TKN_OPERATOR_OR:
 		ChunkWriteOpCode(chunk, OP_BIT_OR);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_XOR:
+	case TKN_OPERATOR_XOR:
 		ChunkWriteOpCode(chunk, OP_BIT_XOR);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_TILDE:
+	case TKN_OPERATOR_TILDE:
 		ChunkWriteOpCode(chunk, OP_BIT_NOT);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_GREATER:
+	case TKN_OPERATOR_GREATER_GREATER:
+		ChunkWriteOpCode(chunk, OP_BIT_SHIFT_R);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		return true;
+	case TKN_OPERATOR_LESS_LESS:
+		ChunkWriteOpCode(chunk, OP_BIT_SHIFT_L);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		return true;
+	case TKN_OPERATOR_GREATER:
 		ChunkWriteOpCode(chunk, OP_CMP_GREATER);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_GREATER_EQUAL:
+	case TKN_OPERATOR_GREATER_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_GREATER_EQ);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_LESS:
+	case TKN_OPERATOR_LESS:
 		ChunkWriteOpCode(chunk, OP_CMP_LESS);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_LESS_EQUAL:
+	case TKN_OPERATOR_LESS_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_LESS_EQ);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_EQUAL_EQUAL:
+	case TKN_OPERATOR_EQUAL_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_EQUAL);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		return true;
-	break; case TKN_OPERATOR_BANG_EQUAL:
+	case TKN_OPERATOR_BANG_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_NOT_EQUAL);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		return true;
-	break; default:
+	default:
 		colt_assert(false, "NOT IMPLEMENTED!");
 		return false;
 	}
