@@ -20,13 +20,13 @@ typedef enum
 {
 	//IMMEDIATE VALUES LOADING
 	/// @brief Specifies that the next byte-code is an immediate byte
-	OP_IMMEDIATE_BYTE,
+	OP_PUSH_BYTE,
 	/// @brief Specifies that a 2 bytes (aligned) WORD is written in the following byte-codes
-	OP_IMMEDIATE_WORD,
+	OP_PUSH_WORD,
 	/// @brief Specifies that a 4 bytes (aligned) DWORD is written in the following byte-codes
-	OP_IMMEDIATE_DWORD,
+	OP_PUSH_DWORD,
 	/// @brief Specifies that an 8 bytes (aligned) QWORD is written in the following byte-codes
-	OP_IMMEDIATE_QWORD,
+	OP_PUSH_QWORD,
 
 	/// @brief Specifies that the next byte is an operand to which to cast a QWORD before negating its sign
 	OP_NEGATE,

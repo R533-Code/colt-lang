@@ -80,25 +80,25 @@ uint64_t ChunkWriteQWORD(Chunk* chunk, QWORD value);
 
 /// @brief Gets a byte from the offset specified
 /// @param chunk The chunk to get the value from
-/// @param offset The offset should point to the OP_IMMEDIATE_BYTE, is modified by this function
+/// @param offset The offset should point to the OP_PUSH_BYTE, is modified by this function
 /// @return The byte at that offset
 BYTE ChunkGetBYTE(const Chunk* chunk, uint64_t* offset);
 
 /// @brief Gets a word from the offset specified, aligning the access
 /// @param chunk The chunk to get the value from
-/// @param offset The offset should point to the OP_IMMEDIATE_WORD, is modified by this function
+/// @param offset The offset should point to the OP_PUSH_WORD, is modified by this function
 /// @return The word at that offset
 WORD ChunkGetWORD(const Chunk* chunk, uint64_t* offset);
 
 /// @brief Gets a double word from the offset specified, aligning the access
 /// @param chunk The chunk to get the value from
-/// @param offset The offset should point to the OP_IMMEDIATE_DWORD
+/// @param offset The offset should point to the OP_PUSH_DWORD
 /// @return The double word at that offset
 DWORD ChunkGetDWORD(const Chunk* chunk, uint64_t* offset);
 
 /// @brief Gets a quad word from the offset specified, aligning the access
 /// @param chunk The chunk to get the value from
-/// @param offset The offset should point to the OP_IMMEDIATE_QWORD
+/// @param offset The offset should point to the OP_PUSH_QWORD
 /// @return The quad word at that offset
 QWORD ChunkGetQWORD(const Chunk* chunk, uint64_t* offset);
 
@@ -126,22 +126,22 @@ IMPLEMENTATION HELPERS
 **********************************/
 
 /// @brief Extracts a BYTE from a pointer and updates the location pointed by that pointer
-/// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_BYTE (not checked)
+/// @param ptr Pointer to the pointer pointing to the byte following OP_PUSH_BYTE (not checked)
 /// @return BYTE union representing the read byte
 BYTE unsafe_get_byte(uint8_t** ptr);
 
 /// @brief Extracts a WORD from a pointer and updates the location pointed by that pointer
-/// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_WORD (not checked)
+/// @param ptr Pointer to the pointer pointing to the byte following OP_PUSH_WORD (not checked)
 /// @return WORD union representing the read word
 WORD unsafe_get_word(uint8_t** ptr);
 
 /// @brief Extracts a DWORD from a pointer and updates the location pointed by that pointer
-/// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_DWORD (not checked)
+/// @param ptr Pointer to the pointer pointing to the byte following OP_PUSH_DWORD (not checked)
 /// @return DWORD union representing the read word
 DWORD unsafe_get_dword(uint8_t** ptr);
 
 /// @brief Extracts a QWORD from a pointer and updates the location pointed by that pointer
-/// @param ptr Pointer to the pointer pointing to the byte following OP_IMMEDIATE_QWORD(not checked)
+/// @param ptr Pointer to the pointer pointing to the byte following OP_PUSH_QWORD(not checked)
 /// @return QWORD union representing the read word
 QWORD unsafe_get_qword(uint8_t** ptr);
 

@@ -106,7 +106,7 @@ BYTE ChunkGetBYTE(const Chunk* chunk, uint64_t* offset)
 WORD ChunkGetWORD(const Chunk* chunk, uint64_t* offset)
 {
 	//Local variable which will be used to store a copy of the offset, than write only one time to *offset
-	//As the offset points to OP_IMMEDIATE_WORD, we also need to add 1
+	//As the offset points to OP_PUSH_WORD, we also need to add 1
 	uint64_t local_offset = *offset + 1;
 	//We add the padding to the offset, which means we are now pointing to the int16
 	local_offset += ((uint64_t)(chunk->code + local_offset) & 1);
@@ -121,7 +121,7 @@ WORD ChunkGetWORD(const Chunk* chunk, uint64_t* offset)
 DWORD ChunkGetDWORD(const Chunk* chunk, uint64_t* offset)
 {
 	//Local variable which will be used to store a copy of the offset, than write only one time to *offset
-	//As the offset points to OP_IMMEDIATE_DWORD, we also need to add 1
+	//As the offset points to OP_PUSH_DWORD, we also need to add 1
 	uint64_t local_offset = *offset + 1;
 	//We add the padding to the offset, which means we are now pointing to the int32
 	local_offset += (uint64_t)(chunk->code + local_offset) % 4;
@@ -137,7 +137,7 @@ DWORD ChunkGetDWORD(const Chunk* chunk, uint64_t* offset)
 QWORD ChunkGetQWORD(const Chunk* chunk, uint64_t* offset)
 {
 	//Local variable which will be used to store a copy of the offset, than write only one time to *offset
-	//As the offset points to OP_IMMEDIATE_QWORD, we also need to add 1
+	//As the offset points to OP_PUSH_QWORD, we also need to add 1
 	uint64_t local_offset = *offset + 1;
 	//We add the padding to the offset, which means we are now pointing to the int64
 	local_offset += (uint64_t)(chunk->code + local_offset) % 8;

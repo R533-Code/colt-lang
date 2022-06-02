@@ -52,22 +52,22 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 
 			/******************************************************/
 
-		break; case OP_IMMEDIATE_BYTE:
+		break; case OP_PUSH_BYTE:
 		{
 			QWORD qword = { .byte = unsafe_get_byte(&ip) };
 			StackVMPush(vm, qword);
 		}
-		break; case OP_IMMEDIATE_WORD:
+		break; case OP_PUSH_WORD:
 		{
 			QWORD qword = { .word = unsafe_get_word(&ip) };
 			StackVMPush(vm, qword);
 		}
-		break; case OP_IMMEDIATE_DWORD:
+		break; case OP_PUSH_DWORD:
 		{
 			QWORD qword = { .dword = unsafe_get_dword(&ip) };
 			StackVMPush(vm, qword);
 		}
-		break; case OP_IMMEDIATE_QWORD:
+		break; case OP_PUSH_QWORD:
 		{
 			QWORD qword = unsafe_get_qword(&ip);
 			StackVMPush(vm, qword);

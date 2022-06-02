@@ -83,7 +83,7 @@ bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr)
 		//prohibit zero division
 		if (is_type_integral((BuiltinTypeID)ptr->expr_type.type_id))
 		{
-			ChunkWriteOpCode(chunk, OP_IMMEDIATE_QWORD);
+			ChunkWriteOpCode(chunk, OP_PUSH_QWORD);
 			QWORD zero = { .u64 = 0 };
 			ChunkWriteQWORD(chunk, zero);
 			ChunkWriteOpCode(chunk, OP_SJUMP_NOT_EQUAL);
@@ -161,24 +161,24 @@ bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr)
 	case ID_COLT_I8:
 	case ID_COLT_U8:
 	case ID_COLT_BOOL:
-		ChunkWriteOpCode(chunk, OP_IMMEDIATE_BYTE);
+		ChunkWriteOpCode(chunk, OP_PUSH_BYTE);
 		ChunkWriteBYTE(chunk, ptr->value.byte);
 		break;
 	case ID_COLT_DOUBLE:
 	case ID_COLT_U64:
 	case ID_COLT_I64:
-		ChunkWriteOpCode(chunk, OP_IMMEDIATE_QWORD);
+		ChunkWriteOpCode(chunk, OP_PUSH_QWORD);
 		ChunkWriteQWORD(chunk, ptr->value);
 		break;
 	case ID_COLT_FLOAT:
 	case ID_COLT_I32:
 	case ID_COLT_U32:
-		ChunkWriteOpCode(chunk, OP_IMMEDIATE_DWORD);
+		ChunkWriteOpCode(chunk, OP_PUSH_DWORD);
 		ChunkWriteDWORD(chunk, ptr->value.dword);
 		break;
 	case ID_COLT_I16:
 	case ID_COLT_U16:
-		ChunkWriteOpCode(chunk, OP_IMMEDIATE_WORD);
+		ChunkWriteOpCode(chunk, OP_PUSH_WORD);
 		ChunkWriteWORD(chunk, ptr->value.word);
 		break;
 	default:
