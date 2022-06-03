@@ -71,6 +71,14 @@ bool TableDelete(Table* table, StringView key)
 	return true;
 }
 
+Entry* TableGetEntry(Table* table, StringView key)
+{
+	Entry* entry = table_find_entry(table->entries, table->capacity, key);
+	if (entry->key.start == NULL)
+		return NULL;
+	return entry;
+}
+
 uint64_t hash_strv(StringView strv)
 {
 	//FNV-1a hashing method

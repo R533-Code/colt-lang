@@ -37,6 +37,8 @@ bool TableSet(Table* table, StringView strv, QWORD value, Type type);
 
 bool TableDelete(Table* table, StringView key);
 
+Entry* TableGetEntry(Table* table, StringView key);
+
 /**************************************
 IMPLEMENTATION HELPERS
 **************************************/
