@@ -43,10 +43,10 @@ bool TableSet(Table* table, StringView strv, QWORD value, Type type)
 {
 	if ((double)table->count + 1 > (double)table->capacity * TABLE_MAX_LOAD)
 	{
-		table_double_capacity(table);
+		table_grow_capacity(table, table->capacity * 2);
 	}
 
-	Entry* entry = table_find_entry(table, strv);
+	Entry* entry = table_find_entry(table->entries, table->capacity, strv);
 	bool isNewKey = (entry->key.end == entry->key.start);
 	if (isNewKey)
 		table->count++;
