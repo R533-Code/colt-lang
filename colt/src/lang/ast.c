@@ -338,9 +338,10 @@ Expr* impl_unary_expr(AST* ast)
 	if (!child)
 		return NULL; //propagate the error
 
+	//a minus followed by a unsigned type is converted to a signed type
 	if (is_type_uint(child->expr_type.type_id) && tkn == TKN_OPERATOR_MINUS)
 	{
-		ast_gen_warning(ast, ast->scan.current_line, line_strv, lexeme_strv, "Implicit conversion from '%s' to '%s'!", BuiltinTypeIDToString(child->expr_type.type_id), BuiltinTypeIDToString(child->expr_type.type_id + 4));
+		ast_gen_warning(ast, ast->scan.current_line, line_strv, lexeme_strv, "Implicit conversion from '%s' to '%s'!", BuiltinTypeIDToString(child->expr_type.type_id), BuiltinTypeIDToString((BuiltinTypeID)child->expr_type.type_id + 4));
 		child = makeConvertExpr(child, type_unsigned_to_signed(child->expr_type.type_id),
 			child->line_nb, child->line, child->lexeme
 		);
