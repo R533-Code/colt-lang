@@ -31,6 +31,14 @@ bool TableGet(Table* table, StringView key, QWORD* value)
 	return true;
 }
 
+bool TableContains(Table* table, StringView key)
+{
+	const Entry* entry = table_find_entry(table->entries, table->capacity, key);
+	if (entry->key.start == NULL)
+		return false;
+	return true;
+}
+
 bool TableSet(Table* table, StringView strv, QWORD value, Type type)
 {
 	if ((double)table->count + 1 > (double)table->capacity * TABLE_MAX_LOAD)

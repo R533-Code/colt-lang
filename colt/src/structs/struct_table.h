@@ -31,6 +31,8 @@ void TableFree(Table* table);
 
 bool TableGet(Table* table, StringView key, QWORD* value);
 
+bool TableContains(Table* table, StringView key);
+
 bool TableSet(Table* table, StringView strv, QWORD value, Type type);
 
 bool TableDelete(Table* table, StringView key);
