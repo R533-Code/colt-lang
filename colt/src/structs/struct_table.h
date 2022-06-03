@@ -2,6 +2,7 @@
 #define HG_COLT_STRUCT_TABLE
 
 #include "common.h"
+#include "lang/type.h"
 #include "struct_string.h"
 
 /// @brief The maximum occupied capacity before growing the table
