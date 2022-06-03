@@ -112,16 +112,14 @@ bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr)
 		return true;
 	case TKN_OPERATOR_GREATER_GREATER:
 	{
-		QWORD zero = { .u64 = 0 };
-		gen_integral_short_jmp(chunk, OP_SJUMP_GREATER_EQ, zero, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		gen_bitshift_ub_checks(chunk, ptr->expr_type);
 		ChunkWriteOpCode(chunk, OP_BIT_SHIFT_R);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		return true;
 	}
 	case TKN_OPERATOR_LESS_LESS:
 	{
-		QWORD zero = { .u64 = 0 };
-		gen_integral_short_jmp(chunk, OP_SJUMP_GREATER_EQ, zero, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		gen_bitshift_ub_checks(chunk, ptr->expr_type);
 		ChunkWriteOpCode(chunk, OP_BIT_SHIFT_L);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
 		return true;
@@ -226,4 +224,30 @@ void gen_integral_short_jmp(Chunk* chunk, OpCode short_jump, QWORD cmp_to, Built
 	chunk->code[offset_pos] = (uint8_t)(chunk->count - offset_pos);
 	//pop the value we compared with
 	ChunkWriteOpCode(chunk, OP_POP);
+}
+
+void gen_bitshift_ub_checks(Chunk* chunk, Type type)
+{
+	QWORD zero = { .u64 = 0 };
+	QWORD bit_size = { .u64 = 0 };
+	switch (type.type_id)
+	{
+	case ID_COLT_U8:
+	case ID_COLT_U16:
+	case ID_COLT_U32:
+	case ID_COLT_U64:
+		bit_size.u64 = type.byte_size * 8;
+	break; case ID_COLT_I8:
+		bit_size.i8 = (int8_t)type.byte_size * 8;
+	break; case ID_COLT_I16:
+		bit_size.i16 = (int16_t)type.byte_size * 8;
+	break; case ID_COLT_I32:
+		bit_size.i32 = (int32_t)type.byte_size * 8;
+	break; case ID_COLT_I64:
+		bit_size.i64 = (int64_t)type.byte_size * 8;
+	break; default:
+		colt_assert(false, "Unexpected type for bit-shift operands!");
+	}
+	gen_integral_short_jmp(chunk, OP_SJUMP_GREATER_EQ, zero, (BuiltinTypeID)type.type_id);
+	gen_integral_short_jmp(chunk, OP_SJUMP_LESS, bit_size, (BuiltinTypeID)type.type_id);
 }

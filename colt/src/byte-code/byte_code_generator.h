@@ -60,4 +60,6 @@ bool impl_gen_code_convert(Chunk* chunk, const ConvertExpr* ptr);
 /// @param type The expression's type
 void gen_integral_short_jmp(Chunk* chunk, OpCode short_jump, QWORD cmp_to, BuiltinTypeID type);
 
+void gen_bitshift_ub_checks(Chunk* chunk, Type type);
+
 #endif //HG_COLT_BYTE_CODE_GENERATOR
