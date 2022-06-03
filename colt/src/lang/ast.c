@@ -309,6 +309,28 @@ Expr* impl_primary_expr(AST* ast)
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		return primary;
 
+		/**************** VARIABLE ****************/
+	
+	break; case TKN_IDENTIFIER:
+	{
+		StringView variable_name = ScannerGetIdentifier(&ast->scan);
+		Entry* table_entry = TableGetEntry(&ast->var_table, variable_name);
+		if (!table_entry)
+		{
+			ast_gen_error(ast,
+				ast->scan.current_line,
+				ScannerGetCurrentLine(&ast->scan),
+				ScannerGetCurrentLexeme(&ast->scan),
+				"Identifier '%.*s' is not defined!", variable_name.end - variable_name.start, variable_name.start
+			);
+			return NULL;
+		}
+		return makeVariableExpr(variable_name, table_entry->type,
+			ast->scan.current_line,
+			ScannerGetCurrentLine(&ast->scan),
+			ScannerGetCurrentLexeme(&ast->scan));
+	}
+
 		/**************** ERROR ****************/
 
 	break; case TKN_ERROR:
@@ -368,4 +390,25 @@ Expr* impl_paren_expr(AST* ast)
 	}
 
 	return ret;
+}
+
+Expr* impl_expression(AST* ast)
+{
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+	switch (ast->current_tkn)
+	{
+	//case TKN_KEYWORD_VAR:
+	case TKN_IDENTIFIER:
+		impl_variable_expression(ast);		
+	default:
+		break;
+	}
+}
+
+Expr* impl_variable_expression(AST* ast)
+{
+	Expr* expr = impl_binary_expr(ast, 0);
+	if (!expr)
+		return expr;
+	//TableGet(ast->var_table, 
 }

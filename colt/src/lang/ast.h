@@ -126,4 +126,8 @@ Expr* impl_unary_expr(AST* ast);
 /// @return An Expr* representing the parsed expression
 Expr* impl_paren_expr(AST* ast);
 
+Expr* impl_expression(AST* ast);
+
+Expr* impl_variable_expression(AST* ast);
+
 #endif //HG_COLT_AST
