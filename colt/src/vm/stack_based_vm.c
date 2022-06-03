@@ -231,7 +231,7 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = *(vm->stack_top - 1);
 			QWORD lhs = *(vm->stack_top - 2);
-			if (OpCode_Greater(lhs, rhs, *(ip++)).b)
+			if (OpCode_Less(lhs, rhs, *(ip++)).b)
 			{
 				ip += *ip;
 				continue;
@@ -243,7 +243,7 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
 			QWORD rhs = *(vm->stack_top - 1);
 			QWORD lhs = *(vm->stack_top - 2);
-			if (OpCode_GreaterEq(lhs, rhs, *(ip++)).b)
+			if (OpCode_LessEq(lhs, rhs, *(ip++)).b)
 			{
 				ip += *ip;
 				continue;
