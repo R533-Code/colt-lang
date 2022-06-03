@@ -137,6 +137,22 @@ typedef struct
 	Expr* child;
 } ConvertExpr;
 
+typedef struct
+{
+	/// @brief The line number
+	uint64_t line_nb;
+	/// @brief The line from which the expression was created
+	StringView line;
+	/// @brief The lexeme representing the expression
+	StringView lexeme;
+	/// @brief should be EXPR_VAR
+	ExprIdentifier identifier;
+	/// @brief The expression type, which depends on the type of 'value'
+	Type expr_type;
+	/// @brief The literal value
+	StringView var_name;
+} VariableExpr;
+
 /// @brief Allocates a new literal expression on the heap, initializing it
 /// @param value The value of the literal expression
 /// @param type The type of the literal expression
@@ -174,6 +190,8 @@ Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, Type expr_type
 /// @param lexeme A StringView over the lexeme representing the expression
 /// @return A pointer to a heap allocated ConvertExpr
 Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView line, StringView lexeme);
+
+Expr* makeVariableExpr(StringView var_name, Type var_type, uint64_t line_nb, StringView line, StringView lexeme);
 
 /// @brief Recursively frees a heap-allocated expression.
 /// As an Expr* can be a BinaryExpr, or an expression with child expression,

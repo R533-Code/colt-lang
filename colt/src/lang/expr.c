@@ -103,6 +103,23 @@ Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView 
 	return (Expr*)ptr;
 }
 
+Expr* makeVariableExpr(StringView var_name, Type var_type, uint64_t line_nb, StringView line, StringView lexeme)
+{
+	VariableExpr* ptr = safe_malloc(sizeof(VariableExpr));
+
+	ptr->identifier = EXPR_VAR;
+
+	ptr->expr_type = var_type;
+
+	ptr->var_name = var_name;
+
+	ptr->line_nb = line_nb;
+	ptr->line = line;
+	ptr->lexeme = lexeme;
+
+	return (Expr*)ptr;
+}
+
 void freeExpr(Expr* ptr)
 {
 	if (ptr == NULL)
