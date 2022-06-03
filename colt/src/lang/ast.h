@@ -15,6 +15,7 @@
 #include "common.h"
 #include "token.h"
 #include "scanner.h"
+#include "structs/struct_table.h"
 #include "expr.h"
 
 /// @brief Represents an Abstract Syntax Tree of a parsed string.
@@ -27,9 +28,13 @@ typedef struct
 	/// @brief The scanner providing the lexemes for the AST
 	Scanner scan;
 	/// @brief The number of errors encountered
-	uint8_t error_nb;
+	uint16_t error_nb;
+	/// @brief The number of warnings encountered
+	uint16_t warning_nb;
 	/// @brief The next token to consume from the scanner
 	Token current_tkn;
+	/// @brief Variable table
+	Table var_table;
 } AST;
 
 /// @brief Initializes an AST

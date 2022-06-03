@@ -7,12 +7,15 @@
 void ASTInit(AST* ast, StringView to_parse)
 {
 	ast->error_nb = 0;
+	ast->warning_nb = 0;
 	ScannerInit(&ast->scan, to_parse);
+	TableInit(&ast->var_table);
 }
 
 void ASTFree(AST* ast)
 {
 	ScannerFree(&ast->scan);
+	TableFree(&ast->var_table);
 	freeExpr(ast->expr);
 
 	DO_IF_DEBUG_BUILD(
@@ -31,8 +34,9 @@ bool ASTParse(AST* ast)
 
 void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lexeme, const char* format, ...)
 {
+	ast->warning_nb++;
 	fprintf(stdout, CONSOLE_FOREGROUND_BRIGHT_YELLOW "Warning: "
-		CONSOLE_COLOR_RESET "On line %"PRIu64": ", ast->scan.current_line);
+		CONSOLE_COLOR_RESET "On line %"PRIu64": ", line_nb);
 	//prints the error
 	va_list args;
 	va_start(args, format);
