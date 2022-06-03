@@ -251,3 +251,23 @@ void gen_bitshift_ub_checks(Chunk* chunk, Type type)
 	gen_integral_short_jmp(chunk, OP_SJUMP_GREATER_EQ, zero, (BuiltinTypeID)type.type_id);
 	gen_integral_short_jmp(chunk, OP_SJUMP_LESS, bit_size, (BuiltinTypeID)type.type_id);
 }
+
+void gen_signed_addition_checks(Chunk chunk, Type type)
+{
+	
+}
+
+void gen_signed_subtraction_checks(Chunk* chunk, Type type)
+{
+
+}
+
+void gen_signed_multiplication_checks(Chunk* chunk, Type type)
+{
+
+}
+
+void gen_signed_division_checks(Chunk* chunk, Type type)
+{
+
+}
