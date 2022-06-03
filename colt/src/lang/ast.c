@@ -61,7 +61,7 @@ void ast_gen_error(AST* ast, uint64_t line_nb, StringView current_line, StringVi
 	ast_enter_panic_mode(ast);
 
 	fprintf(stderr, CONSOLE_FOREGROUND_BRIGHT_RED "Error: "
-		CONSOLE_COLOR_RESET "On line %"PRIu64": ", ast->scan.current_line);
+		CONSOLE_COLOR_RESET "On line %"PRIu64": ", line_nb);
 	//prints the error
 	va_list args;
 	va_start(args, format);
