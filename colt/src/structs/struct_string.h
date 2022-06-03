@@ -170,6 +170,11 @@ bool StringViewEqual(StringView lhs, StringView rhs);
 /// @return True if 'lhs' contains 'rhs'
 bool StringViewContains(StringView lhs, StringView rhs);
 
+/// @brief Check if a StringView is empty or not
+/// @param strv The StringView to check for
+/// @return True if 'strv' is empty 
+bool StringViewIsEmpty(StringView strv);
+
 /*****************************************
 IMPLEMENTATION HELPERS
 *****************************************/
