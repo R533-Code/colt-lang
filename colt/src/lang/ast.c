@@ -8,14 +8,15 @@ void ASTInit(AST* ast)
 {
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
+	ast->expr = NULL;
 	TableInit(&ast->var_table);
 }
 
 void ASTFree(AST* ast)
 {
-	ScannerFree(&ast->scan);
 	TableFree(&ast->var_table);
-	freeExpr(ast->expr);
+	if (ast->expr != NULL)
+		freeExpr(ast->expr);
 
 	DO_IF_DEBUG_BUILD(
 		ast->expr = NULL;
