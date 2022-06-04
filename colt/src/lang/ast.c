@@ -15,8 +15,7 @@ void ASTInit(AST* ast)
 void ASTFree(AST* ast)
 {
 	TableFree(&ast->var_table);
-	if (ast->expr != NULL)
-		freeExpr(ast->expr);
+	freeExpr(ast->expr);
 
 	DO_IF_DEBUG_BUILD(
 		ast->expr = NULL;
