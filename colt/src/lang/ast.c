@@ -140,6 +140,8 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' expects integral operands!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
 			return ColtBool;
 		}
+	case TKN_OPERATOR_EQUAL:
+		return lhs;
 	case TKN_OPERATOR_GREATER:
 	case TKN_OPERATOR_GREATER_EQUAL:
 	case TKN_OPERATOR_LESS:
