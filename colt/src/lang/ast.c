@@ -103,7 +103,6 @@ void ast_enter_panic_mode(AST* ast)
 	{
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	}
-	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 }
 
 void ast_handle_conversion(Expr** plhs, Expr** prhs)
@@ -476,16 +475,6 @@ Expr* impl_variable_declaration(AST* ast)
 			return NULL;
 		if (tkn_type == TKN_KEYWORD_VAR)
 			var_type = to_assign->expr_type;
-
-		if (ast->current_tkn != TKN_SEMICOLON)
-		{
-			ast_gen_error(ast,
-				ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
-				"Expected a ';'!"
-			);
-			return to_assign;
-		}
-		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
 		QWORD zero = { .u64 = 0 };
 		if (!TableSet(&ast->var_table, decl_identifier, zero, to_assign->expr_type))
