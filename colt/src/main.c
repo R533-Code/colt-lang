@@ -37,6 +37,8 @@ void debug_ast(AST* ast, StringView view, const char* byte_out)
 			printf(CONSOLE_FOREGROUND_BRIGHT_GREEN"Successfully created an AST!\n"
 				"Type of expression: %.*s!\n"CONSOLE_COLOR_RESET, (uint32_t)(ast->expr->expr_type.name.end - ast->expr->expr_type.name.start),
 				ast->expr->expr_type.name.start);
+			TablePrint(&ast->var_table);
+
 			fputs(CONSOLE_FOREGROUND_BRIGHT_BLUE"Generating byte-code...\n"CONSOLE_COLOR_RESET, stdout);
 			
 			Chunk chunk;
@@ -51,7 +53,7 @@ void debug_ast(AST* ast, StringView view, const char* byte_out)
 					fputs(CONSOLE_FOREGROUND_BRIGHT_GREEN"Successfully run VM!\n"CONSOLE_COLOR_RESET, stdout);
 				else
 					fputs(CONSOLE_FOREGROUND_BRIGHT_RED"VM did not run successfully!\n"CONSOLE_COLOR_RESET, stdout);
-
+				TablePrint(&ast->var_table);
 				StackVMFree(&vm);
 				if (byte_out != NULL)
 					ChunkSerialize(&chunk, byte_out);
@@ -76,12 +78,12 @@ int main(int argc, const char** argv)
 	if (args.file_path_in == NULL)
 	{
 		AST ast;
-		ASTInit(&ast);
+		ASTInit(&ast);		
 		while (!feof(stdin))
 		{
 			fputs(CONSOLE_FOREGROUND_BRIGHT_MAGENTA"> "CONSOLE_COLOR_RESET, stdout);
 			String line = StringGetLine();
-			debug_ast(&ast, StringToStringView(&line), args.byte_code_out);
+			debug_ast(&ast, StringToStringViewWithNUL(&line), args.byte_code_out);
 			StringFree(&line);
 		}
 		ASTFree(&ast);
@@ -91,7 +93,7 @@ int main(int argc, const char** argv)
 		AST ast;
 		ASTInit(&ast);
 		String file_content = StringGetFileContent(args.file_path_in);
-		debug_ast(&ast, StringToStringView(&file_content), args.byte_code_out);
+		debug_ast(&ast, StringToStringViewWithNUL(&file_content), args.byte_code_out);
 		StringFree(&file_content);
 		ASTFree(&ast);
 	}
