@@ -103,6 +103,19 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 
 		/******************************************************/
 
+		break;
+		case OP_STORE_BYTE:
+		case OP_STORE_WORD:
+		case OP_STORE_DWORD:
+		case OP_STORE_QWORD:
+		{
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			QWORD offset = unsafe_get_qword(&ip);
+			(vm->var_table.entries + offset.u64)->value = StackVMTop(vm);
+		}
+
+		/******************************************************/
+
 		break; case OP_NEGATE:
 			colt_assert(!StackVMIsEmpty(vm), "Stack should contain at least 1 items!");
 			StackVMPush(vm, OpCode_Negate(StackVMPop(vm), *(ip++)));
