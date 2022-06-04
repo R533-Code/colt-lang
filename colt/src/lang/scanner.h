@@ -13,6 +13,7 @@
 #define HG_COLT_SCANNER
 
 #include "common.h"
+#include "type.h"
 #include "structs/struct_string.h"
 #include "token.h"
 
@@ -25,6 +26,8 @@ typedef struct
 	String parsed_string;
 	/// @brief Last parsed integer/bool/double/float
 	QWORD parsed_value;
+	/// @brief Last parsed built-in type name
+	Type parsed_typename;
 
 	/// @brief The string to scan
 	StringView view;
