@@ -415,14 +415,23 @@ Expr* impl_paren_expr(AST* ast)
 
 Expr* impl_expression(AST* ast)
 {
+	Expr* expr;
 	switch (ast->current_tkn)
 	{
 	case TKN_KEYWORD_VAR:
 	case TKN_BUILTIN_TYPE:
-		return impl_variable_declaration(ast);
+		expr = impl_variable_declaration(ast);
 	default:
-		return impl_binary_expr(ast, -1);
+		expr = impl_binary_expr(ast, -1);
 	}
+	if (ast->current_tkn != TKN_SEMICOLON)
+	{
+		ast_gen_error(ast,
+			ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+			"Expected a ';'!"
+		);
+	}
+	return expr;
 }
 
 Expr* impl_variable_declaration(AST* ast)
@@ -495,9 +504,5 @@ Expr* impl_variable_declaration(AST* ast)
 			line_nb, lexeme, line
 		);
 	}
-	ast_gen_error(ast,
-		ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
-		"Expected a ';' or an assignment!"
-	);
 	return NULL;
 }
