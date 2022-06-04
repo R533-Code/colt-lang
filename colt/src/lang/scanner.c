@@ -732,6 +732,7 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 			return TKN_BOOL;
 		}
 	break; case 'u':
+		///TODO: optimize in a finite automaton
 		if (strcmp(str, "u8") == 0)
 		{
 			scan->parsed_typename = ColtU8;
