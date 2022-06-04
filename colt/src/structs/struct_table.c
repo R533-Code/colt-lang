@@ -86,7 +86,7 @@ uint64_t hash_strv(StringView strv)
 
 	//FNV_offset_basis
 	uint64_t hash = 0xcbf29ce484222325;
-	for (size_t i = 0; i < strv.end - strv.start; i++)
+	for (size_t i = 0; i < (uint64_t)(strv.end - strv.start); i++)
 	{
 		hash ^= (uint8_t)strv.start[i];
 		hash *= 0x100000001b3; //FNV_prime
