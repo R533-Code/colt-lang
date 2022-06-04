@@ -235,9 +235,20 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 		if (!right) //propagate error
 			return left; // we don't want memory leaks
 
-		ast_handle_conversion(&left, &right);
-		Type expr_type = ast_operator_return_type(ast, left->expr_type, token_type, right->expr_type,
-			line_nb, line_strv, lexeme_strv);
+		Type expr_type;
+
+		if (token_type != TKN_OPERATOR_EQUAL)
+		{
+			ast_handle_conversion(&left, &right);
+			expr_type = ast_operator_return_type(ast, left->expr_type, token_type, right->expr_type,
+				line_nb, line_strv, lexeme_strv);
+		}
+		else
+		{
+			expr_type = left->expr_type;
+			right = makeConvertExpr(right, left->expr_type,
+				right->line_nb, right->line, right->lexeme);
+		}
 
 		//Pratt's parsing, which allows operators priority
 		left = makeBinaryExpr(left, token_type, right, expr_type,
@@ -475,6 +486,14 @@ Expr* impl_variable_declaration(AST* ast)
 			return NULL;
 		if (tkn_type == TKN_KEYWORD_VAR)
 			var_type = to_assign->expr_type;
+		else if (var_type.type_id != to_assign->expr_type.type_id)
+		{
+			//TODO: issue conversion warnings
+			to_assign = makeConvertExpr(to_assign, var_type,
+				to_assign->line_nb, to_assign->line, to_assign->lexeme
+				);
+		}
+
 
 		QWORD zero = { .u64 = 0 };
 		if (!TableSet(&ast->var_table, decl_identifier, zero, to_assign->expr_type))
