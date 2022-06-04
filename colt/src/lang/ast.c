@@ -422,7 +422,6 @@ Expr* impl_expression(AST* ast)
 
 Expr* impl_var_variable_declaration(AST* ast)
 {
-	Token var_type = ast->current_tkn;
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	if (ast->current_tkn != TKN_IDENTIFIER)
 	{
@@ -463,18 +462,18 @@ Expr* impl_var_variable_declaration(AST* ast)
 				ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
 				"Expected a ';'!"
 			);
-			return NULL;
+			return to_assign;
 		}
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		
 		QWORD zero = { .u64 = 0 };
-		if (!TableSet(&ast->var_table, decl_identifier, zero, ast->scan.parsed_typename))
+		if (!TableSet(&ast->var_table, decl_identifier, zero, to_assign->expr_type))
 		{
 			ast_gen_error(ast,
 				ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
 				"Variable with identifier '%.*s' already exists!", decl_identifier.end - decl_identifier.start, decl_identifier.start
 			);
-			return NULL;
+			return to_assign;
 		}
 
 		return makeBinaryExpr(
