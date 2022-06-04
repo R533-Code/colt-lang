@@ -89,6 +89,9 @@ Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, Type expr_type
 
 Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView line, StringView lexeme)
 {
+	if (convert_to.type_id == expr->expr_type.type_id)
+		return expr;
+
 	ConvertExpr* ptr = safe_malloc(sizeof(BinaryExpr));
 	//type for casting
 	ptr->identifier = EXPR_CONVERT;
