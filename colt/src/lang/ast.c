@@ -456,9 +456,9 @@ Expr* impl_variable_declaration(AST* ast)
 
 	if (ast->current_tkn == TKN_SEMICOLON && tkn_type == TKN_KEYWORD_VAR)
 	{
-		ast_gen_warning(ast,
-			identifier_line_nb, identifier_line, decl_identifier,
-			"Always initialize variables!"
+		ast_gen_error(ast,
+			ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+			"Variable declared with 'var' should always be initialized!"
 		);
 		return NULL;
 	}
