@@ -136,9 +136,9 @@ Expr* impl_paren_expr(AST* ast);
 /// @return An Expr* representing the parsed expression or NULL for errors
 Expr* impl_expression(AST* ast);
 
-/// @brief Parses a variable declaration that uses 'var' as a type declaration
+/// @brief Parses a variable declaration, and adds the variable to the 'var_table'
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression or NULL for errors
-Expr* impl_var_variable_declaration(AST* ast);
+Expr* impl_variable_declaration(AST* ast);
 
 #endif //HG_COLT_AST

@@ -418,14 +418,16 @@ Expr* impl_expression(AST* ast)
 	switch (ast->current_tkn)
 	{
 	case TKN_KEYWORD_VAR:
-		return impl_var_variable_declaration(ast);
+	case TKN_BUILTIN_TYPE:
+		return impl_variable_declaration(ast);
 	default:
 		return impl_binary_expr(ast, -1);
 	}
 }
 
-Expr* impl_var_variable_declaration(AST* ast)
+Expr* impl_variable_declaration(AST* ast)
 {
+	Token tkn_type = ast->current_tkn;
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	if (ast->current_tkn != TKN_IDENTIFIER)
 	{
@@ -435,17 +437,20 @@ Expr* impl_var_variable_declaration(AST* ast)
 		);
 		return NULL;
 	}
+	Type var_type;
+	if (tkn_type != TKN_KEYWORD_VAR)
+		var_type = ast->scan.parsed_typename;
 	StringView decl_identifier = ScannerGetIdentifier(&ast->scan);
 	StringView identifier_line = ScannerGetCurrentLine(&ast->scan);
 	uint64_t identifier_line_nb = ast->scan.current_line;
-	
+
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
-	if (ast->current_tkn == TKN_SEMICOLON)
+	if (ast->current_tkn == TKN_SEMICOLON && tkn_type == TKN_KEYWORD_VAR)
 	{
-		ast_gen_error(ast,
-			ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
-			"Variable declared with 'var' should always be initialized!"
+		ast_gen_warning(ast,
+			identifier_line_nb, identifier_line, decl_identifier,
+			"Always initialize variables!"
 		);
 		return NULL;
 	}
@@ -460,6 +465,9 @@ Expr* impl_var_variable_declaration(AST* ast)
 		Expr* to_assign = impl_binary_expr(ast, 0);
 		if (!to_assign)
 			return NULL;
+		if (tkn_type == TKN_KEYWORD_VAR)
+			var_type = to_assign->expr_type;
+
 		if (ast->current_tkn != TKN_SEMICOLON)
 		{
 			ast_gen_error(ast,
@@ -469,7 +477,7 @@ Expr* impl_var_variable_declaration(AST* ast)
 			return to_assign;
 		}
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
-		
+
 		QWORD zero = { .u64 = 0 };
 		if (!TableSet(&ast->var_table, decl_identifier, zero, to_assign->expr_type))
 		{
@@ -483,7 +491,7 @@ Expr* impl_var_variable_declaration(AST* ast)
 		return makeBinaryExpr(
 			makeVariableExpr(decl_identifier, to_assign->expr_type,
 				identifier_line_nb, identifier_line, decl_identifier),
-			TKN_OPERATOR_EQUAL, to_assign, to_assign->expr_type,
+			TKN_OPERATOR_EQUAL, to_assign, var_type,
 			line_nb, lexeme, line
 		);
 	}
