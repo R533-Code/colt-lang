@@ -21,6 +21,9 @@
 /// @brief Represents a stream of instructions
 typedef struct
 {
+	/// @brief Offset to the first byte-code to execute
+	uint64_t code_begin;
+	/// @brief Offset to the first global variable
 	uint64_t global_begin;
 	/// @brief Number of items pointed to
 	uint64_t count;

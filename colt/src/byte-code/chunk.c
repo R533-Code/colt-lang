@@ -16,6 +16,8 @@ void ChunkPrintBytes(const Chunk* chunk)
 
 void ChunkInit(Chunk* chunk)
 {
+	//which means no code start
+	chunk->code_begin = 0;
 	//which means no global_begin
 	chunk->global_begin = 0;
 	chunk->capacity = 128;
