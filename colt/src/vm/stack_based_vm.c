@@ -44,7 +44,7 @@ uint64_t StackVMSize(const StackVM* vm)
 
 uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 {
-	uint8_t* ip = chunk->code + chunk->code_begin;
+	uint8_t* ip = chunk->code + *((uint64_t*)(chunk->code));
 	for (;;)
 	{
 		switch (*(ip++)) //Dereferences then advances the pointer
@@ -78,25 +78,25 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		break; case OP_LOAD_BYTE:
 		{
 			QWORD offset = unsafe_get_qword(&ip);
-			QWORD push = { .byte = ((QWORD*)(chunk->code + (chunk->global_begin + offset.u64)))->byte };
+			QWORD push = { .byte = ((QWORD*)(chunk->code + (*((uint64_t*)chunk->code + 1) + offset.u64)))->byte };
 			StackVMPush(vm, push);
 		}
 		break; case OP_LOAD_WORD:
 		{
 			QWORD offset = unsafe_get_qword(&ip);
-			QWORD push = { .word = ((QWORD*)(chunk->code + (chunk->global_begin + offset.u64)))->word };
+			QWORD push = { .word = ((QWORD*)(chunk->code + (*((uint64_t*)chunk->code + 1) + offset.u64)))->word };
 			StackVMPush(vm, push);
 		}
 		break; case OP_LOAD_DWORD:
 		{
 			QWORD offset = unsafe_get_qword(&ip);
-			QWORD push = { .dword = ((QWORD*)(chunk->code + (chunk->global_begin + offset.u64)))->dword };
+			QWORD push = { .dword = ((QWORD*)(chunk->code + (*((uint64_t*)chunk->code + 1) + offset.u64)))->dword };
 			StackVMPush(vm, push);
 		}
 		break; case OP_LOAD_QWORD:
 		{
 			QWORD offset = unsafe_get_qword(&ip);
-			QWORD push = *(QWORD*)(chunk->code + (chunk->global_begin + offset.u64));
+			QWORD push = *(QWORD*)(chunk->code + (*((uint64_t*)chunk->code + 1) + offset.u64));
 			StackVMPush(vm, push);
 		}
 
@@ -110,7 +110,7 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			QWORD offset = unsafe_get_qword(&ip);
-			*(QWORD*)(chunk->code + (chunk->global_begin + offset.u64)) = StackVMTop(vm);
+			*(QWORD*)(chunk->code + (*((uint64_t*)chunk->code + 1) + offset.u64)) = StackVMTop(vm);
 		}
 
 		/******************************************************/
