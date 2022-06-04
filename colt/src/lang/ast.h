@@ -112,7 +112,7 @@ int impl_op_precedence(AST* ast, Token token);
 
 /// @brief Parses a binary expression or a primary expression.
 /// @param ast The AST from which to parse
-/// @param op_precedence The current_tkn operator precedence (which when first call should be 0)
+/// @param op_precedence The current_tkn operator precedence (which when first call should be -1)
 /// @return An Expr* representing either a binary or primary expression
 Expr* impl_binary_expr(AST* ast, int op_precedence);
 
