@@ -15,14 +15,20 @@ void ChunkPrintBytes(const Chunk* chunk)
 }
 
 void ChunkInit(Chunk* chunk)
-{
-	//which means no code start
-	chunk->code_begin = 0;
-	//which means no global_begin
-	chunk->global_begin = 0;
+{	
 	chunk->capacity = 128;
 	chunk->count = 0;
 	chunk->code = safe_malloc(128);
+
+	QWORD zero = { .u64 = 0 };
+	//CODE OFFSET
+	ChunkWriteQWORD(chunk, zero);
+	//GLOBAL OFFSET
+	ChunkWriteQWORD(chunk, zero);
+	//CONST OFFSET
+	ChunkWriteQWORD(chunk, zero);
+	//DEBUG OFFSET
+	ChunkWriteQWORD(chunk, zero);
 }
 
 void ChunkWriteOpCode(Chunk* chunk, OpCode code)
