@@ -24,11 +24,17 @@ bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr);
 IMPLEMENTATION HELPERS
 *************************************/
 
+/// @brief Generates the global memory pool
+/// @param chunk The Chunk where to write the byte code
+/// @param var_table The Table whose entries to write
+/// @return True if the pool has been written or False if the table was empty
+bool gen_global_pool(Chunk* chunk, const Table* var_table);
+
 /// @brief Function which dispatches the expression to the write `gen_code_...`
 /// @param chunk The Chunk where to write the byte-code
 /// @param expr The expression to dispatch
 /// @return True
-bool impl_gen_byte_code(Chunk* chunk, const Table* var_table, const Expr* expr);
+bool gen_byte_code(Chunk* chunk, const Table* var_table, const Expr* expr);
 
 /// @brief Generate code necessary for unary operators
 /// @param chunk The Chunk where to write the byte-code
