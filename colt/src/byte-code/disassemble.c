@@ -13,7 +13,8 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		printf("!EMPTY CHUNK!");
 		return;
 	}
-	for (uint64_t offset = 0; offset < chunk->count;)
+	uint64_t code = *((uint64_t*)chunk->code);
+	for (uint64_t offset = code; offset < chunk->count;)
 	{
 		offset = impl_chunk_print_code(chunk, offset);
 	}
