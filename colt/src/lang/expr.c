@@ -127,10 +127,6 @@ void freeExpr(Expr* ptr)
 
 	switch (ptr->identifier)
 	{
-	break; case EXPR_VAR:
-	{
-		//TODO: when implemented
-	}
 	break; case EXPR_FN:
 	{
 		//TODO: when implemented
@@ -157,7 +153,9 @@ void freeExpr(Expr* ptr)
 		freeExpr(cexpr->child);
 		safe_free(cexpr);
 	}
-	break; case EXPR_LITERAL:
+	break;
+	case EXPR_LITERAL:
+	case EXPR_VAR:
 		safe_free(ptr);
 	break; default:
 		colt_assert(false, "Expression identifier was invalid!");
