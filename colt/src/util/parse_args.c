@@ -288,10 +288,7 @@ void impl_run_byte(int argc, const char** argv, size_t current_argc)
 		if (checkIfValidFile(argv[2]))
 		{
 			Chunk chunk = ChunkDeserialize(argv[2]);
-			StackVM vm;
-			StackVMInit(&vm);
-			StackVMRun(&vm, &chunk);
-			StackVMFree(&vm);
+			print_error_string("NOT IMPLEMENTED!");
 			ChunkFree(&chunk);
 			exit(EXIT_NO_FAILURE);
 		}
