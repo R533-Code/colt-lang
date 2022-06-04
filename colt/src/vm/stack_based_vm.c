@@ -51,7 +51,7 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		switch (*(ip++)) //Dereferences then advances the pointer
 		{
 
-			/******************************************************/
+		/******************************************************/
 
 		break; case OP_PUSH_BYTE:
 		{
@@ -72,6 +72,33 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		{
 			QWORD qword = unsafe_get_qword(&ip);
 			StackVMPush(vm, qword);
+		}
+
+		/******************************************************/
+
+		break; case OP_LOAD_BYTE:
+		{
+			QWORD offset = unsafe_get_qword(&ip);
+			QWORD push = { .byte = (vm->var_table.entries + offset.u64)->value.byte };
+			StackVMPush(vm, push);
+		}
+		break; case OP_LOAD_WORD:
+		{
+			QWORD offset = unsafe_get_qword(&ip);
+			QWORD push = { .word = (vm->var_table.entries + offset.u64)->value.word };
+			StackVMPush(vm, push);
+		}
+		break; case OP_LOAD_DWORD:
+		{
+			QWORD offset = unsafe_get_qword(&ip);
+			QWORD push = { .dword = (vm->var_table.entries + offset.u64)->value.dword };
+			StackVMPush(vm, push);
+		}
+		break; case OP_LOAD_QWORD:
+		{
+			QWORD offset = unsafe_get_qword(&ip);
+			QWORD push = (vm->var_table.entries + offset.u64)->value;
+			StackVMPush(vm, push);
 		}
 
 		/******************************************************/
