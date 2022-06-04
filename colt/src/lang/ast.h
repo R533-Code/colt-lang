@@ -51,6 +51,13 @@ void ASTFree(AST* ast);
 /// @return True if no error were found
 bool ASTParse(AST* ast);
 
+/// @brief Prepare an AST to parse another StringView, leaving the variable table untouched.
+/// Resets the Scanner and error/warning count of the AST, and frees
+/// resources used by 'expr'. This is helpful for REPL.
+/// @param ast The AST to modify
+/// @param to_parse The StringView to parse
+void ASTResetScanner(AST* ast, StringView to_parse);
+
 /************************************
 IMPLEMENTATION HELPERS
 ************************************/

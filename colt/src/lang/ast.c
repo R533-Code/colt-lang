@@ -32,6 +32,20 @@ bool ASTParse(AST* ast)
 	return true;
 }
 
+void ASTResetScanner(AST* ast, StringView to_parse)
+{
+	freeExpr(ast->expr);
+
+	DO_IF_DEBUG_BUILD(
+		ast->expr = NULL;
+	);
+
+	ScannerFree(&ast->scan);
+	ScannerInit(&ast->scan, to_parse);
+	ast->error_nb = 0;
+	ast->warning_nb = 0;
+}
+
 void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lexeme, const char* format, ...)
 {
 	ast->warning_nb++;
