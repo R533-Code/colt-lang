@@ -10,7 +10,7 @@
 
 typedef struct
 {
-	StringView key;
+	String key;
 	QWORD value;
 	Type type;
 } Entry;

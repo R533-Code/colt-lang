@@ -10,11 +10,14 @@ void TableInit(Table* table)
 	table->count = 0;
 	table->entries = safe_malloc(sizeof(Entry) * 10);
 	for (size_t i = 0; i < table->capacity; i++)
-		table->entries[i].key.start = NULL;
+		table->entries[i].key.ptr = NULL;
 }
 
 void TableFree(Table* table)
 {
+	for (size_t i = 0; i < table->capacity; i++)
+		if (table->entries[i].key.ptr != NULL)
+			StringFree(&table->entries[i].key);
 	safe_free(table->entries);
 }
 
@@ -24,7 +27,7 @@ bool TableGet(Table* table, StringView key, QWORD* value)
 		return false;
 
 	const Entry* entry = table_find_entry(table->entries, table->capacity, key);
-	if (entry->key.start == NULL)
+	if (entry->key.ptr == NULL)
 		return false;
 
 	*value = entry->value;
@@ -34,7 +37,7 @@ bool TableGet(Table* table, StringView key, QWORD* value)
 bool TableContains(Table* table, StringView key)
 {
 	const Entry* entry = table_find_entry(table->entries, table->capacity, key);
-	if (entry->key.start == NULL)
+	if (entry->key.ptr == NULL)
 		return false;
 	return true;
 }
@@ -47,11 +50,11 @@ bool TableSet(Table* table, StringView strv, QWORD value, Type type)
 	}
 
 	Entry* entry = table_find_entry(table->entries, table->capacity, strv);
-	bool is_new = (entry->key.start == NULL);
+	bool is_new = (entry->key.ptr == NULL);
 	if (is_new)
 		table->count++;
-
-	entry->key = strv;
+	
+	StringViewToString(strv, &entry->key);
 	entry->value = value;
 	entry->type = type;
 	return is_new;
@@ -63,18 +66,18 @@ bool TableDelete(Table* table, StringView key)
 
 	// Find the entry.
 	Entry* entry = table_find_entry(table->entries, table->capacity, key);
-	if (entry->key.start == NULL)
+	if (entry->key.ptr == NULL)
 		return false;
 
-	entry->key.start = NULL;
-	DO_IF_DEBUG_BUILD(entry->key.end = NULL);
+	StringFree(&entry->key.ptr);
+	entry->key.ptr = NULL;
 	return true;
 }
 
 Entry* TableGetEntry(Table* table, StringView key)
 {
 	Entry* entry = table_find_entry(table->entries, table->capacity, key);
-	if (entry->key.start == NULL)
+	if (entry->key.ptr == NULL)
 		return NULL;
 	return entry;
 }
@@ -83,15 +86,17 @@ void TablePrint(const Table* table)
 {
 	fputs("============ TABLE ============\n", stdout);
 	if (table->count == 0)
-		fputs("!EMPTY!", stdout);
+		fputs("!EMPTY!\n", stdout);
 	for (size_t i = 0; i < table->capacity; i++)
 	{
-		if (table->entries[i].key.start == NULL)
+		if (table->entries[i].key.ptr == NULL)
 			continue;
-		printf("%.*s: typeof(%.*s)", (uint32_t)(table->entries[i].key.end - table->entries[i].key.start), table->entries[i].key.start,
+		printf("%s: typeof(%.*s)\n", table->entries[i].key.ptr,
 			(uint32_t)(table->entries[i].type.name.end - table->entries[i].type.name.start), table->entries[i].type.name.start
 		);
+		OpCode_Print(table->entries[i].value, (BuiltinTypeID)table->entries[i].type.type_id);
 	}
+
 }
 
 uint64_t hash_strv(StringView strv)
@@ -113,15 +118,15 @@ void table_grow_capacity(Table* table, uint64_t capacity)
 {
 	Entry* entries = safe_malloc(sizeof(Entry) * capacity);
 	for (size_t i = 0; i < capacity; i++)
-		entries[i].key.start = NULL;
+		entries[i].key.ptr = NULL;
 
 	for (size_t i = 0; i < table->capacity; i++)
 	{
 		const Entry* entry = &table->entries[i];
-		if (entry->key.start == NULL)
+		if (entry->key.ptr == NULL)
 			continue;
 
-		Entry* dest = table_find_entry(entries, capacity, entry->key);
+		Entry* dest = table_find_entry(entries, capacity, StringToStringView(&entry->key));
 		dest->key = entry->key;
 		dest->value = entry->value;
 	}
@@ -136,8 +141,10 @@ Entry* table_find_entry(Entry* entries, uint64_t capacity, StringView strv)
 	uint64_t index = hash_strv(strv) % capacity;
 	for (;;)
 	{
-		Entry* entry = &entries[index];
-		if (StringViewEqual(entry->key, strv) || entry->key.start == NULL)
+		Entry* entry = entries + index;
+		if (entry->key.ptr == NULL)
+			return entry;
+		else if (StringViewEqual(StringToStringView(&entry->key), strv))
 			return entry;
 
 		index = (index + 1) % capacity;
