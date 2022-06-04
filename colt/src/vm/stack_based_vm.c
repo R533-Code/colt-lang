@@ -4,11 +4,10 @@
 
 #include "stack_based_vm.h"
 
-void StackVMInit(StackVM* vm, Table* table)
+void StackVMInit(StackVM* vm)
 {
 	//Point to index 0 of the stack (which means empty)
 	vm->stack_top = vm->stack;
-	vm->var_table = *table;
 }
 
 void StackVMFree(StackVM* vm)
@@ -45,7 +44,7 @@ uint64_t StackVMSize(const StackVM* vm)
 
 uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 {
-	uint8_t* ip = chunk->code;
+	uint8_t* ip = chunk->code + chunk->code_begin;
 	for (;;)
 	{
 		switch (*(ip++)) //Dereferences then advances the pointer
@@ -79,25 +78,25 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		break; case OP_LOAD_BYTE:
 		{
 			QWORD offset = unsafe_get_qword(&ip);
-			QWORD push = { .byte = (vm->var_table.entries + offset.u64)->value.byte };
+			QWORD push = { .byte = ((QWORD*)(chunk->code + (chunk->global_begin + offset.u64)))->byte };
 			StackVMPush(vm, push);
 		}
 		break; case OP_LOAD_WORD:
 		{
 			QWORD offset = unsafe_get_qword(&ip);
-			QWORD push = { .word = (vm->var_table.entries + offset.u64)->value.word };
+			QWORD push = { .word = ((QWORD*)(chunk->code + (chunk->global_begin + offset.u64)))->word };
 			StackVMPush(vm, push);
 		}
 		break; case OP_LOAD_DWORD:
 		{
 			QWORD offset = unsafe_get_qword(&ip);
-			QWORD push = { .dword = (vm->var_table.entries + offset.u64)->value.dword };
+			QWORD push = { .dword = ((QWORD*)(chunk->code + (chunk->global_begin + offset.u64)))->dword };
 			StackVMPush(vm, push);
 		}
 		break; case OP_LOAD_QWORD:
 		{
 			QWORD offset = unsafe_get_qword(&ip);
-			QWORD push = (vm->var_table.entries + offset.u64)->value;
+			QWORD push = *(QWORD*)(chunk->code + (chunk->global_begin + offset.u64));
 			StackVMPush(vm, push);
 		}
 
@@ -111,7 +110,7 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			QWORD offset = unsafe_get_qword(&ip);
-			(vm->var_table.entries + offset.u64)->value = StackVMTop(vm);
+			*(QWORD*)(chunk->code + (chunk->global_begin + offset.u64)) = StackVMTop(vm);
 		}
 
 		/******************************************************/
