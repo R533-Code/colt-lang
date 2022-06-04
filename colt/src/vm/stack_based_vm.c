@@ -4,15 +4,16 @@
 
 #include "stack_based_vm.h"
 
-void StackVMInit(StackVM* vm)
+void StackVMInit(StackVM* vm, Table* table)
 {
 	//Point to index 0 of the stack (which means empty)
 	vm->stack_top = vm->stack;
+	vm->var_table = *table;
 }
 
 void StackVMFree(StackVM* vm)
 {
-	//Nothing to free
+	//Nothing to free, yet
 }
 
 void StackVMPush(StackVM* vm, QWORD value)
