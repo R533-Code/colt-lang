@@ -17,18 +17,8 @@ void ChunkPrintBytes(const Chunk* chunk)
 void ChunkInit(Chunk* chunk)
 {	
 	chunk->capacity = 128;
-	chunk->count = 0;
+	chunk->count = 4 * sizeof(QWORD);
 	chunk->code = safe_malloc(128);
-
-	QWORD zero = { .u64 = 0 };
-	//CODE OFFSET
-	ChunkWriteQWORD(chunk, zero);
-	//GLOBAL OFFSET
-	ChunkWriteQWORD(chunk, zero);
-	//CONST OFFSET
-	ChunkWriteQWORD(chunk, zero);
-	//DEBUG OFFSET
-	ChunkWriteQWORD(chunk, zero);
 }
 
 void ChunkWriteOpCode(Chunk* chunk, OpCode code)
