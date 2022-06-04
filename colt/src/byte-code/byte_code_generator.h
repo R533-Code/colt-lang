@@ -16,8 +16,9 @@
 
 /// @brief Recursively converts an expression to byte-code in a Chunk
 /// @param chunk The Chunk in which to write the byte-code
+/// @param var_table Table containing variables
 /// @param expr The expression to convert
-bool generateByteCode(Chunk* chunk, const Expr* expr);
+bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr);
 
 /*************************************
 IMPLEMENTATION HELPERS
@@ -27,21 +28,23 @@ IMPLEMENTATION HELPERS
 /// @param chunk The Chunk where to write the byte-code
 /// @param expr The expression to dispatch
 /// @return True
-bool impl_gen_byte_code(Chunk* chunk, const Expr* expr);
+bool impl_gen_byte_code(Chunk* chunk, const Table* var_table, const Expr* expr);
 
 /// @brief Generate code necessary for unary operators
 /// @param chunk The Chunk where to write the byte-code
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
-bool impl_gen_code_unary(Chunk* chunk, const UnaryExpr* ptr);
+bool impl_gen_code_unary(Chunk* chunk, const Table* var_table, const UnaryExpr* ptr);
 
 /// @brief Generate code necessary for binary operators
 /// @param chunk The Chunk where to write the byte-code
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
-bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr);
+bool impl_gen_code_binary(Chunk* chunk, const Table* var_table, const BinaryExpr* ptr);
 
-/// @brief Generate code necessary for literals
+/// @brief Generate code necessary for literals.
+/// As literals never have child expressions, it doesn't need the variable
+/// Table.
 /// @param chunk The Chunk where to write the byte-code
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
@@ -51,7 +54,16 @@ bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr);
 /// @param chunk The Chunk where to write the byte-code
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
-bool impl_gen_code_convert(Chunk* chunk, const ConvertExpr* ptr);
+bool impl_gen_code_convert(Chunk* chunk, const Table* var_table, const ConvertExpr* ptr);
+
+/// @brief Generate code necessary for variable to r-value conversion
+/// @param chunk The Chunk where to write the byte-code
+/// @param var_table The variable table
+/// @param ptr The pointer to the expression
+/// @return True if no error are encountered
+bool impl_gen_code_variable(Chunk* chunk, const Table* var_table, const VariableExpr* ptr);
+
+bool gen_variable_assigment(Chunk* chunk, const Table* var_table, const BinaryExpr* ptr);
 
 /// @brief Generate short jump code to ensure the last pushed operand is 'short_jump' 'cmp_to'
 /// @param chunk The Chunk where to write the byte-code

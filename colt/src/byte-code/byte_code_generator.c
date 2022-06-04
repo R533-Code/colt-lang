@@ -3,9 +3,9 @@
 */
 #include "byte_code_generator.h"
 
-bool generateByteCode(Chunk* chunk, const Expr* expr)
+bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr)
 {
-	if (impl_gen_byte_code(chunk, expr))
+	if (impl_gen_byte_code(chunk, var_table, expr))
 	{
 		//FOR DEBUG PURPOSE
 		ChunkWriteOpCode(chunk, OP_PRINT);
@@ -23,36 +23,43 @@ bool generateByteCode(Chunk* chunk, const Expr* expr)
 IMPLEMENTATION HELPERS
 *************************************/
 
-bool impl_gen_byte_code(Chunk* chunk, const Expr* expr)
+bool impl_gen_byte_code(Chunk* chunk, const Table* var_table, const Expr* expr)
 {
 	colt_assert(expr != NULL, "Generation should never happen if AST was not valid!");
 	switch (expr->identifier)
 	{
 	break; case EXPR_UNARY:
-		return impl_gen_code_unary(chunk, (const UnaryExpr*)expr);
+		return impl_gen_code_unary(chunk, var_table, (const UnaryExpr*)expr);
 	break; case EXPR_BINARY:
-		return impl_gen_code_binary(chunk, (const BinaryExpr*)expr);
+		return impl_gen_code_binary(chunk, var_table, (const BinaryExpr*)expr);
 	break; case EXPR_LITERAL:
 		return impl_gen_code_literal(chunk, (const LiteralExpr*)expr);
 	break; case EXPR_CONVERT:
-		return impl_gen_code_convert(chunk, (const ConvertExpr*)expr);
+		return impl_gen_code_convert(chunk, var_table, (const ConvertExpr*)expr);
+	break; case EXPR_VAR:
+		return impl_gen_code_variable(chunk, var_table, (const VariableExpr*)expr);
+	break; default:
+		colt_assert(false, "NOT IMPLEMENTED YET!");
 	}
 	return true;
 }
 
-bool impl_gen_code_unary(Chunk* chunk, const UnaryExpr* ptr)
+bool impl_gen_code_unary(Chunk* chunk, const Table* var_table, const UnaryExpr* ptr)
 {
 	//TODO: should use Type to actually dispatch call depending on operator
 	switch (ptr->expr_operator)
 	{
 	break; case TKN_OPERATOR_MINUS:
-		impl_gen_byte_code(chunk, ptr->child);
+		impl_gen_byte_code(chunk, var_table, ptr->child);
 		ChunkWriteOpCode(chunk, OP_NEGATE);
-		ChunkWriteOperand(chunk, ptr->expr_type.type_id);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	break; case TKN_OPERATOR_PLUS:
+		//DOES NOT DO ANYTHING
 	break; case TKN_OPERATOR_BANG:
 	break; case TKN_OPERATOR_TILDE:
-		//DOES NOT DO ANYTHING
+		impl_gen_byte_code(chunk, var_table, ptr->child);
+		ChunkWriteOpCode(chunk, OP_BIT_NOT);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	break; default:
 		colt_assert(false, "Operator was not unary!");
 		return false;
@@ -60,10 +67,13 @@ bool impl_gen_code_unary(Chunk* chunk, const UnaryExpr* ptr)
 	return true;
 }
 
-bool impl_gen_code_binary(Chunk* chunk, const BinaryExpr* ptr)
+bool impl_gen_code_binary(Chunk* chunk, const Table* var_table, const BinaryExpr* ptr)
 {
-	impl_gen_byte_code(chunk, ptr->lhs);
-	impl_gen_byte_code(chunk, ptr->rhs);
+	if (ptr->expr_operator == TKN_OPERATOR_EQUAL)
+		return gen_variable_assigment(chunk, var_table, ptr);
+
+	impl_gen_byte_code(chunk, var_table, ptr->lhs);
+	impl_gen_byte_code(chunk, var_table, ptr->rhs);
 	colt_assert(ptr->expr_type.type_id <= ID_COLT_DOUBLE, "Type ID should be of that of a built-in type!");
 	switch (ptr->expr_operator)
 	{
@@ -193,12 +203,68 @@ bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr)
 	return true;
 }
 
-bool impl_gen_code_convert(Chunk* chunk, const ConvertExpr* ptr)
+bool impl_gen_code_convert(Chunk* chunk, const Table* var_table, const ConvertExpr* ptr)
 {
-	impl_gen_byte_code(chunk, ptr->child);
+	impl_gen_byte_code(chunk, var_table, ptr->child);
 	ChunkWriteOpCode(chunk, OP_CONVERT);
 	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->child->expr_type.type_id);
 	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);	
+	return true;
+}
+
+bool impl_gen_code_variable(Chunk* chunk, const Table* var_table, const VariableExpr* ptr)
+{
+	Entry* entry = table_find_entry(var_table->entries, var_table->capacity, ptr->var_name);
+	
+	colt_assert(entry->key.start != NULL, "Variable was not found!");
+
+	QWORD offset = { .u64 = entry - var_table->entries };
+	
+	switch (ptr->expr_type.byte_size)
+	{
+	break; case 1:
+		ChunkWriteOpCode(chunk, OP_LOAD_BYTE);
+	break; case 2:
+		ChunkWriteOpCode(chunk, OP_LOAD_WORD);
+	break; case 4:
+		ChunkWriteOpCode(chunk, OP_LOAD_DWORD);
+	break; case 8:
+		ChunkWriteOpCode(chunk, OP_LOAD_QWORD);
+	break; default:
+		colt_assert(false, "Unexpected operand for LOAD!");
+	}
+	ChunkWriteQWORD(chunk, offset);
+	return true;
+}
+
+bool gen_variable_assigment(Chunk* chunk, const Table* var_table, const BinaryExpr* ptr)
+{
+	impl_gen_byte_code(chunk, var_table, ptr->rhs);
+
+	colt_assert(ptr->lhs->identifier == EXPR_VAR, "Left hand side should be a variable!");
+	if (ptr->lhs->identifier != EXPR_VAR)
+		return false;
+
+	const Entry* entry = table_find_entry(var_table->entries, var_table->capacity, ((VariableExpr*)ptr->lhs)->var_name);
+
+	colt_assert(entry->key.start != NULL, "Variable was not found!");
+
+	QWORD offset = { .u64 = entry - var_table->entries };
+
+	switch (ptr->expr_type.byte_size)
+	{
+	break; case 1:
+		ChunkWriteOpCode(chunk, OP_STORE_BYTE);
+	break; case 2:
+		ChunkWriteOpCode(chunk, OP_STORE_WORD);
+	break; case 4:
+		ChunkWriteOpCode(chunk, OP_STORE_DWORD);
+	break; case 8:
+		ChunkWriteOpCode(chunk, OP_STORE_QWORD);
+	break; default:
+		colt_assert(false, "Unexpected operand for STORE!");
+	}
+	ChunkWriteQWORD(chunk, offset);
 	return true;
 }
 
