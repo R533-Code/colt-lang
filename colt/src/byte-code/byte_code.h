@@ -21,21 +21,30 @@ typedef enum
 	//IMMEDIATE VALUES LOADING
 	/// @brief Specifies that the next byte-code is an immediate byte
 	OP_PUSH_BYTE,
-	/// @brief Specifies that a 2 bytes (aligned) WORD is written in the following byte-codes
+	/// @brief Specifies that a 2 bytes (aligned) WORD is written in the following bytes
 	OP_PUSH_WORD,
-	/// @brief Specifies that a 4 bytes (aligned) DWORD is written in the following byte-codes
+	/// @brief Specifies that a 4 bytes (aligned) DWORD is written in the following bytes
 	OP_PUSH_DWORD,
-	/// @brief Specifies that an 8 bytes (aligned) QWORD is written in the following byte-codes
+	/// @brief Specifies that an 8 bytes (aligned) QWORD is written in the following bytes
 	OP_PUSH_QWORD,
 
-	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following byte, which gives an offset to the global BYTE to load
+	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives an offset to the global BYTE to load
 	OP_LOAD_BYTE,
-	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following byte, which gives an offset to the global WORD to load
+	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives an offset to the global WORD to load
 	OP_LOAD_WORD,
-	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following byte, which gives an offset to the global DWORD to load
+	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives an offset to the global DWORD to load
 	OP_LOAD_DWORD,
-	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following byte, which gives an offset to the global QWORD to load
+	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives an offset to the global QWORD to load
 	OP_LOAD_QWORD,
+
+	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives an offset to the global BYTE to write to
+	OP_STORE_BYTE,
+	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives an offset to the global WORD to write to
+	OP_STORE_WORD,
+	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives an offset to the global DWORD to write to
+	OP_STORE_DWORD,
+	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives an offset to the global QWORD to write to
+	OP_STORE_QWORD,
 
 	/// @brief Specifies that the next byte is an operand to which to cast a QWORD before negating its sign
 	OP_NEGATE,
