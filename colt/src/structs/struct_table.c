@@ -10,7 +10,7 @@ void TableInit(Table* table)
 	table->count = 0;
 	table->entries = safe_malloc(sizeof(Entry) * 10);
 	for (size_t i = 0; i < table->capacity; i++)
-		table->entries->key.start = NULL;
+		table->entries[i].key.start = NULL;
 }
 
 void TableFree(Table* table)
@@ -98,7 +98,7 @@ void table_grow_capacity(Table* table, uint64_t capacity)
 {
 	Entry* entries = safe_malloc(sizeof(Entry) * capacity);
 	for (size_t i = 0; i < capacity; i++)
-		entries->key.start = NULL;
+		entries[i].key.start = NULL;
 
 	for (size_t i = 0; i < table->capacity; i++)
 	{
