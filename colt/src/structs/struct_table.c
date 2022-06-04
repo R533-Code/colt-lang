@@ -6,6 +6,7 @@
 
 void TableInit(Table* table)
 {
+	table->counter = 0;
 	table->capacity = 10;
 	table->count = 0;
 	table->entries = safe_malloc(sizeof(Entry) * 10);
@@ -54,7 +55,10 @@ bool TableSet(Table* table, StringView strv, QWORD value, Type type)
 	Entry* entry = table_find_entry(table->entries, table->capacity, strv);
 	bool is_new = (entry->key.ptr == NULL);
 	if (is_new)
+	{
+		entry->counter_nb = table->count++;
 		table->count++;
+	}
 	
 	StringViewToString(strv, &entry->key);
 	entry->value = value;

@@ -13,12 +13,18 @@ typedef struct
 	String key;
 	QWORD value;
 	Type type;
+	uint64_t counter_nb;
 } Entry;
 
 typedef struct
 {
+	/// @brief A counter incremented at each pushed item
+	uint64_t counter;
+	/// @brief The number of active entries in the Table
 	uint64_t count;
+	/// @brief The capacity of the Table
 	uint64_t capacity;
+	/// @brief The pointer to the entries beginning
 	Entry* entries;
 } Table;
 
