@@ -137,6 +137,7 @@ typedef struct
 	Expr* child;
 } ConvertExpr;
 
+/// @brief Represents a variable read/write
 typedef struct
 {
 	/// @brief The line number
@@ -247,5 +248,10 @@ bool is_type_floating(uint64_t type);
 /// @param type The unsigned type ID
 /// @return The signed type equivalent
 Type type_unsigned_to_signed(uint64_t type);
+
+/// @brief Returns the type from a BuiltinTypeID
+/// @param id The ID to representing a buit-in type
+/// @return A Type corresponding to the ID
+Type type_get_from_id(BuiltinTypeID id);
 
 #endif //HG_COLT_EXPR
