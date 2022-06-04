@@ -120,6 +120,8 @@ typedef enum
 	TKN_DOUBLE,
 	/// @brief true|false
 	TKN_BOOL,
+	/// @brief bool, float, double, [ui](8|16|32|64)
+	TKN_BUILTIN_TYPE,
 
 	/*********************
 	* KEYWORDS

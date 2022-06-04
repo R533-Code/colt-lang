@@ -107,6 +107,8 @@ const char* TokenToString(Token tkn)
 		return "TKN_DOUBLE";
 	case TKN_BOOL:
 		return "TKN_BOOL";
+	case TKN_BUILTIN_TYPE:
+		return "TKN_BUILTIN_TYPE";
 
 	/*********************
 	* KEYWORDS
