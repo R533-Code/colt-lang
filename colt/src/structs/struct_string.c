@@ -300,9 +300,15 @@ String StringGetFileContent(const char* path)
 	return str;
 }
 
-StringView StringToStringView(const String* str)
+StringView StringToStringViewWithNUL(const String* str)
 {
 	StringView strv = { str->ptr, str->ptr + str->size };
+	return strv;
+}
+
+StringView StringToStringView(const String* str)
+{
+	StringView strv = { str->ptr, str->ptr + str->size - 1};
 	return strv;
 }
 
