@@ -17,7 +17,6 @@
 /// @brief VM containing a stack
 typedef struct
 {
-	Table var_table;
 	/// @brief The pointer to the stack's top.
 	/// Points to where the next push should be written.
 	QWORD* stack_top;
