@@ -5,8 +5,12 @@
 
 bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr)
 {
-	gen_global_pool(chunk, var_table);
-	
+	colt_assert(chunk->count == 32, "Chunk should be initialized!");
+
+	//write GLOBAL offset
+	*((uint64_t*)(chunk->code) + 1) = gen_global_pool(chunk, var_table);
+	//write CODE offset, which starts after the global pool
+	*((uint64_t*)(chunk->code)) = *((uint64_t*)(chunk->code) + 1) + var_table->count * sizeof(QWORD);
 	if (gen_byte_code(chunk, var_table, expr))
 	{
 		//FOR DEBUG PURPOSE
@@ -21,11 +25,11 @@ bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr)
 	return false;
 }
 
-bool gen_global_pool(Chunk* chunk, const Table* var_table)
+uint64_t gen_global_pool(Chunk* chunk, const Table* var_table)
 {
+	uint64_t global_begin = chunk->count;
 	if (var_table->count == 0)
-		return false;
-	ChunkWriteOpCode(chunk, OP_BEGIN_GLOBAL);
+		return global_begin;
 	size_t i = 0;
 	//we only want to save the offset the first time we write a QWORD
 	for (; i < var_table->capacity; i++)
@@ -33,10 +37,12 @@ bool gen_global_pool(Chunk* chunk, const Table* var_table)
 		//not active entry
 		if (var_table->entries[i].key.ptr == NULL)
 			continue;		
-		chunk->global_begin = chunk->count;
+		global_begin = chunk->count;
 		//We add padding which gives us the offset to the first
 		//global variable
-		chunk->global_begin += ChunkWriteQWORD(chunk, var_table->entries[i].value);
+		global_begin += ChunkWriteQWORD(chunk, var_table->entries[i].value);
+
+		i++;
 		break;
 	}
 	for (; i < var_table->capacity; i++)
@@ -46,7 +52,7 @@ bool gen_global_pool(Chunk* chunk, const Table* var_table)
 			continue;
 		ChunkWriteQWORD(chunk, var_table->entries[i].value);
 	}
-	return true;
+	return global_begin;
 }
 
 /*************************************

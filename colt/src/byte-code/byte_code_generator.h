@@ -27,8 +27,8 @@ IMPLEMENTATION HELPERS
 /// @brief Generates the global memory pool
 /// @param chunk The Chunk where to write the byte code
 /// @param var_table The Table whose entries to write
-/// @return True if the pool has been written or False if the table was empty
-bool gen_global_pool(Chunk* chunk, const Table* var_table);
+/// @return The offset of the GLOBAL pool
+uint64_t gen_global_pool(Chunk* chunk, const Table* var_table);
 
 /// @brief Function which dispatches the expression to the write `gen_code_...`
 /// @param chunk The Chunk where to write the byte-code
