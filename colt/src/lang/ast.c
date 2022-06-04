@@ -24,6 +24,8 @@ void ASTFree(AST* ast)
 
 bool ASTParse(AST* ast, StringView to_parse)
 {
+	ast->error_nb = 0;
+	ast->warning_nb = 0;
 	freeExpr(ast->expr);
 	ScannerInit(&ast->scan, to_parse);
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
