@@ -130,4 +130,6 @@ Expr* impl_expression(AST* ast);
 
 Expr* impl_variable_expression(AST* ast);
 
+Expr* impl_var_variable_declaration(AST* ast);
+
 #endif //HG_COLT_AST

@@ -26,7 +26,7 @@ void ASTFree(AST* ast)
 bool ASTParse(AST* ast)
 {
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
-	ast->expr = impl_binary_expr(ast, 0);
+	ast->expr = impl_expression(ast);
 	if (ast->error_nb != 0)
 		return false;
 	return true;
@@ -259,28 +259,28 @@ Expr* impl_primary_expr(AST* ast)
 
 	break; case TKN_I8:
 		value.i8 = ast->scan.parsed_value.i8;
-		type = ColtInt8;
+		type = ColtI8;
 	break; case TKN_I16:
 		value.i16 = ast->scan.parsed_value.i16;
-		type = ColtInt16;
+		type = ColtI16;
 	break; case TKN_I32:
 		value.i32 = ast->scan.parsed_value.i32;
-		type = ColtInt32;
+		type = ColtI32;
 	break; case TKN_I64:
 		value.i64 = ast->scan.parsed_value.i64;
-		type = ColtInt64;
+		type = ColtI64;
 	break; case TKN_U8:
 		value.u8 = ast->scan.parsed_value.u8;
-		type = ColtUInt8;
+		type = ColtU8;
 	break; case TKN_U16:
 		value.u16 = ast->scan.parsed_value.u16;
-		type = ColtUInt16;
+		type = ColtU16;
 	break; case TKN_U32:
 		value.u32 = ast->scan.parsed_value.u32;
-		type = ColtUInt32;
+		type = ColtU32;
 	break; case TKN_U64:
 		value.u64 = ast->scan.parsed_value.u64;
-		type = ColtUInt64;
+		type = ColtU64;
 	break; case TKN_FLOAT:
 		value.f = ast->scan.parsed_value.f;
 		type = ColtFloat;
@@ -394,21 +394,85 @@ Expr* impl_paren_expr(AST* ast)
 
 Expr* impl_expression(AST* ast)
 {
-	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+	//ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	switch (ast->current_tkn)
 	{
-	//case TKN_KEYWORD_VAR:
+	case TKN_KEYWORD_VAR:
+		return impl_var_variable_declaration(ast);
 	case TKN_IDENTIFIER:
-		impl_variable_expression(ast);		
+		return impl_binary_expr(ast, 0);
 	default:
-		break;
+		return impl_binary_expr(ast, 0);
 	}
 }
 
-Expr* impl_variable_expression(AST* ast)
+Expr* impl_var_variable_declaration(AST* ast)
 {
-	Expr* expr = impl_binary_expr(ast, 0);
-	if (!expr)
-		return expr;
-	//TableGet(ast->var_table, 
+	Token var_type = ast->current_tkn;
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+	if (ast->current_tkn != TKN_IDENTIFIER)
+	{
+		ast_gen_error(ast,
+			ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+			"Expected an identifier!"
+		);
+		return NULL;
+	}
+	StringView decl_identifier = ScannerGetIdentifier(&ast->scan);
+	StringView identifier_line = ScannerGetCurrentLine(&ast->scan);
+	uint64_t identifier_line_nb = ast->scan.current_line;
+	
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+
+	if (ast->current_tkn == TKN_SEMICOLON)
+	{
+		ast_gen_error(ast,
+			ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+			"Variable declared with 'var' should always be initialized!"
+		);
+		return NULL;
+	}
+	else if (ast->current_tkn == TKN_OPERATOR_EQUAL)
+	{
+		//The operator source code's location
+		StringView line = ScannerGetCurrentLine(&ast->scan);
+		StringView lexeme = ScannerGetCurrentLexeme(&ast->scan);
+		uint64_t line_nb = ast->scan.current_line;
+
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+		Expr* to_assign = impl_binary_expr(ast, 0);
+		if (!to_assign)
+			return NULL;
+		if (ast->current_tkn != TKN_SEMICOLON)
+		{
+			ast_gen_error(ast,
+				ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+				"Expected a ';'!"
+			);
+			return NULL;
+		}
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+		
+		QWORD zero = { .u64 = 0 };
+		if (!TableSet(&ast->var_table, decl_identifier, zero, ast->scan.parsed_typename))
+		{
+			ast_gen_error(ast,
+				ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+				"Variable with identifier '%.*s' already exists!", decl_identifier.end - decl_identifier.start, decl_identifier.start
+			);
+			return NULL;
+		}
+
+		return makeBinaryExpr(
+			makeVariableExpr(decl_identifier, to_assign->expr_type,
+				identifier_line_nb, identifier_line, decl_identifier),
+			TKN_OPERATOR_EQUAL, to_assign, to_assign->expr_type,
+			line_nb, lexeme, line
+		);
+	}
+	ast_gen_error(ast,
+		ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+		"Expected a ';' or an assignment!"
+	);
+	return NULL;
 }
