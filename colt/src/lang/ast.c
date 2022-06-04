@@ -394,7 +394,6 @@ Expr* impl_paren_expr(AST* ast)
 
 Expr* impl_expression(AST* ast)
 {
-	//ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	switch (ast->current_tkn)
 	{
 	case TKN_KEYWORD_VAR:
