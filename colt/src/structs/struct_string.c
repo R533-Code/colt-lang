@@ -311,11 +311,38 @@ void StringViewPrint(const StringView strv)
 	printf("%.*s", (int)(strv.end - strv.start), strv.start);
 }
 
+void StringViewToString(const StringView strv, String* str)
+{
+	size_t size = (strv.end - strv.start) + 1;
+	str->size = size;
+	if (size > STRING_SMALL_BUFFER_OPTIMIZATION)
+	{
+		str->capacity = size;
+		str->ptr = safe_malloc(str->capacity);
+	}
+	else
+	{
+		str->capacity = STRING_SMALL_BUFFER_OPTIMIZATION;
+		str->ptr = str->buffer;
+	}
+	memcpy(str->ptr, strv.start, size - 1);
+	str->ptr[size - 1] = '\0';
+}
+
 bool StringViewEqual(StringView lhs, StringView rhs)
 {
 	if (lhs.end - lhs.start != rhs.end - rhs.start)
 		return false;
 	return memcmp(lhs.start, rhs.start, lhs.end - lhs.start) == 0;
+}
+
+bool StringViewEqualString(const StringView lhs, const String* str)
+{
+	if (lhs.end - lhs.start - (*(lhs.end - 1) == '\0') != str->size - 1)
+	{
+		return false;
+	}
+	return memcmp(lhs.start, str->ptr, str->size - 1) == 0;
 }
 
 bool StringViewContains(StringView lhs, StringView rhs)

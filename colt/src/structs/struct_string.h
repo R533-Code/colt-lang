@@ -158,6 +158,17 @@ StringView StringToStringView(const String* str);
 /// @param strv The view to print
 void StringViewPrint(const StringView strv);
 
+/// @brief Initializes a String by copying the content of a StringView to it
+/// @param strv The StringView to copy
+/// @param str The String to initialize
+void StringViewToString(const StringView strv, String* str);
+
+/// @brief Compares the characters in a StringView and a String
+/// @param lhs The StringView to compare
+/// @param str The String to compare to
+/// @return True if the characters are the same
+bool StringViewEqualString(const StringView lhs, const String* str);
+
 /// @brief Check if 2 string views are equal
 /// @param lhs The left hand side
 /// @param rhs The right hand side
