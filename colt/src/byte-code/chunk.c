@@ -16,9 +16,11 @@ void ChunkPrintBytes(const Chunk* chunk)
 
 void ChunkInit(Chunk* chunk)
 {
-	chunk->capacity = 32;
+	//which means no global_begin
+	chunk->global_begin = 0;
+	chunk->capacity = 128;
 	chunk->count = 0;
-	chunk->code = safe_malloc(32);
+	chunk->code = safe_malloc(128);
 }
 
 void ChunkWriteOpCode(Chunk* chunk, OpCode code)
