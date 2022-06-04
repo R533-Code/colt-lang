@@ -421,7 +421,7 @@ Expr* impl_expression(AST* ast)
 	case TKN_KEYWORD_VAR:
 	case TKN_BUILTIN_TYPE:
 		expr = impl_variable_declaration(ast);
-	default:
+	break; default:
 		expr = impl_binary_expr(ast, -1);
 	}
 	if (ast->current_tkn != TKN_SEMICOLON)
