@@ -16,8 +16,10 @@ void TableInit(Table* table)
 void TableFree(Table* table)
 {
 	for (size_t i = 0; i < table->capacity; i++)
+	{
 		if (table->entries[i].key.ptr != NULL)
 			StringFree(&table->entries[i].key);
+	}
 	safe_free(table->entries);
 }
 
@@ -69,7 +71,7 @@ bool TableDelete(Table* table, StringView key)
 	if (entry->key.ptr == NULL)
 		return false;
 
-	StringFree(&entry->key.ptr);
+	StringFree(&entry->key);
 	entry->key.ptr = NULL;
 	return true;
 }
