@@ -134,6 +134,8 @@ const char* TokenToString(Token tkn)
 		return "TKN_KEYWORD_SWITCH";
 	case TKN_KEYWORD_WHILE:
 		return "TKN_KEYWORD_WHILE";
+	case TKN_KEYWORD_VAR:
+		return "TKN_KEYWORD_VAR";
 
 	/*********************
 	* MISCELLANEOUS

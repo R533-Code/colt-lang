@@ -147,6 +147,8 @@ typedef enum
 	TKN_KEYWORD_SWITCH,
 	/// @brief while
 	TKN_KEYWORD_WHILE,
+	/// @brief var
+	TKN_KEYWORD_VAR,
 
 	/*********************
 	* MISCELLANEOUS
