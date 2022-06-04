@@ -659,10 +659,6 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 {
 	const char* str = scan->parsed_string.ptr;
 	
-	//TODO: optimize better using len
-	//size - 1 as we don't care about comparing the NUL terminator
-	//size_t len = string->size - 1;
-	
 	if (scan->parsed_string.size == 2)
 		return TKN_IDENTIFIER;
 
@@ -718,6 +714,9 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 	break; case 'w':
 		if (strcmp(str, "while") == 0)
 			return TKN_KEYWORD_WHILE;
+	break; case 'v':
+		if (strcmp(str, "var") == 0)
+			return TKN_KEYWORD_VAR;
 	break; default:
 		return TKN_IDENTIFIER;
 	}
