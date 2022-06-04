@@ -126,10 +126,14 @@ Expr* impl_unary_expr(AST* ast);
 /// @return An Expr* representing the parsed expression
 Expr* impl_paren_expr(AST* ast);
 
+/// @brief An expression is either a variable declaration or a binary expression
+/// @param ast The AST from which to parse
+/// @return An Expr* representing the parsed expression or NULL for errors
 Expr* impl_expression(AST* ast);
 
-Expr* impl_variable_expression(AST* ast);
-
+/// @brief Parses a variable declaration that uses 'var' as a type declaration
+/// @param ast The AST from which to parse
+/// @return An Expr* representing the parsed expression or NULL for errors
 Expr* impl_var_variable_declaration(AST* ast);
 
 #endif //HG_COLT_AST
