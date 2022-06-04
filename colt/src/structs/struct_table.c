@@ -79,6 +79,21 @@ Entry* TableGetEntry(Table* table, StringView key)
 	return entry;
 }
 
+void TablePrint(const Table* table)
+{
+	fputs("============ TABLE ============\n", stdout);
+	if (table->count == 0)
+		fputs("!EMPTY!", stdout);
+	for (size_t i = 0; i < table->capacity; i++)
+	{
+		if (table->entries[i].key.start == NULL)
+			continue;
+		printf("%.*s: typeof(%.*s)", (uint32_t)(table->entries[i].key.end - table->entries[i].key.start), table->entries[i].key.start,
+			(uint32_t)(table->entries[i].type.name.end - table->entries[i].type.name.start), table->entries[i].type.name.start
+		);
+	}
+}
+
 uint64_t hash_strv(StringView strv)
 {
 	//FNV-1a hashing method

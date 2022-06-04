@@ -38,6 +38,10 @@ bool TableSet(Table* table, StringView strv, QWORD value, Type type);
 
 bool TableDelete(Table* table, StringView key);
 
+/// @brief Prints the content of a Table
+/// @param table The Table whose content to print
+void TablePrint(const Table* table);
+
 Entry* TableGetEntry(Table* table, StringView key);
 
 /**************************************
