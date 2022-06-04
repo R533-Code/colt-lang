@@ -415,10 +415,8 @@ Expr* impl_expression(AST* ast)
 	{
 	case TKN_KEYWORD_VAR:
 		return impl_var_variable_declaration(ast);
-	case TKN_IDENTIFIER:
-		return impl_binary_expr(ast, 0);
 	default:
-		return impl_binary_expr(ast, 0);
+		return impl_binary_expr(ast, -1);
 	}
 }
 
