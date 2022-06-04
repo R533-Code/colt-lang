@@ -29,29 +29,37 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 		/******************************************************/
 
 	case OP_PUSH_BYTE:
-		colt_assert(offset + 1 <= chunk->count, "Missing byte after OP_PUSH_BYTE!");
 		impl_print_hex_instruction("OP_PUSH_BYTE", ChunkGetBYTE(chunk, &offset).u8);
 		return offset;
 
 	case OP_PUSH_WORD:
-		colt_assert(offset + ((uint64_t)(chunk->code + offset) & 1) + sizeof(int16_t) <= chunk->count, "Missing int16 after OP_PUSH_WORD");
 		impl_print_hex_instruction("OP_PUSH_WORD", ChunkGetWORD(chunk, &offset).u16);
 		return offset;
 
 	case OP_PUSH_DWORD:
-		colt_assert(offset + ((uint64_t)(chunk->code + offset) % 4) + sizeof(int32_t) <= chunk->count, "Missing int32 after OP_PUSH_DWORD");
 		impl_print_hex_instruction("OP_PUSH_DWORD", ChunkGetDWORD(chunk, &offset).u32);
 		return offset;
 
 	case OP_PUSH_QWORD:
-		colt_assert(offset + ((uint64_t)(chunk->code + offset) % 8) + sizeof(int64_t) <= chunk->count, "Missing int64 after OP_PUSH_QWORD");
 		impl_print_hex_instruction("OP_PUSH_QWORD", ChunkGetQWORD(chunk, &offset).u64);
+		return offset;
+
+	case OP_LOAD_BYTE:
+		impl_print_hex_instruction("OP_LOAD_BYTE", ChunkGetQWORD(chunk, &offset).u64);
+		return offset;
+	case OP_LOAD_WORD:
+		impl_print_hex_instruction("OP_LOAD_WORD", ChunkGetQWORD(chunk, &offset).u64);
+		return offset;
+	case OP_LOAD_DWORD:
+		impl_print_hex_instruction("OP_LOAD_DWORD", ChunkGetQWORD(chunk, &offset).u64);
+		return offset;
+	case OP_LOAD_QWORD:
+		impl_print_hex_instruction("OP_LOAD_QWORD", ChunkGetQWORD(chunk, &offset).u64);
 		return offset;
 
 		/******************************************************/
 
 	case OP_CONVERT:
-		colt_assert(offset + 2 <= chunk->count, "Missing operands of OP_CONVERT!");		
 		return impl_print_2operand_instruction("OP_CONVERT", chunk->code[offset + 1], chunk->code[offset + 2], offset);
 
 		/******************************************************/
