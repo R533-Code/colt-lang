@@ -216,7 +216,7 @@ bool impl_gen_code_variable(Chunk* chunk, const Table* var_table, const Variable
 {
 	Entry* entry = table_find_entry(var_table->entries, var_table->capacity, ptr->var_name);
 	
-	colt_assert(entry->key.start != NULL, "Variable was not found!");
+	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
 	QWORD offset = { .u64 = entry - var_table->entries };
 	
@@ -247,11 +247,11 @@ bool gen_variable_assigment(Chunk* chunk, const Table* var_table, const BinaryEx
 
 	const Entry* entry = table_find_entry(var_table->entries, var_table->capacity, ((VariableExpr*)ptr->lhs)->var_name);
 
-	colt_assert(entry->key.start != NULL, "Variable was not found!");
+	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
 	QWORD offset = { .u64 = entry - var_table->entries };
 
-	switch (ptr->expr_type.byte_size)
+	switch (ptr->lhs->expr_type.byte_size)
 	{
 	break; case 1:
 		ChunkWriteOpCode(chunk, OP_STORE_BYTE);
