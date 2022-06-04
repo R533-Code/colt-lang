@@ -39,8 +39,7 @@ typedef struct
 
 /// @brief Initializes an AST
 /// @param ast The AST to initialize
-/// @param to_parse The StringView to parse
-void ASTInit(AST* ast, StringView to_parse);
+void ASTInit(AST* ast);
 
 /// @brief Frees any resources used by the AST
 /// @param ast The AST to modify
@@ -48,15 +47,14 @@ void ASTFree(AST* ast);
 
 /// @brief Parses the string stored in the initialized AST
 /// @param ast The AST to modify
+/// @param to_parse The StringView to parse
 /// @return True if no error were found
-bool ASTParse(AST* ast);
+bool ASTParse(AST* ast, StringView to_parse);
 
-/// @brief Prepare an AST to parse another StringView, leaving the variable table untouched.
-/// Resets the Scanner and error/warning count of the AST, and frees
-/// resources used by 'expr'. This is helpful for REPL.
+/// @brief Reset the whole AST to its initialized state
 /// @param ast The AST to modify
 /// @param to_parse The StringView to parse
-void ASTResetScanner(AST* ast, StringView to_parse);
+void ASTReset(AST* ast);
 
 /************************************
 IMPLEMENTATION HELPERS

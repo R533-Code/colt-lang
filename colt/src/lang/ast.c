@@ -4,11 +4,10 @@
 
 #include "ast.h"
 
-void ASTInit(AST* ast, StringView to_parse)
+void ASTInit(AST* ast)
 {
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
-	ScannerInit(&ast->scan, to_parse);
 	TableInit(&ast->var_table);
 }
 
@@ -23,16 +22,18 @@ void ASTFree(AST* ast)
 	);
 }
 
-bool ASTParse(AST* ast)
+bool ASTParse(AST* ast, StringView to_parse)
 {
+	ScannerInit(&ast->scan, to_parse);
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	ast->expr = impl_expression(ast);
+	ScannerFree(&ast->scan);
 	if (ast->error_nb != 0)
 		return false;
 	return true;
 }
 
-void ASTResetScanner(AST* ast, StringView to_parse)
+void ASTReset(AST* ast)
 {
 	freeExpr(ast->expr);
 
@@ -40,8 +41,8 @@ void ASTResetScanner(AST* ast, StringView to_parse)
 		ast->expr = NULL;
 	);
 
-	ScannerFree(&ast->scan);
-	ScannerInit(&ast->scan, to_parse);
+	TableFree(&ast->var_table);
+	TableInit(&ast->var_table);
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
 }
