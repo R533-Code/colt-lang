@@ -24,6 +24,7 @@ void ASTFree(AST* ast)
 
 bool ASTParse(AST* ast, StringView to_parse)
 {
+	freeExpr(ast->expr);
 	ScannerInit(&ast->scan, to_parse);
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	ast->expr = impl_expression(ast);
@@ -340,6 +341,7 @@ Expr* impl_primary_expr(AST* ast)
 			);
 			return NULL;
 		}
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		return makeVariableExpr(variable_name, table_entry->type,
 			ast->scan.current_line,
 			ScannerGetCurrentLine(&ast->scan),
