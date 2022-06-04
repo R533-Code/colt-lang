@@ -699,6 +699,26 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 	break; case 'i':
 		if (strcmp(str, "if") == 0)
 			return TKN_KEYWORD_IF;
+		else if (strcmp(str, "i8") == 0)
+		{
+			scan->parsed_typename = ColtI8;
+			return TKN_BUILTIN_TYPE;
+		}
+		else if (strcmp(str, "i16") == 0)
+		{
+			scan->parsed_typename = ColtI16;
+			return TKN_BUILTIN_TYPE;
+		}
+		else if (strcmp(str, "i32") == 0)
+		{
+			scan->parsed_typename = ColtI32;
+			return TKN_BUILTIN_TYPE;
+		}
+		else if (strcmp(str, "i64") == 0)
+		{
+			scan->parsed_typename = ColtI64;
+			return TKN_BUILTIN_TYPE;
+		}
 	break; case 'o':
 		if (strcmp(str, "or") == 0)
 			return TKN_OPERATOR_OR_OR;
@@ -710,6 +730,27 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 		{
 			scan->parsed_value.b = true;
 			return TKN_BOOL;
+		}
+	break; case 'u':
+		if (strcmp(str, "u8") == 0)
+		{
+			scan->parsed_typename = ColtU8;
+			return TKN_BUILTIN_TYPE;
+		}
+		else if (strcmp(str, "u16") == 0)
+		{
+			scan->parsed_typename = ColtU16;
+			return TKN_BUILTIN_TYPE;
+		}
+		else if (strcmp(str, "u32") == 0)
+		{
+			scan->parsed_typename = ColtU32;
+			return TKN_BUILTIN_TYPE;
+		}
+		else if (strcmp(str, "u64") == 0)
+		{
+			scan->parsed_typename = ColtU64;
+			return TKN_BUILTIN_TYPE;
 		}
 	break; case 'w':
 		if (strcmp(str, "while") == 0)
