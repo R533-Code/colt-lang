@@ -28,6 +28,15 @@ typedef enum
 	/// @brief Specifies that an 8 bytes (aligned) QWORD is written in the following byte-codes
 	OP_PUSH_QWORD,
 
+	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following byte, which gives an offset to the global BYTE to load
+	OP_LOAD_BYTE,
+	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following byte, which gives an offset to the global WORD to load
+	OP_LOAD_WORD,
+	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following byte, which gives an offset to the global DWORD to load
+	OP_LOAD_DWORD,
+	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following byte, which gives an offset to the global QWORD to load
+	OP_LOAD_QWORD,
+
 	/// @brief Specifies that the next byte is an operand to which to cast a QWORD before negating its sign
 	OP_NEGATE,
 
