@@ -47,14 +47,14 @@ bool TableSet(Table* table, StringView strv, QWORD value, Type type)
 	}
 
 	Entry* entry = table_find_entry(table->entries, table->capacity, strv);
-	bool isNewKey = (entry->key.end == entry->key.start);
-	if (isNewKey)
+	bool is_new = (entry->key.start == NULL);
+	if (is_new)
 		table->count++;
 
 	entry->key = strv;
 	entry->value = value;
 	entry->type = type;
-	return isNewKey;
+	return is_new;
 }
 
 bool TableDelete(Table* table, StringView key)
