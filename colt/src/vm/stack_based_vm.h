@@ -26,8 +26,7 @@ typedef struct
 
 /// @brief Initializes a StackVM
 /// @param vm The virtual machine to initialize
-/// @param table The global variable table
-void StackVMInit(StackVM* vm, Table* table);
+void StackVMInit(StackVM* vm);
 
 /// @brief Frees the resources used by a StackVM
 /// @param vm The virtual machine to modify
