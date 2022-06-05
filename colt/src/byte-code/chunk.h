@@ -34,7 +34,7 @@ typedef struct
 /// @param chunk The chunk whose content to print
 void ChunkPrintBytes(const Chunk* chunk);
 
-/// @brief Zero-initializes a chunk
+/// @brief Zero-initializes a chunk, and writes its header
 /// @param chunk The chunk to initialize
 void ChunkInit(Chunk* chunk);
 
