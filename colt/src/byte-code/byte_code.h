@@ -114,14 +114,6 @@ typedef enum
 	OP_RETURN,
 	/// @brief Stops interpreting, followed by an u64, which is the exit code
 	OP_EXIT,
-	/// @brief Signifies the beginning of the modifiable global memory
-	OP_BEGIN_GLOBAL,
-	/// @brief Signifies the beginning of the byte-code to interpret
-	OP_BEGIN_CODE,
-	/// @brief Signifies the beginning of the constant global memory
-	OP_BEGIN_CONST,
-	/// @brief Signifies the beginning of the debugging symbols
-	OP_BEGIN_DEBUG,
 } OpCode;
 
 
