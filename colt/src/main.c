@@ -49,9 +49,9 @@ void debug_ast(AST* ast, StringView view, const char* byte_out)
 				StackVM vm;
 				StackVMInit(&vm);
 				if (StackVMRun(&vm, &chunk) == 0)
-					fputs(CONSOLE_FOREGROUND_BRIGHT_GREEN"Successfully run VM!\n"CONSOLE_COLOR_RESET, stdout);
+					fputs(CONSOLE_FOREGROUND_BRIGHT_GREEN"\nSuccessfully run VM!\n"CONSOLE_COLOR_RESET, stdout);
 				else
-					fputs(CONSOLE_FOREGROUND_BRIGHT_RED"VM did not run successfully!\n"CONSOLE_COLOR_RESET, stdout);
+					fputs(CONSOLE_FOREGROUND_BRIGHT_RED"\nVM did not run successfully!\n"CONSOLE_COLOR_RESET, stdout);
 				StackVMFree(&vm);
 				if (byte_out != NULL)
 					ChunkSerialize(&chunk, byte_out);
