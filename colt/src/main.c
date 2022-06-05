@@ -37,7 +37,6 @@ void debug_ast(AST* ast, StringView view, const char* byte_out)
 			printf(CONSOLE_FOREGROUND_BRIGHT_GREEN"Successfully created an AST!\n"
 				"Type of expression: %.*s!\n"CONSOLE_COLOR_RESET, (uint32_t)(ast->expr->expr_type.name.end - ast->expr->expr_type.name.start),
 				ast->expr->expr_type.name.start);
-			TablePrint(&ast->var_table);
 
 			fputs(CONSOLE_FOREGROUND_BRIGHT_BLUE"Generating byte-code...\n"CONSOLE_COLOR_RESET, stdout);
 			
@@ -53,7 +52,6 @@ void debug_ast(AST* ast, StringView view, const char* byte_out)
 					fputs(CONSOLE_FOREGROUND_BRIGHT_GREEN"Successfully run VM!\n"CONSOLE_COLOR_RESET, stdout);
 				else
 					fputs(CONSOLE_FOREGROUND_BRIGHT_RED"VM did not run successfully!\n"CONSOLE_COLOR_RESET, stdout);
-				TablePrint(&ast->var_table);
 				StackVMFree(&vm);
 				if (byte_out != NULL)
 					ChunkSerialize(&chunk, byte_out);
