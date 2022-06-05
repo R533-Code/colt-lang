@@ -547,17 +547,17 @@ void OpCode_Print(QWORD value, BuiltinTypeID type)
 {
 	switch (type)
 	{
-	break; case COLTI_BOOL_ID:		printf("%s\n", value.b ? "true" : "false");
-	break; case COLTI_I8_ID:		printf("%"PRId8"\n", value.u8);
-	break; case COLTI_I16_ID:		printf("%"PRId16"\n", value.u16);
-	break; case COLTI_I32_ID:		printf("%"PRId32"\n", value.u32);
-	break; case COLTI_I64_ID:		printf("%"PRId64"\n", value.u64);
-	break; case COLTI_U8_ID:		printf("%"PRIu8"\n", value.u8);
-	break; case COLTI_U16_ID:		printf("%"PRIu16"\n", value.u16);
-	break; case COLTI_U32_ID:		printf("%"PRIu32"\n", value.u32);
-	break; case COLTI_U64_ID:		printf("%"PRIu64"\n", value.u64);
-	break; case COLTI_FLOAT_ID:	printf("%g\n", value.f);
-	break; case COLTI_DOUBLE_ID:	printf("%g\n", value.d);
+	break; case COLTI_BOOL_ID:		printf("%s", value.b ? "true" : "false");
+	break; case COLTI_I8_ID:		printf("%"PRId8, value.u8);
+	break; case COLTI_I16_ID:		printf("%"PRId16, value.u16);
+	break; case COLTI_I32_ID:		printf("%"PRId32, value.u32);
+	break; case COLTI_I64_ID:		printf("%"PRId64, value.u64);
+	break; case COLTI_U8_ID:		printf("%"PRIu8, value.u8);
+	break; case COLTI_U16_ID:		printf("%"PRIu16, value.u16);
+	break; case COLTI_U32_ID:		printf("%"PRIu32, value.u32);
+	break; case COLTI_U64_ID:		printf("%"PRIu64, value.u64);
+	break; case COLTI_FLOAT_ID:		printf("%g", value.f);
+	break; case COLTI_DOUBLE_ID:	printf("%g", value.d);
 	break; default: colt_assert(false, "Invalid operand for OP_PRINT!");
 	}
 }
