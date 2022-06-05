@@ -7,10 +7,8 @@ bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr)
 {
 	colt_assert(chunk->count == 32, "Chunk should be initialized!");
 
-	//write GLOBAL offset
-	*((uint64_t*)(chunk->code) + 1) = gen_global_pool(chunk, var_table);
-	//write CODE offset, which starts after the global pool
-	*((uint64_t*)(chunk->code)) = *((uint64_t*)(chunk->code) + 1) + var_table->count * sizeof(QWORD);
+	//write CODE offset, which starts after the header
+	*((uint64_t*)(chunk->code)) = 32;
 	if (gen_byte_code(chunk, var_table, expr))
 	{
 		//FOR DEBUG PURPOSE
@@ -20,6 +18,12 @@ bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr)
 		ChunkWriteOpCode(chunk, OP_EXIT);
 		QWORD exit_code = { .u64 = 0 };
 		ChunkWriteQWORD(chunk, exit_code);
+		
+		//write GLOBAL offset
+		*((uint64_t*)(chunk->code) + 1) = gen_global_pool(chunk, var_table);
+		//*((uint64_t*)(chunk->code) + 2) = gen_const_pool(chunk, var_table);
+		//write DEBUG offset
+		*((uint64_t*)(chunk->code) + 3) = gen_debug_pool(chunk, var_table);
 		return true;
 	}
 	return false;
@@ -27,25 +31,11 @@ bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr)
 
 uint64_t gen_global_pool(Chunk* chunk, const Table* var_table)
 {
-	uint64_t global_begin = chunk->count;
 	if (var_table->count == 0)
-		return global_begin;
-	size_t i = 0;
-	//we only want to save the offset the first time we write a QWORD
-	for (; i < var_table->capacity; i++)
-	{
-		//not active entry
-		if (var_table->entries[i].key.ptr == NULL)
-			continue;		
-		global_begin = chunk->count;
-		//We add padding which gives us the offset to the first
-		//global variable
-		global_begin += ChunkWriteQWORD(chunk, var_table->entries[i].value);
+		return 0;
+	uint64_t global_begin = chunk->count;
 
-		i++;
-		break;
-	}
-	for (; i < var_table->capacity; i++)
+	for (size_t i = 0; i < var_table->capacity; i++)
 	{
 		//not active entry
 		if (var_table->entries[i].key.ptr == NULL)
@@ -53,6 +43,23 @@ uint64_t gen_global_pool(Chunk* chunk, const Table* var_table)
 		ChunkWriteQWORD(chunk, var_table->entries[i].value);
 	}
 	return global_begin;
+}
+
+uint64_t gen_debug_pool(Chunk* chunk, const Table* var_table)
+{
+	if (var_table->count == 0)
+		return 0;
+	uint64_t debug_begin = chunk->count;
+
+
+	for (size_t i = 0; i < var_table->capacity; i++)
+	{
+		//not active entry
+		if (var_table->entries[i].key.ptr == NULL)
+			continue;
+		ChunkWriteOperand(chunk, (BuiltinTypeID)var_table->entries[i].type.type_id);
+	}
+	return debug_begin;
 }
 
 /*************************************

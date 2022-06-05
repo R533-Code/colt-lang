@@ -25,10 +25,16 @@ IMPLEMENTATION HELPERS
 *************************************/
 
 /// @brief Generates the global memory pool
-/// @param chunk The Chunk where to write the byte code
+/// @param chunk The Chunk where to write the byte-code
 /// @param var_table The Table whose entries to write
-/// @return The offset of the GLOBAL pool
+/// @return The offset to the GLOBAL section
 uint64_t gen_global_pool(Chunk* chunk, const Table* var_table);
+
+/// @brief Generates the debug pool
+/// @param chunk The Chunk where to write the byte-code
+/// @param var_table The Table whose entries to write
+/// @return The offset to the DEBUG section
+uint64_t gen_debug_pool(Chunk* chunk, const Table* var_table);
 
 /// @brief Function which dispatches the expression to the write `gen_code_...`
 /// @param chunk The Chunk where to write the byte-code
