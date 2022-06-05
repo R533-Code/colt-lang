@@ -29,6 +29,8 @@ bool ASTParse(AST* ast, StringView to_parse)
 	freeExpr(ast->expr);
 	ScannerInit(&ast->scan, to_parse);
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+	
+	//parse the expression
 	ast->expr = impl_expression(ast);
 	ScannerFree(&ast->scan);
 	if (ast->error_nb != 0)
@@ -484,6 +486,11 @@ Expr* impl_variable_declaration(AST* ast)
 		Expr* to_assign = impl_binary_expr(ast, 0);
 		if (!to_assign)
 			return NULL;
+		
+		//we don't want to register the variable if the expression is not valid
+		if (ast->current_tkn != TKN_SEMICOLON)
+			return to_assign;
+		
 		if (tkn_type == TKN_KEYWORD_VAR)
 			var_type = to_assign->expr_type;
 		else if (var_type.type_id != to_assign->expr_type.type_id)
