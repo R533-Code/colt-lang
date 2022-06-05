@@ -6,6 +6,7 @@
 #define HG_COLT_DISASSEMBLE
 
 #include "chunk.h"
+#include "byte_code.h"
 
 /// @brief Prints a human readable description of the code contained in a chunk
 /// @param chunk The chunk whose content to print
@@ -15,6 +16,8 @@ void ChunkDisassemble(const Chunk* chunk, const char* name);
 /**********************************
 IMPLEMENTATION HELPERS
 **********************************/
+
+void impl_print_global_variable(const Chunk* chunk, uint64_t* offset, BuiltinTypeID id);
 
 /// @brief Dispatches a code to the correct printing function
 /// @param chunk The chunk from which to extract the code

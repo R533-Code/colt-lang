@@ -32,10 +32,23 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 	if (global_offset != 0)
 	{
 		fputs(CONSOLE_COLOR_REVERSE"SECTION GLOBAL:\n"CONSOLE_COLOR_RESET, stdout);
+		//if there are debug symbols
+		if (debug_offset != 0)
+		{
+			for (size_t i = global_offset; i < chunk->count;)
+				impl_print_global_variable(chunk, &i, (BuiltinTypeID) *(chunk->code + debug_offset + (i - global_offset) / 4));
+		}
+		else
+		{
+			for (size_t i = global_offset; i < chunk->count; i += sizeof(QWORD))
+				printf("        %08"PRIu64": 0x%"PRIX64, i, *(uint64_t*)chunk->code + i);
+		}
 	}
 
 	if (code_offset != 0)
 	{
+		if (global_offset == 0)
+			global_offset = chunk->count;
 		//loop to print byte-code to execute
 		fputs(CONSOLE_COLOR_REVERSE"SECTION CODE:\n"CONSOLE_COLOR_RESET, stdout);
 		for (uint64_t offset = code_offset; offset < global_offset;)
@@ -44,6 +57,15 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		}
 	}
 
+}
+
+void impl_print_global_variable(const Chunk* chunk, uint64_t* offset, BuiltinTypeID id)
+{
+	printf("        %08"PRIu64 CONSOLE_FOREGROUND_CYAN" '%s': "CONSOLE_FOREGROUND_BRIGHT_GREEN"'", *offset, BuiltinTypeIDToString(id));
+	
+	QWORD value = ChunkGetQWORD(chunk, offset);
+	OpCode_Print(value, id);
+	fputs("'\n"CONSOLE_COLOR_RESET, stdout);
 }
 
 uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
