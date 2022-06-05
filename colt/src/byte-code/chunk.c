@@ -68,7 +68,7 @@ uint64_t ChunkWriteWORD(Chunk* chunk, WORD value)
 
 uint64_t ChunkWriteDWORD(Chunk* chunk, DWORD value)
 {
-	uint64_t offset = (uint64_t)(chunk->code + chunk->count) & 3; //same as % 4
+	uint64_t offset = (uint64_t)(chunk->code + chunk->count) % 4; //same as % 4
 	if (!(chunk->count + offset + sizeof(uint32_t) < chunk->capacity)) //Grow if needed
 		impl_chunk_grow_double(chunk);
 
@@ -85,7 +85,7 @@ uint64_t ChunkWriteDWORD(Chunk* chunk, DWORD value)
 
 uint64_t ChunkWriteQWORD(Chunk* chunk, QWORD value)
 {
-	uint64_t offset = (uint64_t)(chunk->code + chunk->count) & 7; //same as % 8
+	uint64_t offset = (uint64_t)(chunk->code + chunk->count) % 8; //same as % 8
 	if (!(chunk->count + offset + sizeof(uint64_t) < chunk->capacity)) //Grow if needed
 		impl_chunk_grow_double(chunk);
 
@@ -127,7 +127,7 @@ DWORD ChunkGetDWORD(const Chunk* chunk, uint64_t* offset)
 	//As the offset points to OP_PUSH_DWORD, we also need to add 1
 	uint64_t local_offset = *offset + 1;
 	//We add the padding to the offset, which means we are now pointing to the int32
-	local_offset += (uint64_t)(chunk->code + local_offset) & 3; //same as % 4
+	local_offset += (uint64_t)(chunk->code + local_offset) % 4; //same as % 4
 
 
 	DWORD return_val;
@@ -143,7 +143,7 @@ QWORD ChunkGetQWORD(const Chunk* chunk, uint64_t* offset)
 	//As the offset points to OP_PUSH_QWORD, we also need to add 1
 	uint64_t local_offset = *offset + 1;
 	//We add the padding to the offset, which means we are now pointing to the int64
-	local_offset += (uint64_t)(chunk->code + local_offset) & 7; //same as % 8
+	local_offset += (uint64_t)(chunk->code + local_offset) % 8; //same as % 8
 
 	QWORD return_val;
 	return_val.u64 = *(int64_t*)(chunk->code + local_offset);
@@ -225,7 +225,7 @@ WORD unsafe_get_word(uint8_t** ptr)
 
 DWORD unsafe_get_dword(uint8_t** ptr)
 {
-	*ptr += (uint64_t)(*ptr) & 3; //read past padding
+	*ptr += (uint64_t)(*ptr) % 4; //read past padding
 	DWORD return_val;
 	return_val.u32 = *((uint32_t*)*ptr);
 	*ptr += sizeof(int32_t);
@@ -234,7 +234,7 @@ DWORD unsafe_get_dword(uint8_t** ptr)
 
 QWORD unsafe_get_qword(uint8_t** ptr)
 {
-	*ptr += (uint64_t)(*ptr) & 7; //read past padding
+	*ptr += (uint64_t)(*ptr) % 8; //read past padding
 	QWORD return_val;
 	return_val.u64 = *((uint64_t*)*ptr);
 	*ptr += sizeof(int64_t);
