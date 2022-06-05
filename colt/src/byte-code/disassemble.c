@@ -8,21 +8,47 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 {
 	printf("============ %s ============\n", name);
 
-	if (chunk->count == 0)
+	//32 is the size of the header
+	if (chunk->count == 32)
 	{
 		printf("!EMPTY CHUNK!");
 		return;
 	}
-	uint64_t code = *((uint64_t*)chunk->code);
-	for (uint64_t offset = code; offset < chunk->count;)
+
+	//CODE OFFSET
+	uint64_t code_offset = *((uint64_t*)chunk->code);
+	//GLOBAL OFFSET
+	uint64_t global_offset = *((uint64_t*)chunk->code + 1);
+	//CONST OFFSET
+	uint64_t const_offset = *((uint64_t*)chunk->code + 2);
+	//DEBUG OFFSET
+	uint64_t debug_offset = *((uint64_t*)chunk->code + 3);
+
+	fputs(CONSOLE_COLOR_REVERSE"SECTION HEADER:\n"CONSOLE_COLOR_RESET, stdout);
+	printf("        %08"PRIu64": SECTION CODE\n""        %08"PRIu64": SECTION GLOBAL\n""        %08"PRIu64": SECTION CONST\n""        %08"PRIu64": SECTION DEBUG\n",
+		code_offset, global_offset, const_offset, debug_offset
+	);
+
+	if (global_offset != 0)
 	{
-		offset = impl_chunk_print_code(chunk, offset);
+		fputs(CONSOLE_COLOR_REVERSE"SECTION GLOBAL:\n"CONSOLE_COLOR_RESET, stdout);
 	}
+
+	if (code_offset != 0)
+	{
+		//loop to print byte-code to execute
+		fputs(CONSOLE_COLOR_REVERSE"SECTION CODE:\n"CONSOLE_COLOR_RESET, stdout);
+		for (uint64_t offset = code_offset; offset < global_offset;)
+		{
+			offset = impl_chunk_print_code(chunk, offset);
+		}
+	}
+
 }
 
 uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 {
-	printf("%04"PRIu64" ", offset);
+	printf("        %08"PRIu64" ", offset);
 
 	uint8_t instruction = chunk->code[offset];
 	switch (instruction)
