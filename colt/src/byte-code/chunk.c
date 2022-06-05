@@ -19,6 +19,9 @@ void ChunkInit(Chunk* chunk)
 	chunk->capacity = 128;
 	chunk->count = 4 * sizeof(QWORD);
 	chunk->code = safe_malloc(128);
+
+	//we set all the bytes of the header to 0
+	memset(chunk->code, 0, sizeof(QWORD) * 4);
 }
 
 void ChunkWriteOpCode(Chunk* chunk, OpCode code)
