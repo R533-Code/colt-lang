@@ -223,8 +223,18 @@ QWORD OpCode_BitXOR(QWORD left, QWORD right, BuiltinTypeID type);
 /// @return The bitwise NOT of the QWORD
 QWORD OpCode_BitNOT(QWORD value, BuiltinTypeID type);
 
+/// @brief Casts 'left' and 'right' to 'type' and perform a shift left
+/// @param left The QWORD to shift
+/// @param right The QWORD to shift by
+/// @param type The type of the QWORD
+/// @return The shifted QWORD
 QWORD OpCode_BitShiftL(QWORD left, QWORD right, BuiltinTypeID type);
 
+/// @brief Casts 'left' and 'right' to 'type' and perform a shift right
+/// @param left The QWORD to shift
+/// @param right The QWORD to shift by
+/// @param type The type of the QWORD
+/// @return The shifted QWORD
 QWORD OpCode_BitShiftR(QWORD left, QWORD right, BuiltinTypeID type);
 
 /// @brief Casts 2 QWORD and return a bool from 'greater' comparison
