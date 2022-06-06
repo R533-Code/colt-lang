@@ -81,7 +81,7 @@ bool gen_byte_code(Chunk* chunk, const Table* var_table, const Expr* expr)
 	break; case EXPR_CONVERT:
 		return impl_gen_code_convert(chunk, var_table, (const ConvertExpr*)expr);
 	break; case EXPR_VAR:
-		return impl_gen_code_variable(chunk, var_table, (const VariableExpr*)expr);
+		return impl_gen_global_code_variable(chunk, var_table, (const VariableExpr*)expr);
 	break; default:
 		colt_assert(false, "NOT IMPLEMENTED YET!");
 	}
@@ -114,7 +114,7 @@ bool impl_gen_code_unary(Chunk* chunk, const Table* var_table, const UnaryExpr* 
 bool impl_gen_code_binary(Chunk* chunk, const Table* var_table, const BinaryExpr* ptr)
 {
 	if (ptr->expr_operator == TKN_OPERATOR_EQUAL)
-		return gen_variable_assigment(chunk, var_table, ptr);
+		return gen_global_variable_assigment(chunk, var_table, ptr);
 
 	gen_byte_code(chunk, var_table, ptr->lhs);
 	gen_byte_code(chunk, var_table, ptr->rhs);
@@ -256,7 +256,7 @@ bool impl_gen_code_convert(Chunk* chunk, const Table* var_table, const ConvertEx
 	return true;
 }
 
-bool impl_gen_code_variable(Chunk* chunk, const Table* var_table, const VariableExpr* ptr)
+bool impl_gen_global_code_variable(Chunk* chunk, const Table* var_table, const VariableExpr* ptr)
 {
 	Entry* entry = table_find_entry(var_table->entries, var_table->capacity, ptr->var_name);
 	
@@ -281,7 +281,7 @@ bool impl_gen_code_variable(Chunk* chunk, const Table* var_table, const Variable
 	return true;
 }
 
-bool gen_variable_assigment(Chunk* chunk, const Table* var_table, const BinaryExpr* ptr)
+bool gen_global_variable_assigment(Chunk* chunk, const Table* var_table, const BinaryExpr* ptr)
 {
 	gen_byte_code(chunk, var_table, ptr->rhs);
 

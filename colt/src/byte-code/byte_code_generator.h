@@ -24,13 +24,13 @@ bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr);
 IMPLEMENTATION HELPERS
 *************************************/
 
-/// @brief Generates the global memory pool
+/// @brief Generates the global memory pool, and return the offset to its beginning
 /// @param chunk The Chunk where to write the byte-code
 /// @param var_table The Table whose entries to write
 /// @return The offset to the GLOBAL section
 uint64_t gen_global_pool(Chunk* chunk, const Table* var_table);
 
-/// @brief Generates the debug pool
+/// @brief Generates the debug pool, and return the offset to its beginning
 /// @param chunk The Chunk where to write the byte-code
 /// @param var_table The Table whose entries to write
 /// @return The offset to the DEBUG section
@@ -38,6 +38,7 @@ uint64_t gen_debug_pool(Chunk* chunk, const Table* var_table);
 
 /// @brief Function which dispatches the expression to the write `gen_code_...`
 /// @param chunk The Chunk where to write the byte-code
+/// @param var_table Table containing variables
 /// @param expr The expression to dispatch
 /// @return True
 bool gen_byte_code(Chunk* chunk, const Table* var_table, const Expr* expr);
@@ -73,9 +74,14 @@ bool impl_gen_code_convert(Chunk* chunk, const Table* var_table, const ConvertEx
 /// @param var_table The variable table
 /// @param ptr The pointer to the expression
 /// @return True if no error are encountered
-bool impl_gen_code_variable(Chunk* chunk, const Table* var_table, const VariableExpr* ptr);
+bool impl_gen_global_code_variable(Chunk* chunk, const Table* var_table, const VariableExpr* ptr);
 
-bool gen_variable_assigment(Chunk* chunk, const Table* var_table, const BinaryExpr* ptr);
+/// @brief Generate the code necessary for a global variable assignment
+/// @param chunk The Chunk where to write the byte-code
+/// @param var_table The variable table from which to extract the offsets
+/// @param ptr The pointer to the expression
+/// @return True if no error are encountered
+bool gen_global_variable_assigment(Chunk* chunk, const Table* var_table, const BinaryExpr* ptr);
 
 /// @brief Generate short jump code to ensure the last pushed operand is 'short_jump' 'cmp_to'
 /// @param chunk The Chunk where to write the byte-code
