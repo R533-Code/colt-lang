@@ -82,26 +82,13 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		}
 
 		/******************************************************/
-
-		break; case OP_LOAD_BYTE:
-		{
-			QWORD offset = unsafe_get_qword(&ip);
-			QWORD push = { .byte = (global_offset + offset.u64)->byte };
-			StackVMPush(vm, push);
-		}
-		break; case OP_LOAD_WORD:
-		{
-			QWORD offset = unsafe_get_qword(&ip);
-			QWORD push = { .word = (global_offset + offset.u64)->word };
-			StackVMPush(vm, push);
-		}
-		break; case OP_LOAD_DWORD:
-		{
-			QWORD offset = unsafe_get_qword(&ip);
-			QWORD push = { .dword = (global_offset + offset.u64)->dword };
-			StackVMPush(vm, push);
-		}
-		break; case OP_LOAD_QWORD:
+		//As all the variables are stored as QWORDs, we can optimize all the
+		//cases into one
+		break;
+		case OP_LOAD_BYTE:
+		case OP_LOAD_WORD:
+		case OP_LOAD_DWORD:
+		case OP_LOAD_QWORD:
 		{
 			QWORD offset = unsafe_get_qword(&ip);
 			QWORD push = *(global_offset + offset.u64);
