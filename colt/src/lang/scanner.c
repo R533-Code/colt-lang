@@ -679,7 +679,12 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 		else if (strcmp(str, "continue") == 0)
 			return TKN_KEYWORD_CONTINUE;
 	break; case 'd':
-		if (strcmp(str, "default") == 0)
+		if (strcmp(str, "double") == 0)
+		{
+			scan->parsed_typename = ColtDouble;
+			return TKN_BUILTIN_TYPE;
+		}
+		else if (strcmp(str, "default") == 0)
 			return TKN_KEYWORD_DEFAULT;
 	break; case 'e':
 		if (strcmp(str, "elif") == 0)
@@ -693,6 +698,11 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 		{
 			scan->parsed_value.b = false;
 			return TKN_BOOL;
+		}
+		else if (strcmp(str, "float") == 0)
+		{
+			scan->parsed_typename = ColtFloat;
+			return TKN_BUILTIN_TYPE;
 		}
 	break; case 'g':
 		if (strcmp(str, "goto") == 0)
