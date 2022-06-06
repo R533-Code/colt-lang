@@ -407,6 +407,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 			return impl_token_str_to_double(scan);
 		default:
 			colt_assert(false, "Should never happen!");
+			exit(1);
 		}
 	}
 	else
@@ -1097,6 +1098,7 @@ Token impl_token_str_to_integral(Scanner* scan)
 		return impl_token_str_to_u64(scan, 10);
 	default:
 		colt_assert(false, "Should never happen!");
+		exit(1);
 	}
 }
 

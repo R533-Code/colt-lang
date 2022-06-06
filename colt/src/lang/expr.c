@@ -176,6 +176,7 @@ Type impl_operator_type(Type lhs, Token binary_operator, Type rhs)
 	{
 		//Check operator overloads table
 		colt_assert(false, "NOT IMPLEMENTED YET");
+		exit(1);
 	}
 	else if (lhs.type_id != rhs.type_id)
 	{
@@ -237,6 +238,7 @@ Type type_unsigned_to_signed(uint64_t type)
 	case COLTI_U64_ID:	return ColtI64;
 	default:
 		colt_assert(false, "Type ID was not that of an unsigned integer!");
+		exit(1);
 	}
 }
 
@@ -268,5 +270,6 @@ Type type_get_from_id(BuiltinTypeID id)
 		return ColtFloat;
 	default:
 		colt_assert(false, "ID was not that of a Built-in Type!");
+		exit(1);
 	}
 }
