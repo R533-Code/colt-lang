@@ -3,7 +3,7 @@
 */
 #include "byte_code_generator.h"
 
-bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr)
+bool generateByteCode(Chunk* chunk, const VariableTable* var_table, const Expr* expr)
 {
 	colt_assert(chunk->count >= 32, "Chunk should be initialized!");
 
@@ -29,7 +29,7 @@ bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr)
 	return false;
 }
 
-uint64_t gen_global_pool(Chunk* chunk, const Table* var_table)
+uint64_t gen_global_pool(Chunk* chunk, const VariableTable* var_table)
 {
 	if (var_table->count == 0)
 		return 0;
@@ -46,7 +46,7 @@ uint64_t gen_global_pool(Chunk* chunk, const Table* var_table)
 	return global_begin;
 }
 
-uint64_t gen_debug_pool(Chunk* chunk, const Table* var_table)
+uint64_t gen_debug_pool(Chunk* chunk, const VariableTable* var_table)
 {
 	if (var_table->count == 0)
 		return 0;
@@ -67,7 +67,7 @@ uint64_t gen_debug_pool(Chunk* chunk, const Table* var_table)
 IMPLEMENTATION HELPERS
 *************************************/
 
-bool gen_byte_code(Chunk* chunk, const Table* var_table, const Expr* expr)
+bool gen_byte_code(Chunk* chunk, const VariableTable* var_table, const Expr* expr)
 {
 	colt_assert(expr != NULL, "Generation should never happen if AST was not valid!");
 	switch (expr->identifier)
@@ -88,7 +88,7 @@ bool gen_byte_code(Chunk* chunk, const Table* var_table, const Expr* expr)
 	return true;
 }
 
-bool impl_gen_code_unary(Chunk* chunk, const Table* var_table, const UnaryExpr* ptr)
+bool impl_gen_code_unary(Chunk* chunk, const VariableTable* var_table, const UnaryExpr* ptr)
 {
 	//TODO: should use Type to actually dispatch call depending on operator
 	switch (ptr->expr_operator)
@@ -111,7 +111,7 @@ bool impl_gen_code_unary(Chunk* chunk, const Table* var_table, const UnaryExpr* 
 	return true;
 }
 
-bool impl_gen_code_binary(Chunk* chunk, const Table* var_table, const BinaryExpr* ptr)
+bool impl_gen_code_binary(Chunk* chunk, const VariableTable* var_table, const BinaryExpr* ptr)
 {
 	if (ptr->expr_operator == TKN_OPERATOR_EQUAL)
 		return gen_global_variable_assigment(chunk, var_table, ptr);
@@ -247,7 +247,7 @@ bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr)
 	return true;
 }
 
-bool impl_gen_code_convert(Chunk* chunk, const Table* var_table, const ConvertExpr* ptr)
+bool impl_gen_code_convert(Chunk* chunk, const VariableTable* var_table, const ConvertExpr* ptr)
 {
 	gen_byte_code(chunk, var_table, ptr->child);
 	ChunkWriteOpCode(chunk, OP_CONVERT);
@@ -256,7 +256,7 @@ bool impl_gen_code_convert(Chunk* chunk, const Table* var_table, const ConvertEx
 	return true;
 }
 
-bool impl_gen_global_code_variable(Chunk* chunk, const Table* var_table, const VariableExpr* ptr)
+bool impl_gen_global_code_variable(Chunk* chunk, const VariableTable* var_table, const VariableExpr* ptr)
 {
 	Entry* entry = table_find_entry(var_table->entries, var_table->capacity, ptr->var_name);
 	
@@ -281,7 +281,7 @@ bool impl_gen_global_code_variable(Chunk* chunk, const Table* var_table, const V
 	return true;
 }
 
-bool gen_global_variable_assigment(Chunk* chunk, const Table* var_table, const BinaryExpr* ptr)
+bool gen_global_variable_assigment(Chunk* chunk, const VariableTable* var_table, const BinaryExpr* ptr)
 {
 	gen_byte_code(chunk, var_table, ptr->rhs);
 

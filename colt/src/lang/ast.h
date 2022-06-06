@@ -34,7 +34,7 @@ typedef struct
 	/// @brief The next token to consume from the scanner
 	Token current_tkn;
 	/// @brief Variable table
-	Table var_table;
+	VariableTable var_table;
 } AST;
 
 /// @brief Initializes an AST

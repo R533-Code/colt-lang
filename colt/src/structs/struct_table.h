@@ -20,35 +20,35 @@ typedef struct
 {
 	/// @brief A counter incremented at each pushed item
 	uint64_t counter;
-	/// @brief The number of active entries in the Table
+	/// @brief The number of active entries in the VariableTable
 	uint64_t count;
-	/// @brief The capacity of the Table
+	/// @brief The capacity of the VariableTable
 	uint64_t capacity;
 	/// @brief The pointer to the entries beginning
 	Entry* entries;
-} Table;
+} VariableTable;
 
-/// @brief Initializes a Table
-/// @param table The Table to initialize
-void TableInit(Table* table);
+/// @brief Initializes a VariableTable
+/// @param table The VariableTable to initialize
+void TableInit(VariableTable* table);
 
-/// @brief Frees the resources used by a Table
-/// @param table The Table whose resources to free
-void TableFree(Table* table);
+/// @brief Frees the resources used by a VariableTable
+/// @param table The VariableTable whose resources to free
+void TableFree(VariableTable* table);
 
-bool TableGet(Table* table, StringView key, QWORD* value);
+bool TableGet(VariableTable* table, StringView key, QWORD* value);
 
-bool TableContains(Table* table, StringView key);
+bool TableContains(VariableTable* table, StringView key);
 
-bool TableSet(Table* table, StringView strv, QWORD value, Type type);
+bool TableSet(VariableTable* table, StringView strv, QWORD value, Type type);
 
-bool TableDelete(Table* table, StringView key);
+bool TableDelete(VariableTable* table, StringView key);
 
-/// @brief Prints the content of a Table
-/// @param table The Table whose content to print
-void TablePrint(const Table* table);
+/// @brief Prints the content of a VariableTable
+/// @param table The VariableTable whose content to print
+void TablePrint(const VariableTable* table);
 
-Entry* TableGetEntry(Table* table, StringView key);
+Entry* TableGetEntry(VariableTable* table, StringView key);
 
 /**************************************
 IMPLEMENTATION HELPERS
@@ -61,9 +61,9 @@ IMPLEMENTATION HELPERS
 uint64_t hash_strv(StringView strv);
 
 /// @brief Doubles the capacity of the table
-/// @param table The Table to modify
+/// @param table The VariableTable to modify
 /// @param capacity
-void table_grow_capacity(Table* table, uint64_t capacity);
+void table_grow_capacity(VariableTable* table, uint64_t capacity);
 
 Entry* table_find_entry(Entry* entries, uint64_t capacity, StringView strv);
 

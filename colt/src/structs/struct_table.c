@@ -4,7 +4,7 @@
 
 #include "struct_table.h"
 
-void TableInit(Table* table)
+void TableInit(VariableTable* table)
 {
 	table->counter = 0;
 	table->capacity = 10;
@@ -14,7 +14,7 @@ void TableInit(Table* table)
 		table->entries[i].key.ptr = NULL;
 }
 
-void TableFree(Table* table)
+void TableFree(VariableTable* table)
 {
 	for (size_t i = 0; i < table->capacity; i++)
 	{
@@ -24,7 +24,7 @@ void TableFree(Table* table)
 	safe_free(table->entries);
 }
 
-bool TableGet(Table* table, StringView key, QWORD* value)
+bool TableGet(VariableTable* table, StringView key, QWORD* value)
 {
 	if (table->count == 0)
 		return false;
@@ -37,7 +37,7 @@ bool TableGet(Table* table, StringView key, QWORD* value)
 	return true;
 }
 
-bool TableContains(Table* table, StringView key)
+bool TableContains(VariableTable* table, StringView key)
 {
 	const Entry* entry = table_find_entry(table->entries, table->capacity, key);
 	if (entry->key.ptr == NULL)
@@ -45,7 +45,7 @@ bool TableContains(Table* table, StringView key)
 	return true;
 }
 
-bool TableSet(Table* table, StringView strv, QWORD value, Type type)
+bool TableSet(VariableTable* table, StringView strv, QWORD value, Type type)
 {
 	if ((double)table->count + 1 > (double)table->capacity * TABLE_MAX_LOAD)
 	{
@@ -66,7 +66,7 @@ bool TableSet(Table* table, StringView strv, QWORD value, Type type)
 	return is_new;
 }
 
-bool TableDelete(Table* table, StringView key)
+bool TableDelete(VariableTable* table, StringView key)
 {
 	if (table->count == 0) return false;
 
@@ -80,7 +80,7 @@ bool TableDelete(Table* table, StringView key)
 	return true;
 }
 
-Entry* TableGetEntry(Table* table, StringView key)
+Entry* TableGetEntry(VariableTable* table, StringView key)
 {
 	Entry* entry = table_find_entry(table->entries, table->capacity, key);
 	if (entry->key.ptr == NULL)
@@ -88,7 +88,7 @@ Entry* TableGetEntry(Table* table, StringView key)
 	return entry;
 }
 
-void TablePrint(const Table* table)
+void TablePrint(const VariableTable* table)
 {
 	fputs("============ TABLE ============\n", stdout);
 	if (table->count == 0)
@@ -120,7 +120,7 @@ uint64_t hash_strv(StringView strv)
 	return hash;
 }
 
-void table_grow_capacity(Table* table, uint64_t capacity)
+void table_grow_capacity(VariableTable* table, uint64_t capacity)
 {
 	Entry* entries = safe_malloc(sizeof(Entry) * capacity);
 	for (size_t i = 0; i < capacity; i++)
