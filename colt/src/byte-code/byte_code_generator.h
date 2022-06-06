@@ -45,12 +45,14 @@ bool gen_byte_code(Chunk* chunk, const Table* var_table, const Expr* expr);
 
 /// @brief Generate code necessary for unary operators
 /// @param chunk The Chunk where to write the byte-code
+/// @param var_table Table containing variables
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
 bool impl_gen_code_unary(Chunk* chunk, const Table* var_table, const UnaryExpr* ptr);
 
 /// @brief Generate code necessary for binary operators
 /// @param chunk The Chunk where to write the byte-code
+/// @param var_table Table containing variables
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
 bool impl_gen_code_binary(Chunk* chunk, const Table* var_table, const BinaryExpr* ptr);
@@ -65,6 +67,7 @@ bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr);
 
 /// @brief Generate code necessary for built-in conversions
 /// @param chunk The Chunk where to write the byte-code
+/// @param var_table Table containing variables
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
 bool impl_gen_code_convert(Chunk* chunk, const Table* var_table, const ConvertExpr* ptr);

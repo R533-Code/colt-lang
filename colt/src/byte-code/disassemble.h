@@ -17,6 +17,11 @@ void ChunkDisassemble(const Chunk* chunk, const char* name);
 IMPLEMENTATION HELPERS
 **********************************/
 
+/// @brief Writes the value of a global value and its type
+/// @param chunk The Chunk from which to read
+/// @param offset The offset to the beginning of the GLOBAL section
+/// @param var_nb The current global variable counter
+/// @param id The type of the variable, extracted from the DEBUG section
 void impl_print_global_variable(const Chunk* chunk, uint64_t offset, uint64_t var_nb, BuiltinTypeID id);
 
 /// @brief Dispatches a code to the correct printing function
