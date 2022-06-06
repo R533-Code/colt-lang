@@ -44,8 +44,8 @@ uint64_t StackVMSize(const StackVM* vm)
 
 uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 {
-	QWORD* global_offset = chunk->code + *(uint64_t*)(chunk->code);
-	QWORD* const_offset = chunk->code + *(uint64_t*)(chunk->code + 1);
+	QWORD* global_offset = (QWORD*)(chunk->code + *(uint64_t*)(chunk->code));
+	QWORD* const_offset = (QWORD*)(chunk->code + *(uint64_t*)(chunk->code + 1));
 	uint8_t* ip = chunk->code + *((uint64_t*)(chunk->code) + 3);
 	if (ip == chunk->code)
 	{
