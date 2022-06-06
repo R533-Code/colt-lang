@@ -162,7 +162,7 @@ typedef enum
 	TKN_DOT,
 	/// @brief :
 	TKN_COLON,
-	/// @brief ;
+	/// @brief ';'
 	TKN_SEMICOLON,
 
 	/// @brief {
