@@ -78,7 +78,7 @@ void impl_print_global_variable(const Chunk* chunk, uint64_t offset, uint64_t va
 {
 	printf("        %08"PRIu64 CONSOLE_FOREGROUND_CYAN" '%s': "CONSOLE_FOREGROUND_BRIGHT_GREEN"'", offset + 8 * var_nb, BuiltinTypeIDToString(id));
 		
-	QWORD value = *((QWORD*)chunk->code + offset + var_nb * 8);
+	QWORD value = *(QWORD*)(chunk->code + offset + var_nb * 8);
 	OpCode_Print(value, id);
 	fputs("'\n"CONSOLE_COLOR_RESET, stdout);
 }
