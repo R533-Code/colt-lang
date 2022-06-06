@@ -40,7 +40,8 @@ uint64_t gen_global_pool(Chunk* chunk, const Table* var_table)
 		//not active entry
 		if (var_table->entries[i].key.ptr == NULL)
 			continue;
-		ChunkWriteQWORD(chunk, var_table->entries[i].value);
+		*((QWORD*)(chunk->code + global_begin) + var_table->entries[i].counter_nb) = var_table->entries[i].value;
+		chunk->count += sizeof(QWORD);
 	}
 	return global_begin;
 }

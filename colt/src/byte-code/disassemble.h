@@ -17,7 +17,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name);
 IMPLEMENTATION HELPERS
 **********************************/
 
-void impl_print_global_variable(const Chunk* chunk, uint64_t* offset, BuiltinTypeID id);
+void impl_print_global_variable(const Chunk* chunk, uint64_t offset, uint64_t var_nb, BuiltinTypeID id);
 
 /// @brief Dispatches a code to the correct printing function
 /// @param chunk The chunk from which to extract the code

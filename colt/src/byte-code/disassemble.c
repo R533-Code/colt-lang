@@ -36,8 +36,8 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		//if there are debug symbols
 		if (debug_offset != 0)
 		{
-			for (size_t i = global_offset; i < global_end;)
-				impl_print_global_variable(chunk, &i, (BuiltinTypeID) *(chunk->code + debug_offset + (i - global_offset) / 4));
+			for (size_t i = 0; i < (global_end - global_offset) / sizeof(QWORD); i++)
+				impl_print_global_variable(chunk, global_offset, i, (BuiltinTypeID) *(chunk->code + debug_offset + i));
 		}
 		else
 		{
@@ -52,8 +52,8 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		//if there are debug symbols
 		if (debug_offset != 0)
 		{
-			for (size_t i = const_offset; i < const_end;)
-				impl_print_global_variable(chunk, &i, (BuiltinTypeID) * (chunk->code + debug_offset + (i - global_offset) / 4));
+			for (size_t i = 0; i < const_end; i++)
+				impl_print_global_variable(chunk, const_offset, i, (BuiltinTypeID) *(chunk->code + debug_offset + i));
 		}
 		else
 		{
@@ -74,11 +74,11 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 
 }
 
-void impl_print_global_variable(const Chunk* chunk, uint64_t* offset, BuiltinTypeID id)
+void impl_print_global_variable(const Chunk* chunk, uint64_t offset, uint64_t var_nb, BuiltinTypeID id)
 {
-	printf("        %08"PRIu64 CONSOLE_FOREGROUND_CYAN" '%s': "CONSOLE_FOREGROUND_BRIGHT_GREEN"'", *offset, BuiltinTypeIDToString(id));
-	
-	QWORD value = ChunkGetQWORD(chunk, offset);
+	printf("        %08"PRIu64 CONSOLE_FOREGROUND_CYAN" '%s': "CONSOLE_FOREGROUND_BRIGHT_GREEN"'", offset + 8 * var_nb, BuiltinTypeIDToString(id));
+		
+	QWORD value = *((QWORD*)chunk->code + offset + var_nb * 8);
 	OpCode_Print(value, id);
 	fputs("'\n"CONSOLE_COLOR_RESET, stdout);
 }
