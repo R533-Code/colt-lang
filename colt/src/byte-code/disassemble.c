@@ -15,43 +15,58 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		return;
 	}
 
-	//CODE OFFSET
-	uint64_t code_offset = *((uint64_t*)chunk->code);
 	//GLOBAL OFFSET
-	uint64_t global_offset = *((uint64_t*)chunk->code + 1);
+	uint64_t global_offset = *((uint64_t*)chunk->code);
 	//CONST OFFSET
-	uint64_t const_offset = *((uint64_t*)chunk->code + 2);
+	uint64_t const_offset = *((uint64_t*)chunk->code + 1);
 	//DEBUG OFFSET
-	uint64_t debug_offset = *((uint64_t*)chunk->code + 3);
+	uint64_t debug_offset = *((uint64_t*)chunk->code + 2);
+	//CODE OFFSET
+	uint64_t code_offset = *((uint64_t*)chunk->code + 3);
 
 	fputs(CONSOLE_COLOR_REVERSE"SECTION HEADER:\n"CONSOLE_COLOR_RESET, stdout);
-	printf("        %08"PRIu64": SECTION CODE\n""        %08"PRIu64": SECTION GLOBAL\n""        %08"PRIu64": SECTION CONST\n""        %08"PRIu64": SECTION DEBUG\n",
-		code_offset, global_offset, const_offset, debug_offset
+	printf("        %08"PRIu64": SECTION GLOBAL\n""        %08"PRIu64": SECTION CONST\n""        %08"PRIu64": SECTION DEBUG\n""        %08"PRIu64": SECTION CODE\n",
+		global_offset, const_offset, debug_offset, code_offset
 	);
 
 	if (global_offset != 0)
 	{
 		fputs(CONSOLE_COLOR_REVERSE"SECTION GLOBAL:\n"CONSOLE_COLOR_RESET, stdout);
+		const uint64_t global_end = const_offset > 0 ? const_offset : (debug_offset > 0 ? debug_offset : (code_offset > 0 ? code_offset : chunk->count));
 		//if there are debug symbols
 		if (debug_offset != 0)
 		{
-			for (size_t i = global_offset; i < chunk->count;)
+			for (size_t i = global_offset; i < global_end;)
 				impl_print_global_variable(chunk, &i, (BuiltinTypeID) *(chunk->code + debug_offset + (i - global_offset) / 4));
 		}
 		else
 		{
-			for (size_t i = global_offset; i < chunk->count; i += sizeof(QWORD))
+			for (size_t i = global_offset; i < global_end; i += sizeof(QWORD))
+				printf("        %08"PRIu64": 0x%"PRIX64, i, *(uint64_t*)chunk->code + i);
+		}
+	}
+	if (const_offset != 0)
+	{
+		fputs(CONSOLE_COLOR_REVERSE"SECTION CONST:\n"CONSOLE_COLOR_RESET, stdout);
+		const uint64_t const_end = debug_offset > 0 ? debug_offset : (code_offset > 0 ? code_offset : chunk->count);
+		//if there are debug symbols
+		if (debug_offset != 0)
+		{
+			for (size_t i = const_offset; i < const_end;)
+				impl_print_global_variable(chunk, &i, (BuiltinTypeID) * (chunk->code + debug_offset + (i - global_offset) / 4));
+		}
+		else
+		{
+			for (size_t i = const_offset; i < const_end; i += sizeof(QWORD))
 				printf("        %08"PRIu64": 0x%"PRIX64, i, *(uint64_t*)chunk->code + i);
 		}
 	}
 
 	if (code_offset != 0)
 	{
-		if (global_offset == 0)
-			global_offset = chunk->count;
 		//loop to print byte-code to execute
 		fputs(CONSOLE_COLOR_REVERSE"SECTION CODE:\n"CONSOLE_COLOR_RESET, stdout);
-		for (uint64_t offset = code_offset; offset < global_offset;)
+		for (uint64_t offset = code_offset; offset < chunk->count;)
 		{
 			offset = impl_chunk_print_code(chunk, offset);
 		}
