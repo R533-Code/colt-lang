@@ -374,9 +374,6 @@ bool StringViewContains(StringView lhs, StringView rhs)
 	return false;	
 }
 
-/// @brief Check if a StringView is empty or not
-/// @param strv The StringView to check for
-/// @return True if 'strv' is empty
 bool StringViewIsEmpty(StringView strv)
 {
 	return strv.end == strv.start;
