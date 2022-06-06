@@ -51,9 +51,8 @@ void ASTFree(AST* ast);
 /// @return True if no error were found
 bool ASTParse(AST* ast, StringView to_parse);
 
-/// @brief Reset the whole AST to its initialized state
+/// @brief Reset the whole AST (its 'var_table' included) to its initialized state
 /// @param ast The AST to modify
-/// @param to_parse The StringView to parse
 void ASTReset(AST* ast);
 
 /************************************
