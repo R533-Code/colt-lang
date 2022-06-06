@@ -1,5 +1,5 @@
-/** @file parse_args.c
-* Contains the definitions of the functions declared in 'parse_args.h'
+/** @file struct_table.c
+* Contains the definitions of the functions declared in 'struct_table.h'
 */
 
 #include "struct_table.h"
@@ -47,7 +47,7 @@ bool TableContains(VariableTable* table, StringView key)
 
 bool TableSet(VariableTable* table, StringView strv, QWORD value, Type type)
 {
-	if ((double)table->count + 1 > (double)table->capacity * TABLE_MAX_LOAD)
+	if ((double)table->count + 1 > (double)table->capacity * VARIABLE_TABLE_MAX_LOAD)
 	{
 		table_grow_capacity(table, table->capacity * 2);
 	}

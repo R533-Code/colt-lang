@@ -1,3 +1,9 @@
+/** @file struct_table.h
+* Contains the variable hash-table used for global variables.
+* The VariableTable is responsible of providing a simplified container
+* for storing global variable declarations.
+*/
+
 #ifndef HG_COLT_STRUCT_TABLE
 #define HG_COLT_STRUCT_TABLE
 
@@ -6,8 +12,10 @@
 #include "struct_string.h"
 
 /// @brief The maximum occupied capacity before growing the table
-#define TABLE_MAX_LOAD 0.75
+#define VARIABLE_TABLE_MAX_LOAD 0.75
 
+/// @brief An entry to a VariableTable.
+/// An VariableEntry is considered uninitialized if its key->ptr == NULL.
 typedef struct
 {
 	/// @brief The key (which is the name of the variable)
@@ -20,15 +28,17 @@ typedef struct
 	uint64_t counter_nb;
 } VariableEntry;
 
+/// @brief A hash-table used for global variables of a program.
+/// For an entry of a VariableTable to be considered uninitialized, its key->ptr is equal to NULL.
 typedef struct
 {
-	/// @brief A counter incremented at each pushed item
+	/// @brief A counter incremented at each pushed global item
 	uint64_t counter;
 	/// @brief The number of active entries in the VariableTable
 	uint64_t count;
 	/// @brief The capacity of the VariableTable
 	uint64_t capacity;
-	/// @brief The pointer to the entries beginning
+	/// @brief The pointer to the entries array
 	VariableEntry* entries;
 } VariableTable;
 
@@ -40,18 +50,43 @@ void TableInit(VariableTable* table);
 /// @param table The VariableTable whose resources to free
 void TableFree(VariableTable* table);
 
+/// @brief Get the value of an entry if it exists.
+/// If this function returns True, then it has written the value
+/// of an entry to 'value'.
+/// @param table The table from which to get the entry
+/// @param key The key to the entry
+/// @param value Where to write the entry's value if it is found
+/// @return True if the entry was found and its value written to 'value'
 bool TableGet(VariableTable* table, StringView key, QWORD* value);
 
+/// @brief Check is a variable is already exists in a VariableTable
+/// @param table The table where to search for
+/// @param key The key to check for
+/// @return True if an entry already has a key equal to 'key'
 bool TableContains(VariableTable* table, StringView key);
 
+/// @brief Creates an entry if it does not exist or overwrite one
+/// @param table The table to modify
+/// @param strv The key of the value to write/modify
+/// @param value The value to assign
+/// @param type The type of the variable
+/// @return True if a new entry was created, False if an old entry was overridden
 bool TableSet(VariableTable* table, StringView strv, QWORD value, Type type);
 
+/// @brief Deletes an entry if it exists
+/// @param table The table to modify
+/// @param key The key of the entry to delete
+/// @return True if deletion happened
 bool TableDelete(VariableTable* table, StringView key);
 
 /// @brief Prints the content of a VariableTable
 /// @param table The VariableTable whose content to print
 void TablePrint(const VariableTable* table);
 
+/// @brief Gets an entry if it exists or NULL
+/// @param table The table from which to search for the entry
+/// @param key The key whose entry to search for
+/// @return A pointer to the entry if it exits or NULL
 VariableEntry* TableGetEntry(VariableTable* table, StringView key);
 
 /**************************************
@@ -69,6 +104,11 @@ uint64_t hash_strv(StringView strv);
 /// @param capacity
 void table_grow_capacity(VariableTable* table, uint64_t capacity);
 
+/// @brief Find an existing entry or searches for the next empty slot where to write
+/// @param entries The pointer to the entries
+/// @param capacity The size of the buffer of entries
+/// @param strv The key to search for
+/// @return A valid pointer to an empty entry or to an existing one with the same key as 'strv'
 VariableEntry* table_find_entry(VariableEntry* entries, uint64_t capacity, StringView strv);
 
 #endif //HG_COLT_STRUCT_TABLE
