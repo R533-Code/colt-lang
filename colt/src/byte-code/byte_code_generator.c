@@ -5,10 +5,16 @@
 
 bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr)
 {
-	colt_assert(chunk->count == 32, "Chunk should be initialized!");
+	colt_assert(chunk->count >= 32, "Chunk should be initialized!");
 
-	//write CODE offset, which starts after the header
-	*((uint64_t*)(chunk->code)) = 32;
+	//write GLOBAL offset
+	*(uint64_t*)(chunk->code) = gen_global_pool(chunk, var_table);
+	//*((uint64_t*)(chunk->code) + 1) = gen_const_pool(chunk, var_table);
+	//write DEBUG offset
+	*((uint64_t*)(chunk->code) + 2) = gen_debug_pool(chunk, var_table);
+	//write CODE offset
+	*((uint64_t*)(chunk->code) + 3) = chunk->count;
+
 	if (gen_byte_code(chunk, var_table, expr))
 	{
 		//FOR DEBUG PURPOSE
@@ -17,13 +23,7 @@ bool generateByteCode(Chunk* chunk, const Table* var_table, const Expr* expr)
 		//EXIT
 		ChunkWriteOpCode(chunk, OP_EXIT);
 		QWORD exit_code = { .u64 = 0 };
-		ChunkWriteQWORD(chunk, exit_code);
-		
-		//write GLOBAL offset
-		*((uint64_t*)(chunk->code) + 1) = gen_global_pool(chunk, var_table);
-		//*((uint64_t*)(chunk->code) + 2) = gen_const_pool(chunk, var_table);
-		//write DEBUG offset
-		*((uint64_t*)(chunk->code) + 3) = gen_debug_pool(chunk, var_table);
+		ChunkWriteQWORD(chunk, exit_code);		
 		return true;
 	}
 	return false;
@@ -292,7 +292,7 @@ bool gen_variable_assigment(Chunk* chunk, const Table* var_table, const BinaryEx
 
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
-	QWORD offset = { .u64 = entry - var_table->entries };
+	QWORD offset = { .u64 = entry->counter_nb };
 
 	switch (ptr->lhs->expr_type.byte_size)
 	{
