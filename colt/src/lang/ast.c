@@ -346,7 +346,7 @@ Expr* impl_primary_expr(AST* ast)
 	break; case TKN_IDENTIFIER:
 	{
 		StringView variable_name = ScannerGetIdentifier(&ast->scan);
-		Entry* table_entry = TableGetEntry(&ast->var_table, variable_name);
+		VariableEntry* table_entry = TableGetEntry(&ast->var_table, variable_name);
 		if (!table_entry)
 		{
 			ast_gen_error(ast,

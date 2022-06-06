@@ -258,7 +258,7 @@ bool impl_gen_code_convert(Chunk* chunk, const VariableTable* var_table, const C
 
 bool impl_gen_global_code_variable(Chunk* chunk, const VariableTable* var_table, const VariableExpr* ptr)
 {
-	Entry* entry = table_find_entry(var_table->entries, var_table->capacity, ptr->var_name);
+	VariableEntry* entry = table_find_entry(var_table->entries, var_table->capacity, ptr->var_name);
 	
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
@@ -289,7 +289,7 @@ bool gen_global_variable_assigment(Chunk* chunk, const VariableTable* var_table,
 	if (ptr->lhs->identifier != EXPR_VAR)
 		return false;
 
-	const Entry* entry = table_find_entry(var_table->entries, var_table->capacity, ((VariableExpr*)ptr->lhs)->var_name);
+	const VariableEntry* entry = table_find_entry(var_table->entries, var_table->capacity, ((VariableExpr*)ptr->lhs)->var_name);
 
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 

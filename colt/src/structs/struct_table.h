@@ -10,11 +10,15 @@
 
 typedef struct
 {
+	/// @brief The key (which is the name of the variable)
 	String key;
+	/// @brief The value of the variable
 	QWORD value;
+	/// @brief The type of the variable
 	Type type;
+	/// @brief The number of the variable
 	uint64_t counter_nb;
-} Entry;
+} VariableEntry;
 
 typedef struct
 {
@@ -25,7 +29,7 @@ typedef struct
 	/// @brief The capacity of the VariableTable
 	uint64_t capacity;
 	/// @brief The pointer to the entries beginning
-	Entry* entries;
+	VariableEntry* entries;
 } VariableTable;
 
 /// @brief Initializes a VariableTable
@@ -48,7 +52,7 @@ bool TableDelete(VariableTable* table, StringView key);
 /// @param table The VariableTable whose content to print
 void TablePrint(const VariableTable* table);
 
-Entry* TableGetEntry(VariableTable* table, StringView key);
+VariableEntry* TableGetEntry(VariableTable* table, StringView key);
 
 /**************************************
 IMPLEMENTATION HELPERS
@@ -65,6 +69,6 @@ uint64_t hash_strv(StringView strv);
 /// @param capacity
 void table_grow_capacity(VariableTable* table, uint64_t capacity);
 
-Entry* table_find_entry(Entry* entries, uint64_t capacity, StringView strv);
+VariableEntry* table_find_entry(VariableEntry* entries, uint64_t capacity, StringView strv);
 
 #endif //HG_COLT_STRUCT_TABLE
