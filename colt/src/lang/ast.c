@@ -130,12 +130,21 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 	case TKN_OPERATOR_MINUS:
 	case TKN_OPERATOR_STAR:
 	case TKN_OPERATOR_SLASH:
+			case TKN_OPERATOR_EQUAL:
+	case TKN_OPERATOR_PLUS_EQUAL:
+	case TKN_OPERATOR_MINUS_EQUAL:
+	case TKN_OPERATOR_STAR_EQUAL:
+	case TKN_OPERATOR_SLASH_EQUAL:
+	case TKN_OPERATOR_MODULO:
 		return lhs;
 	case TKN_OPERATOR_AND:
 	case TKN_OPERATOR_OR:
 	case TKN_OPERATOR_XOR:
 	case TKN_OPERATOR_GREATER_GREATER:
 	case TKN_OPERATOR_LESS_LESS:
+	case TKN_OPERATOR_AND_EQUAL:
+	case TKN_OPERATOR_OR_EQUAL:
+	case TKN_OPERATOR_XOR_EQUAL:
 		if (is_type_integral(lhs.type_id) && is_type_integral(rhs.type_id))
 			return lhs;
 		else
@@ -143,8 +152,6 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' expects integral operands!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
 			return ColtBool;
 		}
-	case TKN_OPERATOR_EQUAL:
-		return lhs;
 	case TKN_OPERATOR_GREATER:
 	case TKN_OPERATOR_GREATER_EQUAL:
 	case TKN_OPERATOR_LESS:
