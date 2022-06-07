@@ -26,17 +26,17 @@ void ChunkInit(Chunk* chunk)
 
 void ChunkWriteOpCode(Chunk* chunk, OpCode code)
 {
-	impl_chunk_write_byte(chunk, (uint8_t)code);
+	chunk_write_byte(chunk, (uint8_t)code);
 }
 
 void ChunkWriteOperand(Chunk* chunk, BuiltinTypeID type)
 {
-	impl_chunk_write_byte(chunk, (uint8_t)type);
+	chunk_write_byte(chunk, (uint8_t)type);
 }
 
 uint64_t ChunkWriteBYTE(Chunk* chunk, BYTE byte)
 {
-	impl_chunk_write_byte(chunk, byte.u8);
+	chunk_write_byte(chunk, byte.u8);
 	return 1;
 }
 
@@ -268,7 +268,7 @@ void impl_chunk_grow_size(Chunk* chunk, size_t size)
 	chunk->code = ptr;
 }
 
-void impl_chunk_write_byte(Chunk* chunk, uint8_t byte)
+void chunk_write_byte(Chunk* chunk, uint8_t byte)
 {
 	if (chunk->count == chunk->capacity) //Grow if needed
 		impl_chunk_grow_double(chunk);

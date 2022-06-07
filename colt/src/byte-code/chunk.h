@@ -164,6 +164,6 @@ void impl_chunk_grow_size(Chunk* chunk, size_t size);
 /// @brief Appends a byte at the end of the chunk
 /// @param chunk The chunk to modify
 /// @param byte The byte to append
-void impl_chunk_write_byte(Chunk* chunk, uint8_t byte);
+void chunk_write_byte(Chunk* chunk, uint8_t byte);
 
 #endif //HG_COLT_CHUNK
