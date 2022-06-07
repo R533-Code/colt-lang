@@ -51,6 +51,11 @@ static const Type ColtDouble	= { .name.start = ColtDouble_str,	.name.end = ColtD
 /// @brief Type representing a built-in literal
 static const Type ColtLString	= { .name.start = ColtLString_str,  .name.end = ColtLString_str + 7,	.type_id = ID_COLT_LSTRING,		.byte_size = sizeof(ColtLString_t) };
 
+/// @brief Check for if a type is built-in
+/// @param type The type to check for
+/// @return True if the type is built-in
+bool is_type_builtin(uint64_t type);
+
 /// @brief Check if a type is a built-in signed integer
 /// @param type The type_id to check for
 /// @return True if the type is a signed integer

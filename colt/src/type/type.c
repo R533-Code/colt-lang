@@ -1,5 +1,10 @@
 #include "type.h"
 
+bool is_type_builtin(uint64_t type)
+{
+	return type <= ID_COLT_LSTRING;
+}
+
 bool is_type_signed_int(uint64_t type)
 {
 	return type < ID_COLT_FLOAT && type > ID_COLT_U64;
@@ -60,6 +65,8 @@ Type type_get_from_id(BuiltinTypeID id)
 		return ColtFloat;
 	case ID_COLT_DOUBLE:
 		return ColtFloat;
+	case ID_COLT_LSTRING:
+		return ColtLString;
 	default:
 		colt_assert(false, "ID was not that of a Built-in Type!");
 		exit(1);
