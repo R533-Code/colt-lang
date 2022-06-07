@@ -130,6 +130,9 @@ typedef enum
 	/// @brief Represents a 32-bit single-precision float
 	ID_COLT_FLOAT		= COLTI_FLOAT_ID,
 
+	/// @brief Represents a pointer to a literal string
+	ID_COLT_LSTRING = COLTI_LSTRING_ID,
+
 	/// @brief Represents a signed 8-bit integer
 	ID_COLT_I8			= COLTI_I8_ID,
 	/// @brief Represents a signed 16-bit integer
@@ -146,7 +149,7 @@ typedef enum
 	/// @brief Represents an unsigned 32-bit integer
 	ID_COLT_U32			= COLTI_U32_ID,
 	/// @brief Represents an unsigned 64-bit integer
-	ID_COLT_U64			= COLTI_U64_ID,
+	ID_COLT_U64			= COLTI_U64_ID,	
 } BuiltinTypeID;
 
 /// @brief Converts a built-in type ID to a const char*
