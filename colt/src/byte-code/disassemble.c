@@ -6,7 +6,7 @@
 
 void ChunkDisassemble(const Chunk* chunk, const char* name)
 {
-	printf("============ %s ============\n", name);
+	printf("================ %s ================\n", name);
 
 	//32 is the size of the header
 	if (chunk->count == 32)
