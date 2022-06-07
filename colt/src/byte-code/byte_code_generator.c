@@ -122,18 +122,26 @@ bool impl_gen_code_binary(Chunk* chunk, const VariableTable* var_table, const Bi
 	switch (ptr->expr_operator)
 	{
 	case TKN_OPERATOR_PLUS:
+		if (is_type_signed_int(ptr->expr_type.type_id))
+			gen_signed_addition_checks(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		ChunkWriteOpCode(chunk, OP_ADD);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
 	case TKN_OPERATOR_MINUS:
+		if (is_type_signed_int(ptr->expr_type.type_id))
+			gen_signed_subtraction_checks(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		ChunkWriteOpCode(chunk, OP_SUBTRACT);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
 	case TKN_OPERATOR_STAR:
+		if (is_type_signed_int(ptr->expr_type.type_id))
+			gen_signed_multiplication_checks(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		ChunkWriteOpCode(chunk, OP_MULTIPLY);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
 	case TKN_OPERATOR_SLASH:
+		if (is_type_signed_int(ptr->expr_type.type_id))
+			gen_signed_division_checks(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		//prohibit zero division for integers
 		if (is_type_integral((BuiltinTypeID)ptr->expr_type.type_id))
 		{
@@ -362,22 +370,22 @@ void gen_bitshift_ub_checks(Chunk* chunk, Type type)
 	gen_integral_short_jmp(chunk, OP_SJUMP_LESS, bit_size, (BuiltinTypeID)type.type_id);
 }
 
-void gen_signed_addition_checks(Chunk chunk, Type type)
-{
-	
-}
-
-void gen_signed_subtraction_checks(Chunk* chunk, Type type)
+void gen_signed_addition_checks(Chunk* chunk, BuiltinTypeID type)
 {
 
 }
 
-void gen_signed_multiplication_checks(Chunk* chunk, Type type)
+void gen_signed_subtraction_checks(Chunk* chunk, BuiltinTypeID type)
 {
 
 }
 
-void gen_signed_division_checks(Chunk* chunk, Type type)
+void gen_signed_multiplication_checks(Chunk* chunk, BuiltinTypeID type)
+{
+
+}
+
+void gen_signed_division_checks(Chunk* chunk, BuiltinTypeID type)
 {
 
 }
