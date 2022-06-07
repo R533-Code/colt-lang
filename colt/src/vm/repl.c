@@ -9,7 +9,12 @@ void ColtREPL(const char* byte_code_out)
 		fputs(CONSOLE_FOREGROUND_BRIGHT_GREEN "> " CONSOLE_COLOR_RESET, stdout);
 		String line = StringGetLine();
 		if (line.size != 1) //if string not empty
+		{
+			//append ';' if line does not end with one
+			if (line.ptr[line.size - 2] != ';')
+				StringAppendChar(&line, ';');
 			repl_run(&ast, StringToStringViewWithNUL(&line), byte_code_out);
+		}
 		StringFree(&line);
 	}
 	ASTFree(&ast);
