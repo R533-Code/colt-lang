@@ -288,7 +288,10 @@ void impl_run_byte(int argc, const char** argv, size_t current_argc)
 		if (checkIfValidFile(argv[2]))
 		{
 			Chunk chunk = ChunkDeserialize(argv[2]);
-			print_error_string("NOT IMPLEMENTED!");
+			StackVM vm;
+			StackVMInit(&vm);
+			StackVMRun(&vm, &chunk);
+			StackVMFree(&vm);
 			ChunkFree(&chunk);
 			exit(EXIT_NO_FAILURE);
 		}
@@ -331,11 +334,10 @@ void impl_test_color(int argc, const char** argv, uint64_t offset)
 
 void impl_print_invalid_combination(int argc, const char** argv, uint64_t offset)
 {
-	//TODO: add offset
 	colt_assert(argc >= 2, "Expected 'argc' greater or equal to 2!");
 	
 	//We can not use print_error_format here as it adds a '\n' at the end
-	printf(CONSOLE_FOREGROUND_BRIGHT_RED"Error: "CONSOLE_COLOR_RESET"Invalid argument combination for '%s'", argv[offset]);
+	printf(CONSOLE_FOREGROUND_BRIGHT_RED "Error: " CONSOLE_COLOR_RESET "Invalid argument combination for '%s'", argv[offset]);
 	if (argc > offset)
 	{
 		fputc(':', stdout);
