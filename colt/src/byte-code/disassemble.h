@@ -21,8 +21,8 @@ IMPLEMENTATION HELPERS
 /// @param chunk The Chunk from which to read
 /// @param offset The offset to the beginning of the GLOBAL section
 /// @param var_nb The current global variable counter
-/// @param id The type of the variable, extracted from the DEBUG section
-void impl_print_global_variable(const Chunk* chunk, uint64_t offset, uint64_t var_nb, BuiltinTypeID id);
+/// @param id The offset to the beginning of the DEBUG section
+void impl_print_global_variable(const Chunk* chunk, uint64_t offset, uint64_t var_nb, uint64_t debug_offset);
 
 /// @brief Dispatches a code to the correct printing function
 /// @param chunk The chunk from which to extract the code

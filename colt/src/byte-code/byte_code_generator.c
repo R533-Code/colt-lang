@@ -52,13 +52,39 @@ uint64_t gen_debug_pool(Chunk* chunk, const VariableTable* var_table)
 		return 0;
 	uint64_t debug_begin = chunk->count;
 
-
+	//Write the type of the values and a pointer to there names
 	for (size_t i = 0; i < var_table->capacity; i++)
 	{
 		//not active entry
 		if (var_table->entries[i].key.ptr == NULL)
 			continue;
-		ChunkWriteOperand(chunk, (BuiltinTypeID)var_table->entries[i].type.type_id);
+		QWORD id = { .u64 = var_table->entries[i].type.type_id };
+		//First QWORD which contains the type is followed by another QWORD
+		//which is to be overridden later
+		ChunkWriteQWORD(chunk, id);
+		id.u64 = ULLONG_MAX;
+		//WILL BE OVERRIDEN BY OFFSET TO VARIABLE NAME
+		ChunkWriteQWORD(chunk, id);
+	}
+	size_t counter = 0;
+	for (size_t i = 0; i < var_table->capacity; i++)
+	{
+		//not active entry
+		if (var_table->entries[i].key.ptr == NULL)
+			continue;
+		//Overwrite the QWORD to be overridden, writing the current offset,
+		//which is the beginning of the variable name
+		//The + sizeof(QWORD): as we wrote 2 QWORDs, the first one being the type,
+		//we want to override the second one, so we offset by one QWORD
+		*(uint64_t*)(chunk->code + debug_begin + counter * 2 * sizeof(QWORD) + sizeof(QWORD))
+			= chunk->count;
+		counter++;
+		//Write each characters of the name of the variable
+		for (size_t chr = 0; chr < var_table->entries[i].key.size; chr++)
+		{
+			chunk_write_byte(chunk, var_table->entries[i].key.ptr[chr]);
+		}
+
 	}
 	return debug_begin;
 }
