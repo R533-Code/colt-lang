@@ -79,11 +79,11 @@ void impl_print_global_variable(const Chunk* chunk, uint64_t offset, uint64_t va
 	// + sizeof(QWORD) as we need to offset by one QWORD to get the offset to the name
 	const char* name = chunk->code + *(uint64_t*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD) + sizeof(QWORD));
 	BuiltinTypeID id = (BuiltinTypeID)((QWORD*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD)))->u8;
-	printf("        %08"PRIu64 CONSOLE_FOREGROUND_CYAN" %s %s: "CONSOLE_FOREGROUND_BRIGHT_GREEN"'", offset + 8 * var_nb, BuiltinTypeIDToString(id), name);
+	printf("        %08"PRIu64 CONSOLE_FOREGROUND_CYAN" %s " CONSOLE_FOREGROUND_BRIGHT_CYAN "%s" CONSOLE_COLOR_RESET " = "CONSOLE_FOREGROUND_BRIGHT_GREEN, offset + 8 * var_nb, BuiltinTypeIDToString(id), name);
 		
 	QWORD value = *(QWORD*)(chunk->code + offset + var_nb * 8);
 	OpCode_Print(value, id);
-	fputs("'\n"CONSOLE_COLOR_RESET, stdout);
+	fputs(CONSOLE_COLOR_RESET ";\n", stdout);
 }
 
 uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
