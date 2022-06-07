@@ -13,7 +13,7 @@
 #define HG_COLT_SCANNER
 
 #include "common.h"
-#include "type.h"
+#include "type/type.h"
 #include "structs/struct_string.h"
 #include "token.h"
 

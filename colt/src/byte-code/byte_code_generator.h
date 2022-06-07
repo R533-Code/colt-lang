@@ -12,7 +12,7 @@
 #include "byte_code.h"	//byte-code to write
 #include "chunk.h"		//for where to write the byte-code
 #include "lang/expr.h"	//we convert expressions to byte-code
-#include "lang/type.h"	//for built-in types
+#include "type/type.h"	//for built-in types
 
 /// @brief Recursively converts an expression to byte-code in a Chunk
 /// @param chunk The Chunk in which to write the byte-code

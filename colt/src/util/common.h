@@ -46,8 +46,8 @@
 
 #include "memory.h"
 #include "console_colors.h"
-#include "values/colti_floating_value.h"
-#include "values/colti_integer_value.h"
+#include "type/colti_floating_value.h"
+#include "type/colti_integer_value.h"
 
 /// @brief Represents the result of an interpretation of a program
 typedef enum
