@@ -81,7 +81,7 @@ bool gen_byte_code(Chunk* chunk, const VariableTable* var_table, const Expr* exp
 	break; case EXPR_CONVERT:
 		return impl_gen_code_convert(chunk, var_table, (const ConvertExpr*)expr);
 	break; case EXPR_VAR:
-		return impl_gen_global_code_variable(chunk, var_table, (const VariableExpr*)expr);
+		return gen_global_variable_load(chunk, var_table, (const VariableExpr*)expr);
 	break; default:
 		colt_assert(false, "NOT IMPLEMENTED YET!");
 	}
@@ -287,7 +287,7 @@ bool impl_gen_code_convert(Chunk* chunk, const VariableTable* var_table, const C
 	return true;
 }
 
-bool impl_gen_global_code_variable(Chunk* chunk, const VariableTable* var_table, const VariableExpr* ptr)
+bool gen_global_variable_load(Chunk* chunk, const VariableTable* var_table, const VariableExpr* ptr)
 {
 	VariableEntry* entry = table_find_entry(var_table->entries, var_table->capacity, ptr->var_name);
 	
@@ -320,8 +320,39 @@ bool gen_global_variable_assigment(Chunk* chunk, const VariableTable* var_table,
 	if (ptr->lhs->identifier != EXPR_VAR)
 		return false;
 
-	const VariableEntry* entry = table_find_entry(var_table->entries, var_table->capacity, ((VariableExpr*)ptr->lhs)->var_name);
+	switch (ptr->expr_operator)
+	{
+	break; case TKN_OPERATOR_PLUS_EQUAL:
+		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		ChunkWriteOpCode(chunk, OP_ADD);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+	break; case TKN_OPERATOR_MINUS_EQUAL:
+		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		ChunkWriteOpCode(chunk, OP_SUBTRACT);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+	break; case TKN_OPERATOR_STAR_EQUAL:
+		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		ChunkWriteOpCode(chunk, OP_MULTIPLY);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+	break; case TKN_OPERATOR_SLASH_EQUAL:
+		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		ChunkWriteOpCode(chunk, OP_DIVIDE);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+	break; case TKN_OPERATOR_AND_EQUAL:
+		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		ChunkWriteOpCode(chunk, OP_BIT_AND);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+	break; case TKN_OPERATOR_OR_EQUAL:
+		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		ChunkWriteOpCode(chunk, OP_BIT_OR);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+	break; case TKN_OPERATOR_XOR_EQUAL:
+		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		ChunkWriteOpCode(chunk, OP_BIT_XOR);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+	}
 
+	const VariableEntry* entry = table_find_entry(var_table->entries, var_table->capacity, ((VariableExpr*)ptr->lhs)->var_name);
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
 	QWORD offset = { .u64 = entry->counter_nb };

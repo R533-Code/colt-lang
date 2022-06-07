@@ -77,7 +77,7 @@ bool impl_gen_code_convert(Chunk* chunk, const VariableTable* var_table, const C
 /// @param var_table The variable table
 /// @param ptr The pointer to the expression
 /// @return True if no error are encountered
-bool impl_gen_global_code_variable(Chunk* chunk, const VariableTable* var_table, const VariableExpr* ptr);
+bool gen_global_variable_load(Chunk* chunk, const VariableTable* var_table, const VariableExpr* ptr);
 
 /// @brief Generate the code necessary for a global variable assignment
 /// @param chunk The Chunk where to write the byte-code
