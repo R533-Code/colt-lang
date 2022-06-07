@@ -335,6 +335,7 @@ bool gen_global_variable_assigment(Chunk* chunk, const VariableTable* var_table,
 		ChunkWriteOpCode(chunk, OP_MULTIPLY);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	break; case TKN_OPERATOR_SLASH_EQUAL:
+		//FIXME: check for 0
 		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
 		ChunkWriteOpCode(chunk, OP_DIVIDE);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
