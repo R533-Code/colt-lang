@@ -8,7 +8,7 @@
 /// @brief Pointer to a constant
 typedef const char* ColtLiteralString_t;
 /// @brief The type-id of a Colt bool
-#define COLTI_CSTRING_ID 11
+#define COLTI_LSTRING_ID 11
 /// @brief A string representing a Colt bool
 static const char ColtLiteralString_str[] = "l-string";
 
