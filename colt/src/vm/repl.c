@@ -8,7 +8,8 @@ void ColtREPL(const char* byte_code_out)
 	{
 		fputs(CONSOLE_FOREGROUND_BRIGHT_GREEN "> " CONSOLE_COLOR_RESET, stdout);
 		String line = StringGetLine();
-		repl_run(&ast, StringToStringViewWithNUL(&line), byte_code_out);
+		if (line.size != 1) //if string not empty
+			repl_run(&ast, StringToStringViewWithNUL(&line), byte_code_out);
 		StringFree(&line);
 	}
 	ASTFree(&ast);
