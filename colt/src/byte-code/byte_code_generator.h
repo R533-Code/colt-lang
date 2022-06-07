@@ -98,13 +98,13 @@ void gen_integral_short_jmp(Chunk* chunk, OpCode short_jump, QWORD cmp_to, Built
 /// @param type The type of the expression
 void gen_bitshift_ub_checks(Chunk* chunk, Type type);
 
-void gen_signed_addition_checks(Chunk chunk, Type type);
+void gen_signed_addition_checks(Chunk* chunk, BuiltinTypeID type);
 
-void gen_signed_subtraction_checks(Chunk* chunk, Type type);
+void gen_signed_subtraction_checks(Chunk* chunk, BuiltinTypeID type);
 
-void gen_signed_multiplication_checks(Chunk* chunk, Type type);
+void gen_signed_multiplication_checks(Chunk* chunk, BuiltinTypeID type);
 
-void gen_signed_division_checks(Chunk* chunk, Type type);
+void gen_signed_division_checks(Chunk* chunk, BuiltinTypeID type);
 
 
 #endif //HG_COLT_BYTE_CODE_GENERATOR
