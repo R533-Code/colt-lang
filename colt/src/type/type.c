@@ -2,12 +2,12 @@
 
 bool is_type_signed_int(uint64_t type)
 {
-	return type < ID_COLT_FLOAT&& type > ID_COLT_U64;
+	return type < ID_COLT_FLOAT && type > ID_COLT_U64;
 }
 
 bool is_type_unsigned_int(uint64_t type)
 {
-	return type < ID_COLT_I8&& type > ID_COLT_BOOL;
+	return type < ID_COLT_I8 && type > ID_COLT_BOOL;
 }
 
 bool is_type_integral(uint64_t type)
