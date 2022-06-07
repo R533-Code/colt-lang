@@ -154,6 +154,13 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_Divide(lhs, rhs, *(ip++)));
 		}
+		break; case OP_MODULO:
+		{
+			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
+			QWORD rhs = StackVMPop(vm);
+			QWORD lhs = StackVMPop(vm);
+			StackVMPush(vm, OpCode_Modulo(lhs, rhs, *(ip++)));
+		}
 		break; case OP_BIT_AND:
 		{
 			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
