@@ -115,8 +115,19 @@ bool impl_gen_code_unary(Chunk* chunk, const VariableTable* var_table, const Una
 
 bool impl_gen_code_binary(Chunk* chunk, const VariableTable* var_table, const BinaryExpr* ptr)
 {
-	if (ptr->expr_operator == TKN_OPERATOR_EQUAL)
+	switch (ptr->expr_operator)
+	{
+	case TKN_OPERATOR_EQUAL:
+	case TKN_OPERATOR_PLUS_EQUAL:
+	case TKN_OPERATOR_MINUS_EQUAL:
+	case TKN_OPERATOR_STAR_EQUAL:
+	case TKN_OPERATOR_SLASH_EQUAL:
+	case TKN_OPERATOR_AND_EQUAL:
+	case TKN_OPERATOR_OR_EQUAL:
+	case TKN_OPERATOR_XOR_EQUAL:
 		return gen_global_variable_assigment(chunk, var_table, ptr);
+	}
+
 
 	gen_byte_code(chunk, var_table, ptr->lhs);
 	gen_byte_code(chunk, var_table, ptr->rhs);
