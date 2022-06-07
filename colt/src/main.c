@@ -1,33 +1,5 @@
 #include "precomph.h"
 
-void debug_scan(StringView view)
-{
-	Scanner scan;
-	ScannerInit(&scan, view);
-	Token tkn = ScannerGetNextToken(&scan);
-	do
-	{
-		StringViewPrint(ScannerGetCurrentLine(&scan));
-		fputc('|', stdout);
-		StringViewPrint(ScannerGetCurrentLexeme(&scan));
-		switch (tkn)
-		{
-		break; case TKN_DOUBLE:
-			printf(": %s: %g\n", TokenToString(tkn), scan.parsed_value.d);
-		break; case TKN_U64:
-			printf(": %s: %"PRIu64"\n", TokenToString(tkn), scan.parsed_value.u64);
-		break; case TKN_IDENTIFIER:
-			printf(": %s: %s\n", TokenToString(tkn), scan.parsed_string.ptr);
-		break; case TKN_STRING:
-			printf(": %s: %s\n", TokenToString(tkn), scan.parsed_string.ptr);
-		break; default:
-			printf(": %s\n", TokenToString(tkn));
-		}
-		tkn = ScannerGetNextToken(&scan);
-	} while (tkn != TKN_EOF);
-	ScannerFree(&scan);
-}
-
 void debug_ast(AST* ast, StringView view, const char* byte_out)
 {
 	if (view.end - view.start > 1)
