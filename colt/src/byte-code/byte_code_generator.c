@@ -100,6 +100,8 @@ bool impl_gen_code_unary(Chunk* chunk, const VariableTable* var_table, const Una
 	break; case TKN_OPERATOR_PLUS:
 		//DOES NOT DO ANYTHING
 	break; case TKN_OPERATOR_BANG:
+		gen_byte_code(chunk, var_table, ptr->child);
+		//ChunkWriteOpCode(chunk, )
 	break; case TKN_OPERATOR_TILDE:
 		gen_byte_code(chunk, var_table, ptr->child);
 		ChunkWriteOpCode(chunk, OP_BIT_NOT);
@@ -151,7 +153,17 @@ bool impl_gen_code_binary(Chunk* chunk, const VariableTable* var_table, const Bi
 		ChunkWriteOpCode(chunk, OP_DIVIDE);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 		return true;
-		
+	case TKN_OPERATOR_MODULO:
+		//prohibit mod 0
+		if (is_type_integral((BuiltinTypeID)ptr->expr_type.type_id))
+		{
+			QWORD zero = { .u64 = 0 };
+			gen_integral_short_jmp(chunk, OP_SJUMP_NOT_EQUAL, zero, (BuiltinTypeID)ptr->expr_type.type_id);
+		}
+		ChunkWriteOpCode(chunk, OP_MODULO);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+		return true;
+
 		/****************************************
 		* BITWISE OPCODES
 		****************************************/
