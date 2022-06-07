@@ -10,9 +10,7 @@
 #define HG_COLT_STACK_BASED_VM
 
 #include "common.h"
-
 #include "byte-code/chunk.h"
-#include "values/colti_floating_value.h"
 
 /// @brief VM containing a stack
 typedef struct
