@@ -2,6 +2,13 @@
 * Contains the Chunk struct, which is used to provide simpler operations for storing and writing byte-code.
 * A Chunk can be seen as a contiguous dynamic array which handles resizes automatically
 * when writing byte-code to it.
+* A Chunk usually contains 5 sections:
+* - The HEADER: 4 uint64_t giving the offsets of the 4 other sections
+*	- The offsets are in bytes, which should be added to Chunk.code
+* - The GLOBAL pool: contains all modifiable global variables
+* - The CONST pool: contains all non-modifiable const variables
+* - The DEBUG pool: contains type informations for both const and global variables
+* - The CODE section: contains the byte-code to execute
 * While some functions might seem redundant (ChunkWriteOpCode, ChunkWriteOperand),
 * they provide a bit of type safety (as C's type system can be summarized with warnings)
 * over just appending a byte at the end of the Chunk's code.
