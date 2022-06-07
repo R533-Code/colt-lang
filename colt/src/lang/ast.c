@@ -135,7 +135,6 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 	case TKN_OPERATOR_MINUS_EQUAL:
 	case TKN_OPERATOR_STAR_EQUAL:
 	case TKN_OPERATOR_SLASH_EQUAL:
-	case TKN_OPERATOR_MODULO:
 		return lhs;
 	case TKN_OPERATOR_AND:
 	case TKN_OPERATOR_OR:
@@ -145,6 +144,7 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 	case TKN_OPERATOR_AND_EQUAL:
 	case TKN_OPERATOR_OR_EQUAL:
 	case TKN_OPERATOR_XOR_EQUAL:
+	case TKN_OPERATOR_MODULO:
 		if (is_type_integral(lhs.type_id) && is_type_integral(rhs.type_id))
 			return lhs;
 		else
