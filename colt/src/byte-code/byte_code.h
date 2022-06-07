@@ -61,7 +61,7 @@ typedef enum
 	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their division
 	OP_DIVIDE,
 
-	//DON'T KNOW
+	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their modulo
 	OP_MODULO,
 
 	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their bitwise AND
@@ -76,6 +76,9 @@ typedef enum
 	OP_BIT_SHIFT_L,
 	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their shift right
 	OP_BIT_SHIFT_R,
+
+	/// @brief Specifies that the next byte is an operand to which to cast 1 QWORD before 
+	OP_BOOL_NOT,
 
 	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing greater
 	OP_CMP_GREATER,
@@ -195,6 +198,13 @@ QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type);
 /// @param type The type of the QWORDs
 /// @return The division of the QWORDs
 QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type);
+
+/// @brief Casts 2 QWORD and return the remainder of their division
+/// @param left The left hand side
+/// @param right The right hand side
+/// @param type The type of the QWORDs
+/// @return The remainder of their division
+QWORD OpCode_Modulo(QWORD left, QWORD right, BuiltinTypeID type);
 
 /// @brief Casts 2 QWORD and return their bitwise AND
 /// @param left The left hand side
