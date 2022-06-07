@@ -10,11 +10,9 @@ int main(int argc, const char** argv)
 	}
 	else
 	{
-		AST ast;
-		ASTInit(&ast);
 		String file_content = StringGetFileContent(args.file_path_in);
+		//PARSE
 		StringFree(&file_content);
-		ASTFree(&ast);
 	}
 	DUMP_MEMORY_LEAKS();
 }
