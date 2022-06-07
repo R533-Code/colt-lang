@@ -9,8 +9,9 @@
 #define HG_COLT_TYPE
 
 #include "common.h"
-#include "values/colti_floating_value.h"
-#include "values/colti_integer_value.h"
+#include "type/colti_floating_value.h"
+#include "type/colti_integer_value.h"
+#include "type/colti_string_value.h"
 #include "structs/struct_string.h"
 
 /// @brief Represents a type, which is a name and an ID
@@ -47,5 +48,35 @@ static const Type ColtI64 = { .name.start = ColtI64_str,		.name.end = ColtI64_st
 static const Type ColtFloat = { .name.start = ColtFloat_str,	.name.end = ColtFloat_str + 5,		.type_id = ID_COLT_FLOAT,		.byte_size = sizeof(ColtFloat_t) };
 /// @brief Type representing a built-in double
 static const Type ColtDouble = { .name.start = ColtDouble_str,	.name.end = ColtDouble_str + 6,		.type_id = ID_COLT_DOUBLE,		.byte_size = sizeof(ColtDouble_t) };
+
+/// @brief Check if a type is a built-in signed integer
+/// @param type The type_id to check for
+/// @return True if the type is a signed integer
+bool is_type_signed_int(uint64_t type);
+
+/// @brief Check if a type is a built-in unsigned integer
+/// @param type The type_id to check for
+/// @return True if the type is an unsigned integer
+bool is_type_unsigned_int(uint64_t type);
+
+/// @brief Checks if a type is a built-in integer regardless of its sign
+/// @param type The type_id to check for
+/// @return True if the type is an unsigned/signed integer
+bool is_type_integral(uint64_t type);
+
+/// @brief Check if a type is a built-in floating point type
+/// @param type The type_id to check for
+/// @return True if the type is a ColtFloat_t/ColtDouble_t
+bool is_type_floating(uint64_t type);
+
+/// @brief Returns the sign equivalent Type of an unsigned type ID
+/// @param type The unsigned type ID
+/// @return The signed type equivalent
+Type type_unsigned_to_signed(uint64_t type);
+
+/// @brief Returns the type from a BuiltinTypeID
+/// @param id The ID to representing a buit-in type
+/// @return A Type corresponding to the ID
+Type type_get_from_id(BuiltinTypeID id);
 
 #endif //HG_COLT_TYPE
