@@ -152,6 +152,8 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 		return impl_print_operand_instruction("OP_MULTIPLY", chunk->code[offset + 1], offset);
 	case OP_DIVIDE:
 		return impl_print_operand_instruction("OP_DIVIDE", chunk->code[offset + 1], offset);
+	case OP_MODULO:
+		return impl_print_operand_instruction("OP_MODULO", chunk->code[offset + 1], offset);
 	case OP_BIT_AND:
 		return impl_print_operand_instruction("OP_BIT_AND", chunk->code[offset + 1], offset);
 	case OP_BIT_OR:
