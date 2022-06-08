@@ -332,8 +332,10 @@ Expr* impl_primary_expr(AST* ast)
 
 	break; case TKN_STRING:
 	{
-		value.lstring = ScannerGetLString(&ast->scan);
+		value.string_ptr = ScannerGetLString(&ast->scan);
 		type = ColtLString;
+		//TODO: add table for strings
+		//push string to table
 	}
 	break;
 
