@@ -157,14 +157,14 @@ void freeExpr(Expr* ptr)
 		freeExpr(cexpr->child);
 		safe_free(cexpr);
 	}
-	break;
-	case EXPR_LITERAL:
+	break; case EXPR_LITERAL:
 	{
 		LiteralExpr* lexpr = (LiteralExpr*)ptr;
 		if (ptr->expr_type.type_id == ID_COLT_LSTRING)
 			StringFree(lexpr->value.lstring);
+		safe_free(ptr);
 	}
-	case EXPR_VAR:
+	break; case EXPR_VAR:
 		safe_free(ptr);
 	break; default:
 		colt_assert(false, "Expression identifier was invalid!");
