@@ -24,9 +24,11 @@ StringView ScannerGetIdentifier(const Scanner* scan)
 	return scan->parsed_identifier;
 }
 
-String ScannerGetString(const Scanner* scan)
+String* ScannerGetLString(const Scanner* scan)
 {
-	return StringCopy(&scan->parsed_string);
+	String* to_ret = safe_malloc(sizeof(String));
+	StringCopy(to_ret, &scan->parsed_string);
+	return to_ret;
 }
 
 QWORD ScannerGetParsedQWORD(const Scanner* scan)

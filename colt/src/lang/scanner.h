@@ -55,10 +55,10 @@ void ScannerFree(Scanner* scan);
 /// @return A StringView of the identifier
 StringView ScannerGetIdentifier(const Scanner* scan);
 
-/// @brief Returns a copy of the last parsed string literal
+/// @brief Returns a heap-allocated copy of the last parsed string literal
 /// @param scan The scanner from which to get the value
-/// @return A copy of the String
-String ScannerGetString(const Scanner* scan);
+/// @return A pointer to a copy of the String, that should be freed with StringFree and also deleted
+String* ScannerGetLString(const Scanner* scan);
 
 /// @brief Returns the last parsed double/float/integral as a QWORD
 /// @param scan The scanner from which to get the value
