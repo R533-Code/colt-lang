@@ -430,6 +430,38 @@ Token impl_scanner_handle_string(Scanner* scan)
 
 	while (scan->current_char != '"' && scan->current_char != '\n' && scan->current_char != EOF)
 	{
+		if (scan->current_char == '\\')
+		{
+			scan->current_char = impl_get_next_char(scan);
+			switch (scan->current_char)
+			{
+			break; case '\'':
+				StringAppendChar(&scan->parsed_string, '\'');
+			break; case '\"':
+				StringAppendChar(&scan->parsed_string, '\"');
+			break; case '\\':
+				StringAppendChar(&scan->parsed_string, '\\');
+			break; case 'a':
+				StringAppendChar(&scan->parsed_string, '\a');
+			break; case 'b':
+				StringAppendChar(&scan->parsed_string, '\b');
+			break; case 'f':
+				StringAppendChar(&scan->parsed_string, '\f');
+			break; case 'n':
+				StringAppendChar(&scan->parsed_string, '\n');
+			break; case 'r':
+				StringAppendChar(&scan->parsed_string, '\r');
+			break; case 't':
+				StringAppendChar(&scan->parsed_string, '\t');
+			break; case 'v':
+				StringAppendChar(&scan->parsed_string, '\v');
+			break; default:
+				impl_scanner_print_error(scan, "Invalid escape sequence!");
+				return TKN_ERROR;
+			}
+			scan->current_char = impl_get_next_char(scan);
+			continue;
+		}
 		StringAppendChar(&scan->parsed_string, scan->current_char);
 		scan->current_char = impl_get_next_char(scan);
 	}
