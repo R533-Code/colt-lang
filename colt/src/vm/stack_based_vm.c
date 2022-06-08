@@ -42,7 +42,7 @@ uint64_t StackVMSize(const StackVM* vm)
 	return vm->stack_top - vm->stack;
 }
 
-uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
+int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 {
 	QWORD* global_offset = (QWORD*)(chunk->code + *(uint64_t*)(chunk->code));
 	QWORD* const_offset = (QWORD*)(chunk->code + *(uint64_t*)(chunk->code + 1));
@@ -332,7 +332,7 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		break; case OP_RETURN:
 			return 0;
 		break; case OP_EXIT:
-			return unsafe_get_qword(&ip).u64;
+			return unsafe_get_qword(&ip).i64;
 		break; default:
 			break;
 		}

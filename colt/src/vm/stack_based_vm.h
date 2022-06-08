@@ -59,6 +59,6 @@ uint64_t StackVMSize(const StackVM* vm);
 /// @param vm The virtual machine in which to run
 /// @param chunk The chunk containing the code to run
 /// @return The exit code of the script
-uint64_t StackVMRun(StackVM* vm, Chunk* chunk);
+int64_t StackVMRun(StackVM* vm, Chunk* chunk);
 
 #endif //HG_COLT_STACK_BASED_VM
