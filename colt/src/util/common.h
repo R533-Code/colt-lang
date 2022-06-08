@@ -50,14 +50,6 @@
 #include "type/colti_integer_value.h"
 #include "type/colti_string_value.h"
 
-/// @brief Represents the result of an interpretation of a program
-typedef enum
-{
-	INTERPRET_OK, ///< Interpreting was successful
-	INTERPRET_COMPILE_ERROR, ///< There was a compilation error
-	INTERPRET_RUNTIME_ERROR ///< There was a runtime error
-} InterpretResult;
-
 /// @brief Common exit codes to use in place of ints
 typedef enum
 {
@@ -163,8 +155,6 @@ typedef union
 	ColtU64_t u64;
 	/// @brief Pointer to a string literal
 	ColtLString_t lstring;
-	/// @brief Pointer to a String struct
-	String* str_ptr;
 } QWORD;
 
 
