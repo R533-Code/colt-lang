@@ -330,7 +330,7 @@ uint64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			StackVMPop(vm);
 		break; case OP_RETURN:
-			return INTERPRET_OK;
+			return 0;
 		break; case OP_EXIT:
 			return unsafe_get_qword(&ip).u64;
 		break; default:
