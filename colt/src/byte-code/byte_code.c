@@ -8,17 +8,18 @@ const char* BuiltinTypeIDToString(BuiltinTypeID id)
 {
 	switch (id)
 	{
-	case ID_COLT_BOOL:		return "bool";
-	case ID_COLT_DOUBLE:	return "double";
-	case ID_COLT_FLOAT:		return "float";
-	case ID_COLT_I8:		return "i8";
-	case ID_COLT_I16:		return "i16";
-	case ID_COLT_I32:		return "i32";
-	case ID_COLT_I64:		return "i64";
-	case ID_COLT_U8:		return "u8";
-	case ID_COLT_U16:		return "u16";
-	case ID_COLT_U32:		return "u32";
-	case ID_COLT_U64:		return "u64";
+	case ID_COLT_BOOL:		return ColtBool_str;
+	case ID_COLT_DOUBLE:	return ColtDouble_str;
+	case ID_COLT_FLOAT:		return ColtFloat_str;
+	case ID_COLT_I8:		return ColtI8_str;
+	case ID_COLT_I16:		return ColtI16_str;
+	case ID_COLT_I32:		return ColtI32_str;
+	case ID_COLT_I64:		return ColtI64_str;
+	case ID_COLT_U8:		return ColtU8_str;
+	case ID_COLT_U16:		return ColtU16_str;
+	case ID_COLT_U32:		return ColtU32_str;
+	case ID_COLT_U64:		return ColtU64_str;
+	case ID_COLT_LSTRING:	return ColtLString_str;
 	default:				return "UNKOWN";
 	}
 }
