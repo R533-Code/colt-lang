@@ -8,7 +8,7 @@
 #include "structs/struct_string.h"
 
 /// @brief Pointer to a constant string
-typedef String* ColtLString_t;
+typedef const char* ColtLString_t;
 /// @brief The type-id of a Colt literal string
 #define COLTI_LSTRING_ID 11
 /// @brief A string representing a Colt literal string
