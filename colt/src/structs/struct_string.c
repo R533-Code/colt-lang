@@ -46,22 +46,20 @@ bool StringIsEmpty(const String* str)
 	return str->size == 1;
 }
 
-String StringCopy(const String* str)
+void StringCopy(String* to_init, const String* str)
 {
-	String strc;
 	if (str->size > STRING_SMALL_BUFFER_OPTIMIZATION)
 	{
-		strc.ptr = safe_malloc(strc.size = str->size);
-		strc.capacity = strc.size;
-		memcpy(strc.ptr, str->ptr, strc.size);
-		return strc;
+		to_init->ptr = safe_malloc(to_init->size = str->size);
+		to_init->capacity = to_init->size;
+		memcpy(to_init->ptr, str->ptr, to_init->size);
 	}
 	else
 	{
-		strc.capacity = STRING_SMALL_BUFFER_OPTIMIZATION;
-		strc.ptr = strc.buffer;
-		memcpy(strc.ptr, str->ptr, strc.size = str->size);
-		return strc;
+		to_init->capacity = STRING_SMALL_BUFFER_OPTIMIZATION;
+		to_init->ptr = to_init->buffer;
+		to_init->size = str->size;
+		memcpy(to_init->ptr, str->ptr, to_init->size);
 	}
 }
 

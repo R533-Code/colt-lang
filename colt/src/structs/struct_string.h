@@ -55,10 +55,11 @@ uint64_t StringSize(const String* str);
 /// @param str True if empty
 bool StringIsEmpty(const String* str);
 
-/// @brief Create a copy of a String
+/// @brief Copy initializes a String from another one
+/// @param to_init The string to initialize
 /// @param str The string to copy
 /// @return The copy of the String
-String StringCopy(const String* str);
+void StringCopy(String* to_init, const String* str);
 
 /// @brief Checks if a string is using its stack-allocated buffer
 /// @param str The string for which to check
