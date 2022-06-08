@@ -329,7 +329,13 @@ Expr* impl_primary_expr(AST* ast)
 	break; case TKN_BOOL:
 		value.b = ast->scan.parsed_value.b;
 		type = ColtBool;
-		break;
+
+	break; case TKN_STRING:
+	{
+		value.lstring = ScannerGetLString(&ast->scan);
+		type = ColtLString;
+	}
+	break;
 
 		/**************** UNARY OPERATORS ****************/
 
@@ -467,7 +473,7 @@ Expr* impl_variable_declaration(AST* ast)
 	}
 	Type var_type;
 	if (tkn_type != TKN_KEYWORD_VAR)
-		var_type = ast->scan.parsed_typename;
+		var_type = ScannerGetTypename(&ast->scan);
 	StringView decl_identifier = ScannerGetIdentifier(&ast->scan);
 	StringView identifier_line = ScannerGetCurrentLine(&ast->scan);
 	uint64_t identifier_line_nb = ast->scan.current_line;
