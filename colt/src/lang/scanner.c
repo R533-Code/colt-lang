@@ -31,6 +31,11 @@ String* ScannerGetLString(const Scanner* scan)
 	return to_ret;
 }
 
+Type ScannerGetTypename(const Scanner* scan)
+{
+	return type_get_from_id((BuiltinTypeID)scan->parsed_value.u64);
+}
+
 QWORD ScannerGetParsedQWORD(const Scanner* scan)
 {
 	return scan->parsed_value;
@@ -675,6 +680,11 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 	break; case 'b':
 		if (strcmp(str, "break") == 0)
 			return TKN_KEYWORD_BREAK;
+		else if (strcmp(str, "bool") == 0)
+		{
+			scan->parsed_value.u64 = ID_COLT_BOOL;
+			return TKN_BUILTIN_TYPE;
+		}
 	break; case 'c':
 		if (strcmp(str, "case") == 0)
 			return TKN_KEYWORD_CASE;
@@ -683,7 +693,7 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 	break; case 'd':
 		if (strcmp(str, "double") == 0)
 		{
-			scan->parsed_typename = ColtDouble;
+			scan->parsed_value.u64 = ID_COLT_DOUBLE;
 			return TKN_BUILTIN_TYPE;
 		}
 		else if (strcmp(str, "default") == 0)
@@ -703,7 +713,7 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 		}
 		else if (strcmp(str, "float") == 0)
 		{
-			scan->parsed_typename = ColtFloat;
+			scan->parsed_value.u64 = ID_COLT_FLOAT;
 			return TKN_BUILTIN_TYPE;
 		}
 	break; case 'g':
@@ -714,22 +724,22 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 			return TKN_KEYWORD_IF;
 		else if (strcmp(str, "i8") == 0)
 		{
-			scan->parsed_typename = ColtI8;
+			scan->parsed_value.u64 = ID_COLT_I8;
 			return TKN_BUILTIN_TYPE;
 		}
 		else if (strcmp(str, "i16") == 0)
 		{
-			scan->parsed_typename = ColtI16;
+			scan->parsed_value.u64 = ID_COLT_I16;
 			return TKN_BUILTIN_TYPE;
 		}
 		else if (strcmp(str, "i32") == 0)
 		{
-			scan->parsed_typename = ColtI32;
+			scan->parsed_value.u64 = ID_COLT_I32;
 			return TKN_BUILTIN_TYPE;
 		}
 		else if (strcmp(str, "i64") == 0)
 		{
-			scan->parsed_typename = ColtI64;
+			scan->parsed_value.u64 = ID_COLT_I64;
 			return TKN_BUILTIN_TYPE;
 		}
 	break; case 'o':
@@ -748,22 +758,22 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 		///TODO: optimize in a finite automaton
 		if (strcmp(str, "u8") == 0)
 		{
-			scan->parsed_typename = ColtU8;
+			scan->parsed_value.u64 = ID_COLT_U8;
 			return TKN_BUILTIN_TYPE;
 		}
 		else if (strcmp(str, "u16") == 0)
 		{
-			scan->parsed_typename = ColtU16;
+			scan->parsed_value.u64 = ID_COLT_U16;
 			return TKN_BUILTIN_TYPE;
 		}
 		else if (strcmp(str, "u32") == 0)
 		{
-			scan->parsed_typename = ColtU32;
+			scan->parsed_value.u64 = ID_COLT_U32;
 			return TKN_BUILTIN_TYPE;
 		}
 		else if (strcmp(str, "u64") == 0)
 		{
-			scan->parsed_typename = ColtU64;
+			scan->parsed_value.u64 = ID_COLT_U64;
 			return TKN_BUILTIN_TYPE;
 		}
 	break; case 'w':

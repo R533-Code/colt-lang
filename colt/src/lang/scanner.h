@@ -26,8 +26,6 @@ typedef struct
 	String parsed_string;
 	/// @brief Last parsed integer/bool/double/float
 	QWORD parsed_value;
-	/// @brief Last parsed built-in type name
-	Type parsed_typename;
 
 	/// @brief The string to scan
 	StringView view;
@@ -59,6 +57,11 @@ StringView ScannerGetIdentifier(const Scanner* scan);
 /// @param scan The scanner from which to get the value
 /// @return A pointer to a copy of the String, that should be freed with StringFree and also deleted
 String* ScannerGetLString(const Scanner* scan);
+
+/// @brief Returns the last parsed type name
+/// @param scan The scanner from which to get the value
+/// @return A Type representing the last parsed type name
+Type ScannerGetTypename(const Scanner* scan);
 
 /// @brief Returns the last parsed double/float/integral as a QWORD
 /// @param scan The scanner from which to get the value
