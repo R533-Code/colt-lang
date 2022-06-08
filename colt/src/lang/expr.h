@@ -40,7 +40,7 @@ typedef enum
 } ExprIdentifier;
 
 /// @brief Represents an unspecialized expression.
-/// As C doesn't provide inheritance, we add these two members in each
+/// As C doesn't provide inheritance, we add its members to each
 /// expression class. 'identifier' is used to know which type of expression
 /// is the current expression. This allows us to cast an expression to its
 /// actual type. 'expr_type' is the Colt type of the expression.
@@ -103,7 +103,7 @@ typedef struct
 } BinaryExpr;
 
 /// @brief Represents a literal expression.
-/// A LiteralExpr can contain literal integer, floating point, string, or boolean
+/// A LiteralExpr can contain literal integer, floating point, or boolean
 typedef struct
 {
 	/// @brief The line number
