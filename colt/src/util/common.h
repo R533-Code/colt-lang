@@ -161,7 +161,7 @@ typedef union
 	ColtI64_t i64;
 	/// @brief 64-bit unsigned integer
 	ColtU64_t u64;
-	/// @brief Pointer to a string literal
+	/// @brief Pointer to a string literal, which is represented as a String struct
 	ColtLString_t lstr;
 } QWORD;
 
