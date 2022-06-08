@@ -5,7 +5,7 @@
 #ifndef HG_COLT_STRING_VALUE
 #define HG_COLT_STRING_VALUE
 
-/// @brief Pointer to a constant
+/// @brief Pointer to a constant string
 typedef const char* ColtLString_t;
 /// @brief The type-id of a Colt literal string
 #define COLTI_LSTRING_ID 11
