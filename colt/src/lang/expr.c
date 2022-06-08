@@ -30,6 +30,7 @@ Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line,
 		case ID_COLT_U16:
 		case ID_COLT_U32:
 		case ID_COLT_U64:
+		case ID_COLT_LSTRING:
 		break; default:
 			colt_assert(false, "'type' was not a valid type!");
 		}
@@ -158,6 +159,11 @@ void freeExpr(Expr* ptr)
 	}
 	break;
 	case EXPR_LITERAL:
+	{
+		LiteralExpr* lexpr = (LiteralExpr*)ptr;
+		if (ptr->expr_type.type_id == ID_COLT_LSTRING)
+			StringFree(lexpr->value.lstring);
+	}
 	case EXPR_VAR:
 		safe_free(ptr);
 	break; default:
