@@ -30,6 +30,16 @@ typedef struct
 	uint64_t counter_nb;
 } VariableEntry;
 
+/// @brief An string literal entry to a VariableTable.
+/// An VariableEntry is considered uninitialized if its key->ptr == NULL.
+typedef struct
+{
+	/// @brief The key which is the actual string
+	String key;
+	/// @brief The number of the literal (which is used for offsets)
+	uint64_t counter_nb;
+} StringEntry;
+
 /// @brief A hash-table used for global variables of a program.
 /// For an entry of a VariableTable to be considered uninitialized, its key->ptr is equal to NULL.
 typedef struct
@@ -38,13 +48,26 @@ typedef struct
 	uint64_t global_counter;
 	/// @brief A counter incremented at each pushed const item
 	uint64_t const_counter;
-	/// @brief The number of active entries in the VariableTable
+
+	/// @brief The number of active variables in the VariableTable
 	uint64_t count;
 	/// @brief The capacity of the VariableTable
 	uint64_t capacity;
 	/// @brief The pointer to the entries array
 	VariableEntry* entries;
 } VariableTable;
+
+/// @brief A hash-table used for global variables of a program.
+/// For an entry of a VariableTable to be considered uninitialized, its key->ptr is equal to NULL.
+typedef struct
+{
+	/// @brief The number of active variables in the VariableTable
+	uint64_t count;
+	/// @brief The capacity of the VariableTable
+	uint64_t capacity;
+	/// @brief The pointer to the string entries array
+	StringEntry* str_entries;
+} StringLiteralTable;
 
 /// @brief Initializes a VariableTable
 /// @param table The VariableTable to initialize
