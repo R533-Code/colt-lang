@@ -89,13 +89,25 @@ void ast_gen_error(AST* ast, uint64_t line_nb, StringView current_line, StringVi
 	va_end(args);
 	fputc('\n', stderr);
 
-	//To highlight the error lexeme, we need to break down the line in 3 parts:
-	//The part before the error, the error, and the part after the error
-	fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED"%.*s"CONSOLE_COLOR_RESET"%.*s\n",
-		(uint32_t)(current_lexeme.start - current_line.start), current_line.start,
-		(uint32_t)(current_lexeme.end - current_lexeme.start), current_lexeme.start,
-		(uint32_t)(current_line.end - current_lexeme.end), current_lexeme.end
-	);
+	if ((uint32_t)(current_lexeme.end - current_lexeme.start) == 0)
+	{
+		//To highlight the error lexeme, we need to break down the line in 3 parts:
+		//The part before the error, the error, and the part after the error
+		fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED" "CONSOLE_COLOR_RESET"%.*s\n",
+			(uint32_t)(current_lexeme.start - current_line.start), current_line.start,
+			(uint32_t)(current_line.end - current_lexeme.end), current_lexeme.end
+		);
+	}
+	else
+	{
+		//To highlight the error lexeme, we need to break down the line in 3 parts:
+		//The part before the error, the error, and the part after the error
+		fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED"%.*s"CONSOLE_COLOR_RESET"%.*s\n",
+			(uint32_t)(current_lexeme.start - current_line.start), current_line.start,
+			(uint32_t)(current_lexeme.end - current_lexeme.start), current_lexeme.start,
+			(uint32_t)(current_line.end - current_lexeme.end), current_lexeme.end
+		);
+	}
 }
 
 void ast_enter_panic_mode(AST* ast)
