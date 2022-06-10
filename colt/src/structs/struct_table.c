@@ -6,7 +6,7 @@
 
 void TableInit(VariableTable* table)
 {
-	table->counter = 0;
+	table->global_counter = 0;
 	table->capacity = 10;
 	table->count = 0;
 	table->entries = safe_malloc(sizeof(VariableEntry) * 10);
@@ -56,7 +56,7 @@ bool TableSet(VariableTable* table, StringView strv, QWORD value, Type type)
 	bool is_new = (entry->key.ptr == NULL);
 	if (is_new)
 	{	
-		entry->counter_nb = table->counter++; //update both counter and count
+		entry->counter_nb = table->global_counter++; //update both global_counter and count
 		table->count++;
 	}
 	

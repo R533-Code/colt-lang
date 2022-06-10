@@ -24,6 +24,8 @@ typedef struct
 	QWORD value;
 	/// @brief The type of the variable
 	Type type;
+	/// @brief True if the variable
+	bool is_const;
 	/// @brief The number of the variable
 	uint64_t counter_nb;
 } VariableEntry;
@@ -33,7 +35,9 @@ typedef struct
 typedef struct
 {
 	/// @brief A counter incremented at each pushed global item
-	uint64_t counter;
+	uint64_t global_counter;
+	/// @brief A counter incremented at each pushed const item
+	uint64_t const_counter;
 	/// @brief The number of active entries in the VariableTable
 	uint64_t count;
 	/// @brief The capacity of the VariableTable
