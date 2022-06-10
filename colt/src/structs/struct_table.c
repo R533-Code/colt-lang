@@ -4,7 +4,7 @@
 
 #include "struct_table.h"
 
-void TableInit(VariableTable* table)
+void VariableTableInit(VariableTable* table)
 {
 	table->global_counter = 0;
 	table->capacity = 10;
@@ -14,7 +14,7 @@ void TableInit(VariableTable* table)
 		table->entries[i].key.ptr = NULL;
 }
 
-void TableFree(VariableTable* table)
+void VariableTableFree(VariableTable* table)
 {
 	for (size_t i = 0; i < table->capacity; i++)
 	{
@@ -24,12 +24,12 @@ void TableFree(VariableTable* table)
 	safe_free(table->entries);
 }
 
-bool TableGet(VariableTable* table, StringView key, QWORD* value)
+bool VariableTableGet(VariableTable* table, StringView key, QWORD* value)
 {
 	if (table->count == 0)
 		return false;
 
-	const VariableEntry* entry = table_find_entry(table->entries, table->capacity, key);
+	const VariableEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
 	if (entry->key.ptr == NULL)
 		return false;
 
@@ -37,22 +37,22 @@ bool TableGet(VariableTable* table, StringView key, QWORD* value)
 	return true;
 }
 
-bool TableContains(VariableTable* table, StringView key)
+bool VariableTableContains(VariableTable* table, StringView key)
 {
-	const VariableEntry* entry = table_find_entry(table->entries, table->capacity, key);
+	const VariableEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
 	if (entry->key.ptr == NULL)
 		return false;
 	return true;
 }
 
-bool TableSet(VariableTable* table, StringView strv, QWORD value, Type type)
+bool VariableTableSet(VariableTable* table, StringView strv, QWORD value, Type type)
 {
 	if ((double)table->count + 1 > (double)table->capacity * VARIABLE_TABLE_MAX_LOAD)
 	{
-		table_grow_capacity(table, table->capacity * 2);
+		variable_table_grow_capacity(table, table->capacity * 2);
 	}
 
-	VariableEntry* entry = table_find_entry(table->entries, table->capacity, strv);
+	VariableEntry* entry = variable_table_find_entry(table->entries, table->capacity, strv);
 	bool is_new = (entry->key.ptr == NULL);
 	if (is_new)
 	{	
@@ -66,12 +66,12 @@ bool TableSet(VariableTable* table, StringView strv, QWORD value, Type type)
 	return is_new;
 }
 
-bool TableDelete(VariableTable* table, StringView key)
+bool VariableTableDelete(VariableTable* table, StringView key)
 {
 	if (table->count == 0) return false;
 
 	// Find the entry.
-	VariableEntry* entry = table_find_entry(table->entries, table->capacity, key);
+	VariableEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
 	if (entry->key.ptr == NULL)
 		return false;
 
@@ -80,9 +80,9 @@ bool TableDelete(VariableTable* table, StringView key)
 	return true;
 }
 
-VariableEntry* TableGetEntry(VariableTable* table, StringView key)
+VariableEntry* VariableTableGetEntry(VariableTable* table, StringView key)
 {
-	VariableEntry* entry = table_find_entry(table->entries, table->capacity, key);
+	VariableEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
 	if (entry->key.ptr == NULL)
 		return NULL;
 	return entry;
@@ -120,7 +120,7 @@ uint64_t hash_strv(StringView strv)
 	return hash;
 }
 
-void table_grow_capacity(VariableTable* table, uint64_t capacity)
+void variable_table_grow_capacity(VariableTable* table, uint64_t capacity)
 {
 	VariableEntry* entries = safe_malloc(sizeof(VariableEntry) * capacity);
 	for (size_t i = 0; i < capacity; i++)
@@ -132,7 +132,7 @@ void table_grow_capacity(VariableTable* table, uint64_t capacity)
 		if (entry->key.ptr == NULL)
 			continue;
 
-		VariableEntry* dest = table_find_entry(entries, capacity, StringToStringView(&entry->key));
+		VariableEntry* dest = variable_table_find_entry(entries, capacity, StringToStringView(&entry->key));
 		dest->key = entry->key;
 		dest->value = entry->value;
 	}
@@ -142,7 +142,7 @@ void table_grow_capacity(VariableTable* table, uint64_t capacity)
 	table->capacity = capacity;
 }
 
-VariableEntry* table_find_entry(VariableEntry* entries, uint64_t capacity, StringView strv)
+VariableEntry* variable_table_find_entry(VariableEntry* entries, uint64_t capacity, StringView strv)
 {
 	uint64_t index = hash_strv(strv) % capacity;
 	for (;;)
