@@ -18,12 +18,14 @@
 /// @brief An owning array of characters that is always NUL terminated
 typedef struct
 {
+	/// @brief The pointer to the beginning of the array of characters.
+	///It's the first field so when type punning in QWORD, a String can
+	///be type-punned to a ColtLString_t
+	char* ptr;
 	/// @brief The capacity of the String
 	uint64_t capacity;
 	/// @brief The byte-size of the String, including the NUL terminator
 	uint64_t size; 
-	/// @brief The pointer to the beginning of the array of characters
-	char* ptr;
 	/// @brief Stack-buffer for optimization of small Strings
 	char buffer[STRING_SMALL_BUFFER_OPTIMIZATION];
 } String;
