@@ -315,7 +315,7 @@ bool impl_gen_code_convert(Chunk* chunk, const VariableTable* var_table, const C
 
 bool gen_global_variable_load(Chunk* chunk, const VariableTable* var_table, const VariableExpr* ptr)
 {
-	VariableEntry* entry = table_find_entry(var_table->entries, var_table->capacity, ptr->var_name);
+	VariableEntry* entry = variable_table_find_entry(var_table->entries, var_table->capacity, ptr->var_name);
 	
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
@@ -379,7 +379,7 @@ bool gen_global_variable_assigment(Chunk* chunk, const VariableTable* var_table,
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	}
 
-	const VariableEntry* entry = table_find_entry(var_table->entries, var_table->capacity, ((VariableExpr*)ptr->lhs)->var_name);
+	const VariableEntry* entry = variable_table_find_entry(var_table->entries, var_table->capacity, ((VariableExpr*)ptr->lhs)->var_name);
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
 	QWORD offset = { .u64 = entry->counter_nb };

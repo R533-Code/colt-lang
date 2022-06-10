@@ -9,12 +9,12 @@ void ASTInit(AST* ast)
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
 	ast->expr = NULL;
-	TableInit(&ast->var_table);
+	VariableTableInit(&ast->var_table);
 }
 
 void ASTFree(AST* ast)
 {
-	TableFree(&ast->var_table);
+	VariableTableFree(&ast->var_table);
 	freeExpr(ast->expr);
 
 	DO_IF_DEBUG_BUILD(
@@ -46,8 +46,8 @@ void ASTReset(AST* ast)
 		ast->expr = NULL;
 	);
 
-	TableFree(&ast->var_table);
-	TableInit(&ast->var_table);
+	VariableTableFree(&ast->var_table);
+	VariableTableInit(&ast->var_table);
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
 }
@@ -373,7 +373,7 @@ Expr* impl_primary_expr(AST* ast)
 	break; case TKN_IDENTIFIER:
 	{
 		StringView variable_name = ScannerGetIdentifier(&ast->scan);
-		VariableEntry* table_entry = TableGetEntry(&ast->var_table, variable_name);
+		VariableEntry* table_entry = VariableTableGetEntry(&ast->var_table, variable_name);
 		if (!table_entry)
 		{
 			ast_gen_error(ast,
@@ -530,7 +530,7 @@ Expr* impl_variable_declaration(AST* ast)
 
 
 		QWORD zero = { .u64 = 0 };
-		if (!TableSet(&ast->var_table, decl_identifier, zero, to_assign->expr_type))
+		if (!VariableTableSet(&ast->var_table, decl_identifier, zero, to_assign->expr_type))
 		{
 			ast_gen_error(ast,
 				ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
