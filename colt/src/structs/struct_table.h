@@ -67,7 +67,20 @@ typedef struct
 	uint64_t capacity;
 	/// @brief The pointer to the string entries array
 	StringEntry* str_entries;
-} StringLiteralTable;
+} StringTable;
+
+/// @brief Initializes a StringTable
+/// @param table The StringTable to initialize
+void StringTableInit(StringTable* table);
+
+/// @brief Frees the resources used by a StringTable
+/// @param table The StringTable whose resources to free
+void StringTableFree(StringTable* table);
+
+/// @brief Adds a String to the table
+/// @param table The StringTable to add to
+/// @param to_add The String to add
+void StringTableAdd(StringTable* table, String* to_add);
 
 /// @brief Initializes a VariableTable
 /// @param table The VariableTable to initialize
