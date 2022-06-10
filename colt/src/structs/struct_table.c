@@ -4,6 +4,29 @@
 
 #include "struct_table.h"
 
+void StringTableInit(StringTable* table)
+{
+	table->capacity = 10;
+	table->count = 0;
+	table->str_entries = safe_malloc(sizeof(StringEntry) * 10);
+	for (size_t i = 0; i < table->capacity; i++)
+		table->str_entries[i].key.ptr = NULL;
+}
+
+void StringTableFree(StringTable* table)
+{
+	for (size_t i = 0; i < table->capacity; i++)
+	{
+		if (table->str_entries[i].key.ptr != NULL)
+			StringFree(&table->str_entries[i].key);
+	}
+	safe_free(table->str_entries);
+}
+
+void StringTableAdd(StringTable* table, String* to_add)
+{
+}
+
 void VariableTableInit(VariableTable* table)
 {
 	table->global_counter = 0;
