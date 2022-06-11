@@ -3,19 +3,26 @@
 */
 #include "byte_code_generator.h"
 
-bool generateByteCode(Chunk* chunk, const VariableTable* var_table, const Expr* expr)
+bool generateByteCode(Chunk* chunk, const ASTTable* table, const Expr* expr)
 {
 	colt_assert(chunk->count >= 32, "Chunk should be initialized!");
 
+	//Reserve enough size for the GLOBAL/CONST and string literals
+	ChunkReserve(chunk, table->str_table.all_str_size + table->str_table.count * sizeof(QWORD) + table->var_table.count * sizeof(QWORD));
+
 	//write GLOBAL offset
-	*(uint64_t*)(chunk->code) = gen_global_pool(chunk, var_table);
-	//*((uint64_t*)(chunk->code) + 1) = gen_const_pool(chunk, var_table);
+	*(uint64_t*)(chunk->code) = gen_global_pool(chunk, &table->var_table);
+	//write CONST offset
+	*((uint64_t*)(chunk->code) + 1) = gen_const_pool(chunk, &table->var_table);
+	//write string literals in the constant pool
+	gen_string_literal_pool(chunk, &table->str_table);
+
 	//write DEBUG offset
-	*((uint64_t*)(chunk->code) + 2) = gen_debug_pool(chunk, var_table);
+	*((uint64_t*)(chunk->code) + 2) = gen_debug_pool(chunk, &table->var_table);
 	//write CODE offset
 	*((uint64_t*)(chunk->code) + 3) = chunk->count;
 
-	if (gen_byte_code(chunk, var_table, expr))
+	if (gen_byte_code(chunk, table, expr))
 	{
 		//FOR DEBUG PURPOSE
 		ChunkWriteOpCode(chunk, OP_PRINT);
@@ -40,25 +47,68 @@ uint64_t gen_global_pool(Chunk* chunk, const VariableTable* var_table)
 		//not active entry
 		if (var_table->entries[i].key.ptr == NULL)
 			continue;
-		*((QWORD*)(chunk->code + global_begin) + var_table->entries[i].counter_nb) = var_table->entries[i].value;
-		chunk->count += sizeof(QWORD);
+		if (!var_table->entries[i].is_const) //we are generating non-const
+		{
+			*((QWORD*)(chunk->code + global_begin) + var_table->entries[i].counter_nb) = var_table->entries[i].value;
+			chunk->count += sizeof(QWORD);
+		}
 	}
 	return global_begin;
 }
 
-uint64_t gen_debug_pool(Chunk* chunk, const VariableTable* var_table)
+uint64_t gen_const_pool(Chunk* chunk, const VariableTable* var_table)
 {
 	if (var_table->count == 0)
 		return 0;
-	uint64_t debug_begin = chunk->count;
+	uint64_t const_begin = chunk->count;
 
-	//Write the type of the values and a pointer to there names
 	for (size_t i = 0; i < var_table->capacity; i++)
 	{
 		//not active entry
 		if (var_table->entries[i].key.ptr == NULL)
 			continue;
-		QWORD id = { .u64 = var_table->entries[i].type.type_id };
+		if (var_table->entries[i].is_const)
+		{
+			*((QWORD*)(chunk->code + const_begin) + var_table->entries[i].counter_nb) = var_table->entries[i].value;
+			chunk->count += sizeof(QWORD);
+		}
+	}
+	return const_begin;
+}
+
+void gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
+{
+	uint64_t string_begin = chunk->count;
+	uint64_t offset = 0;
+
+	uint64_t string_literal_begin = string_begin + str_table->count * sizeof(QWORD);
+	for (size_t i = 0; i < str_table->capacity; i++)
+	{
+		//not active entry
+		if (str_table->str_entries[i].key.ptr == NULL)
+			continue;
+		*((uint64_t*)(chunk->code + string_begin) + offset) = string_begin + offset;
+		chunk->count += sizeof(uint64_t);
+
+		memcpy(chunk->code + string_literal_begin, str_table->str_entries[i].key.ptr, 
+			str_table->str_entries[i].key.size);
+		string_literal_begin += str_table->str_entries[i].key.size;
+	}
+}
+
+uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* table)
+{
+	if (table->var_table.count == 0)
+		return 0;
+	uint64_t debug_begin = chunk->count;
+
+	//Write the type of the values and a pointer to there names
+	for (size_t i = 0; i < table->var_table.capacity; i++)
+	{
+		//not active entry
+		if (table->var_table.entries[i].key.ptr == NULL)
+			continue;
+		QWORD id = { .u64 = table->var_table.entries[i].type.type_id };
 		//First QWORD which contains the type is followed by another QWORD
 		//which is to be overridden later
 		ChunkWriteQWORD(chunk, id);
@@ -67,10 +117,10 @@ uint64_t gen_debug_pool(Chunk* chunk, const VariableTable* var_table)
 		ChunkWriteQWORD(chunk, id);
 	}
 	size_t counter = 0;
-	for (size_t i = 0; i < var_table->capacity; i++)
+	for (size_t i = 0; i < table->var_table.capacity; i++)
 	{
 		//not active entry
-		if (var_table->entries[i].key.ptr == NULL)
+		if (table->var_table.entries[i].key.ptr == NULL)
 			continue;
 		//Overwrite the QWORD to be overridden, writing the current offset,
 		//which is the beginning of the variable name
@@ -80,9 +130,9 @@ uint64_t gen_debug_pool(Chunk* chunk, const VariableTable* var_table)
 			= chunk->count;
 		counter++;
 		//Write each characters of the name of the variable
-		for (size_t chr = 0; chr < var_table->entries[i].key.size; chr++)
+		for (size_t chr = 0; chr < table->var_table.entries[i].key.size; chr++)
 		{
-			chunk_write_byte(chunk, var_table->entries[i].key.ptr[chr]);
+			chunk_write_byte(chunk, table->var_table.entries[i].key.ptr[chr]);
 		}
 
 	}
@@ -93,43 +143,43 @@ uint64_t gen_debug_pool(Chunk* chunk, const VariableTable* var_table)
 IMPLEMENTATION HELPERS
 *************************************/
 
-bool gen_byte_code(Chunk* chunk, const VariableTable* var_table, const Expr* expr)
+bool gen_byte_code(Chunk* chunk, const ASTTable* table, const Expr* expr)
 {
 	colt_assert(expr != NULL, "Generation should never happen if AST was not valid!");
 	switch (expr->identifier)
 	{
 	break; case EXPR_UNARY:
-		return impl_gen_code_unary(chunk, var_table, (const UnaryExpr*)expr);
+		return impl_gen_code_unary(chunk, table, (const UnaryExpr*)expr);
 	break; case EXPR_BINARY:
-		return impl_gen_code_binary(chunk, var_table, (const BinaryExpr*)expr);
+		return impl_gen_code_binary(chunk, table, (const BinaryExpr*)expr);
 	break; case EXPR_LITERAL:
 		return impl_gen_code_literal(chunk, (const LiteralExpr*)expr);
 	break; case EXPR_CONVERT:
-		return impl_gen_code_convert(chunk, var_table, (const ConvertExpr*)expr);
+		return impl_gen_code_convert(chunk, table, (const ConvertExpr*)expr);
 	break; case EXPR_VAR:
-		return gen_global_variable_load(chunk, var_table, (const VariableExpr*)expr);
+		return gen_global_variable_load(chunk, table, (const VariableExpr*)expr);
 	break; default:
 		colt_assert(false, "NOT IMPLEMENTED YET!");
 	}
 	return true;
 }
 
-bool impl_gen_code_unary(Chunk* chunk, const VariableTable* var_table, const UnaryExpr* ptr)
+bool impl_gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* ptr)
 {
 	//TODO: should use Type to actually dispatch call depending on operator
 	switch (ptr->expr_operator)
 	{
 	break; case TKN_OPERATOR_MINUS:
-		gen_byte_code(chunk, var_table, ptr->child);
+		gen_byte_code(chunk, table, ptr->child);
 		ChunkWriteOpCode(chunk, OP_NEGATE);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	break; case TKN_OPERATOR_PLUS:
 		//DOES NOT DO ANYTHING
 	break; case TKN_OPERATOR_BANG:
-		gen_byte_code(chunk, var_table, ptr->child);
+		gen_byte_code(chunk, table, ptr->child);
 		//ChunkWriteOpCode(chunk, )
 	break; case TKN_OPERATOR_TILDE:
-		gen_byte_code(chunk, var_table, ptr->child);
+		gen_byte_code(chunk, table, ptr->child);
 		ChunkWriteOpCode(chunk, OP_BIT_NOT);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	break; default:
@@ -139,7 +189,7 @@ bool impl_gen_code_unary(Chunk* chunk, const VariableTable* var_table, const Una
 	return true;
 }
 
-bool impl_gen_code_binary(Chunk* chunk, const VariableTable* var_table, const BinaryExpr* ptr)
+bool impl_gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 {
 	switch (ptr->expr_operator)
 	{
@@ -151,12 +201,12 @@ bool impl_gen_code_binary(Chunk* chunk, const VariableTable* var_table, const Bi
 	case TKN_OPERATOR_AND_EQUAL:
 	case TKN_OPERATOR_OR_EQUAL:
 	case TKN_OPERATOR_XOR_EQUAL:
-		return gen_global_variable_assigment(chunk, var_table, ptr);
+		return gen_global_variable_assigment(chunk, &table->var_table, ptr);
 	}
 
 
-	gen_byte_code(chunk, var_table, ptr->lhs);
-	gen_byte_code(chunk, var_table, ptr->rhs);
+	gen_byte_code(chunk, &table->var_table, ptr->lhs);
+	gen_byte_code(chunk, &table->var_table, ptr->rhs);
 	colt_assert(ptr->expr_type.type_id <= ID_COLT_DOUBLE, "Type ID should be of that of a built-in type!");
 	switch (ptr->expr_operator)
 	{
@@ -304,18 +354,18 @@ bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr)
 	return true;
 }
 
-bool impl_gen_code_convert(Chunk* chunk, const VariableTable* var_table, const ConvertExpr* ptr)
+bool impl_gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* ptr)
 {
-	gen_byte_code(chunk, var_table, ptr->child);
+	gen_byte_code(chunk, table, ptr->child);
 	ChunkWriteOpCode(chunk, OP_CONVERT);
 	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->child->expr_type.type_id);
 	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);	
 	return true;
 }
 
-bool gen_global_variable_load(Chunk* chunk, const VariableTable* var_table, const VariableExpr* ptr)
+bool gen_global_variable_load(Chunk* chunk, const ASTTable* table, const VariableExpr* ptr)
 {
-	VariableEntry* entry = variable_table_find_entry(var_table->entries, var_table->capacity, ptr->var_name);
+	const VariableEntry* entry = variable_table_find_entry(table->var_table.entries, table->var_table.capacity, ptr->var_name);
 	
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
@@ -338,9 +388,9 @@ bool gen_global_variable_load(Chunk* chunk, const VariableTable* var_table, cons
 	return true;
 }
 
-bool gen_global_variable_assigment(Chunk* chunk, const VariableTable* var_table, const BinaryExpr* ptr)
+bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 {
-	gen_byte_code(chunk, var_table, ptr->rhs);
+	gen_byte_code(chunk, table, ptr->rhs);
 
 	colt_assert(ptr->lhs->identifier == EXPR_VAR, "Left hand side should be a variable!");
 	if (ptr->lhs->identifier != EXPR_VAR)
@@ -349,37 +399,37 @@ bool gen_global_variable_assigment(Chunk* chunk, const VariableTable* var_table,
 	switch (ptr->expr_operator)
 	{
 	break; case TKN_OPERATOR_PLUS_EQUAL:
-		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		gen_global_variable_load(chunk, table, (VariableExpr*)ptr->lhs);
 		ChunkWriteOpCode(chunk, OP_ADD);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	break; case TKN_OPERATOR_MINUS_EQUAL:
-		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		gen_global_variable_load(chunk, table, (VariableExpr*)ptr->lhs);
 		ChunkWriteOpCode(chunk, OP_SUBTRACT);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	break; case TKN_OPERATOR_STAR_EQUAL:
-		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		gen_global_variable_load(chunk, table, (VariableExpr*)ptr->lhs);
 		ChunkWriteOpCode(chunk, OP_MULTIPLY);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	break; case TKN_OPERATOR_SLASH_EQUAL:
 		//FIXME: check for 0
-		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		gen_global_variable_load(chunk, table, (VariableExpr*)ptr->lhs);
 		ChunkWriteOpCode(chunk, OP_DIVIDE);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	break; case TKN_OPERATOR_AND_EQUAL:
-		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		gen_global_variable_load(chunk, table, (VariableExpr*)ptr->lhs);
 		ChunkWriteOpCode(chunk, OP_BIT_AND);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	break; case TKN_OPERATOR_OR_EQUAL:
-		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		gen_global_variable_load(chunk, table, (VariableExpr*)ptr->lhs);
 		ChunkWriteOpCode(chunk, OP_BIT_OR);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	break; case TKN_OPERATOR_XOR_EQUAL:
-		gen_global_variable_load(chunk, var_table, (VariableExpr*)ptr->lhs);
+		gen_global_variable_load(chunk, table, (VariableExpr*)ptr->lhs);
 		ChunkWriteOpCode(chunk, OP_BIT_XOR);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	}
 
-	const VariableEntry* entry = variable_table_find_entry(var_table->entries, var_table->capacity, ((VariableExpr*)ptr->lhs)->var_name);
+	const VariableEntry* entry = variable_table_find_entry(table->var_table.entries, table->var_table.capacity, ((VariableExpr*)ptr->lhs)->var_name);
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
 	QWORD offset = { .u64 = entry->counter_nb };
