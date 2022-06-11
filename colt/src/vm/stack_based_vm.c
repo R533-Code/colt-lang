@@ -44,16 +44,13 @@ uint64_t StackVMSize(const StackVM* vm)
 
 int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 {
-	QWORD* global_offset = (QWORD*)(chunk->code + *(uint64_t*)(chunk->code));
-	QWORD* const_offset = (QWORD*)(chunk->code + *(uint64_t*)(chunk->code + 1));
-	uint64_t* string_offset = (uint64_t*)(chunk->code + *(uint64_t*)(chunk->code + 2));
-	
 	uint8_t* ip = chunk->code + *((uint64_t*)(chunk->code) + 4);
 	if (ip == chunk->code)
 	{
 		print_error_string("Cannot run Chunk that does not contain byte-code!");
 		return 1;
-	}
+	}	
+	impl_stack_vm_init_strings(chunk);
 
 	for (;;)
 	{
@@ -93,7 +90,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		case OP_LOAD_QWORD:
 		{
 			QWORD offset = unsafe_get_qword(&ip);
-			QWORD push = *(global_offset + offset.u64);
+			QWORD push = *(QWORD*)(chunk->code + offset.u64);
 			StackVMPush(vm, push);
 		}
 
@@ -109,7 +106,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			QWORD offset = unsafe_get_qword(&ip);
-			*(global_offset + offset.u64) = StackVMTop(vm);
+			*(QWORD*)(chunk->code + offset.u64) = StackVMTop(vm);
 		}
 
 		/******************************************************/
@@ -338,5 +335,22 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		break; default:
 			break;
 		}
+	}
+}
+
+void impl_stack_vm_init_strings(Chunk* chunk)
+{
+	uint64_t string_offset = *((uint64_t*)(chunk->code) + 2);
+	if (string_offset == 0)
+		return;
+	uint64_t debug_offset = *((uint64_t*)chunk->code + 3);
+	uint64_t byte_offset = *((uint64_t*)chunk->code + 4);
+	
+	//end of STRING section
+	uint64_t offset_end = debug_offset == 0 ? byte_offset : debug_offset;
+	
+	for (size_t i = 0; i < (string_offset - offset_end) / sizeof(QWORD); i++)
+	{
+		*((uint64_t*)(chunk->code + string_offset) + i) = chunk->code + *(uint64_t*)(chunk->code + string_offset);
 	}
 }
