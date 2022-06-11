@@ -72,9 +72,10 @@ bool impl_gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr*
 /// As literals never have child expressions, it doesn't need the variable
 /// VariableTable.
 /// @param chunk The Chunk where to write the byte-code
+/// @param table VariableTable containing variables
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
-bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr);
+bool impl_gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* ptr);
 
 /// @brief Generate code necessary for built-in conversions
 /// @param chunk The Chunk where to write the byte-code
