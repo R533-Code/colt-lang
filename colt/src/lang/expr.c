@@ -161,7 +161,10 @@ void freeExpr(Expr* ptr)
 	{
 		LiteralExpr* lexpr = (LiteralExpr*)ptr;
 		if (ptr->expr_type.type_id == ID_COLT_LSTRING)
+		{
 			StringFree(lexpr->value.string_ptr);
+			safe_free(lexpr->value.string_ptr);
+		}
 		safe_free(ptr);
 	}
 	break; case EXPR_VAR:
