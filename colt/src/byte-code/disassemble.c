@@ -34,7 +34,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 	if (global_offset != 0)
 	{
 		fputs(CONSOLE_COLOR_REVERSE"SECTION GLOBAL:\n"CONSOLE_COLOR_RESET, stdout);
-		const uint64_t global_end = const_offset > 0 ? const_offset : (debug_offset > 0 ? debug_offset : (code_offset > 0 ? code_offset : chunk->count));
+		const uint64_t global_end = unsafe_chunk_get_global_end(chunk);
 		//if there are debug symbols
 		if (debug_offset != 0)
 		{
@@ -50,7 +50,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 	if (const_offset != 0)
 	{
 		fputs(CONSOLE_COLOR_REVERSE"SECTION CONST:\n"CONSOLE_COLOR_RESET, stdout);
-		const uint64_t const_end = debug_offset > 0 ? debug_offset : (code_offset > 0 ? code_offset : chunk->count);
+		const uint64_t const_end = unsafe_chunk_get_const_end(chunk);
 		//if there are debug symbols
 		if (debug_offset != 0)
 		{
@@ -65,19 +65,66 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 	}
 	if (string_offset != 0)
 	{
-
+		fputs(CONSOLE_COLOR_REVERSE"SECTION STRING:\n"CONSOLE_COLOR_RESET, stdout);
+		const uint64_t string_literal_count = unsafe_chunk_get_lstring_count(chunk);
+		
+		//%c for plural -> 's' else ' '
+		printf("        %08"PRIu64": %08"PRIu64" lstring%c\n",
+			string_offset, string_literal_count, string_literal_count == 1 ? ' ' : 's');
+		
+		for (size_t i = 0; i < string_literal_count; i++)
+		{
+			printf("        %08"PRIu64": "CONSOLE_FOREGROUND_YELLOW"\"", string_offset + 8);
+			//+ 1 so we move over the uint64_t written for string literal count
+			impl_print_lstring(chunk->code + string_offset + (i + 1) * 8);
+			fputs("\""CONSOLE_COLOR_RESET"\n", stdout);
+		}
 	}
 
 	if (code_offset != 0)
 	{
-		//loop to print byte-code to execute
 		fputs(CONSOLE_COLOR_REVERSE"SECTION CODE:\n"CONSOLE_COLOR_RESET, stdout);
+		//loop to print byte-code to execute
 		for (uint64_t offset = code_offset; offset < chunk->count;)
 		{
 			offset = impl_chunk_print_code(chunk, offset);
 		}
 	}
 
+}
+
+void impl_print_lstring(const char* str)
+{
+	//TODO: we need to add size information for string
+	while (*str != '\0')
+	{
+		switch (*str)
+		{
+		break; case '\'':
+			fputs(CONSOLE_FOREGROUND_BRIGHT_YELLOW "\\'"CONSOLE_FOREGROUND_YELLOW, stdout);
+		break; case '\"':
+			fputs(CONSOLE_FOREGROUND_BRIGHT_YELLOW "\\\""CONSOLE_FOREGROUND_YELLOW, stdout);
+		break; case '\\':
+			fputs(CONSOLE_FOREGROUND_BRIGHT_YELLOW "\\\\"CONSOLE_FOREGROUND_YELLOW, stdout);
+		break; case '\a':
+			fputs(CONSOLE_FOREGROUND_BRIGHT_YELLOW "\\a"CONSOLE_FOREGROUND_YELLOW, stdout);
+		break; case '\b':
+			fputs(CONSOLE_FOREGROUND_BRIGHT_YELLOW "\\b"CONSOLE_FOREGROUND_YELLOW, stdout);
+		break; case '\f':
+			fputs(CONSOLE_FOREGROUND_BRIGHT_YELLOW "\\f"CONSOLE_FOREGROUND_YELLOW, stdout);
+		break; case '\n':
+			fputs(CONSOLE_FOREGROUND_BRIGHT_YELLOW "\\n"CONSOLE_FOREGROUND_YELLOW, stdout);
+		break; case '\r':
+			fputs(CONSOLE_FOREGROUND_BRIGHT_YELLOW "\\r"CONSOLE_FOREGROUND_YELLOW, stdout);
+		break; case '\t':
+			fputs(CONSOLE_FOREGROUND_BRIGHT_YELLOW "\\t"CONSOLE_FOREGROUND_YELLOW, stdout);
+		break; case '\v':
+			fputs(CONSOLE_FOREGROUND_BRIGHT_YELLOW "\\v"CONSOLE_FOREGROUND_YELLOW, stdout);
+		break; default:
+			fputc(*str, stdout);
+		}
+		str++;
+	}
 }
 
 void impl_print_global_variable(const Chunk* chunk, uint64_t offset, uint64_t var_nb, uint64_t debug_offset)

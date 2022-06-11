@@ -17,6 +17,10 @@ void ChunkDisassemble(const Chunk* chunk, const char* name);
 IMPLEMENTATION HELPERS
 **********************************/
 
+/// @brief Writes a string to 'stdout', highlighting escape characters
+/// @param str The string to print
+void impl_print_lstring(const char* str);
+
 /// @brief Writes the value of a global value and its type
 /// @param chunk The Chunk from which to read
 /// @param offset The offset to the beginning of the GLOBAL section
