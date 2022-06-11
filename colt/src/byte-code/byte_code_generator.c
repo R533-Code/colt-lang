@@ -18,7 +18,7 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const Expr* expr)
 	gen_string_literal_pool(chunk, &table->str_table);
 
 	//write DEBUG offset
-	*((uint64_t*)(chunk->code) + 2) = gen_debug_pool(chunk, &table->var_table);
+	*((uint64_t*)(chunk->code) + 2) = gen_debug_pool(chunk, table);
 	//write CODE offset
 	*((uint64_t*)(chunk->code) + 3) = chunk->count;
 
@@ -201,12 +201,12 @@ bool impl_gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr*
 	case TKN_OPERATOR_AND_EQUAL:
 	case TKN_OPERATOR_OR_EQUAL:
 	case TKN_OPERATOR_XOR_EQUAL:
-		return gen_global_variable_assigment(chunk, &table->var_table, ptr);
+		return gen_global_variable_assigment(chunk, table, ptr);
 	}
 
 
-	gen_byte_code(chunk, &table->var_table, ptr->lhs);
-	gen_byte_code(chunk, &table->var_table, ptr->rhs);
+	gen_byte_code(chunk, table, ptr->lhs);
+	gen_byte_code(chunk, table, ptr->rhs);
 	colt_assert(ptr->expr_type.type_id <= ID_COLT_DOUBLE, "Type ID should be of that of a built-in type!");
 	switch (ptr->expr_operator)
 	{
