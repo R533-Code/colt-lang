@@ -69,14 +69,14 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		const uint64_t string_literal_count = unsafe_chunk_get_lstring_count(chunk);
 		
 		//%c for plural -> 's' else ' '
-		printf("        %08"PRIu64": %08"PRIu64" lstring%c\n",
+		printf("        %08"PRIu64": %"PRIu64" lstring%c\n",
 			string_offset, string_literal_count, string_literal_count == 1 ? ' ' : 's');
 		
 		for (size_t i = 0; i < string_literal_count; i++)
 		{
 			printf("        %08"PRIu64": "CONSOLE_FOREGROUND_YELLOW"\"", string_offset + 8);
 			//+ 1 so we move over the uint64_t written for string literal count
-			impl_print_lstring(chunk->code + string_offset + (i + 1) * 8);
+			impl_print_lstring(chunk->code + *((uint64_t*)(chunk->code + string_offset) + i + 1));
 			fputs("\""CONSOLE_COLOR_RESET"\n", stdout);
 		}
 	}
