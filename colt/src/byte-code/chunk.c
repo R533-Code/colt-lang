@@ -66,6 +66,7 @@ uint64_t ChunkGetCODESection(const Chunk* chunk)
 
 uint64_t unsafe_chunk_get_global_end(const Chunk* chunk)
 {
+	colt_assert(ChunkGetGLOBALSection(chunk) != 0, "GLOBAL section does not exist!");
 	uint64_t ret = *((uint64_t*)chunk->code + 1);
 	for (size_t i = 1; i < 4; i++)
 	{
@@ -78,6 +79,7 @@ uint64_t unsafe_chunk_get_global_end(const Chunk* chunk)
 
 uint64_t unsafe_chunk_get_const_end(const Chunk* chunk)
 {
+	colt_assert(ChunkGetCONSTSection(chunk) != 0, "CONST section does not exist!");
 	uint64_t ret = *((uint64_t*)chunk->code + 2);
 	for (size_t i = 2; i < 4; i++)
 	{
@@ -90,6 +92,7 @@ uint64_t unsafe_chunk_get_const_end(const Chunk* chunk)
 
 uint64_t unsafe_chunk_get_string_end(const Chunk* chunk)
 {
+	colt_assert(ChunkGetSTRINGSection(chunk) != 0, "STRING section does not exist!");
 	uint64_t ret = *((uint64_t*)chunk->code + 3);
 	if (ret != 0)
 		return ret;
@@ -104,6 +107,7 @@ uint64_t unsafe_chunk_get_string_end(const Chunk* chunk)
 
 uint64_t unsafe_chunk_get_debug_end(const Chunk* chunk)
 {
+	colt_assert(ChunkGetDEBUGSection(chunk) != 0, "DEBUG section does not exist!");
 	uint64_t ret = *((uint64_t*)chunk->code + 4);
 	if (ret != 0)
 		return ret;	
@@ -112,7 +116,14 @@ uint64_t unsafe_chunk_get_debug_end(const Chunk* chunk)
 
 uint64_t unsafe_chunk_get_code_end(const Chunk* chunk)
 {
+	colt_assert(ChunkGetSTRINGSection(chunk) != 0, "CODE section does not exist!");
 	return chunk->count;
+}
+
+uint64_t unsafe_chunk_get_lstring_count(const Chunk* chunk)
+{
+	colt_assert(ChunkGetSTRINGSection(chunk) != 0, "STRING section does not exist!");
+	return *(uint64_t*)(chunk->code + *((uint64_t*)chunk->code + 2));
 }
 
 void ChunkWriteOpCode(Chunk* chunk, OpCode code)
