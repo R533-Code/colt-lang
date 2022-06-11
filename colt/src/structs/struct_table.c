@@ -135,23 +135,6 @@ VariableEntry* VariableTableGetEntry(VariableTable* table, StringView key)
 	return entry;
 }
 
-void TablePrint(const VariableTable* table)
-{
-	fputs("============ TABLE ============\n", stdout);
-	if (table->count == 0)
-		fputs("!EMPTY!\n", stdout);
-	for (size_t i = 0; i < table->capacity; i++)
-	{
-		if (table->entries[i].key.ptr == NULL)
-			continue;
-		printf("%s: typeof(%.*s)\n", table->entries[i].key.ptr,
-			(uint32_t)(table->entries[i].type.name.end - table->entries[i].type.name.start), table->entries[i].type.name.start
-		);
-		OpCode_Print(table->entries[i].value, (BuiltinTypeID)table->entries[i].type.type_id);
-	}
-
-}
-
 uint64_t hash_strv(StringView strv)
 {
 	//FNV-1a hashing method
