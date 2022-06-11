@@ -33,8 +33,8 @@ typedef struct
 	uint16_t warning_nb;
 	/// @brief The next token to consume from the scanner
 	Token current_tkn;
-	/// @brief Variable table
-	VariableTable var_table;
+	/// @brief Table for string literals and const/global variables
+	ASTTable table;
 } AST;
 
 /// @brief Initializes an AST
