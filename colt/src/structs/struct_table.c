@@ -103,7 +103,8 @@ bool VariableTableSet(VariableTable* table, StringView strv, QWORD value, Type t
 
 bool VariableTableDelete(VariableTable* table, StringView key)
 {
-	if (table->count == 0) return false;
+	if (table->count == 0)
+		return false;
 
 	// Find the entry.
 	VariableEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
