@@ -39,7 +39,8 @@ uint64_t gen_const_pool(Chunk* chunk, const VariableTable* var_table);
 /// @brief Write the offsets and string literals
 /// @param chunk The Chunk where to write the byte-code
 /// @param str_table The StringTable whose entries to write
-void gen_string_literal_pool(Chunk* chunk, const StringTable* str_table);
+/// @return The offset to the GLOBAL section
+uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table);
 
 /// @brief Generates the debug pool, and return the offset to its beginning
 /// @param chunk The Chunk where to write the byte-code
