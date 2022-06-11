@@ -320,7 +320,7 @@ bool impl_gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr*
 	}
 }
 
-bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr)
+bool impl_gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* ptr)
 {
 	switch (ptr->expr_type.type_id)
 	{
@@ -347,7 +347,16 @@ bool impl_gen_code_literal(Chunk* chunk, const LiteralExpr* ptr)
 		ChunkWriteOpCode(chunk, OP_PUSH_WORD);
 		ChunkWriteWORD(chunk, ptr->value.word);
 		break;
-	default:
+	case ID_COLT_LSTRING:
+	{
+		ChunkWriteOpCode(chunk, OP_PUSH_QWORD);
+		const StringEntry* entry = string_table_find_entry(table->str_table.str_entries, table->str_table.capacity,
+			StringToStringView(ptr->value.string_ptr));
+		colt_assert(entry != NULL, "Could not find string literal entry!");
+		QWORD offset = { .u64 = entry->counter_nb };
+		ChunkWriteQWORD(chunk, offset);
+	}
+	break; default:
 		colt_assert(false, "Type ID should be of that of a built-in type!");
 		return false;
 	}
