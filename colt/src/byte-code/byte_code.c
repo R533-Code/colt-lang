@@ -577,6 +577,7 @@ void OpCode_Print(QWORD value, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		printf("%"PRIu64, value.u64);
 	break; case COLTI_FLOAT_ID:		printf("%g", value.f);
 	break; case COLTI_DOUBLE_ID:	printf("%g", value.d);
+	break; case COLTI_LSTRING_ID:	printf("%s", value.lstring);
 	break; default: colt_assert(false, "Invalid operand for OP_PRINT!");
 	}
 }
