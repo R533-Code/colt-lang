@@ -61,7 +61,7 @@ uint64_t gen_global_pool(Chunk* chunk, const VariableTable* var_table)
 
 uint64_t gen_const_pool(Chunk* chunk, const VariableTable* var_table)
 {
-	if (var_table->count == 0)
+	if (var_table->count - var_table->global_counter == 0)
 		return 0;
 	const uint64_t const_begin = chunk->count;
 
