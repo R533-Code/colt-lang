@@ -47,9 +47,10 @@ void StringTableAdd(StringTable* table, const String* to_add)
 	if (entry->key.ptr == NULL)
 	{
 		table->all_str_size += to_add->size;
-		table->count++;
+		entry->counter_nb = table->count++;
 		StringCopy(&entry->key, to_add);
 	}
+	//Do not do anything if string already exists
 }
 
 void VariableTableInit(VariableTable* table)
