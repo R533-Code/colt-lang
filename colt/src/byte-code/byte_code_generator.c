@@ -364,9 +364,9 @@ bool impl_gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExp
 		ChunkWriteOpCode(chunk, OP_LOAD_QWORD);
 		const StringEntry* entry = string_table_find_entry(table->str_table.str_entries, table->str_table.capacity,
 			StringToStringView(ptr->value.string_ptr));
-		colt_assert(entry != NULL, "Could not find string literal entry!");
+		colt_assert(entry != NULL, "Could not find string literal entry!");		
 		//byte offset to the beginning of the NUL terminated string
-		QWORD offset = { .u64 = (entry->counter_nb + 1) * sizeof(QWORD) + table->var_table.count * sizeof(QWORD) };
+		QWORD offset = { .u64 = ChunkGetSTRINGSection(chunk) + (entry->counter_nb + 1) * sizeof(QWORD)};
 		ChunkWriteQWORD(chunk, offset);
 	}
 	break; default:
