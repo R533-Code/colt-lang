@@ -61,4 +61,13 @@ uint64_t StackVMSize(const StackVM* vm);
 /// @return The exit code of the script
 int64_t StackVMRun(StackVM* vm, Chunk* chunk);
 
+
+/********************************
+* IMPLEMENTATION HELPERS
+********************************/
+
+/// @brief Overwrites the byte offsets of string literal by a pointer to the string literal
+/// @param chunk The Chunk in which to overwrite
+void impl_stack_vm_init_strings(Chunk* chunk);
+
 #endif //HG_COLT_STACK_BASED_VM
