@@ -5,22 +5,22 @@
 
 bool generateByteCode(Chunk* chunk, const ASTTable* table, const Expr* expr)
 {
-	colt_assert(chunk->count >= 32, "Chunk should be initialized!");
+	colt_assert(chunk->count >= 40, "Chunk should be initialized!");
 
 	//Reserve enough size for the GLOBAL/CONST and string literals
 	ChunkReserve(chunk, table->str_table.all_str_size + table->str_table.count * sizeof(QWORD) + table->var_table.count * sizeof(QWORD));
 
 	//write GLOBAL offset
-	*(uint64_t*)(chunk->code) = gen_global_pool(chunk, &table->var_table);
+	ChunkWriteGLOBALSection(chunk, gen_global_pool(chunk, &table->var_table));
 	//write CONST offset
-	*((uint64_t*)(chunk->code) + 1) = gen_const_pool(chunk, &table->var_table);
+	ChunkWriteCONSTSection(chunk, gen_const_pool(chunk, &table->var_table));
 	//write string literals in the constant pool
-	gen_string_literal_pool(chunk, &table->str_table);
+	ChunkWriteSTRINGSection(chunk, gen_string_literal_pool(chunk, &table->str_table));
 
 	//write DEBUG offset
-	*((uint64_t*)(chunk->code) + 2) = gen_debug_pool(chunk, table);
+	ChunkWriteDEBUGSection(chunk, gen_debug_pool(chunk, table));
 	//write CODE offset
-	*((uint64_t*)(chunk->code) + 3) = chunk->count;
+	ChunkWriteCODESection(chunk, chunk->count);
 
 	if (gen_byte_code(chunk, table, expr))
 	{
@@ -40,7 +40,7 @@ uint64_t gen_global_pool(Chunk* chunk, const VariableTable* var_table)
 {
 	if (var_table->count == 0)
 		return 0;
-	uint64_t global_begin = chunk->count;
+	const uint64_t global_begin = chunk->count;
 
 	for (size_t i = 0; i < var_table->capacity; i++)
 	{
@@ -60,7 +60,7 @@ uint64_t gen_const_pool(Chunk* chunk, const VariableTable* var_table)
 {
 	if (var_table->count == 0)
 		return 0;
-	uint64_t const_begin = chunk->count;
+	const uint64_t const_begin = chunk->count;
 
 	for (size_t i = 0; i < var_table->capacity; i++)
 	{
@@ -76,9 +76,12 @@ uint64_t gen_const_pool(Chunk* chunk, const VariableTable* var_table)
 	return const_begin;
 }
 
-void gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
+uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 {
-	uint64_t string_begin = chunk->count;
+	if (str_table->count == 0)
+		return 0;
+
+	const uint64_t string_begin = chunk->count;
 	uint64_t offset = 0;
 
 	uint64_t string_literal_begin = string_begin + str_table->count * sizeof(QWORD);
@@ -88,19 +91,23 @@ void gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 		if (str_table->str_entries[i].key.ptr == NULL)
 			continue;
 		*((uint64_t*)(chunk->code + string_begin) + offset) = string_begin + offset;
-		chunk->count += sizeof(uint64_t);
+		offset++;
 
 		memcpy(chunk->code + string_literal_begin, str_table->str_entries[i].key.ptr, 
 			str_table->str_entries[i].key.size);
 		string_literal_begin += str_table->str_entries[i].key.size;
 	}
+	//Update size of chunk
+	chunk->count += str_table->all_str_size + str_table->count * sizeof(QWORD);
+	
+	return string_begin;
 }
 
 uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* table)
 {
 	if (table->var_table.count == 0)
 		return 0;
-	uint64_t debug_begin = chunk->count;
+	const uint64_t debug_begin = chunk->count;
 
 	//Write the type of the values and a pointer to there names
 	for (size_t i = 0; i < table->var_table.capacity; i++)
@@ -112,7 +119,7 @@ uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* table)
 		//First QWORD which contains the type is followed by another QWORD
 		//which is to be overridden later
 		ChunkWriteQWORD(chunk, id);
-		id.u64 = ULLONG_MAX;
+		DO_IF_DEBUG_BUILD(id.u64 = ULLONG_MAX);
 		//WILL BE OVERRIDEN BY OFFSET TO VARIABLE NAME
 		ChunkWriteQWORD(chunk, id);
 	}
@@ -153,7 +160,7 @@ bool gen_byte_code(Chunk* chunk, const ASTTable* table, const Expr* expr)
 	break; case EXPR_BINARY:
 		return impl_gen_code_binary(chunk, table, (const BinaryExpr*)expr);
 	break; case EXPR_LITERAL:
-		return impl_gen_code_literal(chunk, (const LiteralExpr*)expr);
+		return impl_gen_code_literal(chunk, table, (const LiteralExpr*)expr);
 	break; case EXPR_CONVERT:
 		return impl_gen_code_convert(chunk, table, (const ConvertExpr*)expr);
 	break; case EXPR_VAR:
