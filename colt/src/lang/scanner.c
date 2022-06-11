@@ -441,6 +441,8 @@ Token impl_scanner_handle_string(Scanner* scan)
 				StringAppendChar(&scan->parsed_string, '\"');
 			break; case '\\':
 				StringAppendChar(&scan->parsed_string, '\\');
+			break; case '0':
+				StringAppendChar(&scan->parsed_string, '\0');
 			break; case 'a':
 				StringAppendChar(&scan->parsed_string, '\a');
 			break; case 'b':
