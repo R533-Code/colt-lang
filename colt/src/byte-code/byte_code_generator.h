@@ -33,7 +33,7 @@ uint64_t gen_global_pool(Chunk* chunk, const VariableTable* var_table);
 /// @brief Generates the const memory pool, and return the offset to its beginning
 /// @param chunk The Chunk where to write the byte-code
 /// @param var_table The VariableTable whose const entries to write
-/// @return The offset to the GLOBAL section
+/// @return The offset to the CONST section
 uint64_t gen_const_pool(Chunk* chunk, const VariableTable* var_table);
 
 /// @brief Write the offsets and string literals
