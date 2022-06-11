@@ -46,7 +46,9 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 {
 	QWORD* global_offset = (QWORD*)(chunk->code + *(uint64_t*)(chunk->code));
 	QWORD* const_offset = (QWORD*)(chunk->code + *(uint64_t*)(chunk->code + 1));
-	uint8_t* ip = chunk->code + *((uint64_t*)(chunk->code) + 3);
+	uint64_t* string_offset = (uint64_t*)(chunk->code + *(uint64_t*)(chunk->code + 2));
+	
+	uint8_t* ip = chunk->code + *((uint64_t*)(chunk->code) + 4);
 	if (ip == chunk->code)
 	{
 		print_error_string("Cannot run Chunk that does not contain byte-code!");
