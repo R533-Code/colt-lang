@@ -14,6 +14,9 @@
 /// @brief The maximum occupied capacity before growing the table
 #define VARIABLE_TABLE_MAX_LOAD 0.75
 
+/// @brief The maximum occupied capacity before growing the table
+#define STRING_TABLE_MAX_LOAD 0.75
+
 /// @brief An entry to a VariableTable.
 /// An VariableEntry is considered uninitialized if its key->ptr == NULL.
 typedef struct
@@ -68,6 +71,23 @@ typedef struct
 	/// @brief The pointer to the string entries array
 	StringEntry* str_entries;
 } StringTable;
+
+/// @brief Contains a VariableTable and StringTable
+typedef struct
+{
+	/// @brief The variable table
+	VariableTable var_table;
+	/// @brief The string literals table
+	StringTable str_table;
+} ASTTable;
+
+/// @brief Initializes both tables inside an ASTTable
+/// @param table The table to initialize
+void ASTTableInit(ASTTable* table);
+
+/// @brief Frees resources used by both tables inside a ASTTable
+/// @param table The table to modify
+void ASTTableFree(ASTTable* table);
 
 /// @brief Initializes a StringTable
 /// @param table The StringTable to initialize

@@ -4,6 +4,18 @@
 
 #include "struct_table.h"
 
+void ASTTableInit(ASTTable* table)
+{
+	VariableTableInit(&table->var_table);
+	StringTableInit(&table->str_table);
+}
+
+void ASTTableFree(ASTTable* table)
+{
+	StringTableFree(&table->str_table);
+	VariableTableFree(&table->var_table);
+}
+
 void StringTableInit(StringTable* table)
 {
 	table->capacity = 10;
@@ -23,9 +35,9 @@ void StringTableFree(StringTable* table)
 	safe_free(table->str_entries);
 }
 
-void StringTableAdd(StringTable* table, String* to_add)
+void StringTableAdd(StringTable* table, const String* to_add)
 {
-	if ((double)table->count + 1 > (double)table->capacity * VARIABLE_TABLE_MAX_LOAD)
+	if ((double)table->count + 1 > (double)table->capacity * STRING_TABLE_MAX_LOAD)
 	{
 		string_table_grow_capacity(table, table->capacity * 2);
 	}
