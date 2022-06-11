@@ -340,17 +340,13 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 
 void impl_stack_vm_init_strings(Chunk* chunk)
 {
-	uint64_t string_offset = *((uint64_t*)(chunk->code) + 2);
+	uint64_t string_offset = ChunkGetSTRINGSection(chunk);
 	if (string_offset == 0)
 		return;
-	uint64_t debug_offset = *((uint64_t*)chunk->code + 3);
-	uint64_t byte_offset = *((uint64_t*)chunk->code + 4);
-	
-	//end of STRING section
-	uint64_t offset_end = debug_offset == 0 ? byte_offset : debug_offset;
-	
-	for (size_t i = 0; i < (string_offset - offset_end) / sizeof(QWORD); i++)
+
+	for (size_t i = 0; i < unsafe_chunk_get_lstring_count(chunk); i++)
 	{
-		*((uint64_t*)(chunk->code + string_offset) + i) = chunk->code + *(uint64_t*)(chunk->code + string_offset);
+		*((char**)(chunk->code + string_offset) + i + 1) =
+			chunk->code + *((uint64_t*)(chunk->code + string_offset + sizeof(QWORD)) + i);
 	}
 }
