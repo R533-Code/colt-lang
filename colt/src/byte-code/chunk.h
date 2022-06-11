@@ -202,6 +202,10 @@ void ChunkFree(Chunk* chunk);
 /// @param more_byte_capacity The count of bytes to add to the capacity
 void ChunkReserve(Chunk* chunk, size_t more_byte_capacity);
 
+/// @brief Overwrites the byte offsets of string literal by a pointer to the string literal
+/// @param chunk The Chunk in which to overwrite
+void ChunkInitLStrings(Chunk* chunk);
+
 /// @brief Serializes a chunk to a file
 /// @param chunk The chunk to serialize
 /// @param path The path to the file to which to serialize

@@ -337,16 +337,3 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		}
 	}
 }
-
-void impl_stack_vm_init_strings(Chunk* chunk)
-{
-	uint64_t string_offset = ChunkGetSTRINGSection(chunk);
-	if (string_offset == 0)
-		return;
-
-	for (size_t i = 0; i < unsafe_chunk_get_lstring_count(chunk); i++)
-	{
-		*((char**)(chunk->code + string_offset) + i + 1) =
-			chunk->code + *((uint64_t*)(chunk->code + string_offset + sizeof(QWORD)) + i);
-	}
-}
