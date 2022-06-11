@@ -39,7 +39,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name, bool chunk_str_init)
 		if (debug_offset != 0)
 		{
 			for (size_t i = 0; i < (global_end - global_offset) / sizeof(QWORD); i++)
-				impl_print_global_variable(chunk, global_offset, i, debug_offset, chunk_str_init);
+				impl_print_global_variable(chunk, i, chunk_str_init);
 		}
 		else
 		{
@@ -55,7 +55,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name, bool chunk_str_init)
 		if (debug_offset != 0)
 		{
 			for (size_t i = 0; i < const_end; i++)
-				impl_print_global_variable(chunk, const_offset, i, (BuiltinTypeID) *(chunk->code + debug_offset + i));
+				impl_print_global_variable(chunk, i, chunk_str_init);
 		}
 		else
 		{
