@@ -4,24 +4,14 @@
 
 #include "chunk.h"
 
-void ChunkPrintBytes(const Chunk* chunk)
-{
-	for (uint32_t i = 0; i < chunk->count; i++)
-	{
-		if (i > 0) printf(" ");
-		printf("%02X", chunk->code[i]);
-	}
-	printf("\n");
-}
-
 void ChunkInit(Chunk* chunk)
 {	
-	chunk->capacity = 128;
-	chunk->count = 4 * sizeof(QWORD);
-	chunk->code = safe_malloc(128);
+	chunk->capacity = 256;
+	chunk->count = 5 * sizeof(QWORD);
+	chunk->code = safe_malloc(256);
 
 	//we set all the bytes of the header to 0
-	memset(chunk->code, 0, sizeof(QWORD) * 4);
+	memset(chunk->code, 0, sizeof(QWORD) * 5);
 }
 
 void ChunkWriteOpCode(Chunk* chunk, OpCode code)

@@ -7,6 +7,7 @@
 *	- The offsets are in bytes, which should be added to Chunk.code
 * - The GLOBAL pool: contains all modifiable global variables
 * - The CONST pool: contains all non-modifiable const variables
+* - The STRING pool: contains all string literals
 * - The DEBUG pool: contains type informations for both const and global variables
 * - The CODE section: contains the byte-code to execute
 * While some functions might seem redundant (ChunkWriteOpCode, ChunkWriteOperand),
@@ -36,10 +37,6 @@ typedef struct
 	/// @brief Pointer to the beginning of the byte-code
 	uint8_t* code;
 } Chunk;
-
-/// @brief Prints the byte content of a Chunk
-/// @param chunk The chunk whose content to print
-void ChunkPrintBytes(const Chunk* chunk);
 
 /// @brief Zero-initializes a chunk, and writes its header
 /// @param chunk The chunk to initialize
