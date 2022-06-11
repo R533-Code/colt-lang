@@ -14,6 +14,107 @@ void ChunkInit(Chunk* chunk)
 	memset(chunk->code, 0, sizeof(QWORD) * 5);
 }
 
+void ChunkWriteGLOBALSection(Chunk* chunk, uint64_t offset)
+{
+	*(uint64_t*)(chunk->code) = offset;
+}
+
+void ChunkWriteCONSTSection(Chunk* chunk, uint64_t offset)
+{
+	*((uint64_t*)chunk->code + 1) = offset;
+}
+
+void ChunkWriteSTRINGSection(Chunk* chunk, uint64_t offset)
+{
+	*((uint64_t*)chunk->code + 2) = offset;
+}
+
+void ChunkWriteDEBUGSection(Chunk* chunk, uint64_t offset)
+{
+	*((uint64_t*)chunk->code + 3) = offset;
+}
+
+void ChunkWriteCODESection(Chunk* chunk, uint64_t offset)
+{
+	*((uint64_t*)chunk->code + 4) = offset;
+}
+
+uint64_t ChunkGetGLOBALSection(const Chunk* chunk)
+{
+	return *((uint64_t*)chunk->code);
+}
+
+uint64_t ChunkGetCONSTSection(const Chunk* chunk)
+{
+	return *((uint64_t*)chunk->code + 1);
+}
+
+uint64_t ChunkGetSTRINGSection(const Chunk* chunk)
+{
+	return *((uint64_t*)chunk->code + 2);
+}
+
+uint64_t ChunkGetDEBUGSection(const Chunk* chunk)
+{
+	return *((uint64_t*)chunk->code + 3);
+}
+
+uint64_t ChunkGetCODESection(const Chunk* chunk)
+{
+	return *((uint64_t*)chunk->code + 4);
+}
+
+uint64_t ChunkGetGLOBALEnd(const Chunk* chunk)
+{
+	uint64_t ret = *((uint64_t*)chunk->code + 1);
+	for (size_t i = 1; i < 4; i++)
+	{
+		if (ret != 0)
+			return ret;
+		ret = *((uint64_t*)chunk->code + i);
+	}
+	return chunk->count;
+}
+
+uint64_t ChunkGetCONSTEnd(const Chunk* chunk)
+{
+	uint64_t ret = *((uint64_t*)chunk->code + 2);
+	for (size_t i = 2; i < 4; i++)
+	{
+		if (ret != 0)
+			return ret;
+		ret = *((uint64_t*)chunk->code + i);
+	}
+	return chunk->count;
+}
+
+uint64_t ChunkGetSTRINGEnd(const Chunk* chunk)
+{
+	uint64_t ret = *((uint64_t*)chunk->code + 3);
+	if (ret != 0)
+		return ret;
+	else
+	{
+		ret = *((uint64_t*)chunk->code + 4);
+		if (ret != 0)
+			return ret;
+	}	
+	return chunk->count;
+}
+
+uint64_t ChunkGetDEBUGEnd(const Chunk* chunk)
+{
+	uint64_t ret = *((uint64_t*)chunk->code + 4);
+	if (ret != 0)
+		return ret;	
+	return chunk->count;
+}
+
+uint64_t ChunkGetCODEEnd(const Chunk* chunk)
+{
+	return chunk->count;
+}
+
 void ChunkWriteOpCode(Chunk* chunk, OpCode code)
 {
 	chunk_write_byte(chunk, (uint8_t)code);
