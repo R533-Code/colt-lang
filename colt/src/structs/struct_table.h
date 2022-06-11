@@ -135,9 +135,21 @@ IMPLEMENTATION HELPERS
 /// @return The unsigned int representing the hash
 uint64_t hash_strv(StringView strv);
 
-/// @brief Doubles the capacity of the table
+/// @brief Grows the capacity of the table
+/// @param table The StringTable to modify
+/// @param capacity The new capacity
+void string_table_grow_capacity(StringTable* table, uint64_t capacity);
+
+/// @brief Find an existing entry or searches for the next empty slot where to write
+/// @param entries The pointer to the entries
+/// @param capacity The size of the buffer of entries
+/// @param strv The key to search for
+/// @return A valid pointer to an empty entry or to an existing one with the same key as 'strv'
+StringEntry* string_table_find_entry(StringEntry* entries, uint64_t capacity, StringView strv);
+
+/// @brief Grows the capacity of the table
 /// @param table The VariableTable to modify
-/// @param capacity
+/// @param capacity The new capacity
 void variable_table_grow_capacity(VariableTable* table, uint64_t capacity);
 
 /// @brief Find an existing entry or searches for the next empty slot where to write

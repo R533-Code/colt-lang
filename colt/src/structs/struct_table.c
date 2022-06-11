@@ -25,6 +25,18 @@ void StringTableFree(StringTable* table)
 
 void StringTableAdd(StringTable* table, String* to_add)
 {
+	if ((double)table->count + 1 > (double)table->capacity * VARIABLE_TABLE_MAX_LOAD)
+	{
+		string_table_grow_capacity(table, table->capacity * 2);
+	}
+
+	StringEntry* entry = string_table_find_entry(table->str_entries, table->capacity, StringToStringView(to_add));
+	if (entry->key.ptr == NULL)
+		table->count++;
+	else //If String already exists, do not do anything
+		return;
+
+	StringCopy(&entry->key, to_add);
 }
 
 void VariableTableInit(VariableTable* table)
@@ -163,6 +175,42 @@ void variable_table_grow_capacity(VariableTable* table, uint64_t capacity)
 	safe_free(table->entries);
 	table->entries = entries;
 	table->capacity = capacity;
+}
+
+void string_table_grow_capacity(StringTable* table, uint64_t capacity)
+{
+	StringEntry* entries = safe_malloc(sizeof(StringEntry) * capacity);
+	for (size_t i = 0; i < capacity; i++)
+		entries[i].key.ptr = NULL;
+
+	for (size_t i = 0; i < table->capacity; i++)
+	{
+		const StringEntry* entry = &table->str_entries[i];
+		if (entry->key.ptr == NULL)
+			continue;
+
+		StringEntry* dest = string_table_find_entry(entries, capacity, StringToStringView(&entry->key));
+		dest->key = entry->key;
+	}
+
+	safe_free(table->str_entries);
+	table->str_entries = entries;
+	table->capacity = capacity;
+}
+
+StringEntry* string_table_find_entry(StringEntry* entries, uint64_t capacity, StringView strv)
+{
+	uint64_t index = hash_strv(strv) % capacity;
+	for (;;)
+	{
+		StringEntry* entry = entries + index;
+		if (entry->key.ptr == NULL)
+			return entry;
+		else if (StringViewEqual(StringToStringView(&entry->key), strv))
+			return entry;
+
+		index = (index + 1) % capacity;
+	}
 }
 
 VariableEntry* variable_table_find_entry(VariableEntry* entries, uint64_t capacity, StringView strv)
