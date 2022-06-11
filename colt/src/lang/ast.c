@@ -346,8 +346,8 @@ Expr* impl_primary_expr(AST* ast)
 	{
 		value.string_ptr = ScannerGetLString(&ast->scan);
 		type = ColtLString;
-		//TODO: add table for strings
-		//push string to table
+		//Add string to string literal table
+		StringTableAdd(&ast->table.str_table, value.string_ptr);
 	}
 	break;
 
@@ -373,7 +373,7 @@ Expr* impl_primary_expr(AST* ast)
 	break; case TKN_IDENTIFIER:
 	{
 		StringView variable_name = ScannerGetIdentifier(&ast->scan);
-		VariableEntry* table_entry = VariableTableGetEntry(&ast->table.var_table, variable_name);
+		const VariableEntry* table_entry = VariableTableGetEntry(&ast->table.var_table, variable_name);
 		if (!table_entry)
 		{
 			ast_gen_error(ast,
