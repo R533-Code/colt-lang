@@ -7,7 +7,7 @@
 *	- The offsets are in bytes, which should be added to Chunk.code
 * - The GLOBAL pool: contains all modifiable global variables
 * - The CONST pool: contains all non-modifiable const variables
-* - The STRING pool: contains all string literals
+* - The STRING pool: starts with the number of string literals, and contains all string literals
 * - The DEBUG pool: contains type informations for both const and global variables
 * - The CODE section: contains the byte-code to execute
 * While some functions might seem redundant (ChunkWriteOpCode, ChunkWriteOperand),
@@ -41,6 +41,82 @@ typedef struct
 /// @brief Zero-initializes a chunk, and writes its header
 /// @param chunk The chunk to initialize
 void ChunkInit(Chunk* chunk);
+
+/// @brief Writes the offset to the beginning of the GLOBAL section
+/// @param chunk The Chunk where to write the value
+/// @param offset The offset to write
+void ChunkWriteGLOBALSection(Chunk* chunk, uint64_t offset);
+
+/// @brief Writes the offset to the beginning of the CONST section
+/// @param chunk The Chunk where to write the value
+/// @param offset The offset to write
+void ChunkWriteCONSTSection(Chunk* chunk, uint64_t offset);
+
+/// @brief Writes the offset to the beginning of the STRING section
+/// @param chunk The Chunk where to write the value
+/// @param offset The offset to write
+void ChunkWriteSTRINGSection(Chunk* chunk, uint64_t offset);
+
+/// @brief Writes the offset to the beginning of the DEBUG section
+/// @param chunk The Chunk where to write the value
+/// @param offset The offset to write
+void ChunkWriteDEBUGSection(Chunk* chunk, uint64_t offset);
+
+/// @brief Writes the offset to the beginning of the CODE section
+/// @param chunk The Chunk where to write the value
+/// @param offset The offset to write
+void ChunkWriteCODESection(Chunk* chunk, uint64_t offset);
+
+/// @brief Returns the offset to the beginning of the GLOBAL section
+/// @param chunk The Chunk from which to read the value
+/// @return The byte offset or 0 if the section doesn't exist
+uint64_t ChunkGetGLOBALSection(const Chunk* chunk);
+
+/// @brief Returns the offset to the beginning of the CONST section
+/// @param chunk The Chunk from which to read the value
+/// @return The byte offset or 0 if the section doesn't exist
+uint64_t ChunkGetCONSTSection(const Chunk* chunk);
+
+/// @brief Returns the offset to the beginning of the STRING section
+/// @param chunk The Chunk from which to read the value
+/// @return The byte offset or 0 if the section doesn't exist
+uint64_t ChunkGetSTRINGSection(const Chunk* chunk);
+
+/// @brief Returns the offset to the beginning of the DEBUG section
+/// @param chunk The Chunk from which to read the value
+/// @return The byte offset or 0 if the section doesn't exist
+uint64_t ChunkGetDEBUGSection(const Chunk* chunk);
+
+/// @brief Returns the offset to the beginning of the CODE section
+/// @param chunk The Chunk from which to read the value
+/// @return The byte offset or 0 if the section doesn't exist
+uint64_t ChunkGetCODESection(const Chunk* chunk);
+
+
+/// @brief Returns the end of the GLOBAL section
+/// @param chunk The Chunk from which to read the value
+/// @return The byte offset or 0 if the section doesn't exist
+uint64_t ChunkGetGLOBALEnd(const Chunk* chunk);
+
+/// @brief Returns the end of the CONST section
+/// @param chunk The Chunk from which to read the value
+/// @return The byte offset or 0 if the section doesn't exist
+uint64_t ChunkGetCONSTEnd(const Chunk* chunk);
+
+/// @brief Returns the end of the STRING section
+/// @param chunk The Chunk from which to read the value
+/// @return The byte offset or 0 if the section doesn't exist
+uint64_t ChunkGetSTRINGEnd(const Chunk* chunk);
+
+/// @brief Returns the end of the DEBUG section
+/// @param chunk The Chunk from which to read the value
+/// @return The byte offset or 0 if the section doesn't exist
+uint64_t ChunkGetDEBUGEnd(const Chunk* chunk);
+
+/// @brief Returns the end of the CODE section
+/// @param chunk The Chunk from which to read the value
+/// @return The byte offset or 0 if the section doesn't exist
+uint64_t ChunkGetCODEEnd(const Chunk* chunk);
 
 /// @brief Appends an OpCode to the end of the chunk
 /// @param chunk The chunk to append to
