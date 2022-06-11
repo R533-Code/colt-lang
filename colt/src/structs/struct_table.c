@@ -32,11 +32,10 @@ void StringTableAdd(StringTable* table, String* to_add)
 
 	StringEntry* entry = string_table_find_entry(table->str_entries, table->capacity, StringToStringView(to_add));
 	if (entry->key.ptr == NULL)
+	{
 		table->count++;
-	else //If String already exists, do not do anything
-		return;
-
-	StringCopy(&entry->key, to_add);
+		StringCopy(&entry->key, to_add);
+	}
 }
 
 void VariableTableInit(VariableTable* table)
