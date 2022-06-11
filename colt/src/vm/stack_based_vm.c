@@ -50,7 +50,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		print_error_string("Cannot run Chunk that does not contain byte-code!");
 		return 1;
 	}	
-	impl_stack_vm_init_strings(chunk);
+	ChunkInitLStrings(chunk);
 
 	for (;;)
 	{
