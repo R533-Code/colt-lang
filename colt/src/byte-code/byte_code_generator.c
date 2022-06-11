@@ -5,10 +5,13 @@
 
 bool generateByteCode(Chunk* chunk, const ASTTable* table, const Expr* expr)
 {
+	colt_assert(expr != NULL, "Cannot generate byte-code if expr == NULL!");
 	colt_assert(chunk->count >= 40, "Chunk should be initialized!");
 
 	//Reserve enough size for the GLOBAL/CONST and string literals
-	ChunkReserve(chunk, table->str_table.all_str_size + table->str_table.count * sizeof(QWORD) + table->var_table.count * sizeof(QWORD));
+	//The + 1 is because at the beginning of the string section, we write
+	//the number of string literals
+	ChunkReserve(chunk, table->str_table.all_str_size + (table->str_table.count + 1) * sizeof(QWORD) + table->var_table.count * sizeof(QWORD));
 
 	//write GLOBAL offset
 	ChunkWriteGLOBALSection(chunk, gen_global_pool(chunk, &table->var_table));
@@ -82,15 +85,17 @@ uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 		return 0;
 
 	const uint64_t string_begin = chunk->count;
-	uint64_t offset = 0;
+	*((uint64_t*)(chunk->code + string_begin)) = str_table->count;
 
-	uint64_t string_literal_begin = string_begin + str_table->count * sizeof(QWORD);
+	uint64_t offset = 1;
+
+	uint64_t string_literal_begin = string_begin + (str_table->count + 1) * sizeof(QWORD);
 	for (size_t i = 0; i < str_table->capacity; i++)
 	{
 		//not active entry
 		if (str_table->str_entries[i].key.ptr == NULL)
 			continue;
-		*((uint64_t*)(chunk->code + string_begin) + offset) = string_begin + offset;
+		*((uint64_t*)(chunk->code + string_begin) + offset) = string_begin + offset * sizeof(QWORD);
 		offset++;
 
 		memcpy(chunk->code + string_literal_begin, str_table->str_entries[i].key.ptr, 
@@ -98,7 +103,7 @@ uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 		string_literal_begin += str_table->str_entries[i].key.size;
 	}
 	//Update size of chunk
-	chunk->count += str_table->all_str_size + str_table->count * sizeof(QWORD);
+	chunk->count += str_table->all_str_size + (str_table->count + 1) * sizeof(QWORD);
 	
 	return string_begin;
 }
@@ -385,7 +390,8 @@ bool gen_global_variable_load(Chunk* chunk, const ASTTable* table, const Variabl
 	
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
-	QWORD offset = { .u64 = entry->counter_nb };
+	//byte-offset to QWORD to load
+	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
 	
 	switch (ptr->expr_type.byte_size)
 	{
@@ -447,8 +453,10 @@ bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const Bi
 
 	const VariableEntry* entry = variable_table_find_entry(table->var_table.entries, table->var_table.capacity, ((VariableExpr*)ptr->lhs)->var_name);
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
+	colt_assert(entry->is_const != true, "Assignment to constant is prohibited!");
 
-	QWORD offset = { .u64 = entry->counter_nb };
+	//byte-offset from where to read
+	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
 
 	switch (ptr->lhs->expr_type.byte_size)
 	{
