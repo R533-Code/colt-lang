@@ -74,7 +74,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		
 		for (size_t i = 0; i < string_literal_count; i++)
 		{
-			printf("        %08"PRIu64": "CONSOLE_FOREGROUND_YELLOW"\"", string_offset + 8);
+			printf("        %08"PRIu64": "CONSOLE_FOREGROUND_YELLOW"\"", string_offset + (i + 1) * sizeof(QWORD));
 			//+ 1 so we move over the uint64_t written for string literal count
 			impl_print_lstring(chunk->code + *((uint64_t*)(chunk->code + string_offset) + i + 1));
 			fputs("\""CONSOLE_COLOR_RESET"\n", stdout);
