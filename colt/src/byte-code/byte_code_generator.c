@@ -95,7 +95,7 @@ uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 		//not active entry
 		if (str_table->str_entries[i].key.ptr == NULL)
 			continue;
-		*((uint64_t*)(chunk->code + string_begin) + offset) = string_begin + offset * sizeof(QWORD);
+		*((uint64_t*)(chunk->code + string_begin) + offset) = string_literal_begin;
 		offset++;
 
 		memcpy(chunk->code + string_literal_begin, str_table->str_entries[i].key.ptr, 
