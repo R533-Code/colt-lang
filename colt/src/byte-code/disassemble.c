@@ -16,15 +16,15 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 	}
 
 	//GLOBAL OFFSET
-	uint64_t global_offset = *((uint64_t*)chunk->code);
+	uint64_t global_offset = ChunkGetGLOBALSection(chunk);
 	//CONST OFFSET
-	uint64_t const_offset = *((uint64_t*)chunk->code + 1);
+	uint64_t const_offset = ChunkGetCONSTSection(chunk);
 	//STRING OFFSET
-	uint64_t string_offset = *((uint64_t*)chunk->code + 2);
+	uint64_t string_offset = ChunkGetSTRINGSection(chunk);
 	//DEBUG OFFSET
-	uint64_t debug_offset = *((uint64_t*)chunk->code + 3);
+	uint64_t debug_offset = ChunkGetDEBUGSection(chunk);
 	//CODE OFFSET
-	uint64_t code_offset = *((uint64_t*)chunk->code + 4);
+	uint64_t code_offset = ChunkGetCODESection(chunk);
 
 	fputs(CONSOLE_COLOR_REVERSE"SECTION HEADER:\n"CONSOLE_COLOR_RESET, stdout);
 	printf("        %08"PRIu64": SECTION GLOBAL\n        %08"PRIu64": SECTION CONST\n        %08"PRIu64": SECTION STRING\n        %08"PRIu64": SECTION DEBUG\n        %08"PRIu64": SECTION CODE\n",
