@@ -19,14 +19,16 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 	uint64_t global_offset = *((uint64_t*)chunk->code);
 	//CONST OFFSET
 	uint64_t const_offset = *((uint64_t*)chunk->code + 1);
+	//STRING OFFSET
+	uint64_t string_offset = *((uint64_t*)chunk->code + 2);
 	//DEBUG OFFSET
-	uint64_t debug_offset = *((uint64_t*)chunk->code + 2);
+	uint64_t debug_offset = *((uint64_t*)chunk->code + 3);
 	//CODE OFFSET
-	uint64_t code_offset = *((uint64_t*)chunk->code + 3);
+	uint64_t code_offset = *((uint64_t*)chunk->code + 4);
 
 	fputs(CONSOLE_COLOR_REVERSE"SECTION HEADER:\n"CONSOLE_COLOR_RESET, stdout);
-	printf("        %08"PRIu64": SECTION GLOBAL\n""        %08"PRIu64": SECTION CONST\n""        %08"PRIu64": SECTION DEBUG\n""        %08"PRIu64": SECTION CODE\n",
-		global_offset, const_offset, debug_offset, code_offset
+	printf("        %08"PRIu64": SECTION GLOBAL\n        %08"PRIu64": SECTION CONST\n        %08"PRIu64": SECTION STRING\n        %08"PRIu64": SECTION DEBUG\n        %08"PRIu64": SECTION CODE\n",
+		global_offset, const_offset, string_offset, debug_offset, code_offset
 	);
 
 	if (global_offset != 0)
@@ -60,6 +62,10 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 			for (size_t i = const_offset; i < const_end; i += sizeof(QWORD))
 				printf("        %08"PRIu64": 0x%"PRIX64, i, *(uint64_t*)chunk->code + i);
 		}
+	}
+	if (string_offset != 0)
+	{
+
 	}
 
 	if (code_offset != 0)
