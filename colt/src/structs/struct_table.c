@@ -111,6 +111,8 @@ bool VariableTableSet(VariableTable* table, StringView strv, QWORD value, Type t
 	StringViewToString(strv, &entry->key);
 	entry->value = value;
 	entry->type = type;
+	//FIXME: add way to specify const
+	entry->is_const = false;
 	return is_new;
 }
 
