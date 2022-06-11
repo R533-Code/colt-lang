@@ -529,15 +529,17 @@ Expr* impl_variable_declaration(AST* ast)
 		}
 
 
-		QWORD zero = { .u64 = 0 };
-		if (!VariableTableSet(&ast->var_table, decl_identifier, zero, to_assign->expr_type))
+		if (VariableTableContains(&ast->var_table, decl_identifier))
 		{
 			ast_gen_error(ast,
-				ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+				identifier_line_nb, identifier_line, decl_identifier,
 				"Variable with identifier '%.*s' already exists!", decl_identifier.end - decl_identifier.start, decl_identifier.start
 			);
 			return to_assign;
 		}
+		
+		QWORD zero = { .u64 = 0 };
+		VariableTableSet(&ast->var_table, decl_identifier, zero, to_assign->expr_type);
 
 		return makeBinaryExpr(
 			makeVariableExpr(decl_identifier, to_assign->expr_type,
