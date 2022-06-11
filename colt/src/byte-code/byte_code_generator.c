@@ -105,6 +105,9 @@ uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 	//Update size of chunk
 	chunk->count += str_table->all_str_size + (str_table->count + 1) * sizeof(QWORD);
 	
+	uint64_t padding = 8 - (chunk->count % 8);
+	for (size_t i = 0; i < padding; i++)
+		chunk_write_byte(chunk, 205); //CD in hex
 	return string_begin;
 }
 
