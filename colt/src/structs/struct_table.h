@@ -68,6 +68,8 @@ typedef struct
 	uint64_t count;
 	/// @brief The capacity of the VariableTable
 	uint64_t capacity;
+	/// @brief The sum of the size of all the active string length
+	uint64_t all_str_size;
 	/// @brief The pointer to the string entries array
 	StringEntry* str_entries;
 } StringTable;
@@ -100,7 +102,7 @@ void StringTableFree(StringTable* table);
 /// @brief Adds a String to the table
 /// @param table The StringTable to add to
 /// @param to_add The String to add
-void StringTableAdd(StringTable* table, String* to_add);
+void StringTableAdd(StringTable* table, const String* to_add);
 
 /// @brief Initializes a VariableTable
 /// @param table The VariableTable to initialize
