@@ -64,7 +64,7 @@ uint64_t ChunkGetCODESection(const Chunk* chunk)
 	return *((uint64_t*)chunk->code + 4);
 }
 
-uint64_t ChunkGetGLOBALEnd(const Chunk* chunk)
+uint64_t unsafe_chunk_get_global_end(const Chunk* chunk)
 {
 	uint64_t ret = *((uint64_t*)chunk->code + 1);
 	for (size_t i = 1; i < 4; i++)
@@ -76,7 +76,7 @@ uint64_t ChunkGetGLOBALEnd(const Chunk* chunk)
 	return chunk->count;
 }
 
-uint64_t ChunkGetCONSTEnd(const Chunk* chunk)
+uint64_t unsafe_chunk_get_const_end(const Chunk* chunk)
 {
 	uint64_t ret = *((uint64_t*)chunk->code + 2);
 	for (size_t i = 2; i < 4; i++)
@@ -88,7 +88,7 @@ uint64_t ChunkGetCONSTEnd(const Chunk* chunk)
 	return chunk->count;
 }
 
-uint64_t ChunkGetSTRINGEnd(const Chunk* chunk)
+uint64_t unsafe_chunk_get_string_end(const Chunk* chunk)
 {
 	uint64_t ret = *((uint64_t*)chunk->code + 3);
 	if (ret != 0)
@@ -102,7 +102,7 @@ uint64_t ChunkGetSTRINGEnd(const Chunk* chunk)
 	return chunk->count;
 }
 
-uint64_t ChunkGetDEBUGEnd(const Chunk* chunk)
+uint64_t unsafe_chunk_get_debug_end(const Chunk* chunk)
 {
 	uint64_t ret = *((uint64_t*)chunk->code + 4);
 	if (ret != 0)
@@ -110,7 +110,7 @@ uint64_t ChunkGetDEBUGEnd(const Chunk* chunk)
 	return chunk->count;
 }
 
-uint64_t ChunkGetCODEEnd(const Chunk* chunk)
+uint64_t unsafe_chunk_get_code_end(const Chunk* chunk)
 {
 	return chunk->count;
 }

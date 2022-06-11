@@ -96,27 +96,27 @@ uint64_t ChunkGetCODESection(const Chunk* chunk);
 /// @brief Returns the end of the GLOBAL section
 /// @param chunk The Chunk from which to read the value
 /// @return The byte offset or 0 if the section doesn't exist
-uint64_t ChunkGetGLOBALEnd(const Chunk* chunk);
+uint64_t unsafe_chunk_get_global_end(const Chunk* chunk);
 
 /// @brief Returns the end of the CONST section
 /// @param chunk The Chunk from which to read the value
 /// @return The byte offset or 0 if the section doesn't exist
-uint64_t ChunkGetCONSTEnd(const Chunk* chunk);
+uint64_t unsafe_chunk_get_const_end(const Chunk* chunk);
 
 /// @brief Returns the end of the STRING section
 /// @param chunk The Chunk from which to read the value
 /// @return The byte offset or 0 if the section doesn't exist
-uint64_t ChunkGetSTRINGEnd(const Chunk* chunk);
+uint64_t unsafe_chunk_get_string_end(const Chunk* chunk);
 
 /// @brief Returns the end of the DEBUG section
 /// @param chunk The Chunk from which to read the value
 /// @return The byte offset or 0 if the section doesn't exist
-uint64_t ChunkGetDEBUGEnd(const Chunk* chunk);
+uint64_t unsafe_chunk_get_debug_end(const Chunk* chunk);
 
 /// @brief Returns the end of the CODE section
 /// @param chunk The Chunk from which to read the value
 /// @return The byte offset or 0 if the section doesn't exist
-uint64_t ChunkGetCODEEnd(const Chunk* chunk);
+uint64_t unsafe_chunk_get_code_end(const Chunk* chunk);
 
 /// @brief Appends an OpCode to the end of the chunk
 /// @param chunk The chunk to append to
