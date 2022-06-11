@@ -20,6 +20,7 @@ void StringTableInit(StringTable* table)
 {
 	table->capacity = 10;
 	table->count = 0;
+	table->all_str_size = 0;
 	table->str_entries = safe_malloc(sizeof(StringEntry) * 10);
 	for (size_t i = 0; i < table->capacity; i++)
 		table->str_entries[i].key.ptr = NULL;
@@ -45,6 +46,7 @@ void StringTableAdd(StringTable* table, const String* to_add)
 	StringEntry* entry = string_table_find_entry(table->str_entries, table->capacity, StringToStringView(to_add));
 	if (entry->key.ptr == NULL)
 	{
+		table->all_str_size += to_add->size;
 		table->count++;
 		StringCopy(&entry->key, to_add);
 	}
