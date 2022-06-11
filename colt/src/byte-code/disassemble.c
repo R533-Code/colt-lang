@@ -4,12 +4,12 @@
 
 #include "disassemble.h"
 
-void ChunkDisassemble(const Chunk* chunk, const char* name)
+void ChunkDisassemble(const Chunk* chunk, const char* name, bool chunk_str_init)
 {
 	printf("================ %s ================\n", name);
 
-	//32 is the size of the header
-	if (chunk->count == 32)
+	//40 is the size of the header
+	if (chunk->count == 40)
 	{
 		printf("!EMPTY CHUNK!");
 		return;
@@ -39,7 +39,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		if (debug_offset != 0)
 		{
 			for (size_t i = 0; i < (global_end - global_offset) / sizeof(QWORD); i++)
-				impl_print_global_variable(chunk, global_offset, i, debug_offset);
+				impl_print_global_variable(chunk, global_offset, i, debug_offset, chunk_str_init);
 		}
 		else
 		{
@@ -74,9 +74,11 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		
 		for (size_t i = 0; i < string_literal_count; i++)
 		{
-			printf("        %08"PRIu64": "CONSOLE_FOREGROUND_YELLOW"\"", string_offset + (i + 1) * sizeof(QWORD));
-			//+ 1 so we move over the uint64_t written for string literal count
-			impl_print_lstring(chunk->code + *((uint64_t*)(chunk->code + string_offset) + i + 1));
+			printf("        %08"PRIu64": "CONSOLE_FOREGROUND_YELLOW"\"", string_offset + (i + 1) * sizeof(QWORD));			
+			if (chunk_str_init)
+				impl_print_lstring(*((char**)(chunk->code + string_offset) + i + 1));
+			else //+ 1 so we move over the uint64_t written for string literal count
+				impl_print_lstring(chunk->code + *((uint64_t*)(chunk->code + string_offset) + i + 1));
 			fputs("\""CONSOLE_COLOR_RESET"\n", stdout);
 		}
 	}
@@ -127,14 +129,19 @@ void impl_print_lstring(const char* str)
 	}
 }
 
-void impl_print_global_variable(const Chunk* chunk, uint64_t offset, uint64_t var_nb, uint64_t debug_offset)
+void impl_print_global_variable(const Chunk* chunk, uint64_t var_nb, bool chunk_str_init)
 {
+	uint64_t debug_offset = ChunkGetDEBUGSection(chunk);
+	uint64_t offset = ChunkGetGLOBALSection(chunk);
+
 	// + sizeof(QWORD) as we need to offset by one QWORD to get the offset to the name
 	const char* name = chunk->code + *(uint64_t*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD) + sizeof(QWORD));
 	BuiltinTypeID id = (BuiltinTypeID)((QWORD*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD)))->u8;
 	printf("        %08"PRIu64 CONSOLE_FOREGROUND_CYAN" %s " CONSOLE_FOREGROUND_BRIGHT_CYAN "%s" CONSOLE_COLOR_RESET " = "CONSOLE_FOREGROUND_BRIGHT_GREEN, offset + 8 * var_nb, BuiltinTypeIDToString(id), name);
 		
 	QWORD value = *(QWORD*)(chunk->code + offset + var_nb * 8);
+	//FIXME: after adding constant folding, if id is LSTRING then depending on
+	//'chunk_str_init' we need to print the value
 	OpCode_Print(value, id);
 	fputs(CONSOLE_COLOR_RESET ";\n", stdout);
 }

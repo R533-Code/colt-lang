@@ -11,7 +11,8 @@
 /// @brief Prints a human readable description of the code contained in a chunk
 /// @param chunk The chunk whose content to print
 /// @param name The chunk name
-void ChunkDisassemble(const Chunk* chunk, const char* name);
+/// @param chunk_str_init If ChunkInitLString was called on the Chunk, should be true
+void ChunkDisassemble(const Chunk* chunk, const char* name, bool chunk_str_init);
 
 /**********************************
 IMPLEMENTATION HELPERS
@@ -23,10 +24,9 @@ void impl_print_lstring(const char* str);
 
 /// @brief Writes the value of a global value and its type
 /// @param chunk The Chunk from which to read
-/// @param offset The offset to the beginning of the GLOBAL section
 /// @param var_nb The current global variable counter
-/// @param id The offset to the beginning of the DEBUG section
-void impl_print_global_variable(const Chunk* chunk, uint64_t offset, uint64_t var_nb, uint64_t debug_offset);
+/// @param chunk_str_init If ChunkInitLString was called on the Chunk, should be true
+void impl_print_global_variable(const Chunk* chunk, uint64_t var_nb, bool chunk_str_init);
 
 /// @brief Dispatches a code to the correct printing function
 /// @param chunk The chunk from which to extract the code
