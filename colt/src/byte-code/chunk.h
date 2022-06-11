@@ -94,29 +94,40 @@ uint64_t ChunkGetCODESection(const Chunk* chunk);
 
 
 /// @brief Returns the end of the GLOBAL section
+/// Preconditions: The GLOBAL section should exist (ChunkGetGLOBALSection != 0)
 /// @param chunk The Chunk from which to read the value
 /// @return The byte offset or 0 if the section doesn't exist
 uint64_t unsafe_chunk_get_global_end(const Chunk* chunk);
 
 /// @brief Returns the end of the CONST section
+/// Preconditions: The CONST section should exist (ChunkGetCONSTSection != 0)
 /// @param chunk The Chunk from which to read the value
 /// @return The byte offset or 0 if the section doesn't exist
 uint64_t unsafe_chunk_get_const_end(const Chunk* chunk);
 
 /// @brief Returns the end of the STRING section
+/// Preconditions: The STRING section should exist (ChunkGetSTRINGSection != 0)
 /// @param chunk The Chunk from which to read the value
 /// @return The byte offset or 0 if the section doesn't exist
 uint64_t unsafe_chunk_get_string_end(const Chunk* chunk);
 
 /// @brief Returns the end of the DEBUG section
+/// Preconditions: The DEBUG section should exist (ChunkGetDEBUGSection != 0)
 /// @param chunk The Chunk from which to read the value
 /// @return The byte offset or 0 if the section doesn't exist
 uint64_t unsafe_chunk_get_debug_end(const Chunk* chunk);
 
 /// @brief Returns the end of the CODE section
+/// Preconditions: The CODE section should exist (ChunkGetCODESection != 0)
 /// @param chunk The Chunk from which to read the value
 /// @return The byte offset or 0 if the section doesn't exist
 uint64_t unsafe_chunk_get_code_end(const Chunk* chunk);
+
+/// @brief Returns the number of string literals in the STRING section.
+/// Preconditions: The STRING section should exist (ChunkGetSTRINGSection != 0)
+/// @param chunk The Chunk from which to read the value
+/// @return The count of string literals written
+uint64_t unsafe_chunk_get_lstring_count(const Chunk* chunk);
 
 /// @brief Appends an OpCode to the end of the chunk
 /// @param chunk The chunk to append to
