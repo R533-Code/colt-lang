@@ -48,7 +48,7 @@ void repl_write_global(VariableTable* table, Chunk* chunk)
 	if (table->count == 0)
 		return;
 	size_t offset = 0;
-	const QWORD* global_offset = (QWORD*)(chunk->code + *(uint64_t*)(chunk->code));
+	const QWORD* global_offset = (QWORD*)(chunk->code + ChunkGetGLOBALSection(chunk));
 	for (size_t i = 0; i < table->capacity; i++)
 	{
 		if (table->entries[i].key.ptr == NULL)
