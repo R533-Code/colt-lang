@@ -15,7 +15,7 @@
 #define COLT_OS_STRING			"${IMPL_COLT_OS_STRING}"
 
 //The ABI of the interpreter, which is used so that the interpreter cannot run code compiled from a previous version
-#define COLTI_ABI				(COLT_VERSION_MAJOR * 1000000000 + COLT_VERSION_MINOR * 1000000 + COLT_VERSION_PATCH * 1000)
+#define COLTI_ABI				${COLTI_ABI}
 
 #ifdef COLT_DEBUG_BUILD
 	#define COLT_CONFIG_STRING		"Debug"
