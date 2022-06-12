@@ -7,83 +7,94 @@
 void ChunkInit(Chunk* chunk)
 {	
 	chunk->capacity = 256;
-	chunk->count = 5 * sizeof(QWORD);
+	chunk->count = CHUNK_HEADER_QWORD_COUNT * sizeof(QWORD);
 	chunk->code = safe_malloc(256);
 
 	//we set all the bytes of the header to 0
-	memset(chunk->code, 0, sizeof(QWORD) * 5);
+	memset(chunk->code + 8, 0, sizeof(QWORD) * CHUNK_HEADER_QWORD_COUNT);
+	*(uint64_t*)chunk->code = COLTI_ABI;
+}
+
+uint64_t ChunkGetABI(const Chunk* chunk)
+{
+	return *(uint64_t*)chunk->code;
+}
+
+bool ChunkIsLStringSectionInit(const Chunk* chunk)
+{
+	return ((QWORD*)chunk->code + 1)->b;
 }
 
 void ChunkWriteGLOBALSection(Chunk* chunk, uint64_t offset)
 {
-	*(uint64_t*)(chunk->code) = offset;
+	*((uint64_t*)(chunk->code) + 2) = offset;
 }
 
 void ChunkWriteCONSTSection(Chunk* chunk, uint64_t offset)
 {
-	*((uint64_t*)chunk->code + 1) = offset;
+	*((uint64_t*)chunk->code + 3) = offset;
 }
 
 void ChunkWriteSTRINGSection(Chunk* chunk, uint64_t offset)
 {
-	*((uint64_t*)chunk->code + 2) = offset;
+	*((uint64_t*)chunk->code + 4) = offset;
 }
 
 void ChunkWriteDEBUGSection(Chunk* chunk, uint64_t offset)
 {
-	*((uint64_t*)chunk->code + 3) = offset;
+	*((uint64_t*)chunk->code + 5) = offset;
 }
 
 void ChunkWriteCODESection(Chunk* chunk, uint64_t offset)
 {
-	*((uint64_t*)chunk->code + 4) = offset;
+	*((uint64_t*)chunk->code + 6) = offset;
 }
 
 uint64_t ChunkGetGLOBALSection(const Chunk* chunk)
 {
-	return *((uint64_t*)chunk->code);
+	return *((uint64_t*)chunk->code + 2);
 }
 
 uint64_t ChunkGetCONSTSection(const Chunk* chunk)
 {
-	return *((uint64_t*)chunk->code + 1);
+	return *((uint64_t*)chunk->code + 3);
 }
 
 uint64_t ChunkGetSTRINGSection(const Chunk* chunk)
 {
-	return *((uint64_t*)chunk->code + 2);
+	return *((uint64_t*)chunk->code + 4);
 }
 
 uint64_t ChunkGetDEBUGSection(const Chunk* chunk)
 {
-	return *((uint64_t*)chunk->code + 3);
+	return *((uint64_t*)chunk->code + 5);
 }
 
 uint64_t ChunkGetCODESection(const Chunk* chunk)
 {
-	return *((uint64_t*)chunk->code + 4);
+	return *((uint64_t*)chunk->code + 6);
 }
 
 uint64_t unsafe_chunk_get_global_end(const Chunk* chunk)
 {
 	colt_assert(ChunkGetGLOBALSection(chunk) != 0, "GLOBAL section does not exist!");
-	uint64_t ret = *((uint64_t*)chunk->code + 1);
+	uint64_t ret = *((uint64_t*)chunk->code + 3);
 	//unrolled the cases rather than using a loop
 	if (ret != 0)
 		return ret;
 	else
 	{
-		ret = *((uint64_t*)chunk->code + 2);
+		ret = *((uint64_t*)chunk->code + 4);
 		if (ret != 0)
 			return ret;
 		else
 		{
-			ret = *((uint64_t*)chunk->code + 3);
+			ret = *((uint64_t*)chunk->code + 5);
 			if (ret != 0)
 				return ret;
 			else
 			{
-				ret = *((uint64_t*)chunk->code + 4);
+				ret = *((uint64_t*)chunk->code + 6);
 				if (ret != 0)
 					return ret;
 				return chunk->count;
@@ -95,17 +106,17 @@ uint64_t unsafe_chunk_get_global_end(const Chunk* chunk)
 uint64_t unsafe_chunk_get_const_end(const Chunk* chunk)
 {
 	colt_assert(ChunkGetCONSTSection(chunk) != 0, "CONST section does not exist!");
-	uint64_t ret = *((uint64_t*)chunk->code + 2);
+	uint64_t ret = *((uint64_t*)chunk->code + 4);
 	if (ret != 0)
 		return ret;
 	else
 	{
-		ret = *((uint64_t*)chunk->code + 3);
+		ret = *((uint64_t*)chunk->code + 5);
 		if (ret != 0)
 			return ret;
 		else
 		{
-			ret = *((uint64_t*)chunk->code + 4);
+			ret = *((uint64_t*)chunk->code + 6);
 			if (ret != 0)
 				return ret;
 			return chunk->count;
@@ -116,12 +127,12 @@ uint64_t unsafe_chunk_get_const_end(const Chunk* chunk)
 uint64_t unsafe_chunk_get_string_end(const Chunk* chunk)
 {
 	colt_assert(ChunkGetSTRINGSection(chunk) != 0, "STRING section does not exist!");
-	uint64_t ret = *((uint64_t*)chunk->code + 3);
+	uint64_t ret = *((uint64_t*)chunk->code + 5);
 	if (ret != 0)
 		return ret;
 	else
 	{
-		ret = *((uint64_t*)chunk->code + 4);
+		ret = *((uint64_t*)chunk->code + 6);
 		if (ret != 0)
 			return ret;
 		return chunk->count;
@@ -131,7 +142,7 @@ uint64_t unsafe_chunk_get_string_end(const Chunk* chunk)
 uint64_t unsafe_chunk_get_debug_end(const Chunk* chunk)
 {
 	colt_assert(ChunkGetDEBUGSection(chunk) != 0, "DEBUG section does not exist!");
-	uint64_t ret = *((uint64_t*)chunk->code + 4);
+	uint64_t ret = *((uint64_t*)chunk->code + 6);
 	if (ret != 0)
 		return ret;
 	return chunk->count;
@@ -298,6 +309,7 @@ void ChunkInitLStrings(Chunk* chunk)
 	uint64_t string_offset = ChunkGetSTRINGSection(chunk);
 	if (string_offset == 0)
 		return;
+	((QWORD*)chunk->code + 1)->b = true;
 
 	for (size_t i = 0; i < unsafe_chunk_get_lstring_count(chunk); i++)
 	{

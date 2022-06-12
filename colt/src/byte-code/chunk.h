@@ -26,6 +26,9 @@
 #include "common.h"
 #include "byte_code.h" //Contains the byte-code enum
 
+/// @brief The count of QWORDs in the header section of an initialized Chunk
+#define CHUNK_HEADER_QWORD_COUNT 7
+
 /// @brief Represents a stream of instructions
 typedef struct
 {
@@ -41,6 +44,15 @@ typedef struct
 /// @brief Zero-initializes a chunk, and writes its header
 /// @param chunk The chunk to initialize
 void ChunkInit(Chunk* chunk);
+
+/// @brief Returns the ABI of a Chunk
+/// @param chunk The Chunk from which to read the value
+uint64_t ChunkGetABI(const Chunk* chunk);
+
+/// @brief Check if ChunkInitLString has been called on the Chunk
+/// @param chunk The Chunk to check
+/// @return True if ChunkInitLString was called on 'chunk' else false
+bool ChunkIsLStringSectionInit(const Chunk* chunk);
 
 /// @brief Writes the offset to the beginning of the GLOBAL section
 /// @param chunk The Chunk where to write the value
