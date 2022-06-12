@@ -458,6 +458,9 @@ Token impl_scanner_handle_string(Scanner* scan)
 			break; case 'v':
 				StringAppendChar(&scan->parsed_string, '\v');
 			break; default:
+				//Consume whole string literal
+				while (scan->current_char != ';' && scan->current_char != '\n' && scan->current_char != EOF)
+					scan->current_char = impl_get_next_char(scan);
 				impl_scanner_print_error(scan, "Invalid escape sequence!");
 				return TKN_ERROR;
 			}
