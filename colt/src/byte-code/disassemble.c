@@ -4,7 +4,7 @@
 
 #include "disassemble.h"
 
-void ChunkDisassemble(const Chunk* chunk, const char* name, bool chunk_str_init)
+void ChunkDisassemble(const Chunk* chunk, const char* name)
 {
 	printf("================ %s ================\n", name);
 
@@ -30,6 +30,8 @@ void ChunkDisassemble(const Chunk* chunk, const char* name, bool chunk_str_init)
 	printf("        ABI: %"PRIu64"\n        %08"PRIu64": SECTION GLOBAL\n        %08"PRIu64": SECTION CONST\n        %08"PRIu64": SECTION STRING\n        %08"PRIu64": SECTION DEBUG\n        %08"PRIu64": SECTION CODE\n",
 		ChunkGetABI(chunk), global_offset, const_offset, string_offset, debug_offset, code_offset
 	);
+
+	bool chunk_str_init = ChunkIsLStringSectionInit(chunk);
 
 	if (global_offset != 0)
 	{

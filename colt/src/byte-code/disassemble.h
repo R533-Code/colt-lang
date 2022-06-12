@@ -11,8 +11,7 @@
 /// @brief Prints a human readable description of the code contained in a chunk
 /// @param chunk The chunk whose content to print
 /// @param name The chunk name
-/// @param chunk_str_init If ChunkInitLString was called on the Chunk, should be true
-void ChunkDisassemble(const Chunk* chunk, const char* name, bool chunk_str_init);
+void ChunkDisassemble(const Chunk* chunk, const char* name);
 
 /**********************************
 IMPLEMENTATION HELPERS

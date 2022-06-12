@@ -161,7 +161,7 @@ void impl_disassemble(int argc, const char** argv, uint64_t offset)
 		if (checkIfValidFile(argv[2]))
 		{
 			Chunk chunk = ChunkDeserialize(argv[2]);
-			ChunkDisassemble(&chunk, argv[2], false);
+			ChunkDisassemble(&chunk, argv[2]);
 			ChunkFree(&chunk);
 			exit(EXIT_NO_FAILURE);
 		}
