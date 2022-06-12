@@ -44,13 +44,15 @@ uint64_t StackVMSize(const StackVM* vm)
 
 int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 {
-	uint8_t* ip = chunk->code + *((uint64_t*)(chunk->code) + 4);
+	uint8_t* ip = chunk->code + ChunkGetCODESection(chunk);
 	if (ip == chunk->code)
 	{
 		print_error_string("Cannot run Chunk that does not contain byte-code!");
 		return 1;
-	}	
-	ChunkInitLStrings(chunk);
+	}
+	
+	if (!ChunkIsLStringSectionInit(chunk))
+		ChunkInitLStrings(chunk);
 
 	for (;;)
 	{
