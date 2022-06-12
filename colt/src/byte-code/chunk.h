@@ -2,8 +2,15 @@
 * Contains the Chunk struct, which is used to provide simpler operations for storing and writing byte-code.
 * A Chunk can be seen as a contiguous dynamic array which handles resizes automatically
 * when writing byte-code to it.
-* A Chunk usually contains 5 sections:
-* - The HEADER: 4 uint64_t giving the offsets of the 4 other sections
+* A Chunk usually contains 6 sections:
+* - The HEADER: 2 uint64_t giving informations about the Chunk, 5 uint64_t giving the offsets of the 5 other sections
+*	- First uint64_t   -> ABI
+*	- Second uint64_t  -> flag for if ChunkInitLString was called on the Chunk
+*	- Third uint64_t   -> byte offset to GLOBAL section or 0 if this section does not exist
+*	- Fourth uint64_t  -> byte offset to CONST section or 0 if this section does not exist
+*	- Fifth uint64_t   -> byte offset to STRING section or 0 if this section does not exist
+*	- Sixth uint64_t   -> byte offset to DEBUG section or 0 if this section does not exist
+*	- Seventh uint64_t -> byte offset to CODE section or 0 if this section does not exist
 *	- The offsets are in bytes, which should be added to Chunk.code
 * - The GLOBAL pool: contains all modifiable global variables
 * - The CONST pool: contains all non-modifiable const variables
