@@ -52,7 +52,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 	}
 	if (ChunkGetABI(chunk) != COLTI_ABI)
 	{
-		print_error_format("Cannot run Chunk as its ABI (%"PRIu64") version does not match the VM's ABI (%"PRIu64")",
+		print_error_format("Cannot run Chunk as its ABI (%"PRIu64") does not match the VM's ABI (%"PRIu64")!",
 			ChunkGetABI(chunk), COLTI_ABI);
 		return 1;
 	}
