@@ -50,7 +50,13 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		print_error_string("Cannot run Chunk that does not contain byte-code!");
 		return 1;
 	}
-	
+	if (ChunkGetABI(chunk) != COLTI_ABI)
+	{
+		print_error_format("Cannot run Chunk as its ABI (%"PRIu64") version does not match the VM's ABI (%"PRIu64")",
+			ChunkGetABI(chunk), COLTI_ABI);
+		return 1;
+	}
+
 	if (!ChunkIsLStringSectionInit(chunk))
 		ChunkInitLStrings(chunk);
 
