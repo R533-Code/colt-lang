@@ -8,8 +8,8 @@ void ChunkDisassemble(const Chunk* chunk, const char* name, bool chunk_str_init)
 {
 	printf("================ %s ================\n", name);
 
-	//40 is the size of the header
-	if (chunk->count == 40)
+	//size of the header
+	if (chunk->count <= CHUNK_HEADER_QWORD_COUNT * sizeof(QWORD))
 	{
 		printf("!EMPTY CHUNK!");
 		return;
@@ -27,8 +27,8 @@ void ChunkDisassemble(const Chunk* chunk, const char* name, bool chunk_str_init)
 	uint64_t code_offset = ChunkGetCODESection(chunk);
 
 	fputs(CONSOLE_COLOR_REVERSE"SECTION HEADER:\n"CONSOLE_COLOR_RESET, stdout);
-	printf("        %08"PRIu64": SECTION GLOBAL\n        %08"PRIu64": SECTION CONST\n        %08"PRIu64": SECTION STRING\n        %08"PRIu64": SECTION DEBUG\n        %08"PRIu64": SECTION CODE\n",
-		global_offset, const_offset, string_offset, debug_offset, code_offset
+	printf("        ABI: %"PRIu64"\n        %08"PRIu64": SECTION GLOBAL\n        %08"PRIu64": SECTION CONST\n        %08"PRIu64": SECTION STRING\n        %08"PRIu64": SECTION DEBUG\n        %08"PRIu64": SECTION CODE\n",
+		ChunkGetABI(chunk), global_offset, const_offset, string_offset, debug_offset, code_offset
 	);
 
 	if (global_offset != 0)
