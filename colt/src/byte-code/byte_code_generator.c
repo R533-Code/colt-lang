@@ -396,20 +396,7 @@ bool gen_global_variable_load(Chunk* chunk, const ASTTable* table, const Variabl
 
 	//byte-offset to QWORD to load
 	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
-	
-	switch (ptr->expr_type.byte_size)
-	{
-	break; case 1:
-		ChunkWriteOpCode(chunk, OP_LOAD_BYTE);
-	break; case 2:
-		ChunkWriteOpCode(chunk, OP_LOAD_WORD);
-	break; case 4:
-		ChunkWriteOpCode(chunk, OP_LOAD_DWORD);
-	break; case 8:
-		ChunkWriteOpCode(chunk, OP_LOAD_QWORD);
-	break; default:
-		colt_assert(false, "Unexpected operand for LOAD!");
-	}
+	ChunkWriteOpCode(chunk, OP_LOAD_GLOBAL);
 	ChunkWriteQWORD(chunk, offset);
 	return true;
 }
@@ -461,20 +448,7 @@ bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const Bi
 
 	//byte-offset from where to read
 	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
-
-	switch (ptr->lhs->expr_type.byte_size)
-	{
-	break; case 1:
-		ChunkWriteOpCode(chunk, OP_STORE_BYTE);
-	break; case 2:
-		ChunkWriteOpCode(chunk, OP_STORE_WORD);
-	break; case 4:
-		ChunkWriteOpCode(chunk, OP_STORE_DWORD);
-	break; case 8:
-		ChunkWriteOpCode(chunk, OP_STORE_QWORD);
-	break; default:
-		colt_assert(false, "Unexpected operand for STORE!");
-	}
+	ChunkWriteOpCode(chunk, OP_STORE_GLOBAL);
 	ChunkWriteQWORD(chunk, offset);
 	return true;
 }
