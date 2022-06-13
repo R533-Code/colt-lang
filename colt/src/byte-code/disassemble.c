@@ -131,7 +131,7 @@ void impl_print_lstring(const char* str)
 	}
 }
 
-void impl_print_global_variable(const Chunk* chunk, uint64_t var_nb, bool chunk_str_init)
+void impl_print_global_variable(const Chunk* chunk, uint64_t var_nb)
 {
 	uint64_t debug_offset = ChunkGetDEBUGSection(chunk);
 	uint64_t offset = ChunkGetGLOBALSection(chunk);

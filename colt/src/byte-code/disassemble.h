@@ -24,8 +24,7 @@ void impl_print_lstring(const char* str);
 /// @brief Writes the value of a global value and its type
 /// @param chunk The Chunk from which to read
 /// @param var_nb The current global variable counter
-/// @param chunk_str_init If ChunkInitLString was called on the Chunk, should be true
-void impl_print_global_variable(const Chunk* chunk, uint64_t var_nb, bool chunk_str_init);
+void impl_print_global_variable(const Chunk* chunk, uint64_t var_nb);
 
 /// @brief Dispatches a code to the correct printing function
 /// @param chunk The chunk from which to extract the code
