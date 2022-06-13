@@ -18,104 +18,203 @@
 /// @brief Represents an instruction to be executed by the VM
 typedef enum
 {
-	//IMMEDIATE VALUES LOADING
-	/// @brief Specifies that the next byte-code is an immediate byte
+	/// @brief Pushes an immediate BYTE to the top of the stack.
+	/// [OP_PUSH_BYTE][BYTE]
 	OP_PUSH_BYTE,
-	/// @brief Specifies that a 2 bytes (aligned) WORD is written in the following bytes
+	/// @brief Pushes an immediate WORD to the top of the stack.
+	/// [OP_PUSH_WORD][PADDING]?[WORD]
 	OP_PUSH_WORD,
-	/// @brief Specifies that a 4 bytes (aligned) DWORD is written in the following bytes
+	/// @brief Pushes an immediate DWORD to the top of the stack.
+	/// [OP_PUSH_DWORD][PADDING]?[DWORD]
 	OP_PUSH_DWORD,
-	/// @brief Specifies that an 8 bytes (aligned) QWORD is written in the following bytes
+	/// @brief Pushes an immediate QWORD to the top of the stack.
+	/// [OP_PUSH_QWORD][PADDING]?[QWORD]
 	OP_PUSH_QWORD,
 
-	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives a byte offset (from the beginning of code chunk) to the global BYTE to load
+	/// @brief Pushes a QWORD from the global section to the top of the stack.
+	/// [OP_LOAD_GLOBAL][PADDING]?[QWORD]
+	/// The QWORD is the byte offset from the beginning of the Chunk to the QWORD
+	OP_LOAD_GLOBAL,
+	/// @brief Writes the top QWORD of the stack to the global section.
+	/// [OP_STORE_GLOBAL][PADDING]?[QWORD]
+	/// The QWORD is the byte offset from the beginning of the Chunk to the QWORD
+	OP_STORE_GLOBAL,
+
+	/// @brief Uses the top of the stack as a byte offset from which to load a BYTE.
+	/// [OP_LOAD_BYTE]
+	/// The byte offset is added to the beginning of the Chunk.
 	OP_LOAD_BYTE,
-	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives a byte offset (from the beginning of code chunk) to the global WORD to load
+	/// @brief Uses the top of the stack as a byte offset from which to load an aligned WORD.
+	/// [OP_LOAD_WORD]
+	/// The byte offset is added to the beginning of the Chunk.
 	OP_LOAD_WORD,
-	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives a byte offset (from the beginning of code chunk) to the global DWORD to load
+	/// @brief Uses the top of the stack as a byte offset from which to load an aligned DWORD.
+	/// [OP_LOAD_DWORD]
+	/// The byte offset is added to the beginning of the Chunk.
 	OP_LOAD_DWORD,
-	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives a byte offset (from the beginning of code chunk) to the global QWORD to load
+	/// @brief Uses the top of the stack as a byte offset from which to load an aligned QWORD.
+	/// [OP_LOAD_QWORD]
+	/// The byte offset is added to the beginning of the Chunk.
 	OP_LOAD_QWORD,
 
-	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives a byte offset (from the beginning of code chunk) to the global BYTE to write to
+	/// @brief Uses the top of the stack as a byte offset to which to write a byte.
+	/// [OP_STORE_BYTE]
+	/// The byte offset is added to the beginning of the Chunk.
 	OP_STORE_BYTE,
-	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives a byte offset (from the beginning of code chunk) to the global WORD to write to
+	/// @brief Uses the top of the stack as a byte offset to which to write an aligned WORD.
+	/// [OP_STORE_WORD]
+	/// The byte offset is added to the beginning of the Chunk.
 	OP_STORE_WORD,
-	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives a byte offset (from the beginning of code chunk) to the global DWORD to write to
+	/// @brief Uses the top of the stack as a byte offset to which to write an aligned DWORD.
+	/// [OP_STORE_DWORD]
+	/// The byte offset is added to the beginning of the Chunk.
 	OP_STORE_DWORD,
-	/// @brief Specifies that an 8 byte (aligned) QWORD is written in the following bytes, which gives a byte offset (from the beginning of code chunk) to the global QWORD to write to
+	/// @brief Uses the top of the stack as a byte offset to which to write an aligned QWORD.
+	/// [OP_STORE_QWORD]
+	/// The byte offset is added to the beginning of the Chunk.
 	OP_STORE_QWORD,
 
-	/// @brief Specifies that the next byte is an operand to which to cast a QWORD before negating its sign
+	/// @brief Negates the top of the stack.
+	/// [OP_NEGATE][TYPE]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to which to cast the QWORD before negating it.
 	OP_NEGATE,
 
-	/// @brief Specifies that the next 2 bytes are operands type, the first to which to cast a QWORD before converting it to the second
+	/// @brief Converts the top of the stack from a built-in type to another.
+	/// [OP_CONVERT][FROM][TO]
+	/// FROM and TO are BuilinTypeIDs (not lstring) to which to cast the QWORD from then to respectively.
 	OP_CONVERT,
 
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their sum
+	/// @brief Pops two QWORD from the stack and pushes their sum.
+	/// [OP_ADD][TYPE]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to which to cast the QWORDs.
+	/// The first popped QWORD is the right hand side of the operator.
 	OP_ADD,
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their difference
+	/// @brief Pops two QWORD from the stack and pushes their subtraction.
+	/// [OP_SUBTRACT][TYPE]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to which to cast the QWORDs.
+	/// The first popped QWORD is the right hand side of the operator.
 	OP_SUBTRACT,
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their product
+	/// @brief Pops two QWORD from the stack and pushes their multiplication.
+	/// [OP_MULTIPLY][TYPE]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to which to cast the QWORDs.
+	/// The first popped QWORD is the right hand side of the operator.
 	OP_MULTIPLY,
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their division
+	/// @brief Pops two QWORD from the stack and pushes their division.
+	/// [OP_DIVIDE][TYPE]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to which to cast the QWORDs.
+	/// The first popped QWORD is the right hand side of the operator.
 	OP_DIVIDE,
 
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their modulo
+	/// @brief Pops two QWORD from the stack and pushes the remainder of their division.
+	/// [OP_MODULO][TYPE]
+	/// The type is an integral BuiltinTypeID to which to cast the QWORDs.
+	/// The first popped QWORD is the right hand side of the operator.
 	OP_MODULO,
 
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their bitwise AND
+	/// @brief Pops two QWORD from the stack and pushes their bitwise AND.
+	/// [OP_BIT_AND][TYPE]
+	/// The type is an integral BuiltinTypeID to which to cast the QWORDs.
 	OP_BIT_AND,
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their bitwise OR
+	/// @brief Pops two QWORD from the stack and pushes their bitwise OR.
+	/// [OP_BIT_OR][TYPE]
+	/// The type is an integral BuiltinTypeID to which to cast the QWORDs.
 	OP_BIT_OR,
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their bitwise XOR
+	/// @brief Pops two QWORD from the stack and pushes their bitwise XOR.
+	/// [OP_BIT_XOR][TYPE]
+	/// The type is an integral BuiltinTypeID to which to cast the QWORDs.
 	OP_BIT_XOR,
-	/// @brief Specifies that the next byte is an operand to which to cast a QWORD before doing its bitwise NOT
+	/// @brief Bitwise NOT the top of the stack.
+	/// [OP_BIT_NOT][TYPE]
+	/// The type is an integral BuiltinTypeID to which to cast the QWORD.
 	OP_BIT_NOT,
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their shift left
+
+	/// @brief Pops two QWORD from the stack and pushes their bit shift left.
+	/// [OP_BIT_SHIFT_L][TYPE]
+	/// The type is an integral BuiltinTypeID to which to cast the QWORDs.
+	/// The first popped QWORD is the right hand side of the operator.
 	OP_BIT_SHIFT_L,
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before doing their shift right
+	/// @brief Pops two QWORD from the stack and pushes their bit shift right.
+	/// [OP_BIT_SHIFT_R][TYPE]
+	/// The type is an integral BuiltinTypeID to which to cast the QWORDs.
+	/// The first popped QWORD is the right hand side of the operator.
 	OP_BIT_SHIFT_R,
 
-	/// @brief Specifies that the next byte is an operand to which to cast 1 QWORD before 
+	/// @brief Boolean not the top of the stack.
+	/// [OP_BOOL_NOT][TYPE]
+	/// The type is a BuiltinTypeID (not lstring) to which to cast the QWORD.
 	OP_BOOL_NOT,
 
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing greater
+	/// @brief Pops 2 QWORDs, compares them and pushes a boolean result.
+	/// [OP_CMP_GREATER][TYPE]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to which to cast the QWORDs.
 	OP_CMP_GREATER,
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing less
+	/// @brief Pops 2 QWORDs, compares them and pushes a boolean result.
+	/// [OP_CMP_LESS][TYPE]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to which to cast the QWORDs.
 	OP_CMP_LESS,
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing greater equal
+	/// @brief Pops 2 QWORDs, compares them and pushes a boolean result.
+	/// [OP_CMP_GREATER_EQ][TYPE]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to which to cast the QWORDs.
 	OP_CMP_GREATER_EQ,
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing less equal
+	/// @brief Pops 2 QWORDs, compares them and pushes a boolean result.
+	/// [OP_CMP_LESS_EQ][TYPE]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to which to cast the QWORDs.
 	OP_CMP_LESS_EQ,
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing equal
+	/// @brief Pops 2 QWORDs, compares them and pushes a boolean result.
+	/// [OP_CMP_EQUAL][TYPE]
+	/// The type is a BuiltinTypeID (not lstring) to which to cast the QWORDs.
 	OP_CMP_EQUAL,
-	/// @brief Specifies that the next byte is an operand to which to cast 2 QWORD before comparing not equal
+	/// @brief Pops 2 QWORDs, compares them and pushes a boolean result.
+	/// [OP_CMP_NOT_EQUAL][TYPE]
+	/// The type is a BuiltinTypeID (not lstring) to which to cast the QWORDs.
 	OP_CMP_NOT_EQUAL,
 
-	/// @brief Short Jump if Greater, two operands, first type to which to cast to compare, second offset to jump to if true
+	/// @brief Short Jump if Greater, compares the top 2 QWORDs, if the result is true, performs a jump
+	/// [OP_SJUMP_GREATER][TYPE][JUMP_OFFSET]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to cast the QWORDs.
+	/// The JUMP_OFFSET is a signed byte which is added to the instruction pointer of the VM.
 	OP_SJUMP_GREATER,
-	/// @brief Short Jump if Less, two operands, first type to which to cast to compare, second offset to jump to if true
+	/// @brief Short Jump if Less, compares the top 2 QWORDs, if the result is true, performs a jump
+	/// [OP_SJUMP_LESS][TYPE][JUMP_OFFSET]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to cast the QWORDs.
+	/// The JUMP_OFFSET is a signed byte which is added to the instruction pointer of the VM.
 	OP_SJUMP_LESS,
-	/// @brief Short Jump if Greater or Equal, two operands, first type to which to cast to compare, second offset to jump to if true
+	/// @brief Short Jump if Greater or Equal, compares the top 2 QWORDs, if the result is true, performs a jump
+	/// [OP_SJUMP_GREATER_EQ][TYPE][JUMP_OFFSET]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to cast the QWORDs.
+	/// The JUMP_OFFSET is a signed byte which is added to the instruction pointer of the VM.
 	OP_SJUMP_GREATER_EQ,
-	/// @brief Short Jump if Less or Equal, two operands, first type to which to cast to compare, second offset to jump to if true
+	/// @brief Short Jump if Greater or Equal, compares the top 2 QWORDs, if the result is true, performs a jump
+	/// [OP_SJUMP_LESS_EQ][TYPE][JUMP_OFFSET]
+	/// The type is a BuiltinTypeID (neither bool nor lstring) to cast the QWORDs.
+	/// The JUMP_OFFSET is a signed byte which is added to the instruction pointer of the VM.
 	OP_SJUMP_LESS_EQ,
-	/// @brief Short Jump if Equal, two operands, first type to which to cast to compare, second offset to jump to if true
+	/// @brief Short Jump if Equal, compares the top 2 QWORDs, if the result is true, performs a jump
+	/// [OP_SJUMP_EQUAL][TYPE][JUMP_OFFSET]
+	/// The type is a BuiltinTypeID (not lstring) to cast the QWORDs.
+	/// The JUMP_OFFSET is a signed byte which is added to the instruction pointer of the VM.
 	OP_SJUMP_EQUAL,
-	/// @brief Short Jump if Not Equal, two operands, first type to which to cast to compare, second offset to jump to if true
+	/// @brief Short Jump if Not Equal, compares the top 2 QWORDs, if the result is true, performs a jump
+	/// [OP_SJUMP_NOT_EQUAL][TYPE][JUMP_OFFSET]
+	/// The type is a BuiltinTypeID (not lstring) to cast the QWORDs.
+	/// The JUMP_OFFSET is a signed byte which is added to the instruction pointer of the VM.
 	OP_SJUMP_NOT_EQUAL,
 
-	/// @brief Specifies that the next byte is an operand to which to cast a QWORD before printing it (for debug purposes)
+	/// @brief Prints the top value of the VM.
+	/// [OP_PRINT][TYPE]
+	/// The type is a BuiltinTypeID to cast the QWORD to.
 	OP_PRINT,
 
 	//MISCALLENEOUS
 
-	/// @brief Pops the last immediate value
+	/// @brief Pops the top QWORD of the stack.
+	/// [OP_POP]
 	OP_POP,
-	/// @brief Returns execution from a function
+	/// @brief Returns execution from a function.
+	/// [OP_RETURN]
 	OP_RETURN,
-	/// @brief Stops interpreting, followed by an u64, which is the exit code
+	/// @brief Stops interpretation with an error code.
+	/// [OP_EXIT][PADDING]?[I64]
 	OP_EXIT,
 } OpCode;
 
