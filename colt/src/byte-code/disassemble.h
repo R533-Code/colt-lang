@@ -68,6 +68,10 @@ uint64_t impl_print_sjump_instruction(const char* name, uint8_t type, uint8_t to
 /// @param value The int following the instruction
 void impl_print_hex_instruction(const char* name, uint64_t value);
 
+/// @brief Prints a global variable name for read/write OpCodes
+/// @param name The name of the instruction
+/// @param byte_offset The offset of the QWORD (from ChunkGetQWORD)
+/// @param chunk The Chunk from which to read debug data
 void impl_print_global_instruction(const char* name, uint64_t byte_offset, const Chunk* chunk);
 
 #endif //HG_COLT_DISASSEMBLE
