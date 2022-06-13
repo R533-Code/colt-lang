@@ -158,34 +158,12 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 		/******************************************************/
 
 	case OP_LOAD_GLOBAL:
-	{
-		uint64_t debug_offset = ChunkGetDEBUGSection(chunk);
-		uint64_t value = ChunkGetQWORD(chunk, &offset).u64;
-		uint64_t var_nb = (value - ChunkGetGLOBALSection(chunk)) / sizeof(QWORD);
-
-		// + sizeof(QWORD) as we need to offset by one QWORD to get the offset to the name
-		const char* name = chunk->code + *(uint64_t*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD) + sizeof(QWORD));
-		BuiltinTypeID id = (BuiltinTypeID)((QWORD*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD)))->u8;
-		printf(CONSOLE_FOREGROUND_BRIGHT_BLUE "%-20s "
-			CONSOLE_FOREGROUND_BRIGHT_GREEN "'%s %s'\n"
-			CONSOLE_COLOR_RESET, "OP_LOAD_GLOBAL", BuiltinTypeIDToString(id), name);
+		impl_print_global_instruction("OP_LOAD_GLOBAL", ChunkGetQWORD(chunk, &offset).u64, chunk);		
 		return offset;
-	}
 
 	case OP_STORE_GLOBAL:
-	{
-		uint64_t debug_offset = ChunkGetDEBUGSection(chunk);
-		uint64_t value = ChunkGetQWORD(chunk, &offset).u64;
-		uint64_t var_nb = (value - ChunkGetGLOBALSection(chunk)) / sizeof(QWORD);
-
-		// + sizeof(QWORD) as we need to offset by one QWORD to get the offset to the name
-		const char* name = chunk->code + *(uint64_t*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD) + sizeof(QWORD));
-		BuiltinTypeID id = (BuiltinTypeID)((QWORD*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD)))->u8;
-		printf(CONSOLE_FOREGROUND_BRIGHT_BLUE "%-20s "
-			CONSOLE_FOREGROUND_BRIGHT_GREEN "'%s %s'\n"
-			CONSOLE_COLOR_RESET, "OP_STORE_GLOBAL", BuiltinTypeIDToString(id), name);
+		impl_print_global_instruction("OP_STORE_GLOBAL", ChunkGetQWORD(chunk, &offset).u64, chunk);
 		return offset;
-	}
 
 	case OP_PUSH_BYTE:
 		impl_print_hex_instruction("OP_PUSH_BYTE", ChunkGetBYTE(chunk, &offset).u8);
@@ -350,4 +328,18 @@ void impl_print_hex_instruction(const char* name, uint64_t value)
 	printf(CONSOLE_FOREGROUND_BRIGHT_BLUE "%-20s "
 		CONSOLE_FOREGROUND_BRIGHT_GREEN "'0x%"PRIX64"'\n"
 		CONSOLE_COLOR_RESET, name, value);
+}
+
+void impl_print_global_instruction(const char* name, uint64_t byte_offset, const Chunk* chunk)
+{
+	uint64_t debug_offset = ChunkGetDEBUGSection(chunk);
+	uint64_t var_nb = (byte_offset - ChunkGetGLOBALSection(chunk)) / sizeof(QWORD);
+
+	// + sizeof(QWORD) as we need to offset by one QWORD to get the offset to the name
+	const char* var_name = chunk->code + *(uint64_t*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD) + sizeof(QWORD));
+	BuiltinTypeID id = (BuiltinTypeID)((QWORD*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD)))->u8;
+	printf(CONSOLE_FOREGROUND_BRIGHT_BLUE "%-20s "
+		CONSOLE_FOREGROUND_BRIGHT_GREEN "'%s'"
+		CONSOLE_FOREGROUND_BRIGHT_CYAN " (%s)\n"
+		CONSOLE_COLOR_RESET, name, var_name, BuiltinTypeIDToString(id));
 }

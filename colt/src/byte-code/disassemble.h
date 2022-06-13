@@ -68,4 +68,6 @@ uint64_t impl_print_sjump_instruction(const char* name, uint8_t type, uint8_t to
 /// @param value The int following the instruction
 void impl_print_hex_instruction(const char* name, uint64_t value);
 
+void impl_print_global_instruction(const char* name, uint64_t byte_offset, const Chunk* chunk);
+
 #endif //HG_COLT_DISASSEMBLE
