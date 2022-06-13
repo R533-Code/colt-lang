@@ -92,10 +92,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		//As all the variables are stored as QWORDs, we can optimize all the
 		//cases into one
 		break;
-		case OP_LOAD_BYTE:
-		case OP_LOAD_WORD:
-		case OP_LOAD_DWORD:
-		case OP_LOAD_QWORD:
+		case OP_LOAD_GLOBAL:
 		{
 			QWORD offset = unsafe_get_qword(&ip);
 			QWORD push = *(QWORD*)(chunk->code + offset.u64);
@@ -105,12 +102,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		/******************************************************/
 
 		break;
-		//As all the variables are stored as QWORDs, we can optimize all the
-		//cases into one
-		case OP_STORE_BYTE:
-		case OP_STORE_WORD:
-		case OP_STORE_DWORD:
-		case OP_STORE_QWORD:
+		case OP_STORE_GLOBAL:
 		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			QWORD offset = unsafe_get_qword(&ip);
