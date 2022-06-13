@@ -89,9 +89,18 @@ Token ScannerGetNextToken(Scanner* scan)
 		scan->current_char = impl_get_next_char(scan);
 		if (scan->current_char == '>')
 		{
+			scan->current_char = impl_get_next_char(scan);
 			return TKN_OPERATOR_COLON_GREATER;
 		}
 		return TKN_COLON;
+	case '!':
+		scan->current_char = impl_get_next_char(scan);
+		if (scan->current_char == '=')
+		{
+			scan->current_char = impl_get_next_char(scan);
+			return TKN_OPERATOR_BANG_EQUAL;
+		}
+		return TKN_OPERATOR_BANG;
 	case '~':
 		scan->current_char = impl_get_next_char(scan);
 		return TKN_OPERATOR_TILDE;
