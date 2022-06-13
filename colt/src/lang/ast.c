@@ -380,7 +380,7 @@ Expr* impl_primary_expr(AST* ast)
 				ast->scan.current_line,
 				ScannerGetCurrentLine(&ast->scan),
 				ScannerGetCurrentLexeme(&ast->scan),
-				"Identifier '%.*s' is not defined!", variable_name.end - variable_name.start, variable_name.start
+				"Identifier '%.*s' is not defined!", (uint32_t)(variable_name.end - variable_name.start), variable_name.start
 			);
 			return NULL;
 		}
@@ -470,7 +470,10 @@ Expr* impl_expression(AST* ast)
 			"Expected a ';'!"
 		);
 	}
-	return expr;
+
+	if (ast->scan.current_char == EOF)	
+		return expr;
+	return makeGlueExpr(expr, impl_expression(ast));
 }
 
 Expr* impl_variable_declaration(AST* ast)
@@ -533,7 +536,7 @@ Expr* impl_variable_declaration(AST* ast)
 		{
 			ast_gen_error(ast,
 				identifier_line_nb, identifier_line, decl_identifier,
-				"Variable with identifier '%.*s' already exists!", decl_identifier.end - decl_identifier.start, decl_identifier.start
+				"Variable with identifier '%.*s' already exists!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start
 			);
 			return to_assign;
 		}
