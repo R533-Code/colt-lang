@@ -470,10 +470,7 @@ Expr* impl_expression(AST* ast)
 			"Expected a ';'!"
 		);
 	}
-
-	if (ast->scan.current_char == EOF)	
-		return expr;
-	return makeGlueExpr(expr, impl_expression(ast));
+	return expr;
 }
 
 Expr* impl_variable_declaration(AST* ast)
