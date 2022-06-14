@@ -5,7 +5,7 @@
 
 bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* array)
 {
-	colt_assert(array->count == 0, "Cannot generate byte-code if expr == NULL!");
+	colt_assert(array->count != 0, "Cannot generate byte-code if expr == NULL!");
 	colt_assert(chunk->count >= 40, "Chunk should be initialized!");
 
 	//Reserve enough size for the GLOBAL/CONST and string literals
