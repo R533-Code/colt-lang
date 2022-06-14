@@ -12,7 +12,10 @@ void ExprArrayInit(ExprArray* array)
 
 void ExprArrayFree(ExprArray* array)
 {
+	for (size_t i = 0; i < array->count; i++)
+		freeExpr(array->expressions[i]);
 	safe_free(array->expressions);
+	DO_IF_DEBUG_BUILD(array->count = 0);
 	DO_IF_DEBUG_BUILD(array->capacity = 0);
 }
 
