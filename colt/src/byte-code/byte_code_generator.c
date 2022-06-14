@@ -27,7 +27,7 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 
 	bool is_valid = true;
 	for (size_t i = 0; i < array->count && is_valid; i++)
-		is_valid &= gen_byte_code(chunk, table, array->expressions[i]);
+		is_valid = gen_byte_code(chunk, table, array->expressions[i]);
 
 	if (is_valid)
 	{
