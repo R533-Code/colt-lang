@@ -154,6 +154,23 @@ typedef struct
 	StringView var_name;
 } VariableExpr;
 
+/// @brief A dynamic array of Expr*
+typedef struct
+{
+	/// @brief The number of active Expr* in 'expressions'
+	uint64_t count;
+	/// @brief The capacity of the 'expressions'
+	uint64_t capacity;
+	/// @brief Pointer to the heap allocated memory buffer of Expr*
+	Expr** expressions;
+} ExprArray;
+
+void ExprArrayInit(ExprArray* array);
+
+void ExprArrayFree(ExprArray* array);
+
+void ExprArrayPushBack(ExprArray* array, Expr* expr);
+
 /// @brief Allocates a new literal expression on the heap, initializing it
 /// @param value The value of the literal expression
 /// @param type The type of the literal expression

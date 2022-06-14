@@ -3,6 +3,32 @@
 */
 #include "ast.h"
 
+void ExprArrayInit(ExprArray* array)
+{
+	array->capacity = 10;
+	array->count = 0;
+	array->expressions = safe_malloc(array->capacity * sizeof(Expr*));
+}
+
+void ExprArrayFree(ExprArray* array)
+{
+	safe_free(array->expressions);
+	DO_IF_DEBUG_BUILD(array->capacity = 0);
+}
+
+void ExprArrayPushBack(ExprArray* array, Expr* expr)
+{
+	if (array->count == array->capacity)
+	{
+		array->capacity *= 2;
+		Expr** ptr = safe_malloc(array->capacity * sizeof(Expr*));
+		memcpy(ptr, array->expressions, array->count * sizeof(Expr*));
+		safe_free(array->expressions);
+		array->expressions = ptr;
+	}
+	array->expressions[array->count++] = expr;
+}
+
 Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line, StringView lexeme)
 {
 	LiteralExpr* ptr = safe_malloc(sizeof(LiteralExpr));
