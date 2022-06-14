@@ -24,7 +24,7 @@
 typedef struct
 {
 	/// @brief The AST
-	Expr* expr;
+	ExprArray expr;
 	/// @brief The scanner providing the lexemes for the AST
 	Scanner scan;
 	/// @brief The number of errors encountered

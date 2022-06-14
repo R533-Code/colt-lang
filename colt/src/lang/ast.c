@@ -8,30 +8,31 @@ void ASTInit(AST* ast)
 {
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
-	ast->expr = NULL;
+	ExprArrayInit(&ast->expr);
 	ASTTableInit(&ast->table);
 }
 
 void ASTFree(AST* ast)
 {
 	ASTTableFree(&ast->table);
-	freeExpr(ast->expr);
-
-	DO_IF_DEBUG_BUILD(
-		ast->expr = NULL;
-	);
+	ExprArrayFree(&ast->expr);
 }
 
 bool ASTParse(AST* ast, StringView to_parse)
 {
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
-	freeExpr(ast->expr);
+	ExprArrayFree(&ast->expr);
+	ExprArrayInit(&ast->expr);
 	ScannerInit(&ast->scan, to_parse);
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	
-	//parse the expression
-	ast->expr = impl_expression(ast);
+	while (ast->scan.current_char != EOF)
+	{
+		//parse the expression
+		ExprArrayPushBack(&ast->expr, impl_expression(ast));
+	}
+
 	ScannerFree(&ast->scan);
 	if (ast->error_nb != 0)
 		return false;
@@ -40,11 +41,8 @@ bool ASTParse(AST* ast, StringView to_parse)
 
 void ASTReset(AST* ast)
 {
-	freeExpr(ast->expr);
-
-	DO_IF_DEBUG_BUILD(
-		ast->expr = NULL;
-	);
+	ExprArrayFree(&ast->expr);
+	ExprArrayInit(&ast->expr);
 
 	VariableTableFree(&ast->table.var_table);
 	VariableTableInit(&ast->table.var_table);
