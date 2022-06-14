@@ -27,7 +27,7 @@ bool ASTParse(AST* ast, StringView to_parse)
 	ScannerInit(&ast->scan, to_parse);
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	
-	while (ast->scan.current_char != EOF)
+	while (ast->current_tkn != TKN_EOF)
 	{
 		//parse the expression
 		ExprArrayPushBack(&ast->expr, impl_expression(ast));
@@ -468,6 +468,7 @@ Expr* impl_expression(AST* ast)
 			"Expected a ';'!"
 		);
 	}
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	return expr;
 }
 
