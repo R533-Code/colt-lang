@@ -17,8 +17,8 @@
 /// @brief Recursively converts an expression to byte-code in a Chunk
 /// @param chunk The Chunk in which to write the byte-code
 /// @param var_table VariableTable containing variables
-/// @param expr The expression to convert
-bool generateByteCode(Chunk* chunk, const ASTTable* var_table, const Expr* expr);
+/// @param array The array of Expr* expression to convert
+bool generateByteCode(Chunk* chunk, const ASTTable* var_table, const ExprArray* array);
 
 /*************************************
 IMPLEMENTATION HELPERS

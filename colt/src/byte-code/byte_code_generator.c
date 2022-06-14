@@ -3,9 +3,9 @@
 */
 #include "byte_code_generator.h"
 
-bool generateByteCode(Chunk* chunk, const ASTTable* table, const Expr* expr)
+bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* array)
 {
-	colt_assert(expr != NULL, "Cannot generate byte-code if expr == NULL!");
+	colt_assert(array->count == 0, "Cannot generate byte-code if expr == NULL!");
 	colt_assert(chunk->count >= 40, "Chunk should be initialized!");
 
 	//Reserve enough size for the GLOBAL/CONST and string literals
@@ -25,14 +25,19 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const Expr* expr)
 	//write CODE offset
 	ChunkWriteCODESection(chunk, chunk->count);
 
-	if (gen_byte_code(chunk, table, expr))
+	bool is_valid = true;
+	for (size_t i = 0; i < array->count && is_valid; i++)
+		is_valid &= gen_byte_code(chunk, table, array->expressions[i]);
+
+	if (is_valid)
 	{
 		//FOR DEBUG PURPOSE
 		ChunkWriteOpCode(chunk, OP_PRINT);
-		ChunkWriteOperand(chunk, (BuiltinTypeID)expr->expr_type.type_id);
+		//Print the last expression
+		ChunkWriteOperand(chunk, (BuiltinTypeID)array->expressions[array->count - 1]->expr_type.type_id);
 		//EXIT
 		ChunkWriteOpCode(chunk, OP_EXIT);
-		QWORD exit_code = { .u64 = 0 };
+		QWORD exit_code = { .i64 = 0 };
 		ChunkWriteQWORD(chunk, exit_code);		
 		return true;
 	}
