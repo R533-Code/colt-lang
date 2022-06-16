@@ -57,6 +57,13 @@ typedef enum
 	/// The byte offset is added to the beginning of the Chunk.
 	OP_LOAD_QWORD,
 
+	/// @brief Pops the top of the stack and uses it as a byte offset to an lstring, then pushes the pointer to the beginning of the lstring.
+	/// [OP_LOAD_LSTRING]
+	OP_LOAD_LSTRING,
+	/// @brief Pops the top of the stack and turns it back to a byte offset which is then pushed to the top of the stack
+	/// [OP_STORE_LSTRING]
+	OP_STORE_LSTRING,
+
 	/// @brief Uses the top of the stack as a byte offset to which to write a byte.
 	/// [OP_STORE_BYTE]
 	/// The byte offset is added to the beginning of the Chunk.
