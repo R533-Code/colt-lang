@@ -151,6 +151,8 @@ typedef enum
 	TKN_KEYWORD_WHILE,
 	/// @brief var
 	TKN_KEYWORD_VAR,
+	/// @brief static_print
+	TKN_KEYWORD_STATIC_PRINT,
 
 	/*********************
 	* MISCELLANEOUS

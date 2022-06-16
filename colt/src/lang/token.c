@@ -138,6 +138,8 @@ const char* TokenToString(Token tkn)
 		return "TKN_KEYWORD_WHILE";
 	case TKN_KEYWORD_VAR:
 		return "TKN_KEYWORD_VAR";
+	case TKN_KEYWORD_STATIC_PRINT:
+		return "TKN_KEYWORD_STATIC_PRINT";
 
 	/*********************
 	* MISCELLANEOUS

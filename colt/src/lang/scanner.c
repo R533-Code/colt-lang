@@ -794,6 +794,8 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 	break; case 's':
 		if (strcmp(str, "switch") == 0)
 			return TKN_KEYWORD_SWITCH;
+		else if (strcmp(str, "static_print") == 0)
+			return TKN_KEYWORD_STATIC_PRINT;
 	break; case 't':
 		if (strcmp(str, "true") == 0)
 		{
