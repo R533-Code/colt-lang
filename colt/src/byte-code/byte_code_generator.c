@@ -93,16 +93,13 @@ uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 	//Write the literal count first
 	*((uint64_t*)(chunk->code + string_begin)) = str_table->count;
 
-	uint64_t offset = 1;
-
 	uint64_t string_literal_begin = string_begin + (str_table->count + 1) * sizeof(QWORD);
 	for (size_t i = 0; i < str_table->capacity; i++)
 	{
 		//not active entry
 		if (str_table->str_entries[i].key.ptr == NULL)
 			continue;
-		*((uint64_t*)(chunk->code + string_begin) + offset) = string_literal_begin;
-		offset++;
+		*((uint64_t*)(chunk->code + string_begin) + str_table->str_entries[i].counter_nb + 1) = string_literal_begin;
 
 		memcpy(chunk->code + string_literal_begin, str_table->str_entries[i].key.ptr, 
 			str_table->str_entries[i].key.size);
@@ -151,6 +148,7 @@ uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* table)
 			= chunk->count;
 		counter++;
 		//Write each characters of the name of the variable
+		//we cannot memcpy here because we aren't sure the Chunk has enough reserved space
 		for (size_t chr = 0; chr < table->var_table.entries[i].key.size; chr++)
 		{
 			chunk_write_byte(chunk, table->var_table.entries[i].key.ptr[chr]);
@@ -375,10 +373,9 @@ bool impl_gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExp
 			StringToStringView(ptr->value.string_ptr));
 		colt_assert(entry != NULL, "Could not find string literal entry!");
 		//byte offset to the beginning of the NUL terminated string		
-		QWORD offset = { .u64 = ChunkGetSTRINGSection(chunk) + (entry->counter_nb + 2) * sizeof(QWORD) };
+		QWORD offset = { .u64 = ChunkGetSTRINGSection(chunk) + (entry->counter_nb + 1) * sizeof(QWORD) };
 		ChunkWriteQWORD(chunk, offset);
-
-		ChunkWriteOpCode(chunk, OP_LOAD_QWORD);
+		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);
 	}
 	break; default:
 		colt_assert(false, "Type ID should be of that of a built-in type!");
@@ -407,8 +404,8 @@ bool gen_global_variable_load(Chunk* chunk, const ASTTable* table, const Variabl
 	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
 	ChunkWriteOpCode(chunk, OP_LOAD_GLOBAL);
 	ChunkWriteQWORD(chunk, offset);
-	if (ptr->expr_type.type_id == ID_COLT_LSTRING)
-		ChunkWriteOpCode(chunk, OP_LOAD_QWORD);
+	/*if (ptr->expr_type.type_id == ID_COLT_LSTRING)
+		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);*/
 	return true;
 }
 
@@ -452,6 +449,9 @@ bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const Bi
 		ChunkWriteOpCode(chunk, OP_BIT_XOR);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	}
+
+	if (ptr->expr_type.type_id == ID_COLT_LSTRING)
+		ChunkWriteOpCode(chunk, OP_STORE_LSTRING);
 
 	const VariableEntry* entry = variable_table_find_entry(table->var_table.entries, table->var_table.capacity, ((VariableExpr*)ptr->lhs)->var_name);
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
