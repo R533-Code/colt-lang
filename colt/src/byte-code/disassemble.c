@@ -165,6 +165,12 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 		impl_print_global_instruction("OP_STORE_GLOBAL", ChunkGetQWORD(chunk, &offset).u64, chunk);
 		return offset;
 
+	case OP_LOAD_LSTRING:
+		return impl_print_simple_instruction("OP_STORE_LSTRING", offset);
+
+	case OP_STORE_LSTRING:
+		return impl_print_simple_instruction("OP_STORE_LSTRING", offset);
+
 	case OP_PUSH_BYTE:
 		impl_print_hex_instruction("OP_PUSH_BYTE", ChunkGetBYTE(chunk, &offset).u8);
 		return offset;
