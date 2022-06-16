@@ -99,8 +99,15 @@ uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 		//not active entry
 		if (str_table->str_entries[i].key.ptr == NULL)
 			continue;
-		*((uint64_t*)(chunk->code + string_begin) + str_table->str_entries[i].counter_nb + 1) = string_literal_begin;
+		//Write the byte offset to the beginning of the literal string
+		//As each string contains a 'counter_nb', which goes from 0 -> count
+		//we use that counter as the offset to add to the beginning of the string section
+		//to get to the byte offset to the beginning of the literal string.
+		// + 1 as the string section begins with the string literal count.
+		*((uint64_t*)(chunk->code + string_begin) + str_table->str_entries[i].counter_nb + 1)
+			= string_literal_begin;
 
+		//Copy the string literal at the end of the byte offset section of the STRING section
 		memcpy(chunk->code + string_literal_begin, str_table->str_entries[i].key.ptr, 
 			str_table->str_entries[i].key.size);
 		string_literal_begin += str_table->str_entries[i].key.size;
@@ -108,6 +115,7 @@ uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 	//Update size of chunk
 	chunk->count += str_table->all_str_size + (str_table->count + 1) * sizeof(QWORD);
 	
+	//Pad so that the next section does not have to worry about alignment
 	uint64_t padding = 8 - (chunk->count % 8);
 	for (size_t i = 0; i < padding; i++)
 		chunk_write_byte(chunk, 205); //CD in hex
