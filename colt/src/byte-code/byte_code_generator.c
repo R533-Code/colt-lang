@@ -90,6 +90,7 @@ uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 		return 0;
 
 	const uint64_t string_begin = chunk->count;
+	//Write the literal count first
 	*((uint64_t*)(chunk->code + string_begin)) = str_table->count;
 
 	uint64_t offset = 1;
@@ -369,13 +370,15 @@ bool impl_gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExp
 		break;
 	case ID_COLT_LSTRING:
 	{
-		ChunkWriteOpCode(chunk, OP_LOAD_QWORD);
+		ChunkWriteOpCode(chunk, OP_PUSH_QWORD);
 		const StringEntry* entry = string_table_find_entry(table->str_table.str_entries, table->str_table.capacity,
 			StringToStringView(ptr->value.string_ptr));
-		colt_assert(entry != NULL, "Could not find string literal entry!");		
-		//byte offset to the beginning of the NUL terminated string
-		QWORD offset = { .u64 = ChunkGetSTRINGSection(chunk) + (entry->counter_nb + 1) * sizeof(QWORD)};
+		colt_assert(entry != NULL, "Could not find string literal entry!");
+		//byte offset to the beginning of the NUL terminated string		
+		QWORD offset = { .u64 = ChunkGetSTRINGSection(chunk) + (entry->counter_nb + 2) * sizeof(QWORD) };
 		ChunkWriteQWORD(chunk, offset);
+
+		ChunkWriteOpCode(chunk, OP_LOAD_QWORD);
 	}
 	break; default:
 		colt_assert(false, "Type ID should be of that of a built-in type!");
@@ -399,10 +402,13 @@ bool gen_global_variable_load(Chunk* chunk, const ASTTable* table, const Variabl
 	
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
+
 	//byte-offset to QWORD to load
 	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
 	ChunkWriteOpCode(chunk, OP_LOAD_GLOBAL);
 	ChunkWriteQWORD(chunk, offset);
+	if (ptr->expr_type.type_id == ID_COLT_LSTRING)
+		ChunkWriteOpCode(chunk, OP_LOAD_QWORD);
 	return true;
 }
 
