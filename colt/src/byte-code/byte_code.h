@@ -40,19 +40,19 @@ typedef enum
 	/// The QWORD is the byte offset from the beginning of the Chunk to the QWORD
 	OP_STORE_GLOBAL,
 
-	/// @brief Uses the top of the stack as a byte offset from which to load a BYTE.
+	/// @brief Pops the top of the stack and uses it as a byte offset from which to load a BYTE.
 	/// [OP_LOAD_BYTE]
 	/// The byte offset is added to the beginning of the Chunk.
 	OP_LOAD_BYTE,
-	/// @brief Uses the top of the stack as a byte offset from which to load an aligned WORD.
+	/// @brief Pops the top of the stack and uses it as a byte offset from which to load an aligned WORD.
 	/// [OP_LOAD_WORD]
 	/// The byte offset is added to the beginning of the Chunk.
 	OP_LOAD_WORD,
-	/// @brief Uses the top of the stack as a byte offset from which to load an aligned DWORD.
+	/// @brief Pops the top of the stack and uses it as a byte offset from which to load an aligned DWORD.
 	/// [OP_LOAD_DWORD]
 	/// The byte offset is added to the beginning of the Chunk.
 	OP_LOAD_DWORD,
-	/// @brief Uses the top of the stack as a byte offset from which to load an aligned QWORD.
+	/// @brief Pops the top of the stack and uses it as a byte offset from which to load an aligned QWORD.
 	/// [OP_LOAD_QWORD]
 	/// The byte offset is added to the beginning of the Chunk.
 	OP_LOAD_QWORD,
