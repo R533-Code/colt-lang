@@ -15,7 +15,7 @@ void ChunkInit(Chunk* chunk)
 	*(uint64_t*)chunk->code = COLTI_ABI;
 }
 
-void ChunkPrintABI(Chunk* chunk, FILE* file)
+void ChunkPrintABI(const Chunk* chunk, FILE* file)
 {
 	//LITTLE ENDIAN
 	uint32_t patch = *chunk->code;
