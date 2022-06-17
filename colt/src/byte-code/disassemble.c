@@ -76,12 +76,12 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		
 		for (size_t i = 0; i < string_literal_count; i++)
 		{
-			printf("        %08"PRIu64": "CONSOLE_FOREGROUND_YELLOW"\"", string_offset + (i + 1) * sizeof(QWORD));			
+			printf("        %08"PRIu64": ", string_offset + (i + 1) * sizeof(QWORD));
 			if (chunk_str_init)
 				impl_print_lstring(*((char**)(chunk->code + string_offset) + i + 1));
 			else //+ 1 so we move over the uint64_t written for string literal count
 				impl_print_lstring(chunk->code + *((uint64_t*)(chunk->code + string_offset) + i + 1));
-			fputs("\""CONSOLE_COLOR_RESET"\n", stdout);
+			fputc('\n', stdout);
 		}
 	}
 
@@ -99,6 +99,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 
 void impl_print_lstring(const char* str)
 {
+	fputs(CONSOLE_FOREGROUND_YELLOW"\"", stdout);
 	//TODO: we need to add size information for string
 	while (*str != '\0')
 	{
@@ -129,6 +130,7 @@ void impl_print_lstring(const char* str)
 		}
 		str++;
 	}
+	fputs("\""CONSOLE_COLOR_RESET, stdout);
 }
 
 void impl_print_global_variable(const Chunk* chunk, uint64_t var_nb)
@@ -142,9 +144,11 @@ void impl_print_global_variable(const Chunk* chunk, uint64_t var_nb)
 	printf("        %08"PRIu64 CONSOLE_FOREGROUND_CYAN" %s " CONSOLE_FOREGROUND_BRIGHT_CYAN "%s" CONSOLE_COLOR_RESET " = "CONSOLE_FOREGROUND_BRIGHT_GREEN, offset + 8 * var_nb, BuiltinTypeIDToString(id), name);
 		
 	QWORD value = *(QWORD*)(chunk->code + offset + var_nb * 8);
-	//FIXME: after adding constant folding, if id is LSTRING then depending on
-	//'chunk_str_init' we need to print the value
-	OpCode_Print(value, id);
+	if (id == ID_COLT_LSTRING)
+		impl_print_lstring(chunk->code + *(uint64_t*)(chunk->code + ChunkGetSTRINGSection(chunk) + (value.u64 + 1) * sizeof(QWORD)));
+	else
+		OpCode_Print(value, id);
+
 	fputs(CONSOLE_COLOR_RESET ";\n", stdout);
 }
 
