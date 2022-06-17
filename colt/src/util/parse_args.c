@@ -292,6 +292,7 @@ void impl_run_byte(int argc, const char** argv, size_t current_argc)
 			StackVM vm;
 			StackVMInit(&vm);
 			StackVMRun(&vm, &chunk);
+			fputc('\n', stdout);
 			StackVMFree(&vm);
 			ChunkFree(&chunk);
 			exit(EXIT_NO_FAILURE);
