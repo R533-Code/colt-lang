@@ -60,7 +60,6 @@ bool StringIsEmpty(const String* str);
 /// @brief Copy initializes a String from another one
 /// @param to_init The string to initialize
 /// @param str The string to copy
-/// @return The copy of the String
 void StringCopy(String* to_init, const String* str);
 
 /// @brief Checks if a string is using its stack-allocated buffer
