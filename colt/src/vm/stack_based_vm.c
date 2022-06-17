@@ -126,8 +126,17 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			QWORD cptr = StackVMPop(vm);
-			cptr.u64 = ((cptr.lstring - chunk->code) - ChunkGetSTRINGSection(chunk)) - 16;
-			StackVMPush(vm, cptr);
+			//help the compiler optimize
+			const uint64_t count = unsafe_chunk_get_lstring_count(chunk);
+			for (size_t i = 0; i < count; i++)
+			{
+				if (*(uint64_t*)(chunk->code + ChunkGetSTRINGSection(chunk) + (i + 1) * sizeof(QWORD)) == (cptr.lstring - chunk->code))
+				{
+					cptr.u64 = i;
+					StackVMPush(vm, cptr);
+					break;
+				}
+			}			
 		}
 
 		/******************************************************/
