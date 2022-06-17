@@ -15,6 +15,16 @@ void ChunkInit(Chunk* chunk)
 	*(uint64_t*)chunk->code = COLTI_ABI;
 }
 
+void ChunkPrintABI(Chunk* chunk, FILE* file)
+{
+	//LITTLE ENDIAN
+	uint32_t patch = *chunk->code;
+	uint32_t tweak = *(chunk->code + 1);
+	uint32_t minor = *(chunk->code + 2);
+	uint32_t major = *(chunk->code + 3);
+	fprintf(file, "%u.%u.%u.%u", major, minor, tweak, patch);
+}
+
 uint64_t ChunkGetABI(const Chunk* chunk)
 {
 	return *(uint64_t*)chunk->code;

@@ -52,6 +52,11 @@ typedef struct
 /// @param chunk The chunk to initialize
 void ChunkInit(Chunk* chunk);
 
+/// @brief Prints the ABI of a Chunk in the form {MAJOR}.{MINOR}.{TWEAK}.{PATCH}
+/// @param chunk The Chunk whose ABI to print
+/// @param file The FILE* to which to write
+void ChunkPrintABI(Chunk* chunk, FILE* file);
+
 /// @brief Returns the ABI of a Chunk
 /// @param chunk The Chunk from which to read the value
 uint64_t ChunkGetABI(const Chunk* chunk);
