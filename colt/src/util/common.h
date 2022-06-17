@@ -17,6 +17,7 @@
 	#define _CRTDBG_MAP_ALLOC
 	#include <crtdbg.h> //Contains _CrtDumpMemoryLeaks()
 	
+	/// @brief On Windows and Debug build, using Visual Studio, this will show memory leaks (if there are any)
 	#define DUMP_MEMORY_LEAKS() do { \
 			_CrtSetReportMode(_CRT_WARN,_CRTDBG_MODE_FILE); \
 			_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT); \
