@@ -17,7 +17,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name);
 IMPLEMENTATION HELPERS
 **********************************/
 
-/// @brief Writes a string to 'stdout', highlighting escape characters
+/// @brief Writes a string to 'stdout', highlighting escape characters, and quoting it
 /// @param str The string to print
 void impl_print_lstring(const char* str);
 
