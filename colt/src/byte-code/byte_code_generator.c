@@ -27,7 +27,11 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 
 	bool is_valid = true;
 	for (size_t i = 0; i < array->count && is_valid; i++)
+	{
 		is_valid = gen_byte_code(chunk, table, array->expressions[i]);
+		//As we only implemented expressions, after an expression, we pop the result
+		//ChunkWriteOpCode(chunk, OP_POP);
+	}
 
 	if (is_valid)
 	{
@@ -380,8 +384,8 @@ bool impl_gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExp
 		const StringEntry* entry = string_table_find_entry(table->str_table.str_entries, table->str_table.capacity,
 			StringToStringView(ptr->value.string_ptr));
 		colt_assert(entry != NULL, "Could not find string literal entry!");
-		//byte offset to the beginning of the NUL terminated string		
-		QWORD offset = { .u64 = ChunkGetSTRINGSection(chunk) + (entry->counter_nb + 1) * sizeof(QWORD) };
+		//We write the string number
+		QWORD offset = { .u64 = entry->counter_nb };
 		ChunkWriteQWORD(chunk, offset);
 		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);
 	}
@@ -412,18 +416,20 @@ bool gen_global_variable_load(Chunk* chunk, const ASTTable* table, const Variabl
 	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
 	ChunkWriteOpCode(chunk, OP_LOAD_GLOBAL);
 	ChunkWriteQWORD(chunk, offset);
-	/*if (ptr->expr_type.type_id == ID_COLT_LSTRING)
-		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);*/
+	
+	if (ptr->expr_type.type_id == ID_COLT_LSTRING)
+		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);
+
 	return true;
 }
 
 bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 {
 	gen_byte_code(chunk, table, ptr->rhs);
+	if (ptr->rhs->expr_type.type_id == ID_COLT_LSTRING)
+		ChunkWriteOpCode(chunk, OP_STORE_LSTRING);
 
 	colt_assert(ptr->lhs->identifier == EXPR_VAR, "Left hand side should be a variable!");
-	if (ptr->lhs->identifier != EXPR_VAR)
-		return false;
 
 	switch (ptr->expr_operator)
 	{
@@ -456,10 +462,7 @@ bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const Bi
 		gen_global_variable_load(chunk, table, (VariableExpr*)ptr->lhs);
 		ChunkWriteOpCode(chunk, OP_BIT_XOR);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
-	}
-
-	if (ptr->expr_type.type_id == ID_COLT_LSTRING)
-		ChunkWriteOpCode(chunk, OP_STORE_LSTRING);
+	}	
 
 	const VariableEntry* entry = variable_table_find_entry(table->var_table.entries, table->var_table.capacity, ((VariableExpr*)ptr->lhs)->var_name);
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
@@ -469,6 +472,8 @@ bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const Bi
 	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
 	ChunkWriteOpCode(chunk, OP_STORE_GLOBAL);
 	ChunkWriteQWORD(chunk, offset);
+	if (ptr->lhs->expr_type.type_id == ID_COLT_LSTRING)
+		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);
 	return true;
 }
 
