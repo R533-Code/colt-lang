@@ -54,7 +54,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 	{
 		fputs(CONSOLE_FOREGROUND_BRIGHT_RED "Error: " CONSOLE_COLOR_RESET "Cannot run Chunk as its ABI (", stderr);
 		ChunkPrintABI(chunk, stderr);
-		fputs(") does not match the VM's ABI (" COLTI_ABI_STRING ")", stderr);
+		fputs(") does not match the VM's ABI (" COLTI_ABI_STRING ")!\n", stderr);
 		return EXIT_USER_INVALID_INPUT;
 	}
 
