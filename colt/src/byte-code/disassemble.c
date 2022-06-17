@@ -166,7 +166,7 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 		return offset;
 
 	case OP_LOAD_LSTRING:
-		return impl_print_simple_instruction("OP_STORE_LSTRING", offset);
+		return impl_print_simple_instruction("OP_LOAD_LSTRING", offset);
 
 	case OP_STORE_LSTRING:
 		return impl_print_simple_instruction("OP_STORE_LSTRING", offset);
