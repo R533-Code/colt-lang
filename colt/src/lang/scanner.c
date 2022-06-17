@@ -788,6 +788,12 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 			scan->parsed_value.u64 = ID_COLT_I64;
 			return TKN_BUILTIN_TYPE;
 		}
+	break; case 'l':
+		if (strcmp(str, "lstring") == 0)
+		{
+			scan->parsed_value.u64 = ID_COLT_LSTRING;
+			return TKN_BUILTIN_TYPE;
+		}
 	break; case 'o':
 		if (strcmp(str, "or") == 0)
 			return TKN_OPERATOR_OR_OR;
