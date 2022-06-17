@@ -154,7 +154,7 @@ typedef struct
 	StringView var_name;
 } VariableExpr;
 
-/// @brief A dynamic array of Expr*
+/// @brief A dynamic array of contiguous Expr*
 typedef struct
 {
 	/// @brief The number of active Expr* in 'expressions'
@@ -165,10 +165,17 @@ typedef struct
 	Expr** expressions;
 } ExprArray;
 
+/// @brief Initializes an ExprArray
+/// @param array The array to initialize
 void ExprArrayInit(ExprArray* array);
 
+/// @brief Frees resources used up by an ExprArray
+/// @param array The array whose resources to free
 void ExprArrayFree(ExprArray* array);
 
+/// @brief Pushes an Expr* at the end of an ExprArray, handling reallocations
+/// @param array The array to modify
+/// @param expr The Expr* to add
 void ExprArrayPushBack(ExprArray* array, Expr* expr);
 
 /// @brief Allocates a new literal expression on the heap, initializing it
