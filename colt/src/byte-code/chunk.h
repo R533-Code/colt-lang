@@ -5,7 +5,7 @@
 * A Chunk usually contains 6 sections:
 * - The HEADER: 2 uint64_t giving informations about the Chunk, 5 uint64_t giving the offsets of the 5 other sections
 *	- First uint64_t   -> ABI
-*	- Second uint64_t  -> flag for if ChunkInitLString was called on the Chunk
+*	- Second uint64_t  -> Unused (now)
 *	- Third uint64_t   -> byte offset to GLOBAL section or 0 if this section does not exist
 *	- Fourth uint64_t  -> byte offset to CONST section or 0 if this section does not exist
 *	- Fifth uint64_t   -> byte offset to STRING section or 0 if this section does not exist
@@ -55,11 +55,6 @@ void ChunkInit(Chunk* chunk);
 /// @brief Returns the ABI of a Chunk
 /// @param chunk The Chunk from which to read the value
 uint64_t ChunkGetABI(const Chunk* chunk);
-
-/// @brief Check if ChunkInitLString has been called on the Chunk
-/// @param chunk The Chunk to check
-/// @return True if ChunkInitLString was called on 'chunk' else false
-bool ChunkIsLStringSectionInit(const Chunk* chunk);
 
 /// @brief Writes the offset to the beginning of the GLOBAL section
 /// @param chunk The Chunk where to write the value
@@ -220,10 +215,6 @@ void ChunkFree(Chunk* chunk);
 /// @param chunk The chunk to modify
 /// @param more_byte_capacity The count of bytes to add to the capacity
 void ChunkReserve(Chunk* chunk, size_t more_byte_capacity);
-
-/// @brief Overwrites the byte offsets of string literal by a pointer to the string literal
-/// @param chunk The Chunk in which to overwrite
-void ChunkInitLStrings(Chunk* chunk);
 
 /// @brief Serializes a chunk to a file
 /// @param chunk The chunk to serialize

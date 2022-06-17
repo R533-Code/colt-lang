@@ -20,11 +20,6 @@ uint64_t ChunkGetABI(const Chunk* chunk)
 	return *(uint64_t*)chunk->code;
 }
 
-bool ChunkIsLStringSectionInit(const Chunk* chunk)
-{
-	return ((QWORD*)chunk->code + 1)->b;
-}
-
 void ChunkWriteGLOBALSection(Chunk* chunk, uint64_t offset)
 {
 	*((uint64_t*)(chunk->code) + 2) = offset;
@@ -303,21 +298,6 @@ void ChunkReserve(Chunk* chunk, size_t more_byte_capacity)
 {
 	impl_chunk_grow_size(chunk, more_byte_capacity);
 }
-
-void ChunkInitLStrings(Chunk* chunk)
-{
-	uint64_t string_offset = ChunkGetSTRINGSection(chunk);
-	if (string_offset == 0)
-		return;
-	((QWORD*)chunk->code + 1)->b = true;
-
-	for (size_t i = 0; i < unsafe_chunk_get_lstring_count(chunk); i++)
-	{
-		*((char**)(chunk->code + string_offset) + i + 1) =
-			chunk->code + *((uint64_t*)(chunk->code + string_offset + sizeof(QWORD)) + i);
-	}
-}
-
 
 void ChunkSerialize(const Chunk* chunk, const char* path)
 {
