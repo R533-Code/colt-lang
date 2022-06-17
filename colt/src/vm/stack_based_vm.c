@@ -48,17 +48,15 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 	if (ip == chunk->code)
 	{
 		print_error_string("Cannot run Chunk that does not contain byte-code!");
-		return 1;
+		return EXIT_USER_INVALID_INPUT;
 	}
 	if (ChunkGetABI(chunk) != COLTI_ABI)
 	{
-		print_error_format("Cannot run Chunk as its ABI (%"PRIu64") does not match the VM's ABI (%"PRIu64")!",
-			ChunkGetABI(chunk), COLTI_ABI);
-		return 1;
+		fputs(CONSOLE_FOREGROUND_BRIGHT_RED "Error: " CONSOLE_COLOR_RESET "Cannot run Chunk as its ABI (", stderr);
+		ChunkPrintABI(chunk, stderr);
+		fputs(") does not match the VM's ABI (" COLTI_ABI_STRING ")", stderr);
+		return EXIT_USER_INVALID_INPUT;
 	}
-
-	/*if (!ChunkIsLStringSectionInit(chunk))
-		ChunkInitLStrings(chunk);*/
 
 	for (;;)
 	{
