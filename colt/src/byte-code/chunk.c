@@ -19,8 +19,9 @@ void ChunkPrintABI(const Chunk* chunk, FILE* file)
 {
 	const uint64_t serialized_abi = *(uint64_t*)chunk->code;
 	fprintf(file, "%"PRIu64".%"PRIu64".%"PRIu64".%"PRIu64,
-		serialized_abi & 0xff000000, serialized_abi & 0x00ff0000,
-		serialized_abi & 0x0000ff00, serialized_abi & 0x000000ff);
+		serialized_abi & 0x000000ff, serialized_abi >> 16 & 0x0000ff,
+		serialized_abi >> 32 & 0x00ff, serialized_abi >> 48
+	);
 }
 
 uint64_t ChunkGetABI(const Chunk* chunk)
