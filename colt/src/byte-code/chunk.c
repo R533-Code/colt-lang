@@ -17,12 +17,10 @@ void ChunkInit(Chunk* chunk)
 
 void ChunkPrintABI(const Chunk* chunk, FILE* file)
 {
-	//LITTLE ENDIAN
-	uint32_t patch = *chunk->code;
-	uint32_t tweak = *(chunk->code + 1);
-	uint32_t minor = *(chunk->code + 2);
-	uint32_t major = *(chunk->code + 3);
-	fprintf(file, "%u.%u.%u.%u", major, minor, tweak, patch);
+	const uint64_t serialized_abi = *(uint64_t*)chunk->code;
+	fprintf(file, "%"PRIu64".%"PRIu64".%"PRIu64".%"PRIu64,
+		serialized_abi & 0xff000000, serialized_abi & 0x00ff0000,
+		serialized_abi & 0x0000ff00, serialized_abi & 0x000000ff);
 }
 
 uint64_t ChunkGetABI(const Chunk* chunk)
