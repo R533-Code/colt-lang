@@ -31,8 +31,6 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		ChunkGetABI(chunk), global_offset, const_offset, string_offset, debug_offset, code_offset
 	);
 
-	bool chunk_str_init = ChunkIsLStringSectionInit(chunk);
-
 	if (global_offset != 0)
 	{
 		fputs(CONSOLE_COLOR_REVERSE"SECTION GLOBAL:\n"CONSOLE_COLOR_RESET, stdout);
@@ -76,11 +74,8 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		
 		for (size_t i = 0; i < string_literal_count; i++)
 		{
-			printf("        %08"PRIu64": ", string_offset + (i + 1) * sizeof(QWORD));
-			if (chunk_str_init)
-				impl_print_lstring(*((char**)(chunk->code + string_offset) + i + 1));
-			else //+ 1 so we move over the uint64_t written for string literal count
-				impl_print_lstring(chunk->code + *((uint64_t*)(chunk->code + string_offset) + i + 1));
+			printf("        %08"PRIu64": ", string_offset + (i + 1) * sizeof(QWORD));;	
+			impl_print_lstring(chunk->code + *((uint64_t*)(chunk->code + string_offset) + i + 1));
 			fputc('\n', stdout);
 		}
 	}
