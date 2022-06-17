@@ -14,8 +14,10 @@
 
 #define COLT_OS_STRING			"${IMPL_COLT_OS_STRING}"
 
-//The ABI of the interpreter, which is used so that the interpreter cannot run code compiled from a previous version
-#define COLTI_ABI				((uint64_t)${COLTI_ABI})
+//The ABI of the interpreter, which is used so that the interpreter cannot run code compiled from a different ABI version
+#define COLTI_ABI				((uint64_t)((uint64_t)${COLTI_ABI_MAJOR} << 48 + (uint64_t)${COLTI_ABI_MINOR} << 32 + (uint64_t)${COLTI_ABI_PATCH} << 16 + (uint64_t)${COLTI_ABI_TWEAK}))
+
+#define COLTI_ABI_STRING		"${COLTI_ABI_MAJOR}.${COLTI_ABI_MINOR}.${COLTI_ABI_PATCH}.${COLTI_ABI_TWEAK}"
 
 #ifdef COLT_DEBUG_BUILD
 	#define COLT_CONFIG_STRING		"Debug"
