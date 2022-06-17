@@ -57,8 +57,8 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		return 1;
 	}
 
-	if (!ChunkIsLStringSectionInit(chunk))
-		ChunkInitLStrings(chunk);
+	/*if (!ChunkIsLStringSectionInit(chunk))
+		ChunkInitLStrings(chunk);*/
 
 	for (;;)
 	{
@@ -107,6 +107,38 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			QWORD offset = unsafe_get_qword(&ip);
 			*(QWORD*)(chunk->code + offset.u64) = StackVMTop(vm);
+		}
+
+		/******************************************************/
+
+		break;
+		case OP_LOAD_LSTRING:
+		{
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			QWORD cptr = StackVMPop(vm);
+			//Transform the offset to a pointer
+			cptr.lstring = chunk->code + *(uint64_t*)(chunk->code + ChunkGetSTRINGSection(chunk) + (cptr.u64 + 1) * sizeof(QWORD));
+			StackVMPush(vm, cptr);
+		}
+
+		break;
+		case OP_STORE_LSTRING:
+		{
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			QWORD cptr = StackVMPop(vm);
+			cptr.u64 = ((cptr.lstring - chunk->code) - ChunkGetSTRINGSection(chunk)) - 16;
+			StackVMPush(vm, cptr);
+		}
+
+		/******************************************************/
+
+		break;
+		case OP_LOAD_QWORD:
+		{
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			uint64_t offset = StackVMPop(vm).u64;
+			QWORD qword = { .lstring = chunk->code + offset };
+			StackVMPush(vm, qword);
 		}
 
 		/******************************************************/
