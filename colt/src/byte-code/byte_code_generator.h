@@ -18,7 +18,9 @@
 /// @param chunk The Chunk in which to write the byte-code
 /// @param var_table VariableTable containing variables
 /// @param array The array of Expr* expression to convert
-bool generateByteCode(Chunk* chunk, const ASTTable* var_table, const ExprArray* array);
+/// @param print_last_expr If true, prints the last expression
+/// @return True if no error are encountered
+bool generateByteCode(Chunk* chunk, const ASTTable* var_table, const ExprArray* array, bool print_last_expr);
 
 /*************************************
 IMPLEMENTATION HELPERS

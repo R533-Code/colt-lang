@@ -3,7 +3,7 @@
 */
 #include "byte_code_generator.h"
 
-bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* array)
+bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* array, bool print_last_expr)
 {
 	colt_assert(array->count != 0, "Cannot generate byte-code if expr == NULL!");
 	colt_assert(chunk->count >= 40, "Chunk should be initialized!");
@@ -26,20 +26,24 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 	ChunkWriteCODESection(chunk, chunk->count);
 
 	bool is_valid = true;
-	for (size_t i = 0; i < array->count && is_valid; i++)
+	for (size_t i = 0; i < array->count - 1 && is_valid; i++)
 	{
 		is_valid = gen_byte_code(chunk, table, array->expressions[i]);
 		//As we only implemented expressions, after an expression, we pop the result
-		//ChunkWriteOpCode(chunk, OP_POP);
+		ChunkWriteOpCode(chunk, OP_POP);
 	}
-
+	is_valid = gen_byte_code(chunk, table, array->expressions[array->count - 1]);
 	if (is_valid)
-	{
-		//FOR DEBUG PURPOSE
-		ChunkWriteOpCode(chunk, OP_PRINT);
-		//Print the last expression
-		ChunkWriteOperand(chunk, (BuiltinTypeID)array->expressions[array->count - 1]->expr_type.type_id);
-		//EXIT
+	{		
+		if (print_last_expr)
+		{
+			//Print the last expression
+			ChunkWriteOpCode(chunk, OP_PRINT);
+			ChunkWriteOperand(chunk, (BuiltinTypeID)array->expressions[array->count - 1]->expr_type.type_id);
+		}
+		//Pop the last expression
+		ChunkWriteOpCode(chunk, OP_POP);
+		//EXIT with code 0
 		ChunkWriteOpCode(chunk, OP_EXIT);
 		QWORD exit_code = { .i64 = 0 };
 		ChunkWriteQWORD(chunk, exit_code);		
