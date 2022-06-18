@@ -1,4 +1,4 @@
-/** @file colti_integer_value.h
+/** @file colti_string_value.h
 * Contains typedefs representing string values in Colt.
 */
 
@@ -7,7 +7,7 @@
 
 #include "structs/struct_string.h"
 
-/// @brief Pointer to a constant string
+/// @brief Pointer to a constant literal string
 typedef const char* ColtLString_t;
 /// @brief The type-id of a Colt literal string
 #define COLTI_LSTRING_ID 11
