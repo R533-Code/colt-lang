@@ -9,7 +9,7 @@ void ColtRun(const char* byte_code_out, StringView to_parse)
 	{
 		Chunk chunk;
 		ChunkInit(&chunk);
-		if (generateByteCode(&chunk, &ast.table, &ast.expr))
+		if (generateByteCode(&chunk, &ast.table, &ast.expr, false))
 		{
 			if (byte_code_out != NULL)
 				ChunkSerialize(&chunk, byte_code_out);

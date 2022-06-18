@@ -27,7 +27,7 @@ void repl_run(AST* ast, StringView strv, const char* byte_code_out)
 		Chunk chunk;
 		ChunkInit(&chunk);
 
-		if (generateByteCode(&chunk, &ast->table, &ast->expr))
+		if (generateByteCode(&chunk, &ast->table, &ast->expr, true))
 		{
 			if (byte_code_out != NULL)
 				ChunkSerialize(&chunk, byte_code_out);
