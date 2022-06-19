@@ -11,7 +11,8 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 	//Reserve enough size for the GLOBAL/CONST and string literals
 	//The + 1 is because at the beginning of the string section, we write
 	//the number of string literals
-	ChunkReserve(chunk, table->str_table.all_str_size + (table->str_table.count + 1) * sizeof(QWORD) + table->var_table.count * sizeof(QWORD));
+	// * 3: as debug data uses 2 QWORDs per variable and a variable is 1 QWORD
+	ChunkReserve(chunk, table->str_table.all_str_size + (table->str_table.count + 1) * sizeof(QWORD) + table->var_table.count * 3 * sizeof(QWORD));
 
 	//write GLOBAL offset
 	ChunkWriteGLOBALSection(chunk, gen_global_pool(chunk, &table->var_table));
@@ -136,41 +137,24 @@ uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* table)
 		return 0;
 	const uint64_t debug_begin = chunk->count;
 
-	//Write the type of the values and a pointer to there names
+	uint64_t string_literal_begin = debug_begin + table->var_table.count * 2 * sizeof(QWORD);
+	//Update size of chunk
+	chunk->count += table->var_table.count * 2 * sizeof(QWORD);
 	for (size_t i = 0; i < table->var_table.capacity; i++)
 	{
 		//not active entry
 		if (table->var_table.entries[i].key.ptr == NULL)
 			continue;
-		QWORD id = { .u64 = table->var_table.entries[i].type.type_id };
-		//First QWORD which contains the type is followed by another QWORD
-		//which is to be overridden later
-		ChunkWriteQWORD(chunk, id);
-		DO_IF_DEBUG_BUILD(id.u64 = ULLONG_MAX);
-		//WILL BE OVERRIDEN BY OFFSET TO VARIABLE NAME
-		ChunkWriteQWORD(chunk, id);
-	}
-	size_t counter = 0;
-	for (size_t i = 0; i < table->var_table.capacity; i++)
-	{
-		//not active entry
-		if (table->var_table.entries[i].key.ptr == NULL)
-			continue;
-		//Overwrite the QWORD to be overridden, writing the current offset,
-		//which is the beginning of the variable name
-		//The + sizeof(QWORD): as we wrote 2 QWORDs, the first one being the type,
-		//we want to override the second one, so we offset by one QWORD
-		*(uint64_t*)(chunk->code + debug_begin + counter * 2 * sizeof(QWORD) + sizeof(QWORD))
-			= chunk->count;
-		counter++;
-		//Write each characters of the name of the variable
-		//we cannot memcpy here because we aren't sure the Chunk has enough reserved space
-		for (size_t chr = 0; chr < table->var_table.entries[i].key.size; chr++)
-		{
-			chunk_write_byte(chunk, table->var_table.entries[i].key.ptr[chr]);
-		}
+		*((uint64_t*)(chunk->code + debug_begin) + table->var_table.entries[i].counter_nb * 2)
+			= table->var_table.entries[i].type.type_id;
+		*((uint64_t*)(chunk->code + debug_begin) + table->var_table.entries[i].counter_nb * 2 + 1)
+			= string_literal_begin;
 
-	}
+		for (size_t j = 0; j < table->var_table.entries[i].key.size; j++)
+			chunk_write_byte(chunk, table->var_table.entries[i].key.ptr[j]);
+		string_literal_begin += table->var_table.entries[i].key.size;
+	}	
+	
 	return debug_begin;
 }
 
