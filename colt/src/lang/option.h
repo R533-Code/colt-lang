@@ -8,6 +8,8 @@ typedef struct
 	/// @brief If false, warns if an expression result is not used.
 	/// When REPLing should be true: we don't want to warn if the user is doing arithmetic
 	bool no_warn_unused_result;
+	/// @brief If false, warns if a variable is not initialized
+	bool no_warn_uninitialized;
 	/// @brief If false, optimizes constant expressions
 	bool no_constant_folding;
 	/// @brief If false, allows messages to be printed
