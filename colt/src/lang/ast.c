@@ -56,6 +56,10 @@ void ASTReset(AST* ast)
 void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lexeme, const char* format, ...)
 {
 	ast->warning_nb++;
+	//We still update the warning number, but do not print anything
+	if (ast->options->no_warning == true)
+		return;
+
 	fprintf(stdout, CONSOLE_FOREGROUND_BRIGHT_YELLOW "Warning: "
 		CONSOLE_COLOR_RESET "On line %"PRIu64": ", line_nb);
 	//prints the error
@@ -76,10 +80,14 @@ void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lex
 
 void ast_gen_error(AST* ast, uint64_t line_nb, StringView current_line, StringView current_lexeme, const char* format, ...)
 {
-	//We clear all the token till we hit an EOF or ';'
+	//We clear all the token till we hit an EOF or ';' or '}' or ')'
 	//This allows to clear an expression that is wrong
 	//also updates error number
 	ast_enter_panic_mode(ast);
+
+	//We do not want to print anything
+	if (ast->options->no_error == true)
+		return;
 
 	fprintf(stderr, CONSOLE_FOREGROUND_BRIGHT_RED "Error: "
 		CONSOLE_COLOR_RESET "On line %"PRIu64": ", line_nb);
@@ -114,7 +122,7 @@ void ast_gen_error(AST* ast, uint64_t line_nb, StringView current_line, StringVi
 void ast_enter_panic_mode(AST* ast)
 {
 	ast->error_nb++;
-	while (ast->current_tkn != TKN_EOF && ast->current_tkn != TKN_SEMICOLON)
+	while (ast->current_tkn != TKN_RIGHT_PAREN && ast->current_tkn != TKN_RIGHT_CURLY && ast->current_tkn != TKN_EOF && ast->current_tkn != TKN_SEMICOLON)
 	{
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	}
