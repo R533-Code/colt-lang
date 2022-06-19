@@ -4,6 +4,12 @@ void ColtREPL(const char* byte_code_out)
 {
 	AST ast;
 	ASTInit(&ast);
+	ColtScanOptions options;
+	//Choose default options
+	memset(&options, 0, sizeof(ColtScanOptions));
+	//But we do not want to warn for unused result of expressions like '20 + 10'
+	options.no_warn_unused_result = true;
+
 	while (!feof(stdin))
 	{
 		fputs(CONSOLE_FOREGROUND_BRIGHT_GREEN "> " CONSOLE_COLOR_RESET, stdout);
@@ -13,16 +19,16 @@ void ColtREPL(const char* byte_code_out)
 			//append ';' if line does not end with one
 			if (line.ptr[line.size - 2] != ';')
 				StringAppendChar(&line, ';');
-			repl_run(&ast, StringToStringViewWithNUL(&line), byte_code_out);
+			repl_run(&ast, StringToStringViewWithNUL(&line), &options, byte_code_out);
 		}
 		StringFree(&line);
 	}
 	ASTFree(&ast);
 }
 
-void repl_run(AST* ast, StringView strv, const char* byte_code_out)
+void repl_run(AST* ast, StringView strv, const ColtScanOptions* options, const char* byte_code_out)
 {
-	if (ASTParse(ast, strv))
+	if (ASTParse(ast, strv, options))
 	{
 		Chunk chunk;
 		ChunkInit(&chunk);
