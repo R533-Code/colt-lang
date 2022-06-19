@@ -16,6 +16,7 @@
 #include "token.h"
 #include "scanner.h"
 #include "structs/struct_table.h"
+#include "option.h"
 #include "expr.h"
 
 /// @brief Represents an Abstract Syntax Tree of a parsed string.
@@ -31,6 +32,8 @@ typedef struct
 	uint16_t error_nb;
 	/// @brief The number of warnings encountered
 	uint16_t warning_nb;
+	/// @brief Options used when parsing
+	const ColtScanOptions* options;
 	/// @brief The next token to consume from the scanner
 	Token current_tkn;
 	/// @brief Table for string literals and const/global variables
@@ -48,8 +51,9 @@ void ASTFree(AST* ast);
 /// @brief Parses the string stored in the initialized AST
 /// @param ast The AST to modify
 /// @param to_parse The StringView to parse
+/// @param options The option used when scanning
 /// @return True if no error were found
-bool ASTParse(AST* ast, StringView to_parse);
+bool ASTParse(AST* ast, StringView to_parse, const ColtScanOptions* options);
 
 /// @brief Reset the whole AST (its 'var_table' included) to its initialized state
 /// @param ast The AST to modify
@@ -77,7 +81,7 @@ void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lex
 /// @param ... The arguments to format
 void ast_gen_error(AST* ast, uint64_t line_nb, StringView line, StringView lexeme, const char* format, ...);
 
-/// @brief Consumes token until an TKN_EOF or TKN_SEMICOLON is hit, and update error counter
+/// @brief Consumes token until an TKN_EOF/TKN_SEMICOLON/TKN_RIGHT_PAREN/TKN_RIGHT_CURLY is hit, and update error counter
 /// @param ast The AST whose tokens to consume
 void ast_enter_panic_mode(AST* ast);
 
