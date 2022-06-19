@@ -18,10 +18,13 @@ void ASTFree(AST* ast)
 	ExprArrayFree(&ast->expr);
 }
 
-bool ASTParse(AST* ast, StringView to_parse)
+bool ASTParse(AST* ast, StringView to_parse, const ColtScanOptions* options)
 {
+	colt_assert(options != NULL, "Options should not be NULL!");
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
+	ast->options = options;
+	//TODO: add a ExprArrayReset function
 	ExprArrayFree(&ast->expr);
 	ExprArrayInit(&ast->expr);
 	ScannerInit(&ast->scan, to_parse);
