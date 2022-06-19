@@ -436,6 +436,7 @@ Expr* impl_unary_expr(AST* ast)
 	//a minus followed by a unsigned type is converted to a signed type
 	if (is_type_unsigned_int(child->expr_type.type_id) && tkn == TKN_OPERATOR_MINUS)
 	{
+		//TODO: add option check
 		ast_gen_warning(ast, child->line_nb, child->line, child->lexeme, "Implicit conversion from '%s' to '%s'!", BuiltinTypeIDToString(child->expr_type.type_id), BuiltinTypeIDToString((BuiltinTypeID)child->expr_type.type_id + 4));
 		child = makeConvertExpr(child, type_unsigned_to_signed(child->expr_type.type_id),
 			child->line_nb, child->line, child->lexeme
@@ -471,6 +472,8 @@ Expr* impl_expression(AST* ast)
 		expr = impl_variable_declaration(ast);
 	break; default:
 		expr = impl_binary_expr(ast, -1);
+		if (ast->options->no_warn_unused_result == false && ast->error_nb == 0)
+			ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
 	}
 	if (ast->current_tkn != TKN_SEMICOLON)
 	{
@@ -504,13 +507,19 @@ Expr* impl_variable_declaration(AST* ast)
 
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
-	if (ast->current_tkn == TKN_SEMICOLON && tkn_type == TKN_KEYWORD_VAR)
+	if (ast->current_tkn == TKN_SEMICOLON)
 	{
-		ast_gen_error(ast,
-			ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
-			"Variable declared with 'var' should always be initialized!"
-		);
-		return NULL;
+		if (tkn_type == TKN_KEYWORD_VAR)
+		{
+			ast_gen_error(ast,
+				ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+				"Variable declared with 'var' should always be initialized!"
+			);
+			return NULL;
+		}
+		//TODO: add uninitialized variable handling
+		ast_gen_warning(ast, identifier_line_nb, identifier_line, decl_identifier, "\"%.*s\" is not initialized!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start);
+
 	}
 	else if (ast->current_tkn == TKN_OPERATOR_EQUAL)
 	{
