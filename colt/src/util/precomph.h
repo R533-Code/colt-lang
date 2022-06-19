@@ -12,6 +12,7 @@
 #include "chunk.h"
 
 #include "lang/scanner.h"
+#include "lang/option.h"
 #include "lang/ast.h"
 
 #include "byte-code/byte_code_generator.h"
