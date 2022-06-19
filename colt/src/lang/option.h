@@ -3,6 +3,9 @@
 
 #include <stdbool.h>
 
+/// @brief Options used by the AST for warnings, messages and errors.
+/// The name of the members is chosen so that `memset`ing the whole struct
+/// to 0 gives the default values of each member.
 typedef struct
 {
 	/// @brief If false, warns if an expression result is not used.
