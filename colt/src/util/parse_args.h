@@ -24,7 +24,6 @@
 
 /// @brief The result of parsing command line arguments.
 /// This struct is one of the only that will never hold any heap-allocated value.
-/// This is the reason why 'file_path_out' defaults to 'a.out'
 typedef struct
 {
 	/// @brief The path to the file to interpret/compile
