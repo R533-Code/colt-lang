@@ -324,6 +324,9 @@ Token impl_scanner_handle_identifier(Scanner* scan)
 
 Token impl_scanner_handle_digit(Scanner* scan)
 {
+	//Allows some optimization for when the AST needs to extract the values from the Scanner
+	scan->parsed_value.u64 = 0;
+
 	//Clear the string
 	StringClear(&scan->parsed_string);
 	StringAppendChar(&scan->parsed_string, scan->current_char);
