@@ -167,9 +167,14 @@ void variable_table_grow_capacity(VariableTable* table, uint64_t capacity)
 		if (entry->key.ptr == NULL)
 			continue;
 
+		//Rehash
 		VariableEntry* dest = variable_table_find_entry(entries, capacity, StringToStringView(&entry->key));
-		dest->key = entry->key;
-		dest->value = entry->value;
+		
+		//Copy entry to new location
+		memcpy(dest, entry, sizeof(VariableEntry));
+		//We need to fix the pointers as String have a small buffer optimization
+		if (StringIsStackAllocated(&dest->key))
+			dest->key.ptr = dest->key.buffer;
 	}
 
 	safe_free(table->entries);
