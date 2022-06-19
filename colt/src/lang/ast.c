@@ -517,9 +517,24 @@ Expr* impl_variable_declaration(AST* ast)
 			);
 			return NULL;
 		}
-		//TODO: add uninitialized variable handling
-		ast_gen_warning(ast, identifier_line_nb, identifier_line, decl_identifier, "\"%.*s\" is not initialized!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start);
+		if (ast->options->no_warn_uninitialized == false)
+			ast_gen_warning(ast, identifier_line_nb, identifier_line, decl_identifier, "\"%.*s\" is not initialized!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start);
 
+		if (VariableTableContains(&ast->table.var_table, decl_identifier))
+		{
+			ast_gen_error(ast,
+				identifier_line_nb, identifier_line, decl_identifier,
+				"Variable with identifier '%.*s' already exists!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start
+			);
+			return NULL;
+		}
+
+		QWORD zero = { .u64 = 0 };
+		var_type = ScannerGetTypename(&ast->scan);
+		VariableTableSet(&ast->table.var_table, decl_identifier, zero, var_type);
+
+		return makeVariableExpr(decl_identifier, var_type,
+			identifier_line_nb, identifier_line, decl_identifier);
 	}
 	else if (ast->current_tkn == TKN_OPERATOR_EQUAL)
 	{
