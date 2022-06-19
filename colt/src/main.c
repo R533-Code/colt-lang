@@ -5,7 +5,11 @@ void ColtRun(const char* byte_code_out, StringView to_parse)
 {
 	AST ast;
 	ASTInit(&ast);
-	if (ASTParse(&ast, to_parse))
+	ColtScanOptions options;
+	//Choose default options
+	memset(&options, 0, sizeof(ColtScanOptions));
+
+	if (ASTParse(&ast, to_parse, &options))
 	{
 		Chunk chunk;
 		ChunkInit(&chunk);
