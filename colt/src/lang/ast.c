@@ -132,6 +132,10 @@ void ast_handle_conversion(Expr** plhs, Expr** prhs)
 {
 	Expr* lhs = *plhs;
 	Expr* rhs = *prhs;
+
+	if (lhs->expr_type.type_id == ID_COLT_LSTRING || rhs->expr_type.type_id == ID_COLT_LSTRING)
+		return;
+
 	if (lhs->expr_type.type_id != rhs->expr_type.type_id)
 	{
 		Type cnv = builtin_inter_type(lhs->expr_type, rhs->expr_type);
@@ -145,6 +149,12 @@ void ast_handle_conversion(Expr** plhs, Expr** prhs)
 
 Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme)
 {
+	if (lhs.type_id == ID_COLT_LSTRING || rhs.type_id == ID_COLT_LSTRING)
+	{
+		ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' cannot have an 'lstring' as operand!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
+		return ColtBool;
+	}
+
 	switch (binary_op)
 	{
 	case TKN_OPERATOR_PLUS:
