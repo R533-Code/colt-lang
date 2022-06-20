@@ -1,3 +1,7 @@
+/** @file scan_option.h
+* Contains ColtScanOptions, which dictates some behaviors of the AST.
+*/
+
 #ifndef HG_COLT_OPTION
 #define HG_COLT_OPTION
 
