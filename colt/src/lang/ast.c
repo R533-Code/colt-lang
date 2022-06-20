@@ -161,7 +161,7 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 	case TKN_OPERATOR_MINUS:
 	case TKN_OPERATOR_STAR:
 	case TKN_OPERATOR_SLASH:
-			case TKN_OPERATOR_EQUAL:
+	case TKN_OPERATOR_EQUAL:
 	case TKN_OPERATOR_PLUS_EQUAL:
 	case TKN_OPERATOR_MINUS_EQUAL:
 	case TKN_OPERATOR_STAR_EQUAL:
