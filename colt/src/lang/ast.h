@@ -16,7 +16,7 @@
 #include "token.h"
 #include "scanner.h"
 #include "structs/struct_table.h"
-#include "option.h"
+#include "scan_option.h"
 #include "expr.h"
 
 /// @brief Represents an Abstract Syntax Tree of a parsed string.
