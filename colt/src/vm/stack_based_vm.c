@@ -87,8 +87,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		}
 
 		/******************************************************/
-		//As all the variables are stored as QWORDs, we can optimize all the
-		//cases into one
+
 		break;
 		case OP_LOAD_GLOBAL:
 		{
@@ -239,6 +238,12 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			QWORD rhs = StackVMPop(vm);
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_BitShiftR(lhs, rhs, *(ip++)));
+		}
+		break; case OP_BOOL_NOT:
+		{
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			QWORD value = StackVMPop(vm);
+			StackVMPush(vm, OpCode_BoolNot(value, *(ip++)));
 		}
 		break; case OP_CMP_GREATER:
 		{
