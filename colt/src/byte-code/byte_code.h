@@ -356,6 +356,12 @@ QWORD OpCode_BitShiftL(QWORD left, QWORD right, BuiltinTypeID type);
 /// @return The shifted QWORD
 QWORD OpCode_BitShiftR(QWORD left, QWORD right, BuiltinTypeID type);
 
+/// @brief Casts 'value' to 'type' and performs a bool conversion to it before doing its not '!'
+/// @param value The value to bool not
+/// @param type The type of the QWORD
+/// @return The bool not-ed QWORD
+QWORD OpCode_BoolNot(QWORD value, BuiltinTypeID type);
+
 /// @brief Casts 2 QWORD and return a bool from 'greater' comparison
 /// @param left The left hand side of the operator
 /// @param right The right hand side of the operator

@@ -64,9 +64,9 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 		case COLTI_U64_ID:
 			ret.b = (value.u64 != 0);
 		break; case COLTI_FLOAT_ID:
-			ret.b = (value.f != 0);
+			ret.b = (value.f != (float)0);
 		break; case COLTI_DOUBLE_ID:
-			ret.b = (value.d != 0);
+			ret.b = (value.d != (double)0);
 		break; default:
 			colt_assert(false, "Invalid operand for OP_CONVERT!");
 		}
@@ -436,6 +436,26 @@ QWORD OpCode_BitShiftR(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U32_ID:		result.u32 = left.u32 >> right.u32;
 	break; case COLTI_U64_ID:		result.u64 = left.u64 >> right.u64;
 	break; default: colt_assert(false, "Invalid operand for OP_BIT_SHIFT_R!");
+	}
+	return result;
+}
+
+QWORD OpCode_BoolNot(QWORD value, BuiltinTypeID type)
+{
+	QWORD result;
+	switch (type)
+	{
+	break; case COLTI_I8_ID:		result.b = !value.u8;
+	break; case COLTI_I16_ID:		result.b = !value.u16;
+	break; case COLTI_I32_ID:		result.b = !value.u32;
+	break; case COLTI_I64_ID:		result.b = !value.u64;
+	break; case COLTI_U8_ID:		result.b = !value.u8;
+	break; case COLTI_U16_ID:		result.b = !value.u16;
+	break; case COLTI_U32_ID:		result.b = !value.u32;
+	break; case COLTI_U64_ID:		result.b = !value.u64;
+	break; case COLTI_FLOAT_ID:		result.b = value.f != (float)0;
+	break; case COLTI_DOUBLE_ID:	result.b = value.d != (double)0;
+	break; default: colt_assert(false, "Invalid operand for OP_CMP_GREATER!");
 	}
 	return result;
 }
