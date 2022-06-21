@@ -445,16 +445,16 @@ QWORD OpCode_BoolNot(QWORD value, BuiltinTypeID type)
 	QWORD result;
 	switch (type)
 	{
-	break; case COLTI_I8_ID:		result.b = !value.u8;
-	break; case COLTI_I16_ID:		result.b = !value.u16;
-	break; case COLTI_I32_ID:		result.b = !value.u32;
-	break; case COLTI_I64_ID:		result.b = !value.u64;
-	break; case COLTI_U8_ID:		result.b = !value.u8;
-	break; case COLTI_U16_ID:		result.b = !value.u16;
-	break; case COLTI_U32_ID:		result.b = !value.u32;
-	break; case COLTI_U64_ID:		result.b = !value.u64;
-	break; case COLTI_FLOAT_ID:		result.b = value.f != (float)0;
-	break; case COLTI_DOUBLE_ID:	result.b = value.d != (double)0;
+	break; case COLTI_I8_ID:		result.b = value.u8 == 0;
+	break; case COLTI_I16_ID:		result.b = value.u16 == 0;
+	break; case COLTI_I32_ID:		result.b = value.u32 == 0;
+	break; case COLTI_I64_ID:		result.b = value.u64 == 0;
+	break; case COLTI_U8_ID:		result.b = value.u8 == 0;
+	break; case COLTI_U16_ID:		result.b = value.u16 == 0;
+	break; case COLTI_U32_ID:		result.b = value.u32 == 0;
+	break; case COLTI_U64_ID:		result.b = value.u64 == 0;
+	break; case COLTI_FLOAT_ID:		result.b = value.f == (float)0;
+	break; case COLTI_DOUBLE_ID:	result.b = value.d == (double)0;
 	break; default: colt_assert(false, "Invalid operand for OP_CMP_GREATER!");
 	}
 	return result;
