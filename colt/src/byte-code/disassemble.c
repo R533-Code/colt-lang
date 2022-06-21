@@ -246,6 +246,8 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 		return impl_print_operand_instruction("OP_BIT_SHIFT_L", chunk->code[offset + 1], offset);
 	case OP_BIT_SHIFT_R:
 		return impl_print_operand_instruction("OP_BIT_SHIFT_R", chunk->code[offset + 1], offset);
+	case OP_BOOL_NOT:
+		return impl_print_operand_instruction("OP_BOOL_NOT", chunk->code[offset + 1], offset);
 	case OP_CMP_GREATER:
 		return impl_print_operand_instruction("OP_CMP_GREATER", chunk->code[offset + 1], offset);
 	case OP_CMP_GREATER_EQ:
