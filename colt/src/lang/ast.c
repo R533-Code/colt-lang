@@ -435,7 +435,7 @@ Expr* impl_unary_expr(AST* ast)
 	StringView lexeme_strv = ScannerGetCurrentLexeme(&ast->scan);
 	StringView line_strv = ScannerGetCurrentLine(&ast->scan);
 	//the unary operator
-	Token tkn = ast->current_tkn;
+	Token unary_op = ast->current_tkn;
 
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
@@ -444,7 +444,7 @@ Expr* impl_unary_expr(AST* ast)
 		return NULL; //propagate the error
 
 	//a minus followed by a unsigned type is converted to a signed type
-	if (is_type_unsigned_int(child->expr_type.type_id) && tkn == TKN_OPERATOR_MINUS)
+	if (is_type_unsigned_int(child->expr_type.type_id) && unary_op == TKN_OPERATOR_MINUS)
 	{
 		//TODO: add option check
 		ast_gen_warning(ast, child->line_nb, child->line, child->lexeme, "Implicit conversion from '%s' to '%s'!", BuiltinTypeIDToString(child->expr_type.type_id), BuiltinTypeIDToString((BuiltinTypeID)child->expr_type.type_id + 4));
@@ -453,7 +453,16 @@ Expr* impl_unary_expr(AST* ast)
 		);
 	}
 
-	return makeUnaryExpr(tkn, child,
+	Type expr_type;
+	switch (unary_op)
+	{
+	break; case TKN_OPERATOR_BANG:
+		expr_type = ColtBool;
+	break; default:
+		expr_type = child->expr_type;
+	}
+
+	return makeUnaryExpr(unary_op, child, expr_type,
 		ast->scan.current_line,
 		line_strv,
 		lexeme_strv);
