@@ -68,13 +68,13 @@ Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line,
 	return (Expr*)ptr;
 }
 
-Expr* makeUnaryExpr(Token unary_operator, Expr* child, uint64_t line_nb, StringView line, StringView lexeme)
+Expr* makeUnaryExpr(Token unary_operator, Expr* child, Type type, uint64_t line_nb, StringView line, StringView lexeme)
 {
 	UnaryExpr* ptr = safe_malloc(sizeof(UnaryExpr));
 	//type for casting
 	ptr->identifier = EXPR_UNARY;
 	
-	ptr->expr_type = child->expr_type;
+	ptr->expr_type = type;
 	ptr->child = child;
 	
 	ptr->line_nb = line_nb;
