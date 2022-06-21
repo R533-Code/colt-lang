@@ -117,6 +117,7 @@ uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 			= string_literal_begin;
 
 		//Copy the string literal at the end of the byte offset section of the STRING section
+		//This can be done as we reserved enough memory before having this function called
 		memcpy(chunk->code + string_literal_begin, str_table->str_entries[i].key.ptr, 
 			str_table->str_entries[i].key.size);
 		string_literal_begin += str_table->str_entries[i].key.size;
@@ -150,6 +151,7 @@ uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* table)
 		*((uint64_t*)(chunk->code + debug_begin) + table->var_table.entries[i].counter_nb * 2 + 1)
 			= string_literal_begin;
 
+		//We cannot memcpy, as we did not reserve memory for the strings in the DEBUG section
 		for (size_t j = 0; j < table->var_table.entries[i].key.size; j++)
 			chunk_write_byte(chunk, table->var_table.entries[i].key.ptr[j]);
 		string_literal_begin += table->var_table.entries[i].key.size;
@@ -185,7 +187,6 @@ bool gen_byte_code(Chunk* chunk, const ASTTable* table, const Expr* expr)
 
 bool impl_gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* ptr)
 {
-	//TODO: should use Type to actually dispatch call depending on operator
 	switch (ptr->expr_operator)
 	{
 	break; case TKN_OPERATOR_MINUS:
@@ -196,7 +197,8 @@ bool impl_gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* p
 		//DOES NOT DO ANYTHING
 	break; case TKN_OPERATOR_BANG:
 		gen_byte_code(chunk, table, ptr->child);
-		//ChunkWriteOpCode(chunk, )
+		ChunkWriteOpCode(chunk, OP_BOOL_NOT);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
 	break; case TKN_OPERATOR_TILDE:
 		gen_byte_code(chunk, table, ptr->child);
 		ChunkWriteOpCode(chunk, OP_BIT_NOT);
