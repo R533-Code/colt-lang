@@ -207,6 +207,15 @@ typedef enum
 	/// The JUMP_OFFSET is a signed byte which is added to the instruction pointer of the VM.
 	OP_SJUMP_NOT_EQUAL,
 
+	/// @brief Short Jump if True, pops the top QWORD, if it evaluates to a true, perform a jump
+	/// [OP_SJUMP_TRUE][JUMP_OFFSET]
+	/// The JUMP_OFFSET is a signed byte which is added to the instruction pointer of the VM.
+	OP_SJUMP_TRUE,
+	/// @brief Short Jump if Not True, pops the top QWORD, if it evaluates to a true, perform a jump
+	/// [OP_SJUMP_TRUE][JUMP_OFFSET]
+	/// The JUMP_OFFSET is a signed byte which is added to the instruction pointer of the VM.
+	OP_SJUMP_NOT_TRUE,
+
 	/// @brief Prints the top value of the VM.
 	/// [OP_PRINT][TYPE]
 	/// The type is a BuiltinTypeID to cast the QWORD to.
