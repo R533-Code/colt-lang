@@ -14,6 +14,13 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		printf("!EMPTY CHUNK!");
 		return;
 	}
+	if (ChunkGetABI(chunk) != COLTI_ABI)
+	{
+		fputs(CONSOLE_FOREGROUND_BRIGHT_RED "Error: " CONSOLE_COLOR_RESET "Cannot disassemble Chunk as its ABI (", stderr);
+		ChunkPrintABI(chunk, stderr);
+		fputs(") does not match the VM's ABI (" COLTI_ABI_STRING ")!\n", stderr);
+		exit(EXIT_USER_INVALID_INPUT);
+	}
 
 	//GLOBAL OFFSET
 	uint64_t global_offset = ChunkGetGLOBALSection(chunk);
