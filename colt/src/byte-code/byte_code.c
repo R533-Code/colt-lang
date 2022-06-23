@@ -445,6 +445,7 @@ QWORD OpCode_BoolNot(QWORD value, BuiltinTypeID type)
 	QWORD result;
 	switch (type)
 	{
+	break; case COLTI_BOOL_ID:		result.b = !value.b;
 	break; case COLTI_I8_ID:		result.b = value.u8 == 0;
 	break; case COLTI_I16_ID:		result.b = value.u16 == 0;
 	break; case COLTI_I32_ID:		result.b = value.u32 == 0;
