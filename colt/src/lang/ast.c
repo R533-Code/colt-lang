@@ -233,16 +233,13 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 		return NULL;
 	}
 
-	Expr* left;
-	Token token_type;
-
-	left = impl_primary_expr(ast);
+	Expr* left = impl_primary_expr(ast);
 	if (!left)
 		return NULL;
 
-	token_type = ast->current_tkn;
+	Token bin_operator = ast->current_tkn;
 
-	switch (token_type)
+	switch (bin_operator)
 	{
 	case TKN_ERROR:
 		ast_enter_panic_mode(ast);
@@ -257,7 +254,7 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 	StringView lexeme_strv = ScannerGetCurrentLexeme(&ast->scan);
 	StringView line_strv = ScannerGetCurrentLine(&ast->scan);
 
-	int precedence = impl_op_precedence(ast, token_type);
+	int precedence = impl_op_precedence(ast, bin_operator);
 
 	while (precedence > op_precedence)
 	{
@@ -271,16 +268,16 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 		//Read the next token
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
-		Expr* right = impl_binary_expr(ast, impl_op_precedence(ast, token_type));
+		Expr* right = impl_binary_expr(ast, impl_op_precedence(ast, bin_operator));
 		if (!right) //propagate error
 			return left; // we don't want memory leaks
 
 		Type expr_type;
 
-		if (token_type != TKN_OPERATOR_EQUAL)
+		if (bin_operator != TKN_OPERATOR_EQUAL)
 		{
 			ast_handle_conversion(&left, &right);
-			expr_type = ast_operator_return_type(ast, left->expr_type, token_type, right->expr_type,
+			expr_type = ast_operator_return_type(ast, left->expr_type, bin_operator, right->expr_type,
 				line_nb, line_strv, lexeme_strv);
 		}
 		else
@@ -291,14 +288,14 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 		}
 
 		//Pratt's parsing, which allows operators priority
-		left = makeBinaryExpr(left, token_type, right, expr_type,
+		left = makeBinaryExpr(left, bin_operator, right, expr_type,
 			line_nb,
 			line_strv,
 			lexeme_strv);
 
-		token_type = ast->current_tkn;
+		bin_operator = ast->current_tkn;
 
-		switch (token_type)
+		switch (bin_operator)
 		{
 		case TKN_ERROR:
 			ast_enter_panic_mode(ast);
@@ -309,7 +306,7 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 			return left;
 		}
 
-		precedence = impl_op_precedence(ast, token_type);
+		precedence = impl_op_precedence(ast, bin_operator);
 	}
 
 	return left;
