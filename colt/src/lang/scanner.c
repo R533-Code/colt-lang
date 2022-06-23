@@ -623,8 +623,17 @@ Token impl_scanner_handle_dot(Scanner* scan)
 
 			//Parse as many digits as possible
 			scan->current_char = impl_parse_digits(scan);
-		}		
-		return impl_token_str_to_double(scan);
+		}
+		switch (impl_scanner_get_floating_suffix(scan))
+		{
+		case TKN_FLOAT:
+			return impl_token_str_to_float(scan);
+		case TKN_DOUBLE:
+			return impl_token_str_to_double(scan);
+		default:
+			colt_assert(false, "Should never happen!");
+			exit(1);
+		}
 	}
 	else
 	{
