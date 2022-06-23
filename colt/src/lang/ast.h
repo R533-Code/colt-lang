@@ -144,4 +144,14 @@ Expr* impl_expression(AST* ast);
 /// @return An Expr* representing the parsed expression or NULL for errors
 Expr* impl_variable_declaration(AST* ast);
 
+/// @brief Returns true if the token represents an assignment
+/// @param tkn The token to check for
+/// @return True if the token is an assignment
+bool is_assignment_token(Token tkn);
+
+/// @brief Returns true if the expression is a binary expression representing an assignment
+/// @param expr The expression to check for
+/// @return True if the expression is binary having an assignment token
+bool is_assignment_expr(Expr* expr);
+
 #endif //HG_COLT_AST

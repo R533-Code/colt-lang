@@ -272,19 +272,23 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 		if (!right) //propagate error
 			return left; // we don't want memory leaks
 
+		//left hand side should be an lvalue
+		if (is_assignment_token(bin_operator) && !(left->identifier == EXPR_VAR || is_assignment_expr(left)))
+			ast_gen_error(ast, left->line_nb, left->line, left->lexeme, "Left hand side of an assignment should be a variable (lvalue)!");
+
 		Type expr_type;
 
-		if (bin_operator != TKN_OPERATOR_EQUAL)
-		{
-			ast_handle_conversion(&left, &right);
-			expr_type = ast_operator_return_type(ast, left->expr_type, bin_operator, right->expr_type,
-				line_nb, line_strv, lexeme_strv);
-		}
-		else
+		if (is_assignment_token(bin_operator))
 		{
 			expr_type = left->expr_type;
 			right = makeConvertExpr(right, left->expr_type,
 				right->line_nb, right->line, right->lexeme);
+		}
+		else
+		{
+			ast_handle_conversion(&left, &right);
+			expr_type = ast_operator_return_type(ast, left->expr_type, bin_operator, right->expr_type,
+				line_nb, line_strv, lexeme_strv);
 		}
 
 		//Pratt's parsing, which allows operators priority
@@ -401,6 +405,7 @@ Expr* impl_primary_expr(AST* ast)
 			return NULL;
 		}
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+
 		return makeVariableExpr(variable_name, table_entry->type,
 			ast->scan.current_line,
 			ScannerGetCurrentLine(&ast->scan),
@@ -594,9 +599,37 @@ Expr* impl_variable_declaration(AST* ast)
 		return makeBinaryExpr(
 			makeVariableExpr(decl_identifier, to_assign->expr_type,
 				identifier_line_nb, identifier_line, decl_identifier),
-			TKN_OPERATOR_EQUAL, to_assign, var_type,
-			line_nb, lexeme, line
+			TKN_OPERATOR_EQUAL, to_assign, var_type, line_nb, lexeme, line
 		);
 	}
 	return NULL;
+}
+
+bool is_assignment_token(Token tkn)
+{
+	switch (tkn)
+	{
+	case TKN_OPERATOR_EQUAL:
+	case TKN_OPERATOR_AND_EQUAL:
+	case TKN_OPERATOR_OR_EQUAL:
+	case TKN_OPERATOR_XOR_EQUAL:
+	case TKN_OPERATOR_PLUS_EQUAL:
+	case TKN_OPERATOR_MINUS_EQUAL:
+	case TKN_OPERATOR_STAR_EQUAL:
+	case TKN_OPERATOR_SLASH_EQUAL:
+		return true;
+	default:
+		return false;
+	}
+}
+
+bool is_assignment_expr(Expr* expr)
+{
+	if (expr->identifier == EXPR_BINARY)
+	{
+		if (is_assignment_token(((BinaryExpr*)expr)->expr_operator))
+			return true;
+		return false;
+	}
+	return false;
 }
