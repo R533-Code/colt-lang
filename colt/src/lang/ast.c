@@ -189,6 +189,8 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 	case TKN_OPERATOR_LESS_EQUAL:
 	case TKN_OPERATOR_EQUAL_EQUAL:
 	case TKN_OPERATOR_BANG_EQUAL:
+	case TKN_OPERATOR_AND_AND:
+	case TKN_OPERATOR_OR_OR:
 		return ColtBool;
 
 	default:
