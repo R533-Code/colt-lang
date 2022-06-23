@@ -275,6 +275,10 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 		return impl_print_sjump_instruction("OP_SJUMP_EQUAL", chunk->code[offset + 1], chunk->code[offset + 2], offset);
 	case OP_SJUMP_NOT_EQUAL:
 		return impl_print_sjump_instruction("OP_SJUMP_NOT_EQUAL", chunk->code[offset + 1], chunk->code[offset + 2], offset);
+	case OP_SJUMP_TRUE:
+		return impl_print_sjump_instruction("OP_SJUMP_TRUE", chunk->code[offset + 1], chunk->code[offset + 2], offset);
+	case OP_SJUMP_NOT_TRUE:
+		return impl_print_sjump_instruction("OP_SJUMP_NOT_TRUE", chunk->code[offset + 1], chunk->code[offset + 2], offset);
 
 		/******************************************************/
 
