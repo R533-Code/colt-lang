@@ -223,6 +223,11 @@ bool impl_gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr*
 	case TKN_OPERATOR_OR_EQUAL:
 	case TKN_OPERATOR_XOR_EQUAL:
 		return gen_global_variable_assigment(chunk, table, ptr);
+	case TKN_OPERATOR_AND_AND:
+		return gen_and_and_bool_comparison(chunk, table, ptr);
+
+	case TKN_OPERATOR_OR_OR:
+		return gen_or_or_bool_comparison(chunk, table, ptr);
 	}
 
 
@@ -334,7 +339,8 @@ bool impl_gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr*
 	case TKN_OPERATOR_BANG_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_NOT_EQUAL);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
-		return true;
+		return true;	
+
 	default:
 		colt_assert(false, "NOT IMPLEMENTED!");
 		return false;
@@ -468,6 +474,40 @@ bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const Bi
 	ChunkWriteQWORD(chunk, offset);
 	if (ptr->lhs->expr_type.type_id == ID_COLT_LSTRING)
 		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);
+	return true;
+}
+
+bool gen_and_and_bool_comparison(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
+{
+	colt_assert(ptr->expr_type.type_id == ID_COLT_BOOL, "Operands of && should be of type bool!");
+	gen_byte_code(chunk, table, ptr->lhs);
+	ChunkWriteOpCode(chunk, OP_SJUMP_NOT_TRUE);
+	uint8_t* jump_to = chunk->code + chunk->count;
+	//TO BE OVERRIDEN
+	chunk_write_byte(chunk, 205);
+	//If it is true, we pop the true, to evaluate the second condition
+	ChunkWriteOpCode(chunk, OP_POP);
+	gen_byte_code(chunk, table, ptr->rhs);
+	//MIGHT OVERFLOW
+	*jump_to = (uint8_t)((chunk->code + chunk->count) - jump_to);
+	
+	return true;
+}
+
+bool gen_or_or_bool_comparison(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
+{
+	colt_assert(ptr->expr_type.type_id == ID_COLT_BOOL, "Operands of || should be of type bool!");
+	gen_byte_code(chunk, table, ptr->lhs);
+	ChunkWriteOpCode(chunk, OP_SJUMP_TRUE);
+	uint8_t* jump_to = chunk->code + chunk->count;
+	//TO BE OVERRIDEN
+	chunk_write_byte(chunk, 205);
+	//If it is false, we pop the false, to evaluate the second condition
+	ChunkWriteOpCode(chunk, OP_POP);
+	gen_byte_code(chunk, table, ptr->rhs);
+	//MIGHT OVERFLOW
+	*jump_to = (uint8_t)((chunk->code + chunk->count) - jump_to);
+
 	return true;
 }
 
