@@ -55,7 +55,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		fputs(CONSOLE_FOREGROUND_BRIGHT_RED "Error: " CONSOLE_COLOR_RESET "Cannot run Chunk as its ABI (", stderr);
 		ChunkPrintABI(chunk, stderr);
 		fputs(") does not match the VM's ABI (" COLTI_ABI_STRING ")!\n", stderr);
-		return EXIT_USER_INVALID_INPUT;
+		exit(EXIT_USER_INVALID_INPUT);
 	}
 
 	for (;;)
@@ -355,6 +355,30 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			QWORD rhs = *(vm->stack_top - 1);
 			QWORD lhs = *(vm->stack_top - 2);
 			if (OpCode_NotEqual(lhs, rhs, *(ip++)).b)
+			{
+				ip += *ip;
+				continue;
+			}
+			ip++;
+		}
+		break; case OP_SJUMP_TRUE:
+		{
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			QWORD value = StackVMTop(vm);
+			colt_assert(value.u64 == 0 || value.u64 == 1, "Value was not a bool!");
+			if (value.b)
+			{
+				ip += *ip;
+				continue;
+			}
+			ip++;
+		}
+		break; case OP_SJUMP_NOT_TRUE:
+		{
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			QWORD value = StackVMTop(vm);
+			colt_assert(value.u64 == 0 || value.u64 == 1, "Value was not a bool!");
+			if (!value.b)
 			{
 				ip += *ip;
 				continue;
