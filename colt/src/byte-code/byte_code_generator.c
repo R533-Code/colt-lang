@@ -415,14 +415,15 @@ bool gen_global_variable_load(Chunk* chunk, const ASTTable* table, const Variabl
 
 bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 {
+	colt_assert(ptr->lhs->identifier == EXPR_VAR, "Left hand side should be a variable!");
+	
 	gen_byte_code(chunk, table, ptr->rhs);
+
 	//Optimize lstring assignment:
 	//as every lstring loading writes a OP_LOAD_LSTRING,
 	//there is no point in OP_STORE_LSTRING, we rather pop OP_LOAD_LSTRING
 	if (ptr->rhs->expr_type.type_id == ID_COLT_LSTRING)
 		chunk->count--;
-
-	colt_assert(ptr->lhs->identifier == EXPR_VAR, "Left hand side should be a variable!");
 
 	switch (ptr->expr_operator)
 	{
