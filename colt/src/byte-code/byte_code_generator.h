@@ -101,8 +101,18 @@ bool gen_global_variable_load(Chunk* chunk, const ASTTable* table, const Variabl
 /// @return True if no error are encountered
 bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr);
 
+/// @brief Generate the code necessary for an bool and (&&) comparison
+/// @param chunk The Chunk where to write the byte-code
+/// @param table The ASTTable of the AST whose being parsed
+/// @param ptr The BinaryExpr whose operator is &&
+/// @return True
 bool gen_and_and_bool_comparison(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr);
 
+/// @brief Generate the code necessary for an bool or (||) comparison
+/// @param chunk The Chunk where to write the byte-code
+/// @param table The ASTTable of the AST whose being parsed
+/// @param ptr The BinaryExpr whose operator is ||
+/// @return True
 bool gen_or_or_bool_comparison(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr);
 
 /// @brief Generate short jump code to ensure the last pushed operand is 'short_jump' 'cmp_to'
