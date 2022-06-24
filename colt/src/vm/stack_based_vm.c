@@ -364,8 +364,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		break; case OP_SJUMP_TRUE:
 		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
-			QWORD value = StackVMTop(vm);
-			colt_assert(value.u64 == 0 || value.u64 == 1, "Value was not a bool!");
+			QWORD value = StackVMTop(vm);			
 			if (value.b)
 			{
 				ip += *ip;
@@ -377,7 +376,6 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			QWORD value = StackVMTop(vm);
-			colt_assert(value.u64 == 0 || value.u64 == 1, "Value was not a bool!");
 			if (!value.b)
 			{
 				ip += *ip;
@@ -399,6 +397,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		break; case OP_RETURN:
 			return 0;
 		break; case OP_EXIT:
+			printf("\nStack contains %"PRIu64" items.", StackVMSize(vm));
 			return unsafe_get_qword(&ip).i64;
 		break; default:
 			break;
