@@ -30,7 +30,7 @@ BYTE-CODE RUNNING
 
 QWORD OpCode_Negate(QWORD value, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = -value.i8;
@@ -234,7 +234,7 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 
 QWORD OpCode_Sum(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = left.i8 + right.i8;
@@ -254,7 +254,7 @@ QWORD OpCode_Sum(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_Difference(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = left.i8 - right.i8;
@@ -274,7 +274,7 @@ QWORD OpCode_Difference(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = left.i8 * right.i8;
@@ -294,7 +294,7 @@ QWORD OpCode_Multiply(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = left.i8 / right.i8;
@@ -314,7 +314,7 @@ QWORD OpCode_Divide(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_Modulo(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = left.i8 % right.i8;
@@ -332,7 +332,7 @@ QWORD OpCode_Modulo(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_BitAND(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = left.i8 & right.i8;
@@ -350,7 +350,7 @@ QWORD OpCode_BitAND(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_BitOR(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = left.i8 | right.i8;
@@ -368,7 +368,7 @@ QWORD OpCode_BitOR(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_BitXOR(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = left.i8 ^ right.i8;
@@ -386,7 +386,7 @@ QWORD OpCode_BitXOR(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_BitNOT(QWORD value, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = ~value.i8;
@@ -404,8 +404,7 @@ QWORD OpCode_BitNOT(QWORD value, BuiltinTypeID type)
 
 QWORD OpCode_BitShiftL(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
-
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = left.i8 << right.i8;
@@ -423,8 +422,7 @@ QWORD OpCode_BitShiftL(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_BitShiftR(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
-
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.i8 = left.i8 >> right.i8;
@@ -442,7 +440,7 @@ QWORD OpCode_BitShiftR(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_BoolNot(QWORD value, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_BOOL_ID:		result.b = !value.b;
@@ -463,7 +461,7 @@ QWORD OpCode_BoolNot(QWORD value, BuiltinTypeID type)
 
 QWORD OpCode_Greater(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.b = left.i8 > right.i8;
@@ -483,7 +481,7 @@ QWORD OpCode_Greater(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_Less(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.b = left.i8 < right.i8;
@@ -503,7 +501,7 @@ QWORD OpCode_Less(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_GreaterEq(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.b = left.i8 >= right.i8;
@@ -523,7 +521,7 @@ QWORD OpCode_GreaterEq(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_LessEq(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_I8_ID:		result.b = left.i8 <= right.i8;
@@ -543,7 +541,7 @@ QWORD OpCode_LessEq(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_Equal(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_BOOL_ID:		result.b = left.b == right.b;
@@ -564,7 +562,7 @@ QWORD OpCode_Equal(QWORD left, QWORD right, BuiltinTypeID type)
 
 QWORD OpCode_NotEqual(QWORD left, QWORD right, BuiltinTypeID type)
 {
-	QWORD result;
+	QWORD result = { .u64 = 0 };
 	switch (type)
 	{
 	break; case COLTI_BOOL_ID:		result.b = left.b != right.b;
