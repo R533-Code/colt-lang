@@ -397,8 +397,11 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		break; case OP_RETURN:
 			return 0;
 		break; case OP_EXIT:
-			printf("\nStack contains %"PRIu64" items.", StackVMSize(vm));
+		{
+			uint64_t size = StackVMSize(vm);
+			printf("\nStack contains %"PRIu64" QWORD%c.", size, size == 1 ? ' ' : 's');
 			return unsafe_get_qword(&ip).i64;
+		}
 		break; default:
 			break;
 		}
