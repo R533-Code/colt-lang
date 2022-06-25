@@ -212,9 +212,37 @@ typedef enum
 	/// The JUMP_OFFSET is an unsigned byte which is added to the instruction pointer of the VM.
 	OP_SJUMP_TRUE,
 	/// @brief Short Jump if Not True, if the top QWORD.b == 0, if it evaluates to a true, perform a jump
-	/// [OP_SJUMP_TRUE][JUMP_OFFSET]
+	/// [OP_SJUMP_NOT_TRUE][JUMP_OFFSET]
 	/// The JUMP_OFFSET is an unsigned byte which is added to the instruction pointer of the VM.
 	OP_SJUMP_NOT_TRUE,
+
+	/// @brief Pushes the current scope, then allocates and pushes a new scope for local variables.
+	/// [OP_PUSH_SCOPE][PADDING]?[LOCAL_COUNT]
+	/// This allocates LOCAL_COUNT QWORDs in the stack, which are used as local variables.
+	/// The LOCAL_COUNT is an aligned DWORD.
+	OP_PUSH_SCOPE,
+	/// @brief Deallocates the top scope, and pops the current scope.
+	/// [OP_PUSH_SCOPE][PADDING]?[LOCAL_COUNT]
+	/// This deallocates LOCAL_COUNT QWORDs in the stack, which are used as local variables.
+	/// The LOCAL_COUNT is an aligned DWORD.
+	OP_POP_SCOPE,
+
+	/// @brief Short Load Local, loads a local from the current scope and pushes it to the stack.
+	/// [OP_SLOAD_LOCAL][LOCAL_NUM]
+	/// The LOCAL_NUM is a byte, which represents the QWORD offset to add to the current scope to get the variable to which to fetch.
+	OP_SLOAD_LOCAL,
+	/// @brief Short Store Local, writes the top of the stack to a local from the current scope.
+	/// [OP_SSTORE_LOCAL][LOCAL_NUM]
+	/// The LOCAL_NUM is a byte, which represents the QWORD offset to add to the current scope to get the variable to which to write.
+	OP_SSTORE_LOCAL,
+	/// @brief Loads a local from the current scope and pushes it to the stack.
+	/// [OP_LOAD_LOCAL][PADDING]?[LOCAL_NUM]
+	/// The LOCAL_NUM is a DWORD, which represents the QWORD offset to add to the current scope to get the variable to which to fetch.
+	OP_LOAD_LOCAL,
+	/// @brief Writes the top of the stack to a local from the current scope.
+	/// [OP_STORE_LOCAL][PADDING]?[LOCAL_NUM]
+	/// The LOCAL_NUM is a DWORD, which represents the QWORD offset to add to the current scope to get the variable to which to write.
+	OP_STORE_LOCAL,
 
 	/// @brief Prints the top value of the VM.
 	/// [OP_PRINT][TYPE]
