@@ -41,9 +41,14 @@ void repl_run(AST* ast, StringView strv, const ColtScanOptions* options, const c
 			StackVM vm;
 			StackVMInit(&vm);
 			if (StackVMRun(&vm, &chunk) == 0)
+			{
 				fputc('\n', stdout);
+				//if we run successfully, we update the globals
+				repl_write_global(&ast->table.var_table, &chunk);
+			}
+			else
+				fputs(CONSOLE_FOREGROUND_BRIGHT_RED"\nError: "CONSOLE_COLOR_RESET "VM did not run successfully!\n", stdout);
 			StackVMFree(&vm);
-			repl_write_global(&ast->table.var_table, &chunk);
 		}
 		ChunkFree(&chunk);
 	}
