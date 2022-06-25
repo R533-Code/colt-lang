@@ -62,14 +62,14 @@ bool gen_byte_code(Chunk* chunk, const ASTTable* table, const Expr* expr);
 /// @param table VariableTable containing variables
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
-bool impl_gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* ptr);
+bool gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* ptr);
 
 /// @brief Generate code necessary for binary operators
 /// @param chunk The Chunk where to write the byte-code
 /// @param table VariableTable containing variables
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
-bool impl_gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr);
+bool gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr);
 
 /// @brief Generate code necessary for literals.
 /// As literals never have child expressions, it doesn't need the variable
@@ -78,14 +78,14 @@ bool impl_gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr*
 /// @param table VariableTable containing variables
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
-bool impl_gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* ptr);
+bool gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* ptr);
 
 /// @brief Generate code necessary for built-in conversions
 /// @param chunk The Chunk where to write the byte-code
 /// @param table VariableTable containing variables
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
-bool impl_gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* ptr);
+bool gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* ptr);
 
 /// @brief Generate code necessary for variable to r-value conversion
 /// @param chunk The Chunk where to write the byte-code
