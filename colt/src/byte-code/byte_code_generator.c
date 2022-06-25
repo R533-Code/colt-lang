@@ -33,6 +33,7 @@
 								ChunkWriteOpCode(chunk, OP_DIVIDE); \
 								ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id); } while (0)
 
+/// @brief Generates the byte-code necessary for a modulo operation, and its checks
 #define gen_binary_modulo() do { /*prohibit zero division for integers*/ \
 								if (is_type_integral((BuiltinTypeID)ptr->expr_type.type_id)) \
 								{ \
