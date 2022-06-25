@@ -19,8 +19,10 @@ void ColtRun(const char* byte_code_out, StringView to_parse)
 				ChunkSerialize(&chunk, byte_code_out);
 			StackVM vm;
 			StackVMInit(&vm);
-			StackVMRun(&vm, &chunk);
-			fputc('\n', stdout);
+			if (StackVMRun(&vm, &chunk) == 0)
+				fputc('\n', stdout);
+			else
+				fputs(CONSOLE_FOREGROUND_BRIGHT_RED"\nError: "CONSOLE_COLOR_RESET "VM did not run successfully!\n", stdout);
 			StackVMFree(&vm);
 		}
 		ChunkFree(&chunk);
