@@ -139,14 +139,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 
 		/******************************************************/
 
-		break;
-		case OP_LOAD_QWORD:
-		{
-			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
-			uint64_t offset = StackVMPop(vm).u64;
-			QWORD qword = { .lstring = chunk->code + offset };
-			StackVMPush(vm, qword);
-		}
+		
 
 		/******************************************************/
 
