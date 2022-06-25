@@ -17,11 +17,12 @@ void StackVMFree(StackVM* vm)
 
 void StackVMPush(StackVM* vm, QWORD value)
 {
+	colt_assert(StackVMSize(vm) != 256, "StackVM was full!");
 	*vm->stack_top = value;
 	vm->stack_top++;
 }
 
-QWORD StackVMTop(StackVM* vm)
+QWORD StackVMTop(const StackVM* vm)
 {
 	colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 	return *(vm->stack_top - 1);
