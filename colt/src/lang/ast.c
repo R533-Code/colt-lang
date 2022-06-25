@@ -498,11 +498,11 @@ Expr* impl_expression(AST* ast)
 		if (ast->options->no_warn_unused_result == false && ast->error_nb == 0)
 			ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
 	}
-	if (ast->current_tkn != TKN_SEMICOLON)
+	if (ast->current_tkn != TKN_SEMICOLON && ast->current_tkn != TKN_ERROR && ast->current_tkn != TKN_EOF)
 	{
 		ast_gen_error(ast,
 			ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
-			"Expected a ';'!"
+			"Expected a semicolon ';'!"
 		);
 	}
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
