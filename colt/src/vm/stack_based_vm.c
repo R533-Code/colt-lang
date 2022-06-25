@@ -49,7 +49,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 	if (ip == chunk->code)
 	{
 		print_error_string("Cannot run Chunk that does not contain byte-code!");
-		return EXIT_USER_INVALID_INPUT;
+		exit(EXIT_USER_INVALID_INPUT);
 	}
 	if (ChunkGetABI(chunk) != COLTI_ABI)
 	{
