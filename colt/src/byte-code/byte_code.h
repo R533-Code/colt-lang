@@ -40,46 +40,12 @@ typedef enum
 	/// The QWORD is the byte offset from the beginning of the Chunk to the QWORD
 	OP_STORE_GLOBAL,
 
-	/// @brief Pops the top of the stack and uses it as a byte offset from which to load a BYTE.
-	/// [OP_LOAD_BYTE]
-	/// The byte offset is added to the beginning of the Chunk.
-	OP_LOAD_BYTE,
-	/// @brief Pops the top of the stack and uses it as a byte offset from which to load an aligned WORD.
-	/// [OP_LOAD_WORD]
-	/// The byte offset is added to the beginning of the Chunk.
-	OP_LOAD_WORD,
-	/// @brief Pops the top of the stack and uses it as a byte offset from which to load an aligned DWORD.
-	/// [OP_LOAD_DWORD]
-	/// The byte offset is added to the beginning of the Chunk.
-	OP_LOAD_DWORD,
-	/// @brief Pops the top of the stack and uses it as a byte offset from which to load an aligned QWORD.
-	/// [OP_LOAD_QWORD]
-	/// The byte offset is added to the beginning of the Chunk.
-	OP_LOAD_QWORD,
-
 	/// @brief Pops the top of the stack and uses it as a byte offset to an lstring, then pushes the pointer to the beginning of the lstring.
 	/// [OP_LOAD_LSTRING]
 	OP_LOAD_LSTRING,
 	/// @brief Pops the top of the stack and turns it back to a byte offset which is then pushed to the top of the stack
 	/// [OP_STORE_LSTRING]
 	OP_STORE_LSTRING,
-
-	/// @brief Uses the top of the stack as a byte offset to which to write a byte.
-	/// [OP_STORE_BYTE]
-	/// The byte offset is added to the beginning of the Chunk.
-	OP_STORE_BYTE,
-	/// @brief Uses the top of the stack as a byte offset to which to write an aligned WORD.
-	/// [OP_STORE_WORD]
-	/// The byte offset is added to the beginning of the Chunk.
-	OP_STORE_WORD,
-	/// @brief Uses the top of the stack as a byte offset to which to write an aligned DWORD.
-	/// [OP_STORE_DWORD]
-	/// The byte offset is added to the beginning of the Chunk.
-	OP_STORE_DWORD,
-	/// @brief Uses the top of the stack as a byte offset to which to write an aligned QWORD.
-	/// [OP_STORE_QWORD]
-	/// The byte offset is added to the beginning of the Chunk.
-	OP_STORE_QWORD,
 
 	/// @brief Negates the top of the stack.
 	/// [OP_NEGATE][TYPE]
