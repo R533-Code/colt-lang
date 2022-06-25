@@ -195,6 +195,30 @@ uint64_t impl_chunk_print_code(const Chunk* chunk, uint64_t offset)
 		impl_print_hex_instruction("OP_PUSH_QWORD", ChunkGetQWORD(chunk, &offset).u64);
 		return offset;
 
+	case OP_PUSH_SCOPE:
+		impl_print_hex_instruction("OP_PUSH_SCOPE", ChunkGetQWORD(chunk, &offset).u64);
+		return offset;
+	
+	case OP_POP_SCOPE:
+		impl_print_hex_instruction("OP_POP_SCOPE", ChunkGetQWORD(chunk, &offset).u64);
+		return offset;
+
+	case OP_SLOAD_LOCAL:
+		impl_print_hex_instruction("OP_SLOAD_LOCAL", ChunkGetQWORD(chunk, &offset).u64);
+		return offset;
+
+	case OP_SSTORE_LOCAL:
+		impl_print_hex_instruction("OP_SSTORE_LOCAL", ChunkGetQWORD(chunk, &offset).u64);
+		return offset;
+
+	case OP_LOAD_LOCAL:
+		impl_print_hex_instruction("OP_LOAD_LOCAL", ChunkGetQWORD(chunk, &offset).u64);
+		return offset;
+
+	case OP_STORE_LOCAL:
+		impl_print_hex_instruction("OP_STORE_LOCAL", ChunkGetQWORD(chunk, &offset).u64);
+		return offset;
+
 		/******************************************************/
 
 	case OP_CONVERT:
