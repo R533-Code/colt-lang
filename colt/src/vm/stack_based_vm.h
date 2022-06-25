@@ -35,10 +35,10 @@ void StackVMFree(StackVM* vm);
 /// @param value The value to push
 void StackVMPush(StackVM* vm, QWORD value);
 
-/// @brief returns the top of a StackVM
-/// @param vm The virtual machine to modify
+/// @brief Returns the top of a StackVM
+/// @param vm The virtual machine to whose top to read
 /// @return The top of the stack
-QWORD StackVMTop(StackVM* vm);
+QWORD StackVMTop(const StackVM* vm);
 
 /// @brief Pops and returns the top of a StackVM
 /// @param vm The virtual machine to modify
