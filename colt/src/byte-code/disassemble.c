@@ -78,7 +78,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		const uint64_t string_literal_count = unsafe_chunk_get_lstring_count(chunk);
 		
 		//%c for plural -> 's' else ' '
-		printf("        %08"PRIu64": %"PRIu64" lstring%c\n",
+		printf("        %08"PRIu64" %"PRIu64" lstring%c\n",
 			string_offset, string_literal_count, string_literal_count == 1 ? ' ' : 's');
 		
 		for (size_t i = 0; i < string_literal_count; i++)
