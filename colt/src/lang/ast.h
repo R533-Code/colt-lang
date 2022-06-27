@@ -117,32 +117,32 @@ int impl_op_precedence(AST* ast, Token token);
 /// @param ast The AST from which to parse
 /// @param op_precedence The current_tkn operator precedence (which when first call should be -1)
 /// @return An Expr* representing either a binary or primary expression
-Expr* impl_binary_expr(AST* ast, int op_precedence);
+Expr* parse_binary(AST* ast, int op_precedence);
 
 /// @brief Parses a primary expression (which can be a UnaryExpr, LiteralExpr or (...)).
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression
-Expr* impl_primary_expr(AST* ast);
+Expr* parse_primary(AST* ast);
 
 /// @brief Parses a unary expression
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression
-Expr* impl_unary_expr(AST* ast);
+Expr* parse_unary(AST* ast);
 
 /// @brief Parses a parenthesis expression, verifying it is well enclosed
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression
-Expr* impl_paren_expr(AST* ast);
+Expr* parse_parenthesis(AST* ast);
 
-/// @brief An expression is either a variable declaration or a binary expression
+/// @brief An expression is either a variable declaration or a binary expression: anything that returns a value on the stack
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression or NULL for errors
-Expr* impl_expression(AST* ast);
+Expr* parse_expression(AST* ast);
 
 /// @brief Parses a variable declaration, and adds the variable to the 'var_table'
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression or NULL for errors
-Expr* impl_variable_declaration(AST* ast);
+Expr* parse_variable_declaration(AST* ast);
 
 /// @brief Returns true if the token represents an assignment
 /// @param tkn The token to check for

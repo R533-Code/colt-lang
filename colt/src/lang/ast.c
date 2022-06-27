@@ -33,7 +33,7 @@ bool ASTParse(AST* ast, StringView to_parse, const ColtScanOptions* options)
 	while (ast->current_tkn != TKN_EOF)
 	{
 		//parse the expression
-		ExprArrayPushBack(&ast->expr, impl_expression(ast));
+		ExprArrayPushBack(&ast->expr, parse_expression(ast));
 	}
 
 	ScannerFree(&ast->scan);
@@ -226,7 +226,7 @@ int impl_op_precedence(AST* ast, Token token)
 	return 100;
 }
 
-Expr* impl_binary_expr(AST* ast, int op_precedence)
+Expr* parse_binary(AST* ast, int op_precedence)
 {
 	if (op_precedence == 100) //token was not an operator: error
 	{
@@ -235,7 +235,7 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 		return NULL;
 	}
 
-	Expr* left = impl_primary_expr(ast);
+	Expr* left = parse_primary(ast);
 	if (!left)
 		return NULL;
 
@@ -270,7 +270,7 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 		//Read the next token
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
-		Expr* right = impl_binary_expr(ast, impl_op_precedence(ast, bin_operator));
+		Expr* right = parse_binary(ast, impl_op_precedence(ast, bin_operator));
 		if (!right) //propagate error
 			return left; // we don't want memory leaks
 
@@ -318,7 +318,7 @@ Expr* impl_binary_expr(AST* ast, int op_precedence)
 	return left;
 }
 
-Expr* impl_primary_expr(AST* ast)
+Expr* parse_primary(AST* ast)
 {
 	Expr* primary;
 	//Zero initialize value. This is a really important step,
@@ -380,13 +380,13 @@ Expr* impl_primary_expr(AST* ast)
 	case TKN_OPERATOR_TILDE:
 	case TKN_OPERATOR_BANG:
 		//there is no need updating current token as a unary expression's internal already does that
-		primary = impl_unary_expr(ast);
+		primary = parse_unary(ast);
 		return primary;
 
 		/**************** PARENTHESIS ****************/
 
 	break; case TKN_LEFT_PAREN:
-		primary = impl_paren_expr(ast);
+		primary = parse_parenthesis(ast);
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		return primary;
 
@@ -433,7 +433,7 @@ Expr* impl_primary_expr(AST* ast)
 	return primary;
 }
 
-Expr* impl_unary_expr(AST* ast)
+Expr* parse_unary(AST* ast)
 {
 	//As C function argument order is not guaranteed
 	StringView lexeme_strv = ScannerGetCurrentLexeme(&ast->scan);
@@ -443,7 +443,7 @@ Expr* impl_unary_expr(AST* ast)
 
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
-	Expr* child = impl_primary_expr(ast);
+	Expr* child = parse_primary(ast);
 	if (!child)
 		return NULL; //propagate the error
 
@@ -472,10 +472,10 @@ Expr* impl_unary_expr(AST* ast)
 		lexeme_strv);
 }
 
-Expr* impl_paren_expr(AST* ast)
+Expr* parse_parenthesis(AST* ast)
 {
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
-	Expr* ret = impl_binary_expr(ast, 0);
+	Expr* ret = parse_binary(ast, 0);
 	if (ast->current_tkn != TKN_RIGHT_PAREN)
 	{
 		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
@@ -485,16 +485,16 @@ Expr* impl_paren_expr(AST* ast)
 	return ret;
 }
 
-Expr* impl_expression(AST* ast)
+Expr* parse_expression(AST* ast)
 {
 	Expr* expr;
 	switch (ast->current_tkn)
 	{
 	case TKN_KEYWORD_VAR:
 	case TKN_BUILTIN_TYPE:
-		expr = impl_variable_declaration(ast);
+		expr = parse_variable_declaration(ast);
 	break; default:
-		expr = impl_binary_expr(ast, -1);
+		expr = parse_binary(ast, -1);
 		if (ast->options->no_warn_unused_result == false && ast->error_nb == 0)
 			ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
 	}
@@ -509,7 +509,7 @@ Expr* impl_expression(AST* ast)
 	return expr;
 }
 
-Expr* impl_variable_declaration(AST* ast)
+Expr* parse_variable_declaration(AST* ast)
 {
 	Token tkn_type = ast->current_tkn;
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
@@ -567,7 +567,7 @@ Expr* impl_variable_declaration(AST* ast)
 		uint64_t line_nb = ast->scan.current_line;
 
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
-		Expr* to_assign = impl_binary_expr(ast, 0);
+		Expr* to_assign = parse_binary(ast, 0);
 		if (!to_assign)
 			return NULL;
 		
