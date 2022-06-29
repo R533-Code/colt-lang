@@ -97,7 +97,8 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 	{
 		is_valid = gen_byte_code(chunk, table, array->expressions[i]);
 		//As we only implemented expressions, after an expression, we pop the result
-		ChunkWriteOpCode(chunk, OP_POP);
+		if (array->expressions[i]->expr_type.type_id != ID_COLT_VOID)
+			ChunkWriteOpCode(chunk, OP_POP);
 	}
 	is_valid = gen_byte_code(chunk, table, array->expressions[array->count - 1]);
 	if (is_valid)
