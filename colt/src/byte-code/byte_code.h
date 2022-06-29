@@ -232,6 +232,8 @@ typedef enum
 /// @brief Represents an operand type
 typedef enum
 {
+	/// @brief Represents the absence of type
+	ID_COLT_VOID		= COLTI_VOID_ID,
 	/// @brief Represents a bool
 	ID_COLT_BOOL		= COLTI_BOOL_ID,
 	/// @brief Represents a 64-bit double-precision float
