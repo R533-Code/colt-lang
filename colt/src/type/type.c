@@ -43,7 +43,8 @@ Type type_get_from_id(BuiltinTypeID id)
 {
 	switch (id)
 	{
-		case 
+	case ID_COLT_VOID:
+		return ColtVoid;
 	case ID_COLT_BOOL:
 		return ColtBool;
 	case ID_COLT_I8:
