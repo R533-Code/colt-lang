@@ -9,7 +9,7 @@
 #include <stdbool.h>
 
 /// @brief Absence of type: any expression with no result
-typedef void ColtVoid;
+typedef void ColtVoid_t;
 /// @brief The type-id of a Colt void
 #define COLTI_VOID_ID 0
 /// @brief A string representing a Colt void
