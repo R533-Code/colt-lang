@@ -10,7 +10,7 @@
 /// @brief Pointer to a constant literal string
 typedef const char* ColtLString_t;
 /// @brief The type-id of a Colt literal string
-#define COLTI_LSTRING_ID 11
+#define COLTI_LSTRING_ID 12
 /// @brief A string representing a Colt literal string
 static const char ColtLString_str[] = "lstring";
 

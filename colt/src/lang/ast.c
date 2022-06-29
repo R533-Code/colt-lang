@@ -465,7 +465,7 @@ Expr* parse_unary(AST* ast)
 	break; default:
 		expr_type = child->expr_type;
 	}
-
+	
 	return makeUnaryExpr(unary_op, child, expr_type,
 		ast->scan.current_line,
 		line_strv,
@@ -485,6 +485,11 @@ Expr* parse_parenthesis(AST* ast)
 	return ret;
 }
 
+Expr* parse_scope(AST* ast)
+{
+	
+}
+
 Expr* parse_expression(AST* ast)
 {
 	Expr* expr;
@@ -493,9 +498,11 @@ Expr* parse_expression(AST* ast)
 	case TKN_KEYWORD_VAR:
 	case TKN_BUILTIN_TYPE:
 		expr = parse_variable_declaration(ast);
+	break; case TKN_LEFT_CURLY:
+		expr = parse_scope(ast);
 	break; default:
 		expr = parse_binary(ast, -1);
-		if (ast->options->no_warn_unused_result == false && ast->error_nb == 0)
+		if (ast->options->no_warn_unused_result == false && !is_assignment_expr(expr))
 			ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
 	}
 	if (ast->current_tkn != TKN_SEMICOLON && ast->current_tkn != TKN_ERROR && ast->current_tkn != TKN_EOF)
