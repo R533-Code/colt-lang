@@ -26,6 +26,7 @@ typedef struct
 } Type;
 
 
+static const Type ColtVoid		= { .name.start = ColtVoid_str,		.name.end = ColtVoid_str + 4,		.type_id = ID_COLT_VOID,		.byte_size = 0 };
 /// @brief Type representing a built-in bool
 static const Type ColtBool		= { .name.start = ColtBool_str,		.name.end = ColtBool_str + 4,		.type_id = ID_COLT_BOOL,		.byte_size = sizeof(ColtBool_t) };
 /// @brief Type representing a built-in unsigned 8-bit integer
