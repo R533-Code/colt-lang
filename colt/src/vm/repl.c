@@ -44,7 +44,7 @@ void repl_run(AST* ast, StringView strv, const ColtScanOptions* options, const c
 			{
 				fputc('\n', stdout);
 				//if we run successfully, we update the globals
-				repl_write_global(&ast->table.var_table, &chunk);
+				repl_write_global(&ast->table.glob_table, &chunk);
 			}
 			else
 				fputs(CONSOLE_FOREGROUND_BRIGHT_RED"\nError: "CONSOLE_COLOR_RESET "VM did not run successfully!\n", stdout);
@@ -54,7 +54,7 @@ void repl_run(AST* ast, StringView strv, const ColtScanOptions* options, const c
 	}
 }
 
-void repl_write_global(VariableTable* table, Chunk* chunk)
+void repl_write_global(GlobalTable* table, Chunk* chunk)
 {
 	if (table->count == 0)
 		return;

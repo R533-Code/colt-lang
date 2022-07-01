@@ -78,12 +78,12 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 	//The + 1 is because at the beginning of the string section, we write
 	//the number of string literals
 	// * 3: as debug data uses 2 QWORDs per variable and a variable is 1 QWORD
-	ChunkReserve(chunk, table->str_table.all_str_size + (table->str_table.count + 1) * sizeof(QWORD) + table->var_table.count * 3 * sizeof(QWORD));
+	ChunkReserve(chunk, table->str_table.all_str_size + (table->str_table.count + 1) * sizeof(QWORD) + table->glob_table.count * 3 * sizeof(QWORD));
 
 	//write GLOBAL offset
-	ChunkWriteGLOBALSection(chunk, gen_global_pool(chunk, &table->var_table));
+	ChunkWriteGLOBALSection(chunk, gen_global_pool(chunk, &table->glob_table));
 	//write CONST offset
-	ChunkWriteCONSTSection(chunk, gen_const_pool(chunk, &table->var_table));
+	ChunkWriteCONSTSection(chunk, gen_const_pool(chunk, &table->glob_table));
 	//write string literals in the constant pool
 	ChunkWriteSTRINGSection(chunk, gen_string_literal_pool(chunk, &table->str_table));
 
@@ -120,40 +120,40 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 	return false;
 }
 
-uint64_t gen_global_pool(Chunk* chunk, const VariableTable* var_table)
+uint64_t gen_global_pool(Chunk* chunk, const GlobalTable* glob_table)
 {
-	if (var_table->count == 0)
+	if (glob_table->count == 0)
 		return 0;
 	const uint64_t global_begin = chunk->count;
 
-	for (size_t i = 0; i < var_table->capacity; i++)
+	for (size_t i = 0; i < glob_table->capacity; i++)
 	{
 		//not active entry
-		if (var_table->entries[i].key.ptr == NULL)
+		if (glob_table->entries[i].key.ptr == NULL)
 			continue;
-		if (!var_table->entries[i].is_const) //we are generating non-const
+		if (!glob_table->entries[i].is_const) //we are generating non-const
 		{
-			*((QWORD*)(chunk->code + global_begin) + var_table->entries[i].counter_nb) = var_table->entries[i].value;
+			*((QWORD*)(chunk->code + global_begin) + glob_table->entries[i].counter_nb) = glob_table->entries[i].value;
 			chunk->count += sizeof(QWORD);
 		}
 	}
 	return global_begin;
 }
 
-uint64_t gen_const_pool(Chunk* chunk, const VariableTable* var_table)
+uint64_t gen_const_pool(Chunk* chunk, const GlobalTable* glob_table)
 {
-	if (var_table->count - var_table->global_counter == 0)
+	if (glob_table->count - glob_table->global_counter == 0)
 		return 0;
 	const uint64_t const_begin = chunk->count;
 
-	for (size_t i = 0; i < var_table->capacity; i++)
+	for (size_t i = 0; i < glob_table->capacity; i++)
 	{
 		//not active entry
-		if (var_table->entries[i].key.ptr == NULL)
+		if (glob_table->entries[i].key.ptr == NULL)
 			continue;
-		if (var_table->entries[i].is_const)
+		if (glob_table->entries[i].is_const)
 		{
-			*((QWORD*)(chunk->code + const_begin) + var_table->entries[i].counter_nb) = var_table->entries[i].value;
+			*((QWORD*)(chunk->code + const_begin) + glob_table->entries[i].counter_nb) = glob_table->entries[i].value;
 			chunk->count += sizeof(QWORD);
 		}
 	}
@@ -201,27 +201,27 @@ uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 
 uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* table)
 {
-	if (table->var_table.count == 0)
+	if (table->glob_table.count == 0)
 		return 0;
 	const uint64_t debug_begin = chunk->count;
 
-	uint64_t string_literal_begin = debug_begin + table->var_table.count * 2 * sizeof(QWORD);
+	uint64_t string_literal_begin = debug_begin + table->glob_table.count * 2 * sizeof(QWORD);
 	//Update size of chunk
-	chunk->count += table->var_table.count * 2 * sizeof(QWORD);
-	for (size_t i = 0; i < table->var_table.capacity; i++)
+	chunk->count += table->glob_table.count * 2 * sizeof(QWORD);
+	for (size_t i = 0; i < table->glob_table.capacity; i++)
 	{
 		//not active entry
-		if (table->var_table.entries[i].key.ptr == NULL)
+		if (table->glob_table.entries[i].key.ptr == NULL)
 			continue;
-		*((uint64_t*)(chunk->code + debug_begin) + table->var_table.entries[i].counter_nb * 2)
-			= table->var_table.entries[i].type.type_id;
-		*((uint64_t*)(chunk->code + debug_begin) + table->var_table.entries[i].counter_nb * 2 + 1)
+		*((uint64_t*)(chunk->code + debug_begin) + table->glob_table.entries[i].counter_nb * 2)
+			= table->glob_table.entries[i].type.type_id;
+		*((uint64_t*)(chunk->code + debug_begin) + table->glob_table.entries[i].counter_nb * 2 + 1)
 			= string_literal_begin;
 
 		//We cannot memcpy, as we did not reserve memory for the strings in the DEBUG section
-		for (size_t j = 0; j < table->var_table.entries[i].key.size; j++)
-			chunk_write_byte(chunk, table->var_table.entries[i].key.ptr[j]);
-		string_literal_begin += table->var_table.entries[i].key.size;
+		for (size_t j = 0; j < table->glob_table.entries[i].key.size; j++)
+			chunk_write_byte(chunk, table->glob_table.entries[i].key.ptr[j]);
+		string_literal_begin += table->glob_table.entries[i].key.size;
 	}	
 	
 	return debug_begin;
@@ -433,7 +433,7 @@ bool gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* pt
 
 bool gen_global_variable_load(Chunk* chunk, const ASTTable* table, const VariableExpr* ptr)
 {
-	const VariableEntry* entry = variable_table_find_entry(table->var_table.entries, table->var_table.capacity, ptr->var_name);	
+	const GlobalEntry* entry = variable_table_find_entry(table->glob_table.entries, table->glob_table.capacity, ptr->var_name);	
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
 	//byte-offset to QWORD to load
@@ -489,7 +489,7 @@ bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const Bi
 		gen_binary_lshift();*/
 	}	
 
-	const VariableEntry* entry = variable_table_find_entry(table->var_table.entries, table->var_table.capacity, ((VariableExpr*)ptr->lhs)->var_name);
+	const GlobalEntry* entry = variable_table_find_entry(table->glob_table.entries, table->glob_table.capacity, ((VariableExpr*)ptr->lhs)->var_name);
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 	colt_assert(entry->is_const != true, "Assignment to constant is prohibited!");
 

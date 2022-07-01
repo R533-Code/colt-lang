@@ -47,8 +47,8 @@ void ASTReset(AST* ast)
 	ExprArrayFree(&ast->expr);
 	ExprArrayInit(&ast->expr);
 
-	VariableTableFree(&ast->table.var_table);
-	VariableTableInit(&ast->table.var_table);
+	VariableTableFree(&ast->table.glob_table);
+	VariableTableInit(&ast->table.glob_table);
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
 }
@@ -395,7 +395,7 @@ Expr* parse_primary(AST* ast)
 	break; case TKN_IDENTIFIER:
 	{
 		StringView variable_name = ScannerGetIdentifier(&ast->scan);
-		const VariableEntry* table_entry = VariableTableGetEntry(&ast->table.var_table, variable_name);
+		const GlobalEntry* table_entry = VariableTableGetEntry(&ast->table.glob_table, variable_name);
 		if (!table_entry)
 		{
 			ast_gen_error(ast,
@@ -550,7 +550,7 @@ Expr* parse_variable_declaration(AST* ast)
 		if (ast->options->no_warn_uninitialized == false)
 			ast_gen_warning(ast, identifier_line_nb, identifier_line, decl_identifier, "\"%.*s\" is not initialized!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start);
 
-		if (VariableTableContains(&ast->table.var_table, decl_identifier))
+		if (VariableTableContains(&ast->table.glob_table, decl_identifier))
 		{
 			ast_gen_error(ast,
 				identifier_line_nb, identifier_line, decl_identifier,
@@ -561,7 +561,7 @@ Expr* parse_variable_declaration(AST* ast)
 
 		QWORD zero = { .u64 = 0 };
 		var_type = ScannerGetTypename(&ast->scan);
-		VariableTableSet(&ast->table.var_table, decl_identifier, zero, var_type);
+		VariableTableSet(&ast->table.glob_table, decl_identifier, zero, var_type);
 
 		return makeVariableExpr(decl_identifier, var_type,
 			identifier_line_nb, identifier_line, decl_identifier);
@@ -593,7 +593,7 @@ Expr* parse_variable_declaration(AST* ast)
 		}
 
 
-		if (VariableTableContains(&ast->table.var_table, decl_identifier))
+		if (VariableTableContains(&ast->table.glob_table, decl_identifier))
 		{
 			ast_gen_error(ast,
 				identifier_line_nb, identifier_line, decl_identifier,
@@ -603,7 +603,7 @@ Expr* parse_variable_declaration(AST* ast)
 		}
 		
 		QWORD zero = { .u64 = 0 };
-		VariableTableSet(&ast->table.var_table, decl_identifier, zero, to_assign->expr_type);
+		VariableTableSet(&ast->table.glob_table, decl_identifier, zero, to_assign->expr_type);
 
 		return makeBinaryExpr(
 			makeVariableExpr(decl_identifier, to_assign->expr_type,

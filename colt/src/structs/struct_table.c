@@ -6,14 +6,14 @@
 
 void ASTTableInit(ASTTable* table)
 {
-	VariableTableInit(&table->var_table);
+	VariableTableInit(&table->glob_table);
 	StringTableInit(&table->str_table);
 }
 
 void ASTTableFree(ASTTable* table)
 {
 	StringTableFree(&table->str_table);
-	VariableTableFree(&table->var_table);
+	VariableTableFree(&table->glob_table);
 }
 
 void StringTableInit(StringTable* table)
@@ -53,17 +53,17 @@ void StringTableAdd(StringTable* table, const String* to_add)
 	//Do not do anything if string already exists
 }
 
-void VariableTableInit(VariableTable* table)
+void VariableTableInit(GlobalTable* table)
 {
 	table->global_counter = 0;
 	table->capacity = 10;
 	table->count = 0;
-	table->entries = safe_malloc(sizeof(VariableEntry) * 10);
+	table->entries = safe_malloc(sizeof(GlobalEntry) * 10);
 	for (size_t i = 0; i < table->capacity; i++)
 		table->entries[i].key.ptr = NULL;
 }
 
-void VariableTableFree(VariableTable* table)
+void VariableTableFree(GlobalTable* table)
 {
 	for (size_t i = 0; i < table->capacity; i++)
 	{
@@ -73,12 +73,12 @@ void VariableTableFree(VariableTable* table)
 	safe_free(table->entries);
 }
 
-bool VariableTableGet(VariableTable* table, StringView key, QWORD* value)
+bool VariableTableGet(GlobalTable* table, StringView key, QWORD* value)
 {
 	if (table->count == 0)
 		return false;
 
-	const VariableEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
+	const GlobalEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
 	if (entry->key.ptr == NULL)
 		return false;
 
@@ -86,22 +86,22 @@ bool VariableTableGet(VariableTable* table, StringView key, QWORD* value)
 	return true;
 }
 
-bool VariableTableContains(VariableTable* table, StringView key)
+bool VariableTableContains(GlobalTable* table, StringView key)
 {
-	const VariableEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
+	const GlobalEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
 	if (entry->key.ptr == NULL)
 		return false;
 	return true;
 }
 
-bool VariableTableSet(VariableTable* table, StringView strv, QWORD value, Type type)
+bool VariableTableSet(GlobalTable* table, StringView strv, QWORD value, Type type)
 {
 	if ((double)table->count + 1 > (double)table->capacity * VARIABLE_TABLE_MAX_LOAD)
 	{
 		variable_table_grow_capacity(table, table->capacity * 2);
 	}
 
-	VariableEntry* entry = variable_table_find_entry(table->entries, table->capacity, strv);
+	GlobalEntry* entry = variable_table_find_entry(table->entries, table->capacity, strv);
 	bool is_new = (entry->key.ptr == NULL);
 	if (is_new)
 	{	
@@ -117,13 +117,13 @@ bool VariableTableSet(VariableTable* table, StringView strv, QWORD value, Type t
 	return is_new;
 }
 
-bool VariableTableDelete(VariableTable* table, StringView key)
+bool VariableTableDelete(GlobalTable* table, StringView key)
 {
 	if (table->count == 0)
 		return false;
 
 	// Find the entry.
-	VariableEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
+	GlobalEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
 	if (entry->key.ptr == NULL)
 		return false;
 
@@ -132,9 +132,9 @@ bool VariableTableDelete(VariableTable* table, StringView key)
 	return true;
 }
 
-VariableEntry* VariableTableGetEntry(VariableTable* table, StringView key)
+GlobalEntry* VariableTableGetEntry(GlobalTable* table, StringView key)
 {
-	VariableEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
+	GlobalEntry* entry = variable_table_find_entry(table->entries, table->capacity, key);
 	if (entry->key.ptr == NULL)
 		return NULL;
 	return entry;
@@ -155,23 +155,23 @@ uint64_t hash_strv(StringView strv)
 	return hash;
 }
 
-void variable_table_grow_capacity(VariableTable* table, uint64_t capacity)
+void variable_table_grow_capacity(GlobalTable* table, uint64_t capacity)
 {
-	VariableEntry* entries = safe_malloc(sizeof(VariableEntry) * capacity);
+	GlobalEntry* entries = safe_malloc(sizeof(GlobalEntry) * capacity);
 	for (size_t i = 0; i < capacity; i++)
 		entries[i].key.ptr = NULL;
 
 	for (size_t i = 0; i < table->capacity; i++)
 	{
-		const VariableEntry* entry = &table->entries[i];
+		const GlobalEntry* entry = &table->entries[i];
 		if (entry->key.ptr == NULL)
 			continue;
 
 		//Rehash
-		VariableEntry* dest = variable_table_find_entry(entries, capacity, StringToStringView(&entry->key));
+		GlobalEntry* dest = variable_table_find_entry(entries, capacity, StringToStringView(&entry->key));
 		
 		//Copy entry to new location
-		memcpy(dest, entry, sizeof(VariableEntry));
+		memcpy(dest, entry, sizeof(GlobalEntry));
 		//We need to fix the pointers as String have a small buffer optimization
 		if (StringIsStackAllocated(&dest->key))
 			dest->key.ptr = dest->key.buffer;
@@ -218,12 +218,12 @@ StringEntry* string_table_find_entry(StringEntry* entries, uint64_t capacity, St
 	}
 }
 
-VariableEntry* variable_table_find_entry(VariableEntry* entries, uint64_t capacity, StringView strv)
+GlobalEntry* variable_table_find_entry(GlobalEntry* entries, uint64_t capacity, StringView strv)
 {
 	uint64_t index = hash_strv(strv) % capacity;
 	for (;;)
 	{
-		VariableEntry* entry = entries + index;
+		GlobalEntry* entry = entries + index;
 		if (entry->key.ptr == NULL)
 			return entry;
 		else if (StringViewEqual(StringToStringView(&entry->key), strv))

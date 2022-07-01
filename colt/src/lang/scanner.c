@@ -728,7 +728,7 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 	if (scan->parsed_string.size == 2)
 		return TKN_IDENTIFIER;
 
-	//VariableTable of keywords
+	//GlobalTable of keywords
 	//We optimize comparisons by comparing the first character
 	switch (str[0])
 	{

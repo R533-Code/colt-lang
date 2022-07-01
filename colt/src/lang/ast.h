@@ -55,7 +55,7 @@ void ASTFree(AST* ast);
 /// @return True if no error were found
 bool ASTParse(AST* ast, StringView to_parse, const ColtScanOptions* options);
 
-/// @brief Reset the whole AST (its 'var_table' included) to its initialized state
+/// @brief Reset the whole AST (its 'glob_table' included) to its initialized state
 /// @param ast The AST to modify
 void ASTReset(AST* ast);
 
@@ -139,7 +139,7 @@ Expr* parse_parenthesis(AST* ast);
 /// @return An Expr* representing the parsed expression or NULL for errors
 Expr* parse_expression(AST* ast);
 
-/// @brief Parses a variable declaration, and adds the variable to the 'var_table'
+/// @brief Parses a variable declaration, and adds the variable to the 'glob_table'
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression or NULL for errors
 Expr* parse_variable_declaration(AST* ast);

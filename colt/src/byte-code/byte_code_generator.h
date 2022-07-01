@@ -16,11 +16,11 @@
 
 /// @brief Recursively converts an expression to byte-code in a Chunk
 /// @param chunk The Chunk in which to write the byte-code
-/// @param var_table VariableTable containing variables
+/// @param glob_table GlobalTable containing variables
 /// @param array The array of Expr* expression to convert
 /// @param print_last_expr If true, prints the last expression
 /// @return True if no error are encountered
-bool generateByteCode(Chunk* chunk, const ASTTable* var_table, const ExprArray* array, bool print_last_expr);
+bool generateByteCode(Chunk* chunk, const ASTTable* glob_table, const ExprArray* array, bool print_last_expr);
 
 /*************************************
 IMPLEMENTATION HELPERS
@@ -28,15 +28,15 @@ IMPLEMENTATION HELPERS
 
 /// @brief Generates the global memory pool, and return the offset to its beginning
 /// @param chunk The Chunk where to write the byte-code
-/// @param var_table The VariableTable whose non-const entries to write
+/// @param glob_table The GlobalTable whose non-const entries to write
 /// @return The offset to the GLOBAL section
-uint64_t gen_global_pool(Chunk* chunk, const VariableTable* var_table);
+uint64_t gen_global_pool(Chunk* chunk, const GlobalTable* glob_table);
 
 /// @brief Generates the const memory pool, and return the offset to its beginning
 /// @param chunk The Chunk where to write the byte-code
-/// @param var_table The VariableTable whose const entries to write
+/// @param glob_table The GlobalTable whose const entries to write
 /// @return The offset to the CONST section
-uint64_t gen_const_pool(Chunk* chunk, const VariableTable* var_table);
+uint64_t gen_const_pool(Chunk* chunk, const GlobalTable* glob_table);
 
 /// @brief Write the offsets and string literals
 /// @param chunk The Chunk where to write the byte-code
@@ -46,9 +46,9 @@ uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table);
 
 /// @brief Generates the debug pool, and return the offset to its beginning
 /// @param chunk The Chunk where to write the byte-code
-/// @param var_table The VariableTable whose entries to write
+/// @param glob_table The GlobalTable whose entries to write
 /// @return The offset to the DEBUG section
-uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* var_table);
+uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* glob_table);
 
 /// @brief Function which dispatches the expression to the write `gen_code_...`
 /// @param chunk The Chunk where to write the byte-code
@@ -59,30 +59,30 @@ bool gen_byte_code(Chunk* chunk, const ASTTable* table, const Expr* expr);
 
 /// @brief Generate code necessary for unary operators
 /// @param chunk The Chunk where to write the byte-code
-/// @param table VariableTable containing variables
+/// @param table GlobalTable containing variables
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
 bool gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* ptr);
 
 /// @brief Generate code necessary for binary operators
 /// @param chunk The Chunk where to write the byte-code
-/// @param table VariableTable containing variables
+/// @param table GlobalTable containing variables
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
 bool gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr);
 
 /// @brief Generate code necessary for literals.
 /// As literals never have child expressions, it doesn't need the variable
-/// VariableTable.
+/// GlobalTable.
 /// @param chunk The Chunk where to write the byte-code
-/// @param table VariableTable containing variables
+/// @param table GlobalTable containing variables
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
 bool gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* ptr);
 
 /// @brief Generate code necessary for built-in conversions
 /// @param chunk The Chunk where to write the byte-code
-/// @param table VariableTable containing variables
+/// @param table GlobalTable containing variables
 /// @param ptr The expression to convert to byte-code
 /// @return True if no error are encountered
 bool gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* ptr);
