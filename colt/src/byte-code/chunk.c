@@ -11,7 +11,7 @@ void ChunkInit(Chunk* chunk)
 	chunk->code = safe_malloc(256);
 
 	//we set all the bytes of the header to 0
-	memset(chunk->code + 8, 0, sizeof(QWORD) * CHUNK_HEADER_QWORD_COUNT);
+	memset(chunk->code + 8, 0, sizeof(QWORD) * (CHUNK_HEADER_QWORD_COUNT - 1));
 	*(uint64_t*)chunk->code = COLTI_ABI;
 }
 
