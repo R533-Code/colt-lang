@@ -563,16 +563,12 @@ Expr* parse_variable_declaration(AST* ast)
 		var_type = ScannerGetTypename(&ast->scan);
 		VariableTableSet(&ast->table.glob_table, decl_identifier, zero, var_type);
 
-		return makeVariableExpr(decl_identifier, var_type,
+		return makeGlobalWriteExpr(decl_identifier, var_type, 
+			makeLiteralExpr(zero, var_type, identifier_line_nb, identifier_line, decl_identifier),
 			identifier_line_nb, identifier_line, decl_identifier);
 	}
 	else if (ast->current_tkn == TKN_OPERATOR_EQUAL)
 	{
-		//The operator source code's location
-		StringView line = ScannerGetCurrentLine(&ast->scan);
-		StringView lexeme = ScannerGetCurrentLexeme(&ast->scan);
-		uint64_t line_nb = ast->scan.current_line;
-
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		Expr* to_assign = parse_binary(ast, 0);
 		if (!to_assign)
@@ -605,10 +601,8 @@ Expr* parse_variable_declaration(AST* ast)
 		QWORD zero = { .u64 = 0 };
 		VariableTableSet(&ast->table.glob_table, decl_identifier, zero, to_assign->expr_type);
 
-		return makeBinaryExpr(
-			makeVariableExpr(decl_identifier, to_assign->expr_type,
-				identifier_line_nb, identifier_line, decl_identifier),
-			TKN_OPERATOR_EQUAL, to_assign, var_type, line_nb, lexeme, line
+		return makeGlobalWriteExpr(decl_identifier, var_type, to_assign,
+			identifier_line_nb, identifier_line, decl_identifier
 		);
 	}
 	return NULL;
