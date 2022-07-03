@@ -131,7 +131,8 @@ uint64_t gen_global_pool(Chunk* chunk, const GlobalTable* glob_table)
 		//not active entry
 		if (glob_table->entries[i].key.ptr == NULL)
 			continue;
-		if (!glob_table->entries[i].is_const) //we are generating non-const
+		//FIXME: when type contains const flag
+		//if (!glob_table->entries[i].is_const) //we are generating non-const
 		{
 			*((QWORD*)(chunk->code + global_begin) + glob_table->entries[i].counter_nb) = glob_table->entries[i].value;
 			chunk->count += sizeof(QWORD);
@@ -151,7 +152,9 @@ uint64_t gen_const_pool(Chunk* chunk, const GlobalTable* glob_table)
 		//not active entry
 		if (glob_table->entries[i].key.ptr == NULL)
 			continue;
-		if (glob_table->entries[i].is_const)
+		//FIXME: when type contains const flag
+		//if (!glob_table->entries[i].is_const) //we are generating const
+		if (false)
 		{
 			*((QWORD*)(chunk->code + const_begin) + glob_table->entries[i].counter_nb) = glob_table->entries[i].value;
 			chunk->count += sizeof(QWORD);
@@ -244,8 +247,10 @@ bool gen_byte_code(Chunk* chunk, const ASTTable* table, const Expr* expr)
 		return gen_code_literal(chunk, table, (const LiteralExpr*)expr);
 	case EXPR_CONVERT:
 		return gen_code_convert(chunk, table, (const ConvertExpr*)expr);
-	case EXPR_VAR:
-		return gen_global_variable_load(chunk, table, (const VariableExpr*)expr);
+	case EXPR_GLOB_READ:
+		return gen_global_read(chunk, table, (const GlobalReadExpr*)expr);
+	case EXPR_GLOB_WRITE:
+		return gen_global_write(chunk, table, (const GlobalWriteExpr*)expr);
 	default:
 		colt_assert(false, "NOT IMPLEMENTED YET!");
 	}
@@ -280,17 +285,7 @@ bool gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* ptr)
 bool gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 {
 	switch (ptr->expr_operator)
-	{
-	case TKN_OPERATOR_EQUAL:
-	case TKN_OPERATOR_PLUS_EQUAL:
-	case TKN_OPERATOR_MINUS_EQUAL:
-	case TKN_OPERATOR_STAR_EQUAL:
-	case TKN_OPERATOR_SLASH_EQUAL:
-	case TKN_OPERATOR_AND_EQUAL:
-	case TKN_OPERATOR_OR_EQUAL:
-	case TKN_OPERATOR_XOR_EQUAL:
-		return gen_global_variable_assigment(chunk, table, ptr);
-	
+	{	
 	case TKN_OPERATOR_AND_AND:
 		return gen_and_and_bool_comparison(chunk, table, ptr);
 
@@ -431,7 +426,7 @@ bool gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* pt
 	return true;
 }
 
-bool gen_global_variable_load(Chunk* chunk, const ASTTable* table, const VariableExpr* ptr)
+bool gen_global_read(Chunk* chunk, const ASTTable* table, const GlobalReadExpr* ptr)
 {
 	const GlobalEntry* entry = variable_table_find_entry(table->glob_table.entries, table->glob_table.capacity, ptr->var_name);	
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
@@ -447,57 +442,25 @@ bool gen_global_variable_load(Chunk* chunk, const ASTTable* table, const Variabl
 	return true;
 }
 
-bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
+bool gen_global_write(Chunk* chunk, const ASTTable* table, const GlobalWriteExpr* ptr)
 {
-	colt_assert(ptr->lhs->identifier == EXPR_VAR, "Left hand side should be a variable!");
-	
-	gen_byte_code(chunk, table, ptr->rhs);
+	//generate byte-code which pushes the value to write to the global
+	gen_byte_code(chunk, table, ptr->value);
 
 	//Optimize lstring assignment:
 	//as every lstring loading writes a OP_LOAD_LSTRING,
 	//there is no point in OP_STORE_LSTRING, we rather pop OP_LOAD_LSTRING
-	if (ptr->rhs->expr_type.type_id == ID_COLT_LSTRING)
+	if (ptr->value->expr_type.type_id == ID_COLT_LSTRING)
 		chunk->count--;
 
-	//We need to fetch the value, then modify, then write it:
-	// hello *= 2 -> get the value of 'hello', multiply it, then write it
-	// hello = 10 -> write the value directly
-	if (ptr->expr_operator != TKN_OPERATOR_EQUAL)
-		gen_global_variable_load(chunk, table, (VariableExpr*)ptr->lhs);
-
-	switch (ptr->expr_operator)
-	{
-	break; case TKN_OPERATOR_PLUS_EQUAL:
-		gen_binary_plus();
-	break; case TKN_OPERATOR_MINUS_EQUAL:
-		gen_binary_minus();
-	break; case TKN_OPERATOR_STAR_EQUAL:
-		gen_binary_star();
-	break; case TKN_OPERATOR_SLASH_EQUAL:
-		gen_binary_slash();
-	break; case TKN_OPERATOR_AND_EQUAL:
-		gen_binary_and();
-	break; case TKN_OPERATOR_OR_EQUAL:
-		gen_binary_or();
-	break; case TKN_OPERATOR_XOR_EQUAL:
-		gen_binary_xor();
-	/*break; case TKN_OPERATOR_MODULO_EQUAL:
-		gen_binary_modulo();
-	break; case TKN_OPERATOR_GREATER_GREATER_EQUAL:
-		gen_binary_rshift();
-	break; case TKN_OPERATOR_LESS_LESS_EQUAL:
-		gen_binary_lshift();*/
-	}	
-
-	const GlobalEntry* entry = variable_table_find_entry(table->glob_table.entries, table->glob_table.capacity, ((VariableExpr*)ptr->lhs)->var_name);
+	const GlobalEntry* entry = variable_table_find_entry(table->glob_table.entries, table->glob_table.capacity, ptr->var_name);
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
-	colt_assert(entry->is_const != true, "Assignment to constant is prohibited!");
 
 	//byte-offset from where to read
 	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
 	ChunkWriteOpCode(chunk, OP_STORE_GLOBAL);
 	ChunkWriteQWORD(chunk, offset);
-	if (ptr->lhs->expr_type.type_id == ID_COLT_LSTRING)
+	if (ptr->expr_type.type_id == ID_COLT_LSTRING)
 		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);
 	return true;
 }
@@ -581,22 +544,22 @@ void gen_bitshift_ub_checks(Chunk* chunk, Type type)
 
 void gen_signed_addition_checks(Chunk* chunk, BuiltinTypeID type)
 {
-
+	//TODO: implement
 }
 
 void gen_signed_subtraction_checks(Chunk* chunk, BuiltinTypeID type)
 {
-
+	//TODO: implement
 }
 
 void gen_signed_multiplication_checks(Chunk* chunk, BuiltinTypeID type)
 {
-
+	//TODO: implement
 }
 
 void gen_signed_division_checks(Chunk* chunk, BuiltinTypeID type)
 {
-
+	//TODO: implement
 }
 
 #undef gen_binary_lshift

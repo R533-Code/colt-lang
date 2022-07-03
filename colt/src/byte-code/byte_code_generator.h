@@ -92,14 +92,14 @@ bool gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* pt
 /// @param table The variable table
 /// @param ptr The pointer to the expression
 /// @return True if no error are encountered
-bool gen_global_variable_load(Chunk* chunk, const ASTTable* table, const VariableExpr* ptr);
+bool gen_global_read(Chunk* chunk, const ASTTable* table, const GlobalReadExpr* ptr);
 
 /// @brief Generate the code necessary for a global variable assignment
 /// @param chunk The Chunk where to write the byte-code
 /// @param table The variable table from which to extract the offsets
 /// @param ptr The pointer to the expression
 /// @return True if no error are encountered
-bool gen_global_variable_assigment(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr);
+bool gen_global_write(Chunk* chunk, const ASTTable* table, const GlobalWriteExpr* ptr);
 
 /// @brief Generate the code necessary for an bool and (&&) comparison
 /// @param chunk The Chunk where to write the byte-code
