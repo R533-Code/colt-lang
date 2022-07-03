@@ -27,8 +27,6 @@ typedef struct
 	QWORD value;
 	/// @brief The type of the variable
 	Type type;
-	/// @brief True if the variable
-	bool is_const;
 	/// @brief The number of the variable (which is used for offsets)
 	uint64_t counter_nb;
 } GlobalEntry;
@@ -77,8 +75,6 @@ typedef struct
 /// @brief Contains a LocalTable, GlobalTable and StringTable
 typedef struct
 {
-	/// @brief The local variables table
-	LocalTable local_table;
 	/// @brief The global variables table
 	GlobalTable glob_table;
 	/// @brief The string literals table
