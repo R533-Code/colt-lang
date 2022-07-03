@@ -25,14 +25,16 @@
 /// information, we can cast that pointer to the right expression struct.
 typedef enum
 {
-	/// @brief Variable expression
-	EXPR_VAR,
 	/// @brief Function expression
 	EXPR_FN,
 	/// @brief UnaryExpr type
 	EXPR_UNARY,
 	/// @brief BinaryExpr type
 	EXPR_BINARY,
+	/// @brief GlobalWriteExpr type
+	EXPR_GLOB_WRITE,
+	/// @brief GlobalReadExpr type
+	EXPR_GLOB_READ,
 	/// @brief LiteralExpr type
 	EXPR_LITERAL,
 	/// @brief ConvertExpr type
@@ -146,13 +148,32 @@ typedef struct
 	StringView line;
 	/// @brief The lexeme representing the expression
 	StringView lexeme;
-	/// @brief should be EXPR_VAR
+	/// @brief should be EXPR_GLOB_READ
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on the type of 'value'
 	Type expr_type;
 	/// @brief The literal value
 	StringView var_name;
-} VariableExpr;
+} GlobalReadExpr;
+
+/// @brief Represents a variable read/write
+typedef struct
+{
+	/// @brief The line number
+	uint64_t line_nb;
+	/// @brief The line from which the expression was created
+	StringView line;
+	/// @brief The lexeme representing the expression
+	StringView lexeme;
+	/// @brief should be EXPR_GLOB_READ
+	ExprIdentifier identifier;
+	/// @brief The expression type, which depends on the type of 'value'
+	Type expr_type;
+	/// @brief The literal value
+	StringView var_name;
+	/// @brief The value to write to the global
+	Expr* value;
+} GlobalWriteExpr;
 
 /// @brief A dynamic array of contiguous Expr*
 typedef struct
