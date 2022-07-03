@@ -240,6 +240,8 @@ Expr* parse_binary(AST* ast, int op_precedence)
 		return NULL;
 
 	Token bin_operator = ast->current_tkn;
+	if (is_assignment_token(bin_operator))
+		return parse_assignment(ast, left, bin_operator);
 
 	switch (bin_operator)
 	{
@@ -312,6 +314,34 @@ Expr* parse_binary(AST* ast, int op_precedence)
 	}
 
 	return left;
+}
+
+Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
+{
+	colt_assert(is_assignment_token(assignment_tkn), "assignment_tkn should be an assignment token!");
+
+	if (lhs->identifier != EXPR_GLOB_READ)
+	{
+		ast_gen_error(ast, lhs->line_nb, lhs->line, lhs->lexeme, "Expected a variable (lvalue)!");
+		return lhs;
+	}
+
+	switch (assignment_tkn)
+	{
+		//cases for *= ...
+	}
+
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+
+	Expr* value = parse_binary(ast, -1);
+	if (value == NULL)
+		return lhs;
+	Expr* ret = makeGlobalWriteExpr(
+		((GlobalReadExpr*)lhs)->var_name, lhs->expr_type, value, lhs->line_nb, lhs->line, lhs->lexeme
+	);
+	freeExpr(lhs);
+
+	return ret;
 }
 
 Expr* parse_primary(AST* ast)
