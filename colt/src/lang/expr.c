@@ -136,16 +136,34 @@ Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView 
 	return (Expr*)ptr;
 }
 
-Expr* makeVariableExpr(StringView var_name, Type var_type, uint64_t line_nb, StringView line, StringView lexeme)
+Expr* makeGlobalReadExpr(StringView var_name, Type var_type, uint64_t line_nb, StringView line, StringView lexeme)
 {
-	VariableExpr* ptr = safe_malloc(sizeof(VariableExpr));
+	GlobalReadExpr* ptr = safe_malloc(sizeof(GlobalReadExpr));
 
-	ptr->identifier = EXPR_VAR;
+	ptr->identifier = EXPR_GLOB_READ;
 
 	ptr->expr_type = var_type;
 
 	ptr->var_name = var_name;
 
+	ptr->line_nb = line_nb;
+	ptr->line = line;
+	ptr->lexeme = lexeme;
+
+	return (Expr*)ptr;
+}
+
+Expr* makeGlobalWriteExpr(StringView var_name, Type var_type,  Expr* value, uint64_t line_nb, StringView line, StringView lexeme)
+{
+	GlobalWriteExpr* ptr = safe_malloc(sizeof(GlobalWriteExpr));
+
+	ptr->identifier = EXPR_GLOB_WRITE;
+
+	ptr->expr_type = var_type;
+
+	ptr->var_name = var_name;
+	ptr->value = value;
+	
 	ptr->line_nb = line_nb;
 	ptr->line = line;
 	ptr->lexeme = lexeme;

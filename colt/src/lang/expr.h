@@ -245,7 +245,17 @@ Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView 
 /// @param line A StringView over the line containing the expression
 /// @param lexeme A StringView over the lexeme representing the expression
 /// @return A pointer to a heap allocated VariableExpr
-Expr* makeVariableExpr(StringView var_name, Type var_type, uint64_t line_nb, StringView line, StringView lexeme);
+Expr* makeGlobalReadExpr(StringView var_name, Type var_type, uint64_t line_nb, StringView line, StringView lexeme);
+
+/// @brief Allocates a new variable expression on the heap, initializing it
+/// @param var_name The variable name
+/// @param var_type The variable type
+/// @param value The value to write to the global
+/// @param line_nb The line number from which the expression is extracted
+/// @param line A StringView over the line containing the expression
+/// @param lexeme A StringView over the lexeme representing the expression
+/// @return A pointer to a heap allocated VariableExpr
+Expr* makeGlobalWriteExpr(StringView var_name, Type var_type, Expr* value, uint64_t line_nb, StringView line, StringView lexeme);
 
 /// @brief Recursively frees a heap-allocated expression.
 /// As an Expr* can be a BinaryExpr, or an expression with child expression,
