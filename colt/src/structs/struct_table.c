@@ -113,7 +113,7 @@ bool VariableTableSet(GlobalTable* table, StringView strv, QWORD value, Type typ
 	entry->value = value;
 	entry->type = type;
 	//FIXME: add way to specify const
-	entry->is_const = false;
+	//entry->is_const = false;
 	return is_new;
 }
 

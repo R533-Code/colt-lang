@@ -274,10 +274,6 @@ Expr* parse_binary(AST* ast, int op_precedence)
 		if (!right) //propagate error
 			return left; // we don't want memory leaks
 
-		//left hand side should be an lvalue
-		if (is_assignment_token(bin_operator) && !(left->identifier == EXPR_VAR || is_assignment_expr(left)))
-			ast_gen_error(ast, left->line_nb, left->line, left->lexeme, "Left hand side of an assignment should be a variable (lvalue)!");
-
 		Type expr_type;
 
 		if (is_assignment_token(bin_operator))
@@ -408,7 +404,7 @@ Expr* parse_primary(AST* ast)
 		}
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
-		return makeVariableExpr(variable_name, table_entry->type,
+		return makeGlobalReadExpr(variable_name, table_entry->type,
 			ast->scan.current_line,
 			ScannerGetCurrentLine(&ast->scan),
 			ScannerGetCurrentLexeme(&ast->scan));
