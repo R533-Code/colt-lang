@@ -214,8 +214,16 @@ void freeExpr(Expr* ptr)
 		}
 		safe_free(ptr);
 	}
-	break; case EXPR_VAR:
+	break; case EXPR_GLOB_WRITE:
+	{
+		GlobalWriteExpr* rexpr = (GlobalWriteExpr*)ptr;
+		freeExpr(rexpr->value);
 		safe_free(ptr);
+	}
+	break; case EXPR_GLOB_READ:
+	{
+		safe_free(ptr);
+	}
 	break; default:
 		colt_assert(false, "Expression identifier was invalid!");
 	}
