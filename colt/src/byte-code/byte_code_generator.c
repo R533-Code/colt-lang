@@ -434,8 +434,10 @@ bool gen_local_read(Chunk* chunk, const ASTTable* table, const LocalReadExpr* pt
 	colt_assert(ptr->offset < 256, "Offset to cannot be represented");
 
 	ChunkWriteOpCode(chunk, OP_SLOAD_LOCAL);
-	BYTE byte = { .u8 = ptr->offset };
+	BYTE byte = { .u8 = (uint8_t)ptr->offset };
 	ChunkWriteBYTE(chunk, byte);
+	
+	return true;
 }
 
 bool gen_local_write(Chunk* chunk, const ASTTable* table, const LocalWriteExpr* ptr)
@@ -443,14 +445,16 @@ bool gen_local_write(Chunk* chunk, const ASTTable* table, const LocalWriteExpr* 
 	colt_assert(ptr->offset < 256, "Offset to cannot be represented");
 
 	ChunkWriteOpCode(chunk, OP_SSTORE_LOCAL);
-	BYTE byte = { .u8 = ptr->offset };
+	BYTE byte = { .u8 = (uint8_t)ptr->offset };
 	ChunkWriteBYTE(chunk, byte);
+
+	return true;
 }
 
 bool gen_code_scope(Chunk* chunk, const ASTTable* table, const ScopeExpr* ptr)
 {
 	ChunkWriteOpCode(chunk, OP_PUSH_SCOPE);
-	DWORD dword = { .u32 = ptr->var_count };
+	DWORD dword = { .u32 = (uint32_t)ptr->var_count };
 	ChunkWriteDWORD(chunk, dword);
 	
 	//Generate byte-code while no error encountered
@@ -462,7 +466,7 @@ bool gen_code_scope(Chunk* chunk, const ASTTable* table, const ScopeExpr* ptr)
 		return is_valid;
 
 	ChunkWriteOpCode(chunk, OP_POP_SCOPE);
-	dword.u32 = ptr->var_count;
+	dword.u32 = (uint32_t)ptr->var_count;
 	ChunkWriteDWORD(chunk, dword);
 
 	return is_valid;
