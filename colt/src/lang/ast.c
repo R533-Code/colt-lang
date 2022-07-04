@@ -358,7 +358,7 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 	);
 
 	//As we took the data from lhs, we no longer need it.
-	//For the other case, the expression becomes part of the binaryExpr
+	//For the other case, the expression becomes part of the BinaryExpr
 	if (assignment_tkn == TKN_OPERATOR_EQUAL)
 		freeExpr(lhs);
 
