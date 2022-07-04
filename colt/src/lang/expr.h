@@ -60,6 +60,7 @@ typedef struct
 	Type expr_type;
 } Expr;
 
+void ExprArrayPushBack(ExprArray* array, Expr* expr);
 /// @brief Represents a unary expression.
 /// A unary expression is composed of a unary operator (-, ~, +, @, !),
 /// and the expression to which the operator is applied
