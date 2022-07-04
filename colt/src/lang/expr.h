@@ -177,7 +177,7 @@ typedef struct
 	Expr* child;
 } ConvertExpr;
 
-/// @brief Represents a variable read/write
+/// @brief Represents a global variable read/write
 typedef struct
 {
 	/// @brief The line number
@@ -194,7 +194,7 @@ typedef struct
 	StringView var_name;
 } GlobalReadExpr;
 
-/// @brief Represents a variable read/write
+/// @brief Represents a global variable read/write
 typedef struct
 {
 	/// @brief The line number
@@ -212,6 +212,46 @@ typedef struct
 	/// @brief The value to write to the global
 	Expr* value;
 } GlobalWriteExpr;
+
+/// @brief Represents a local variable read/write
+typedef struct
+{
+	/// @brief The line number
+	uint64_t line_nb;
+	/// @brief The line from which the expression was created
+	StringView line;
+	/// @brief The lexeme representing the expression
+	StringView lexeme;
+	/// @brief should be EXPR_GLOB_READ
+	ExprIdentifier identifier;
+	/// @brief The expression type, which depends on the type of 'value'
+	Type expr_type;
+	/// @brief The literal value
+	StringView var_name;
+	/// @brief The stack offset of the variable
+	uint64_t offset;
+} LocalReadExpr;
+
+/// @brief Represents a local variable read/write
+typedef struct
+{
+	/// @brief The line number
+	uint64_t line_nb;
+	/// @brief The line from which the expression was created
+	StringView line;
+	/// @brief The lexeme representing the expression
+	StringView lexeme;
+	/// @brief should be EXPR_GLOB_READ
+	ExprIdentifier identifier;
+	/// @brief The expression type, which depends on the type of 'var_name'
+	Type expr_type;
+	/// @brief The variable name
+	StringView var_name;
+	/// @brief The stack offset of the variable
+	uint64_t offset;
+	/// @brief The value to write to the global
+	Expr* value;
+} LocalWriteExpr;
 
 typedef struct
 {
