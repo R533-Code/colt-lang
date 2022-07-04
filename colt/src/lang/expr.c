@@ -243,6 +243,7 @@ Expr* makeScopeExpr(ScopeExpr* parent_scope)
 {
 	ScopeExpr* ptr = safe_malloc(sizeof(ScopeExpr));
 
+	ptr->identifier = EXPR_SCOPE;
 	ptr->expr_type = ColtVoid;
 	ExprArrayInit(&ptr->array);
 	ptr->var_count = 0;
