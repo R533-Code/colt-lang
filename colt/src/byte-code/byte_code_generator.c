@@ -109,8 +109,9 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 			ChunkWriteOpCode(chunk, OP_PRINT);
 			ChunkWriteOperand(chunk, (BuiltinTypeID)array->expressions[array->count - 1]->expr_type.type_id);
 		}
-		//Pop the last expression
-		ChunkWriteOpCode(chunk, OP_POP);
+		if (array->expressions[array->count - 1]->expr_type.type_id != ID_COLT_VOID)
+			ChunkWriteOpCode(chunk, OP_POP);
+
 		//EXIT with code 0
 		ChunkWriteOpCode(chunk, OP_EXIT);
 		QWORD exit_code = { .i64 = 0 };
