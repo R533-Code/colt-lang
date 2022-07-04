@@ -36,12 +36,14 @@ bool ASTParse(AST* ast, StringView to_parse, const ColtScanOptions* options)
 	
 	while (ast->current_tkn != TKN_EOF)
 	{
-		//parse the expression
-		ExprArrayPushBack(&ast->expr, parse_expression(ast));
+		Expr* ptr = parse_expression(ast);
+		if (ptr)
+			ExprArrayPushBack(&ast->expr, ptr);
 	}
 
 	ScannerFree(&ast->scan);
-	if (ast->error_nb != 0)
+	//If no expression could be parsed, or there is an error
+	if (ast->error_nb != 0 || ast->expr.count == 0)
 		return false;
 	return true;
 }
@@ -357,7 +359,7 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 	}
 
 	Expr* ret;
-	if (lhs->identifier != EXPR_GLOB_READ)
+	if (lhs->identifier == EXPR_GLOB_READ)
 	{
 		ret = makeGlobalWriteExpr(
 			((GlobalReadExpr*)lhs)->var_name, lhs->expr_type, value, lhs->line_nb, lhs->line, lhs->lexeme
@@ -460,9 +462,11 @@ Expr* parse_primary(AST* ast)
 		if (var_ptr == NULL)
 			return global_variable_expr(ast, variable_name);
 		
-		return makeLocalReadExpr(variable_name, var_ptr->expr_type, ((LocalReadExpr*)var_ptr)->offset,
+		var_ptr = makeLocalReadExpr(variable_name, var_ptr->expr_type, ((LocalReadExpr*)var_ptr)->offset,
 			ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan)
 		);
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+		return var_ptr;
 	}
 
 		/**************** ERROR ****************/
@@ -545,6 +549,7 @@ Expr* parse_scope(AST* ast)
 	//Update current scope to the scope being parsed
 	ast->current_scope = scope;
 	
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	while (ast->current_tkn != TKN_RIGHT_CURLY && ast->current_tkn != TKN_EOF)
 	{
 		ExprArrayPushBack(&scope->array, parse_expression(ast));
@@ -567,6 +572,8 @@ Expr* parse_expression(AST* ast)
 		expr = parse_variable_declaration(ast);
 	break; case TKN_LEFT_CURLY:
 		expr = parse_scope(ast);
+	break; case TKN_SEMICOLON:
+		return NULL;
 	break; default:
 		expr = parse_binary(ast, -1);
 		if (ast->options->no_warn_unused_result == false && !is_assignment_expr(expr))
@@ -703,12 +710,14 @@ Expr* parse_variable_declaration(AST* ast)
 			return NULL;
 		}
 
+		//FIXME: fix recursion for size of scope
 		uint64_t var_offset = ast->current_scope->var_count++ + (ast->current_scope->parent_scope != NULL ? ast->current_scope->parent_scope->var_count : 0);
 		
 		return makeLocalWriteExpr(decl_identifier, var_type, var_offset,
 			to_assign, identifier_line_nb, identifier_line, decl_identifier
 		);
 	}
+	//TODO: add error expected an assignment or ';'
 	return NULL;
 }
 
