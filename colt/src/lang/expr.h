@@ -253,7 +253,11 @@ typedef struct
 	Expr* value;
 } LocalWriteExpr;
 
-typedef struct
+//Forward declare the struct as it includes a pointer to itself.
+typedef struct ScopeExpr ScopeExpr;
+
+/// @brief Represents a scope.
+struct ScopeExpr
 {
 	/// @brief The line number
 	uint64_t line_nb;
@@ -271,7 +275,7 @@ typedef struct
 	uint64_t var_count;
 	/// @brief Pointer to the parent scope, which can be NULL
 	ScopeExpr* parent_scope;
-} ScopeExpr;
+};
 
 /// @brief Check if a variable already exists
 /// @param scope Pointer to the scope in which to check
