@@ -648,9 +648,9 @@ Expr* parse_variable_declaration(AST* ast)
 
 		QWORD zero = { .u64 = 0 };
 		var_type = ScannerGetTypename(&ast->scan);
-		VariableTableSet(&ast->table.glob_table, decl_identifier, zero, var_type);
+		uint64_t var_offset = ast->current_scope->var_count++ + (ast->current_scope->parent_scope != NULL ? ast->current_scope->parent_scope->var_count : 0);
 
-		return makeLocalWriteExpr(decl_identifier, var_type, ast->current_scope->var_count++,
+		return makeLocalWriteExpr(decl_identifier, var_type, var_offset,
 			makeLiteralExpr(zero, var_type, identifier_line_nb, identifier_line, decl_identifier),
 			identifier_line_nb, identifier_line, decl_identifier);
 	}
@@ -703,11 +703,9 @@ Expr* parse_variable_declaration(AST* ast)
 			return NULL;
 		}
 
-		QWORD zero = { .u64 = 0 };
-		var_type = ScannerGetTypename(&ast->scan);
-		VariableTableSet(&ast->table.glob_table, decl_identifier, zero, var_type);
-
-		return makeLocalWriteExpr(decl_identifier, var_type, ast->current_scope->var_count++,
+		uint64_t var_offset = ast->current_scope->var_count++ + (ast->current_scope->parent_scope != NULL ? ast->current_scope->parent_scope->var_count : 0);
+		
+		return makeLocalWriteExpr(decl_identifier, var_type, var_offset,
 			to_assign, identifier_line_nb, identifier_line, decl_identifier
 		);
 	}
