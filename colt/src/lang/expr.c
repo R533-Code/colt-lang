@@ -174,15 +174,58 @@ Expr* makeGlobalWriteExpr(StringView var_name, Type var_type,  Expr* value, uint
 	GlobalWriteExpr* ptr = safe_malloc(sizeof(GlobalWriteExpr));
 
 	ptr->identifier = EXPR_GLOB_WRITE;
-
 	ptr->expr_type = var_type;
-
 	ptr->var_name = var_name;
 	ptr->value = value;
 	
 	ptr->line_nb = line_nb;
 	ptr->line = line;
 	ptr->lexeme = lexeme;
+
+	return (Expr*)ptr;
+}
+
+Expr* makeLocalReadExpr(StringView var_name, Type var_type, uint64_t var_offset, uint64_t line_nb, StringView line, StringView lexeme)
+{
+	LocalReadExpr* ptr = safe_malloc(sizeof(LocalReadExpr));
+
+	ptr->identifier = EXPR_LOCAL_READ;
+	ptr->expr_type = var_type;
+	ptr->offset = var_offset;
+	ptr->var_name = var_name;
+
+	ptr->line_nb = line_nb;
+	ptr->line = line;
+	ptr->lexeme = lexeme;
+
+	return (Expr*)ptr;
+}
+
+Expr* makeLocalWriteExpr(StringView var_name, Type var_type, uint64_t var_offset, Expr* value, uint64_t line_nb, StringView line, StringView lexeme)
+{
+	LocalWriteExpr* ptr = safe_malloc(sizeof(LocalWriteExpr));
+
+	ptr->identifier = EXPR_LOCAL_WRITE;
+	ptr->expr_type = var_type;
+	ptr->offset = var_offset;
+	ptr->var_name = var_name;
+	ptr->value = value;
+
+	ptr->line_nb = line_nb;
+	ptr->line = line;
+	ptr->lexeme = lexeme;
+
+	return (Expr*)ptr;
+}
+
+Expr* makeScope(ScopeExpr* parent_scope)
+{
+	ScopeExpr* ptr = safe_malloc(sizeof(ScopeExpr));
+
+	ptr->expr_type = ColtVoid;
+	ExprArrayInit(&ptr->array);
+	ptr->var_count = 0;
+	ptr->parent_scope = parent_scope;
 
 	return (Expr*)ptr;
 }
@@ -237,6 +280,7 @@ void freeExpr(Expr* ptr)
 		for (size_t i = 0; i < scexpr->array.count; i++)
 			freeExpr(scexpr->array.expressions[i]);
 		ExprArrayFree(&scexpr->array);
+		safe_free(ptr);
 	}
 	break; case EXPR_GLOB_WRITE:
 	{
@@ -255,7 +299,7 @@ void freeExpr(Expr* ptr)
 	case EXPR_LOCAL_READ:
 		safe_free(ptr);
 	break; default:
-		colt_assert(false, "Expression identifier was invalid!");
+		colt_unreachable("Expression identifier was invalid!");
 	}
 }
 
