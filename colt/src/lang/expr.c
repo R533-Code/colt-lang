@@ -21,6 +21,7 @@ void ExprArrayFree(ExprArray* array)
 
 void ExprArrayPushBack(ExprArray* array, Expr* expr)
 {
+	//handle resize
 	if (array->count == array->capacity)
 	{
 		array->capacity *= 2;
