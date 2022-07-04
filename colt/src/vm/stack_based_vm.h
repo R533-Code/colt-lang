@@ -20,6 +20,10 @@ typedef struct
 	QWORD* stack_top;
 	/// @brief The stack-allocated stack
 	QWORD stack[256];
+	/// @brief The number of active locals on the stack
+	uint64_t active_locals;
+	/// @brief The stack-allocated stack for local variables
+	QWORD locals[256];
 } StackVM;
 
 /// @brief Initializes a StackVM
