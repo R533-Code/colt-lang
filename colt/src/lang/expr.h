@@ -287,6 +287,12 @@ struct ScopeExpr
 /// @return True if the variable has already been declared
 bool ScopeExprIsVarDeclared(ScopeExpr* scope, StringView name);
 
+/// @brief Searches for the first instance of a LocalWriteExpr/LocalReadExpr of name 'name'
+/// @param scope The scope in which to search before recursing in its parent scope
+/// @param name The name of the variable to search for
+/// @return LocalWriteExpr*/LocalReadExpr* or NULL if not found
+Expr* ScopeExprFindVar(ScopeExpr* scope, StringView name);
+
 /// @brief Allocates a new literal expression on the heap, initializing it
 /// @param value The value of the literal expression
 /// @param type The type of the literal expression

@@ -48,6 +48,21 @@ bool ScopeExprIsVarDeclared(ScopeExpr* scope, StringView name)
 	return ScopeExprIsVarDeclared(scope->parent_scope, name);
 }
 
+Expr* ScopeExprFindVar(ScopeExpr* scope, StringView name)
+{
+	Expr** expr_ptr = scope->array.expressions;
+	for (size_t i = 0; i < scope->array.count; i++)
+	{
+		if (expr_ptr[i]->identifier == EXPR_LOCAL_READ || expr_ptr[i]->identifier == EXPR_LOCAL_WRITE)
+			if (StringViewEqual(((LocalReadExpr*)expr_ptr[i])->var_name, name))
+				return expr_ptr[i];
+	}
+	if (scope->parent_scope == NULL)
+		return NULL; //not found, which means it can be a global or simply not exists
+	//recurse into the parent directory
+	return ScopeExprFindVar(scope->parent_scope, name);
+}
+
 Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line, StringView lexeme)
 {
 	LiteralExpr* ptr = safe_malloc(sizeof(LiteralExpr));
