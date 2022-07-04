@@ -425,8 +425,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 		case TKN_DOUBLE:
 			return impl_token_str_to_double(scan);
 		default:
-			colt_assert(false, "Should never happen!");
-			exit(1);
+			colt_unreachable("Floating suffix was invalid!");
 		}
 	}
 	else
@@ -631,8 +630,7 @@ Token impl_scanner_handle_dot(Scanner* scan)
 		case TKN_DOUBLE:
 			return impl_token_str_to_double(scan);
 		default:
-			colt_assert(false, "Should never happen!");
-			exit(1);
+			colt_unreachable("Floating suffix was invalid!");
 		}
 	}
 	else
@@ -1185,8 +1183,7 @@ Token impl_token_str_to_integral(Scanner* scan)
 	case TKN_U64:
 		return impl_token_str_to_u64(scan, 10);
 	default:
-		colt_assert(false, "Should never happen!");
-		exit(1);
+		colt_unreachable("Integral suffix was invalid!");
 	}
 }
 

@@ -34,8 +34,7 @@ Type type_unsigned_to_signed(uint64_t type)
 	case COLTI_U32_ID:	return ColtI32;
 	case COLTI_U64_ID:	return ColtI64;
 	default:
-		colt_assert(false, "Type ID was not that of an unsigned integer!");
-		exit(1);
+		colt_unreachable("Invalid argument!");
 	}
 }
 
@@ -70,7 +69,6 @@ Type type_get_from_id(BuiltinTypeID id)
 	case ID_COLT_LSTRING:
 		return ColtLString;
 	default:
-		colt_assert(false, "ID was not that of a Built-in Type!");
-		exit(1);
+		colt_unreachable("Invalid argument!");
 	}
 }
