@@ -36,6 +36,8 @@ typedef struct
 	const ColtScanOptions* options;
 	/// @brief The next token to consume from the scanner
 	Token current_tkn;
+	/// @brief The current scope or NULL if not in a scope
+	ScopeExpr* current_scope;
 	/// @brief Table for string literals and const/global variables
 	ASTTable table;
 } AST;
@@ -111,7 +113,7 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 /// @param ast The AST use to print an error
 /// @param token The token to get the precedence of
 /// @return A value between 0-13 (with 13 being the highest precedence) or 100 if an error has been detected
-int impl_op_precedence(AST* ast, Token token);
+int ast_op_precedence(AST* ast, Token token);
 
 /// @brief Parses a binary expression or a primary expression.
 /// @param ast The AST from which to parse
@@ -144,6 +146,9 @@ Expr* parse_parenthesis(AST* ast);
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression or NULL for errors
 Expr* parse_expression(AST* ast);
+
+/// @brief Parses a scope expression, verifying it is well enclosed
+Expr* parse_scope(AST* ast);
 
 /// @brief Parses a variable declaration, and adds the variable to the 'glob_table'
 /// @param ast The AST from which to parse
