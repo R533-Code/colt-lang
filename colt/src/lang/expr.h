@@ -179,21 +179,23 @@ typedef struct
 /// @brief A dynamic array of contiguous Expr*
 typedef struct
 {
-	/// @brief The number of active Expr* in 'expressions'
-	uint64_t count;
-	/// @brief The capacity of the 'expressions'
-	uint64_t capacity;
-	/// @brief Pointer to the heap allocated memory buffer of Expr*
-	Expr** expressions;
-} ExprArray;
-
-/// @brief Initializes an ExprArray
-/// @param array The array to initialize
-void ExprArrayInit(ExprArray* array);
-
-/// @brief Frees resources used up by an ExprArray
-/// @param array The array whose resources to free
-void ExprArrayFree(ExprArray* array);
+	/// @brief The line number
+	uint64_t line_nb;
+	/// @brief The line from which the expression was created
+	StringView line;
+	/// @brief The lexeme representing the expression
+	StringView lexeme;
+	/// @brief should be EXPR_SCOPE
+	ExprIdentifier identifier;
+	/// @brief The expression type, which should be 'void'
+	Type expr_type;
+	/// @brief The array of expressions contained in the scope
+	ExprArray* array;
+	/// @brief The variable count
+	uint64_t var_count;
+	/// @brief Pointer to the parent scope, which can be NULL
+	ScopeExpr* parent_scope;
+} ScopeExpr;
 
 /// @brief Pushes an Expr* at the end of an ExprArray, handling reallocations
 /// @param array The array to modify
