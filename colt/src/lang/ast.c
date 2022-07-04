@@ -326,20 +326,41 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 		return lhs;
 	}
 
-	switch (assignment_tkn)
-	{
-		//cases for *= ...
-	}
+	StringView line = ScannerGetCurrentLine(&ast->scan);
+	StringView lexeme = ScannerGetCurrentLexeme(&ast->scan);
+	uint64_t line_nb = ast->scan.current_line;
 
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
-
 	Expr* value = parse_binary(ast, -1);
 	if (value == NULL)
 		return lhs;
+
+	switch (assignment_tkn)
+	{
+	break; case TKN_OPERATOR_AND_EQUAL:
+		value = makeBinaryExpr(lhs, TKN_OPERATOR_AND, value, lhs->expr_type, line_nb, line, lexeme);
+	break; case TKN_OPERATOR_XOR_EQUAL:
+		value = makeBinaryExpr(lhs, TKN_OPERATOR_XOR, value, lhs->expr_type, line_nb, line, lexeme);
+	break; case TKN_OPERATOR_OR_EQUAL:
+		value = makeBinaryExpr(lhs, TKN_OPERATOR_OR, value, lhs->expr_type, line_nb, line, lexeme);
+	break; case TKN_OPERATOR_MINUS_EQUAL:
+		value = makeBinaryExpr(lhs, TKN_OPERATOR_MINUS, value, lhs->expr_type, line_nb, line, lexeme);
+	break; case TKN_OPERATOR_PLUS_EQUAL:
+		value = makeBinaryExpr(lhs, TKN_OPERATOR_PLUS, value, lhs->expr_type, line_nb, line, lexeme);
+	break; case TKN_OPERATOR_STAR_EQUAL:
+		value = makeBinaryExpr(lhs, TKN_OPERATOR_STAR, value, lhs->expr_type, line_nb, line, lexeme);
+	break; case TKN_OPERATOR_SLASH_EQUAL:
+		value = makeBinaryExpr(lhs, TKN_OPERATOR_SLASH, value, lhs->expr_type, line_nb, line, lexeme);
+	}
+
 	Expr* ret = makeGlobalWriteExpr(
 		((GlobalReadExpr*)lhs)->var_name, lhs->expr_type, value, lhs->line_nb, lhs->line, lhs->lexeme
 	);
-	freeExpr(lhs);
+
+	//As we took the data from lhs, we no longer need it.
+	//For the other case, the expression becomes part of the binaryExpr
+	if (assignment_tkn == TKN_OPERATOR_EQUAL)
+		freeExpr(lhs);
 
 	return ret;
 }
