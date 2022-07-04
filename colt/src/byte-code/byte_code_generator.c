@@ -465,7 +465,11 @@ bool gen_code_scope(Chunk* chunk, const ASTTable* table, const ScopeExpr* ptr)
 	//Generate byte-code while no error encountered
 	bool is_valid = true;
 	for (size_t i = 0; i < ptr->array.count && is_valid; i++)
+	{
 		is_valid = gen_byte_code(chunk, table, ptr->array.expressions[i]);
+		if (ptr->array.expressions[i]->expr_type.type_id != ID_COLT_VOID)
+			ChunkWriteOpCode(chunk, OP_POP);
+	}
 
 	if (!is_valid)
 		return is_valid;
