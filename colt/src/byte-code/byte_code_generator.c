@@ -446,6 +446,8 @@ bool gen_local_read(Chunk* chunk, const ASTTable* table, const LocalReadExpr* pt
 bool gen_local_write(Chunk* chunk, const ASTTable* table, const LocalWriteExpr* ptr)
 {
 	colt_assert(ptr->offset < 256, "Offset to cannot be represented");
+	
+	gen_byte_code(chunk, table, ptr->value);
 
 	ChunkWriteOpCode(chunk, OP_SSTORE_LOCAL);
 	BYTE byte = { .u8 = (uint8_t)ptr->offset };
