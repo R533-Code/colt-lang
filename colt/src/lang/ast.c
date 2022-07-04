@@ -458,7 +458,7 @@ Expr* parse_primary(AST* ast)
 		
 		Expr* var_ptr = ScopeExprFindVar(ast->current_scope, variable_name);
 		if (var_ptr == NULL)
-			return global_variable_expr(ast, variable_name, type);
+			return global_variable_expr(ast, variable_name);
 		
 		return makeLocalReadExpr(variable_name, var_ptr->expr_type, ((LocalReadExpr*)var_ptr)->offset,
 			ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan)
@@ -596,8 +596,10 @@ Expr* parse_variable_declaration(AST* ast)
 		return NULL;
 	}
 	Type var_type;
+	
 	if (tkn_type != TKN_KEYWORD_VAR)
 		var_type = ScannerGetTypename(&ast->scan);
+	
 	StringView decl_identifier = ScannerGetIdentifier(&ast->scan);
 	StringView identifier_line = ScannerGetCurrentLine(&ast->scan);
 	uint64_t identifier_line_nb = ast->scan.current_line;
