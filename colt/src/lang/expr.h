@@ -332,7 +332,7 @@ Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView 
 /// @param line_nb The line number from which the expression is extracted
 /// @param line A StringView over the line containing the expression
 /// @param lexeme A StringView over the lexeme representing the expression
-/// @return A pointer to a heap allocated VariableExpr
+/// @return A pointer to a heap allocated GlobalReadExpr
 Expr* makeGlobalReadExpr(StringView var_name, Type var_type, uint64_t line_nb, StringView line, StringView lexeme);
 
 /// @brief Allocates a new variable expression on the heap, initializing it
@@ -342,7 +342,7 @@ Expr* makeGlobalReadExpr(StringView var_name, Type var_type, uint64_t line_nb, S
 /// @param line_nb The line number from which the expression is extracted
 /// @param line A StringView over the line containing the expression
 /// @param lexeme A StringView over the lexeme representing the expression
-/// @return A pointer to a heap allocated VariableExpr
+/// @return A pointer to a heap allocated GlobalWriteExpr
 Expr* makeGlobalWriteExpr(StringView var_name, Type var_type, Expr* value, uint64_t line_nb, StringView line, StringView lexeme);
 
 /// @brief Allocates a new variable expression on the heap, initializing it
@@ -352,7 +352,7 @@ Expr* makeGlobalWriteExpr(StringView var_name, Type var_type, Expr* value, uint6
 /// @param line_nb The line number from which the expression is extracted
 /// @param line A StringView over the line containing the expression
 /// @param lexeme A StringView over the lexeme representing the expression
-/// @return A pointer to a heap allocated VariableExpr
+/// @return A pointer to a heap allocated LocalReadExpr
 Expr* makeLocalReadExpr(StringView var_name, Type var_type, uint64_t var_offset, uint64_t line_nb, StringView line, StringView lexeme);
 
 /// @brief Allocates a new variable expression on the heap, initializing it
@@ -363,8 +363,13 @@ Expr* makeLocalReadExpr(StringView var_name, Type var_type, uint64_t var_offset,
 /// @param line_nb The line number from which the expression is extracted
 /// @param line A StringView over the line containing the expression
 /// @param lexeme A StringView over the lexeme representing the expression
-/// @return A pointer to a heap allocated VariableExpr
+/// @return A pointer to a heap allocated LocalWriteExpr
 Expr* makeLocalWriteExpr(StringView var_name, Type var_type, uint64_t var_offset, Expr* value, uint64_t line_nb, StringView line, StringView lexeme);
+
+/// @brief Allocates a new scope expression on the heap, initializing it
+/// @param parent_scope The parent scope, or NULL
+/// @return A pointer to a heap allocated ScopeExpr
+Expr* makeScope(ScopeExpr* parent_scope);
 
 /// @brief Recursively frees a heap-allocated expression.
 /// As an Expr* can be a BinaryExpr, or an expression with child expression,
