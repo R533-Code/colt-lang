@@ -667,7 +667,7 @@ Expr* parse_variable_declaration(AST* ast)
 
 		QWORD zero = { .u64 = 0 };
 		var_type = ScannerGetTypename(&ast->scan);
-		uint64_t var_offset = ast->current_scope->var_count++ + (ast->current_scope->parent_scope != NULL ? ast->current_scope->parent_scope->var_count : 0);
+		uint64_t var_offset = ast->current_scope->var_count++ + ScopeExprGetOffset(ast->current_scope);
 
 		return makeLocalWriteExpr(decl_identifier, var_type, var_offset,
 			makeLiteralExpr(zero, var_type, identifier_line_nb, identifier_line, decl_identifier),
@@ -723,7 +723,7 @@ Expr* parse_variable_declaration(AST* ast)
 		}
 
 		//FIXME: fix recursion for size of scope
-		uint64_t var_offset = ast->current_scope->var_count++ + (ast->current_scope->parent_scope != NULL ? ast->current_scope->parent_scope->var_count : 0);
+		uint64_t var_offset = ast->current_scope->var_count++ + ScopeExprGetOffset(ast->current_scope);
 		
 		return makeLocalWriteExpr(decl_identifier, var_type, var_offset,
 			to_assign, identifier_line_nb, identifier_line, decl_identifier
