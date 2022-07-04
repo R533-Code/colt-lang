@@ -195,7 +195,7 @@ MACRO HELPERS FOR ASSERTION AND ALLOCATIONS
 
 	/// @brief Marks a branch as unreachable, which asserts on Debug and aborts on Release configuration
 	#define colt_unreachable(error_mes) do { \
-		printf(CONSOLE_FOREGROUND_BRIGHT_RED "\nAssertion failed from file " CONSOLE_FOREGROUND_BRIGHT_WHITE "\"%s\"" \
+		printf(CONSOLE_FOREGROUND_BRIGHT_RED "\nUnreachable code hit in file " CONSOLE_FOREGROUND_BRIGHT_WHITE "\"%s\"" \
 			CONSOLE_FOREGROUND_BRIGHT_RED ", at line " CONSOLE_FOREGROUND_BRIGHT_MAGENTA "%d" \
 			CONSOLE_FOREGROUND_BRIGHT_RED " in function " CONSOLE_FOREGROUND_BRIGHT_WHITE "\"%s\"" \
 			CONSOLE_FOREGROUND_BRIGHT_RED ":\nError: " CONSOLE_FOREGROUND_BRIGHT_CYAN "%s\n" CONSOLE_COLOR_RESET, \
