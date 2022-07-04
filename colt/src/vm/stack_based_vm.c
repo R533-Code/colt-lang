@@ -129,7 +129,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		}
 		break; case OP_SSTORE_LOCAL:
 		{
-			vm->locals[(*ip)++] = StackVMPop(vm);
+			vm->locals[(*ip)++] = StackVMTop(vm);
 		}
 
 		/******************************************************/
