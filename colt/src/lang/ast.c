@@ -552,7 +552,9 @@ Expr* parse_scope(AST* ast)
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	while (ast->current_tkn != TKN_RIGHT_CURLY && ast->current_tkn != TKN_EOF)
 	{
-		ExprArrayPushBack(&scope->array, parse_expression(ast));
+		Expr* expr = parse_expression(ast);
+		if (expr != NULL)
+			ExprArrayPushBack(&scope->array, expr);
 	}
 	if (ast->current_tkn != TKN_RIGHT_CURLY)
 		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
@@ -565,27 +567,35 @@ Expr* parse_scope(AST* ast)
 Expr* parse_expression(AST* ast)
 {
 	Expr* expr;
-	switch (ast->current_tkn)
+
+	if (ast->current_tkn == TKN_LEFT_CURLY)
 	{
-	case TKN_KEYWORD_VAR:
-	case TKN_BUILTIN_TYPE:
-		expr = parse_variable_declaration(ast);
-	break; case TKN_LEFT_CURLY:
 		expr = parse_scope(ast);
-	break; case TKN_SEMICOLON:
-		return NULL;
-	break; default:
-		expr = parse_binary(ast, -1);
-		if (ast->options->no_warn_unused_result == false && !is_assignment_expr(expr))
-			ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	}
-	if (ast->current_tkn != TKN_SEMICOLON && ast->current_tkn != TKN_ERROR && ast->current_tkn != TKN_EOF)
+	else //expressions that need an ending ';'
 	{
-		ast_gen_error(ast,
-			ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
-			"Expected a semicolon ';'!"
-		);
+		switch (ast->current_tkn)
+		{
+		case TKN_KEYWORD_VAR:
+		case TKN_BUILTIN_TYPE:
+			expr = parse_variable_declaration(ast);
+		break; case TKN_SEMICOLON:
+			return NULL;
+		break; default:
+			expr = parse_binary(ast, -1);
+			if (ast->options->no_warn_unused_result == false && !is_assignment_expr(expr))
+				ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
+		}
+		if (ast->current_tkn != TKN_SEMICOLON && ast->current_tkn != TKN_ERROR && ast->current_tkn != TKN_EOF)
+		{
+			ast_gen_error(ast,
+				ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+				"Expected a semicolon ';'!"
+			);
+		}
 	}
+	
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	return expr;
 }
