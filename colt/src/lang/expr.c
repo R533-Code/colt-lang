@@ -35,6 +35,9 @@ void ExprArrayPushBack(ExprArray* array, Expr* expr)
 
 bool ScopeExprIsVarDeclared(ScopeExpr* scope, StringView name)
 {
+	if (scope == NULL)
+		return false;
+
 	Expr** expr_ptr = scope->array.expressions;
 	for (size_t i = 0; i < scope->array.count; i++)
 	{
@@ -50,6 +53,9 @@ bool ScopeExprIsVarDeclared(ScopeExpr* scope, StringView name)
 
 Expr* ScopeExprFindVar(ScopeExpr* scope, StringView name)
 {
+	if (scope == NULL)
+		return NULL;
+
 	Expr** expr_ptr = scope->array.expressions;
 	for (size_t i = 0; i < scope->array.count; i++)
 	{
