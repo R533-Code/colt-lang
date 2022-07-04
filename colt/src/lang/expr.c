@@ -34,7 +34,17 @@ void ExprArrayPushBack(ExprArray* array, Expr* expr)
 
 bool ScopeExprIsVarDeclared(ScopeExpr* scope, StringView name)
 {
-	return false;
+	Expr** expr_ptr = scope->array->expressions;
+	for (size_t i = 0; i < scope->array->count; i++)
+	{
+		if (expr_ptr[i]->identifier == EXPR_LOCAL_READ || expr_ptr[i]->identifier == EXPR_LOCAL_WRITE)
+			if (StringViewEqual(((LocalReadExpr*)expr_ptr[i])->var_name, name))
+				return true;
+	}
+	if (scope->parent_scope == NULL)
+		return false;
+	//recurse into the parent directory
+	return ScopeExprIsVarDeclared(scope->parent_scope, name);
 }
 
 Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line, StringView lexeme)
