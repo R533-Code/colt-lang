@@ -294,6 +294,9 @@ bool gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 
 	case TKN_OPERATOR_OR_OR:
 		return gen_or_or_bool_comparison(chunk, table, ptr);
+
+	default:
+		break;
 	}
 
 	gen_byte_code(chunk, table, ptr->lhs);

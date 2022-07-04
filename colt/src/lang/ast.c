@@ -356,6 +356,8 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 		value = makeBinaryExpr(lhs, TKN_OPERATOR_STAR, value, lhs->expr_type, line_nb, line, lexeme);
 	break; case TKN_OPERATOR_SLASH_EQUAL:
 		value = makeBinaryExpr(lhs, TKN_OPERATOR_SLASH, value, lhs->expr_type, line_nb, line, lexeme);
+	break; default:
+		break;
 	}
 
 	Expr* ret;
