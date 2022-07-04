@@ -32,6 +32,11 @@ void ExprArrayPushBack(ExprArray* array, Expr* expr)
 	array->expressions[array->count++] = expr;
 }
 
+bool ScopeExprIsVarDeclared(ScopeExpr* scope, StringView name)
+{
+	return false;
+}
+
 Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line, StringView lexeme)
 {
 	LiteralExpr* ptr = safe_malloc(sizeof(LiteralExpr));
