@@ -293,6 +293,11 @@ bool ScopeExprIsVarDeclared(ScopeExpr* scope, StringView name);
 /// @return LocalWriteExpr*/LocalReadExpr* or NULL if not found
 Expr* ScopeExprFindVar(ScopeExpr* scope, StringView name);
 
+/// @brief Returns the offset to the current scope.
+/// @param scope The scope whose begin offset is to be computed
+/// @return An uint64_t representing the count of variable of all the parents scopes added together
+uint64_t ScopeExprGetOffset(ScopeExpr* scope);
+
 /// @brief Allocates a new literal expression on the heap, initializing it
 /// @param value The value of the literal expression
 /// @param type The type of the literal expression

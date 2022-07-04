@@ -33,6 +33,12 @@ void ExprArrayPushBack(ExprArray* array, Expr* expr)
 	array->expressions[array->count++] = expr;
 }
 
+uint64_t ScopeExprGetOffset(ScopeExpr* scope)
+{
+	if (scope->parent_scope == NULL)
+		return 0;
+	return scope->parent_scope->var_count + ScopeExprGetOffset(scope->parent_scope->parent_scope);
+}
 bool ScopeExprIsVarDeclared(ScopeExpr* scope, StringView name)
 {
 	if (scope == NULL)
