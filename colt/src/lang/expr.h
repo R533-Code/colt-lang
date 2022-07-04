@@ -22,7 +22,7 @@
 /// @brief Represent the type of the expression holden by an Expr*.
 /// As C does not have inheritance, every expression class contains
 /// an 'identifier' member at the same layout location. By using this
-/// information, we can cast that pointer to the right expression struct.
+/// information, we can cast that pointer to the initial expression struct.
 typedef enum
 {
 	/// @brief Function expression
@@ -35,6 +35,12 @@ typedef enum
 	EXPR_GLOB_WRITE,
 	/// @brief GlobalReadExpr type
 	EXPR_GLOB_READ,
+	/// @brief ScopeExpr type
+	EXPR_SCOPE,
+	/// @brief LocalWriteExpr type
+	EXPR_LOCAL_WRITE,
+	/// @brief LocalReadExpr type
+	EXPR_LOCAL_READ,
 	/// @brief LiteralExpr type
 	EXPR_LITERAL,
 	/// @brief ConvertExpr type
@@ -60,7 +66,38 @@ typedef struct
 	Type expr_type;
 } Expr;
 
+
+/**************************************************/
+
+
+/// @brief A dynamic array of contiguous Expr*
+typedef struct
+{
+	/// @brief The number of active Expr* in 'expressions'
+	uint64_t count;
+	/// @brief The capacity of the 'expressions'
+	uint64_t capacity;
+	/// @brief Pointer to the heap allocated memory buffer of Expr*
+	Expr** expressions;
+} ExprArray;
+
+/// @brief Initializes an ExprArray
+/// @param array The array to initialize
+void ExprArrayInit(ExprArray* array);
+
+/// @brief Frees resources used up by an ExprArray
+/// @param array The array whose resources to free
+void ExprArrayFree(ExprArray* array);
+
+/// @brief Pushes an Expr* at the end of an ExprArray, handling reallocations
+/// @param array The array to modify
+/// @param expr The Expr* to add
 void ExprArrayPushBack(ExprArray* array, Expr* expr);
+
+
+/**************************************************/
+
+
 /// @brief Represents a unary expression.
 /// A unary expression is composed of a unary operator (-, ~, +, @, !),
 /// and the expression to which the operator is applied
@@ -168,7 +205,7 @@ typedef struct
 	StringView lexeme;
 	/// @brief should be EXPR_GLOB_READ
 	ExprIdentifier identifier;
-	/// @brief The expression type, which depends on the type of 'value'
+	/// @brief The expression type, which depends on the type of 'var_name'
 	Type expr_type;
 	/// @brief The literal value
 	StringView var_name;
@@ -176,7 +213,6 @@ typedef struct
 	Expr* value;
 } GlobalWriteExpr;
 
-/// @brief A dynamic array of contiguous Expr*
 typedef struct
 {
 	/// @brief The line number
@@ -197,10 +233,11 @@ typedef struct
 	ScopeExpr* parent_scope;
 } ScopeExpr;
 
-/// @brief Pushes an Expr* at the end of an ExprArray, handling reallocations
-/// @param array The array to modify
-/// @param expr The Expr* to add
-void ExprArrayPushBack(ExprArray* array, Expr* expr);
+/// @brief Check if a variable already exists
+/// @param scope Pointer to the scope in which to check
+/// @param name The variable name to check for
+/// @return True if the variable has already been declared
+bool ScopeExprIsVarDeclared(ScopeExpr* scope, StringView name);
 
 /// @brief Allocates a new literal expression on the heap, initializing it
 /// @param value The value of the literal expression
