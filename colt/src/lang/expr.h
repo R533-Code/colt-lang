@@ -213,7 +213,9 @@ typedef struct
 	Expr* value;
 } GlobalWriteExpr;
 
-/// @brief Represents a local variable read/write
+/// @brief Represents a local variable read.
+/// The position of the 'var_name' member is the same as in LocalWriteExpr
+/// which allows some optimizations in functions such as ScopeExprIsVarDeclared.
 typedef struct
 {
 	/// @brief The line number
@@ -232,7 +234,9 @@ typedef struct
 	uint64_t offset;
 } LocalReadExpr;
 
-/// @brief Represents a local variable read/write
+/// @brief Represents a local variable write.
+/// The position of the 'var_name' member is the same as in LocalReadExpr
+/// which allows some optimizations in functions such as ScopeExprIsVarDeclared.
 typedef struct
 {
 	/// @brief The line number
