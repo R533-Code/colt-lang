@@ -299,8 +299,6 @@ void freeExpr(Expr* ptr)
 	{
 		ScopeExpr* scexpr = (ScopeExpr*)ptr;
 		//Free each expression in the scope
-		for (size_t i = 0; i < scexpr->array.count; i++)
-			freeExpr(scexpr->array.expressions[i]);
 		ExprArrayFree(&scexpr->array);
 		safe_free(ptr);
 	}
