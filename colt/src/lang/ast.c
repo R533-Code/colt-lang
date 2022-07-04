@@ -549,6 +549,9 @@ Expr* parse_scope(AST* ast)
 	{
 		ExprArrayPushBack(&scope->array, parse_expression(ast));
 	}
+	if (ast->current_tkn != TKN_RIGHT_CURLY)
+		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+			"Expected a closing bracket '}'!");
 
 	ast->current_scope = old_scope;
 	return (Expr*)scope;
