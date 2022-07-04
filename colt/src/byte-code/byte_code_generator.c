@@ -247,12 +247,18 @@ bool gen_byte_code(Chunk* chunk, const ASTTable* table, const Expr* expr)
 		return gen_code_literal(chunk, table, (const LiteralExpr*)expr);
 	case EXPR_CONVERT:
 		return gen_code_convert(chunk, table, (const ConvertExpr*)expr);
+	case EXPR_SCOPE:
+		return gen_code_scope(chunk, table, (const ScopeExpr*)expr);
+	case EXPR_LOCAL_READ:
+		return gen_local_read(chunk, table, (const LocalReadExpr*)expr);
+	case EXPR_LOCAL_WRITE:
+		return gen_local_write(chunk, table, (const LocalWriteExpr*)expr);
 	case EXPR_GLOB_READ:
 		return gen_global_read(chunk, table, (const GlobalReadExpr*)expr);
 	case EXPR_GLOB_WRITE:
 		return gen_global_write(chunk, table, (const GlobalWriteExpr*)expr);
 	default:
-		colt_assert(false, "NOT IMPLEMENTED YET!");
+		colt_unreachable("NOT IMPLEMENTED YET!");
 	}
 	return true;
 }
@@ -421,6 +427,45 @@ bool gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* pt
 	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->child->expr_type.type_id);
 	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);	
 	return true;
+}
+
+bool gen_local_read(Chunk* chunk, const ASTTable* table, const LocalReadExpr* ptr)
+{
+	colt_assert(ptr->offset < 256, "Offset to cannot be represented");
+
+	ChunkWriteOpCode(chunk, OP_SLOAD_LOCAL);
+	BYTE byte = { .u8 = ptr->offset };
+	ChunkWriteBYTE(chunk, byte);
+}
+
+bool gen_local_write(Chunk* chunk, const ASTTable* table, const LocalWriteExpr* ptr)
+{
+	colt_assert(ptr->offset < 256, "Offset to cannot be represented");
+
+	ChunkWriteOpCode(chunk, OP_SSTORE_LOCAL);
+	BYTE byte = { .u8 = ptr->offset };
+	ChunkWriteBYTE(chunk, byte);
+}
+
+bool gen_code_scope(Chunk* chunk, const ASTTable* table, const ScopeExpr* ptr)
+{
+	ChunkWriteOpCode(chunk, OP_PUSH_SCOPE);
+	DWORD dword = { .u32 = ptr->var_count };
+	ChunkWriteDWORD(chunk, dword);
+	
+	//Generate byte-code while no error encountered
+	bool is_valid = true;
+	for (size_t i = 0; i < ptr->array.count && is_valid; i++)
+		is_valid = gen_byte_code(chunk, table, ptr->array.expressions[i]);
+
+	if (!is_valid)
+		return is_valid;
+
+	ChunkWriteOpCode(chunk, OP_POP_SCOPE);
+	dword.u32 = ptr->var_count;
+	ChunkWriteDWORD(chunk, dword);
+
+	return is_valid;
 }
 
 bool gen_global_read(Chunk* chunk, const ASTTable* table, const GlobalReadExpr* ptr)

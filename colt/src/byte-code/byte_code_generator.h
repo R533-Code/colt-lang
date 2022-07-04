@@ -92,6 +92,34 @@ bool gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* pt
 /// @param table The variable table
 /// @param ptr The pointer to the expression
 /// @return True if no error are encountered
+bool gen_local_read(Chunk* chunk, const ASTTable* table, const LocalReadExpr* ptr);
+
+/// @brief Generate the code necessary for a global variable assignment
+/// @param chunk The Chunk where to write the byte-code
+/// @param table The variable table from which to extract the offsets
+/// @param ptr The pointer to the expression
+/// @return True if no error are encountered
+bool gen_local_write(Chunk* chunk, const ASTTable* table, const LocalWriteExpr* ptr);
+
+/// @brief Generate the code necessary for a scope and its variables
+/// @param chunk The Chunk where to write the byte-code
+/// @param table The variable table
+/// @param ptr The pointer to the expression
+/// @return True if no error are encountered
+bool gen_code_scope(Chunk* chunk, const ASTTable* table, const ScopeExpr* ptr);
+
+/// @brief Generate code necessary for built-in conversions
+/// @param chunk The Chunk where to write the byte-code
+/// @param table GlobalTable containing variables
+/// @param ptr The expression to convert to byte-code
+/// @return True if no error are encountered
+bool gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* ptr);
+
+/// @brief Generate code necessary for variable to r-value conversion
+/// @param chunk The Chunk where to write the byte-code
+/// @param table The variable table
+/// @param ptr The pointer to the expression
+/// @return True if no error are encountered
 bool gen_global_read(Chunk* chunk, const ASTTable* table, const GlobalReadExpr* ptr);
 
 /// @brief Generate the code necessary for a global variable assignment
