@@ -8,6 +8,7 @@ void StackVMInit(StackVM* vm)
 {
 	//Point to index 0 of the stack (which means empty)
 	vm->stack_top = vm->stack;
+	vm->active_locals = 0;
 }
 
 void StackVMFree(StackVM* vm)
@@ -97,14 +98,37 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			StackVMPush(vm, push);
 		}
 
-		/******************************************************/
-
 		break;
 		case OP_STORE_GLOBAL:
 		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			QWORD offset = unsafe_get_qword(&ip);
 			*(QWORD*)(chunk->code + offset.u64) = StackVMTop(vm);
+		}
+
+		/******************************************************/
+
+		break; case OP_PUSH_SCOPE:
+		{
+			DWORD offset = unsafe_get_dword(&ip);
+			vm->active_locals += offset.u32;
+		}
+		break; case OP_POP_SCOPE:
+		{
+			DWORD offset = unsafe_get_dword(&ip);
+			colt_assert(offset.u32 < vm->active_locals, "Invalid offset!");
+			vm->active_locals -= offset.u32;
+		}
+
+		/******************************************************/
+
+		break; case OP_SLOAD_LOCAL:
+		{
+			StackVMPush(vm, vm->locals[(*ip)++]);
+		}
+		break; case OP_SSTORE_LOCAL:
+		{
+			vm->locals[(*ip)++] = StackVMPop(vm);
 		}
 
 		/******************************************************/
