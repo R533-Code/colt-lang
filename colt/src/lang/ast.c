@@ -21,12 +21,16 @@ void ASTFree(AST* ast)
 bool ASTParse(AST* ast, StringView to_parse, const ColtScanOptions* options)
 {
 	colt_assert(options != NULL, "Options should not be NULL!");
+	
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
 	ast->options = options;
+	ast->current_scope = NULL;
+
 	//TODO: add a ExprArrayReset function
 	ExprArrayFree(&ast->expr);
 	ExprArrayInit(&ast->expr);
+
 	ScannerInit(&ast->scan, to_parse);
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	
@@ -152,7 +156,7 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 	if (lhs.type_id == ID_COLT_LSTRING || rhs.type_id == ID_COLT_LSTRING)
 	{
 		ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' cannot have an 'lstring' as operand!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
-		return ColtBool;
+		return ColtVoid;
 	}
 
 	switch (binary_op)
@@ -181,7 +185,7 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 		else
 		{
 			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' expects integral operands!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
-			return ColtBool;
+			return ColtVoid;
 		}
 	case TKN_OPERATOR_GREATER:
 	case TKN_OPERATOR_GREATER_EQUAL:
@@ -194,8 +198,7 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 		return ColtBool;
 
 	default:
-		//error already outputted by impl_op_precedence 
-		return ColtBool;
+		colt_unreachable("Invalid token");
 	}
 }
 
@@ -203,7 +206,7 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 IMPLEMENTATION HELPERS
 ************************************/
 
-int impl_op_precedence(AST* ast, Token token)
+int ast_op_precedence(AST* ast, Token token)
 {
 	static const int operator_precedence_table[] =
 	{
@@ -258,7 +261,7 @@ Expr* parse_binary(AST* ast, int op_precedence)
 	StringView lexeme_strv = ScannerGetCurrentLexeme(&ast->scan);
 	StringView line_strv = ScannerGetCurrentLine(&ast->scan);
 
-	int precedence = impl_op_precedence(ast, bin_operator);
+	int precedence = ast_op_precedence(ast, bin_operator);
 
 	while (precedence > op_precedence)
 	{
@@ -272,7 +275,7 @@ Expr* parse_binary(AST* ast, int op_precedence)
 		//Read the next token
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
-		Expr* right = parse_binary(ast, impl_op_precedence(ast, bin_operator));
+		Expr* right = parse_binary(ast, ast_op_precedence(ast, bin_operator));
 		if (!right) //propagate error
 			return left; // we don't want memory leaks
 
@@ -310,7 +313,7 @@ Expr* parse_binary(AST* ast, int op_precedence)
 			return left;
 		}
 
-		precedence = impl_op_precedence(ast, bin_operator);
+		precedence = ast_op_precedence(ast, bin_operator);
 	}
 
 	return left;
@@ -320,7 +323,7 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 {
 	colt_assert(is_assignment_token(assignment_tkn), "assignment_tkn should be an assignment token!");
 
-	if (lhs->identifier != EXPR_GLOB_READ)
+	if (lhs->identifier != EXPR_GLOB_READ && lhs->identifier != EXPR_LOCAL_READ)
 	{
 		ast_gen_error(ast, lhs->line_nb, lhs->line, lhs->lexeme, "Expected a variable (lvalue)!");
 		return lhs;
@@ -353,9 +356,19 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 		value = makeBinaryExpr(lhs, TKN_OPERATOR_SLASH, value, lhs->expr_type, line_nb, line, lexeme);
 	}
 
-	Expr* ret = makeGlobalWriteExpr(
-		((GlobalReadExpr*)lhs)->var_name, lhs->expr_type, value, lhs->line_nb, lhs->line, lhs->lexeme
-	);
+	Expr* ret;
+	if (lhs->identifier != EXPR_GLOB_READ)
+	{
+		ret = makeGlobalWriteExpr(
+			((GlobalReadExpr*)lhs)->var_name, lhs->expr_type, value, lhs->line_nb, lhs->line, lhs->lexeme
+		);
+	}
+	else
+	{
+		ret = makeLocalWriteExpr(
+			((LocalReadExpr*)lhs)->var_name, lhs->expr_type, ((LocalReadExpr*)lhs)->offset, value, lhs->line_nb, lhs->line, lhs->lexeme
+		);
+	}
 
 	//As we took the data from lhs, we no longer need it.
 	//For the other case, the expression becomes part of the BinaryExpr
@@ -442,23 +455,14 @@ Expr* parse_primary(AST* ast)
 	break; case TKN_IDENTIFIER:
 	{
 		StringView variable_name = ScannerGetIdentifier(&ast->scan);
-		const GlobalEntry* table_entry = VariableTableGetEntry(&ast->table.glob_table, variable_name);
-		if (!table_entry)
-		{
-			ast_gen_error(ast,
-				ast->scan.current_line,
-				ScannerGetCurrentLine(&ast->scan),
-				ScannerGetCurrentLexeme(&ast->scan),
-				"Identifier '%.*s' is not defined!", (uint32_t)(variable_name.end - variable_name.start), variable_name.start
-			);
-			return NULL;
-		}
-		ast->current_tkn = ScannerGetNextToken(&ast->scan);
-
-		return makeGlobalReadExpr(variable_name, table_entry->type,
-			ast->scan.current_line,
-			ScannerGetCurrentLine(&ast->scan),
-			ScannerGetCurrentLexeme(&ast->scan));
+		
+		Expr* var_ptr = ScopeExprFindVar(ast->current_scope, variable_name);
+		if (var_ptr == NULL)
+			return global_variable_expr(ast, variable_name, type);
+		
+		return makeLocalReadExpr(variable_name, var_ptr->expr_type, ((LocalReadExpr*)var_ptr)->offset,
+			ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan)
+		);
 	}
 
 		/**************** ERROR ****************/
@@ -534,7 +538,20 @@ Expr* parse_parenthesis(AST* ast)
 
 Expr* parse_scope(AST* ast)
 {
+	//Save the current scope of the AST
+	ScopeExpr* old_scope = ast->current_scope;
+
+	ScopeExpr* scope = (ScopeExpr*)makeScopeExpr(old_scope);
+	//Update current scope to the scope being parsed
+	ast->current_scope = scope;
 	
+	while (ast->current_tkn != TKN_RIGHT_CURLY && ast->current_tkn != TKN_EOF)
+	{
+		ExprArrayPushBack(&scope->array, parse_expression(ast));
+	}
+
+	ast->current_scope = old_scope;
+	return (Expr*)scope;
 }
 
 Expr* parse_expression(AST* ast)
@@ -597,12 +614,30 @@ Expr* parse_variable_declaration(AST* ast)
 		if (ast->options->no_warn_uninitialized == false)
 			ast_gen_warning(ast, identifier_line_nb, identifier_line, decl_identifier, "\"%.*s\" is not initialized!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start);
 
-		if (VariableTableContains(&ast->table.glob_table, decl_identifier))
+		if (ast->current_scope == NULL)
+		{
+			if (VariableTableContains(&ast->table.glob_table, decl_identifier))
+			{
+				ast_gen_error(ast,
+					identifier_line_nb, identifier_line, decl_identifier,
+					"Global variable with identifier '%.*s' already exists!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start);
+				return NULL;
+			}
+
+			QWORD zero = { .u64 = 0 };
+			var_type = ScannerGetTypename(&ast->scan);
+			VariableTableSet(&ast->table.glob_table, decl_identifier, zero, var_type);
+
+			return makeGlobalWriteExpr(decl_identifier, var_type,
+				makeLiteralExpr(zero, var_type, identifier_line_nb, identifier_line, decl_identifier),
+				identifier_line_nb, identifier_line, decl_identifier);
+		}
+		//TODO: extract in functions
+		if (ScopeExprIsVarDeclared(ast->current_scope, decl_identifier))
 		{
 			ast_gen_error(ast,
 				identifier_line_nb, identifier_line, decl_identifier,
-				"Variable with identifier '%.*s' already exists!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start
-			);
+				"Variable with identifier '%.*s' already exists!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start);
 			return NULL;
 		}
 
@@ -610,7 +645,7 @@ Expr* parse_variable_declaration(AST* ast)
 		var_type = ScannerGetTypename(&ast->scan);
 		VariableTableSet(&ast->table.glob_table, decl_identifier, zero, var_type);
 
-		return makeGlobalWriteExpr(decl_identifier, var_type, 
+		return makeLocalWriteExpr(decl_identifier, var_type, ast->current_scope->var_count++,
 			makeLiteralExpr(zero, var_type, identifier_line_nb, identifier_line, decl_identifier),
 			identifier_line_nb, identifier_line, decl_identifier);
 	}
@@ -636,23 +671,63 @@ Expr* parse_variable_declaration(AST* ast)
 		}
 
 
-		if (VariableTableContains(&ast->table.glob_table, decl_identifier))
+		if (ast->current_scope == NULL)
+		{
+			if (VariableTableContains(&ast->table.glob_table, decl_identifier))
+			{
+				ast_gen_error(ast,
+					identifier_line_nb, identifier_line, decl_identifier,
+					"Global variable with identifier '%.*s' already exists!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start);
+				return NULL;
+			}
+
+			QWORD zero = { .u64 = 0 };
+			var_type = ScannerGetTypename(&ast->scan);
+			VariableTableSet(&ast->table.glob_table, decl_identifier, zero, var_type);
+
+			return makeGlobalWriteExpr(decl_identifier, var_type, to_assign,
+				identifier_line_nb, identifier_line, decl_identifier
+			);
+		}
+		
+		if (ScopeExprIsVarDeclared(ast->current_scope, decl_identifier))
 		{
 			ast_gen_error(ast,
 				identifier_line_nb, identifier_line, decl_identifier,
-				"Variable with identifier '%.*s' already exists!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start
-			);
-			return to_assign;
+				"Variable with identifier '%.*s' already exists!", (uint32_t)(decl_identifier.end - decl_identifier.start), decl_identifier.start);
+			return NULL;
 		}
-		
-		QWORD zero = { .u64 = 0 };
-		VariableTableSet(&ast->table.glob_table, decl_identifier, zero, to_assign->expr_type);
 
-		return makeGlobalWriteExpr(decl_identifier, var_type, to_assign,
-			identifier_line_nb, identifier_line, decl_identifier
+		QWORD zero = { .u64 = 0 };
+		var_type = ScannerGetTypename(&ast->scan);
+		VariableTableSet(&ast->table.glob_table, decl_identifier, zero, var_type);
+
+		return makeLocalWriteExpr(decl_identifier, var_type, ast->current_scope->var_count++,
+			to_assign, identifier_line_nb, identifier_line, decl_identifier
 		);
 	}
 	return NULL;
+}
+
+Expr* global_variable_expr(AST* ast, StringView variable_name)
+{
+	const GlobalEntry* table_entry = VariableTableGetEntry(&ast->table.glob_table, variable_name);
+	if (table_entry == NULL)
+	{
+		ast_gen_error(ast,
+			ast->scan.current_line,
+			ScannerGetCurrentLine(&ast->scan),
+			ScannerGetCurrentLexeme(&ast->scan),
+			"Identifier '%.*s' is not defined!", (uint32_t)(variable_name.end - variable_name.start), variable_name.start
+		);
+		return NULL;
+	}
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+
+	return makeGlobalReadExpr(variable_name, table_entry->type,
+		ast->scan.current_line,
+		ScannerGetCurrentLine(&ast->scan),
+		ScannerGetCurrentLexeme(&ast->scan));
 }
 
 bool is_assignment_token(Token tkn)

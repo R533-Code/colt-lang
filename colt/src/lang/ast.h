@@ -155,6 +155,12 @@ Expr* parse_scope(AST* ast);
 /// @return An Expr* representing the parsed expression or NULL for errors
 Expr* parse_variable_declaration(AST* ast);
 
+/// @brief 
+/// @param ast 
+/// @param variable_name 
+/// @return 
+Expr* global_variable_expr(AST* ast, StringView variable_name);
+
 /// @brief Returns true if the token represents an assignment
 /// @param tkn The token to check for
 /// @return True if the token is an assignment
