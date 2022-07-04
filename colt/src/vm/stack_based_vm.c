@@ -112,12 +112,13 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		break; case OP_PUSH_SCOPE:
 		{
 			DWORD offset = unsafe_get_dword(&ip);
+			colt_assert(offset.u32 + vm->active_locals < 256, "Stack would overflow allocating new Scope!");
 			vm->active_locals += offset.u32;
 		}
 		break; case OP_POP_SCOPE:
 		{
 			DWORD offset = unsafe_get_dword(&ip);
-			colt_assert(offset.u32 < vm->active_locals, "Invalid offset!");
+			colt_assert(offset.u32 <= vm->active_locals, "Invalid offset!");
 			vm->active_locals -= offset.u32;
 		}
 
@@ -125,10 +126,12 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 
 		break; case OP_SLOAD_LOCAL:
 		{
+			colt_assert((*ip) < 256, "Invalid offset!");
 			StackVMPush(vm, vm->locals[(*ip)++]);
 		}
 		break; case OP_SSTORE_LOCAL:
 		{
+			colt_assert((*ip) < 256, "Invalid offset!");
 			vm->locals[(*ip)++] = StackVMTop(vm);
 		}
 
