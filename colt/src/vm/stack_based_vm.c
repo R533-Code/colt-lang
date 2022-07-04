@@ -127,12 +127,12 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		break; case OP_SLOAD_LOCAL:
 		{
 			colt_assert((*ip) < 256, "Invalid offset!");
-			StackVMPush(vm, vm->locals[(*ip)++]);
+			StackVMPush(vm, vm->locals[*ip++]);
 		}
 		break; case OP_SSTORE_LOCAL:
 		{
 			colt_assert((*ip) < 256, "Invalid offset!");
-			vm->locals[(*ip)++] = StackVMTop(vm);
+			vm->locals[*ip++] = StackVMTop(vm);
 		}
 
 		/******************************************************/
@@ -414,10 +414,14 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			OpCode_Print(StackVMTop(vm), *(ip++));
 		}
 		break; case OP_POP:
+		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			StackVMPop(vm);
+		}
 		break; case OP_RETURN:
+		{
 			return 0;
+		}
 		break; case OP_EXIT:
 		{
 			uint64_t size = StackVMSize(vm);
