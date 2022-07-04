@@ -31,6 +31,7 @@ QWORD StackVMTop(const StackVM* vm)
 
 QWORD StackVMPop(StackVM* vm)
 {
+	colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 	return *(--vm->stack_top);
 }
 
