@@ -34,8 +34,8 @@ void ExprArrayPushBack(ExprArray* array, Expr* expr)
 
 bool ScopeExprIsVarDeclared(ScopeExpr* scope, StringView name)
 {
-	Expr** expr_ptr = scope->array->expressions;
-	for (size_t i = 0; i < scope->array->count; i++)
+	Expr** expr_ptr = scope->array.expressions;
+	for (size_t i = 0; i < scope->array.count; i++)
 	{
 		if (expr_ptr[i]->identifier == EXPR_LOCAL_READ || expr_ptr[i]->identifier == EXPR_LOCAL_WRITE)
 			if (StringViewEqual(((LocalReadExpr*)expr_ptr[i])->var_name, name))
@@ -229,16 +229,30 @@ void freeExpr(Expr* ptr)
 		}
 		safe_free(ptr);
 	}
+	break; case EXPR_SCOPE:
+	{
+		ScopeExpr* scexpr = (ScopeExpr*)ptr;
+		//Free each expression in the scope
+		for (size_t i = 0; i < scexpr->array.count; i++)
+			freeExpr(scexpr->array.expressions[i]);
+		ExprArrayFree(&scexpr->array);
+	}
 	break; case EXPR_GLOB_WRITE:
 	{
 		GlobalWriteExpr* rexpr = (GlobalWriteExpr*)ptr;
 		freeExpr(rexpr->value);
 		safe_free(ptr);
 	}
-	break; case EXPR_GLOB_READ:
+	break; case EXPR_LOCAL_WRITE:
 	{
+		LocalWriteExpr* rexpr = (LocalWriteExpr*)ptr;
+		freeExpr(rexpr->value);
 		safe_free(ptr);
 	}
+	break;
+	case EXPR_GLOB_READ:
+	case EXPR_LOCAL_READ:
+		safe_free(ptr);
 	break; default:
 		colt_assert(false, "Expression identifier was invalid!");
 	}

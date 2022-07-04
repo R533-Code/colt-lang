@@ -274,14 +274,14 @@ struct ScopeExpr
 	/// @brief The expression type, which should be 'void'
 	Type expr_type;
 	/// @brief The array of expressions contained in the scope
-	ExprArray* array;
+	ExprArray array;
 	/// @brief The variable count
 	uint64_t var_count;
 	/// @brief Pointer to the parent scope, which can be NULL
 	ScopeExpr* parent_scope;
 };
 
-/// @brief Check if a variable already exists
+/// @brief Check if a variable already exists in a Scope or its parent scope
 /// @param scope Pointer to the scope in which to check
 /// @param name The variable name to check for
 /// @return True if the variable has already been declared
