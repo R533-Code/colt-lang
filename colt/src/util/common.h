@@ -192,7 +192,18 @@ MACRO HELPERS FOR ASSERTION AND ALLOCATIONS
 		(void)getc(stdin); \
 		exit(EXIT_ASSERTION_FAILURE); \
 	} } while (0)
-	
+
+	/// @brief Marks a branch as unreachable, which asserts on Debug and aborts on Release configuration
+	#define colt_unreachable(error_mes) do { \
+		printf(CONSOLE_FOREGROUND_BRIGHT_RED "\nAssertion failed from file " CONSOLE_FOREGROUND_BRIGHT_WHITE "\"%s\"" \
+			CONSOLE_FOREGROUND_BRIGHT_RED ", at line " CONSOLE_FOREGROUND_BRIGHT_MAGENTA "%d" \
+			CONSOLE_FOREGROUND_BRIGHT_RED " in function " CONSOLE_FOREGROUND_BRIGHT_WHITE "\"%s\"" \
+			CONSOLE_FOREGROUND_BRIGHT_RED ":\nError: " CONSOLE_FOREGROUND_BRIGHT_CYAN "%s\n" CONSOLE_COLOR_RESET, \
+			COLTI_CURRENT_FILENAME, __LINE__, __FUNCTION__, (error_mes)); \
+		(void)getc(stdin); \
+		exit(EXIT_ASSERTION_FAILURE); \
+	} while (0)
+
 	/// @brief Ensures no NULL pointer is returned from a heap allocation
 	#define safe_malloc(size)		checked_malloc(size)
 	#define safe_free(ptr)			checked_free(ptr)
@@ -201,8 +212,10 @@ MACRO HELPERS FOR ASSERTION AND ALLOCATIONS
 	#define DO_IF_DEBUG_BUILD(what) do { what; } while(0)
 #else
 	/// @brief Asserts a condition only on Debug configuration
-	#define colt_assert(cond, error)
-	
+	#define colt_assert(cond, error_mes)
+	/// @brief Marks a branch as unreachable, which asserts on Debug and aborts on Release configuration
+	#define colt_unreachable(error_mes) abort()
+
 	/// @brief Ensures no NULL pointer is returned from a heap allocation
 	#define safe_malloc(size)		checked_malloc(size)
 	/// @brief Ensures no NULL pointer is passed for deallocation
