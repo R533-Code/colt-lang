@@ -369,7 +369,7 @@ Expr* makeLocalWriteExpr(StringView var_name, Type var_type, uint64_t var_offset
 /// @brief Allocates a new scope expression on the heap, initializing it
 /// @param parent_scope The parent scope, or NULL
 /// @return A pointer to a heap allocated ScopeExpr
-Expr* makeScope(ScopeExpr* parent_scope);
+Expr* makeScopeExpr(ScopeExpr* parent_scope);
 
 /// @brief Recursively frees a heap-allocated expression.
 /// As an Expr* can be a BinaryExpr, or an expression with child expression,

@@ -218,7 +218,7 @@ Expr* makeLocalWriteExpr(StringView var_name, Type var_type, uint64_t var_offset
 	return (Expr*)ptr;
 }
 
-Expr* makeScope(ScopeExpr* parent_scope)
+Expr* makeScopeExpr(ScopeExpr* parent_scope)
 {
 	ScopeExpr* ptr = safe_malloc(sizeof(ScopeExpr));
 
