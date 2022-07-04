@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(Colt-Lang VERSION 0.0.18.0 LANGUAGES C)
+project(Colt-Lang VERSION 0.0.19.0 LANGUAGES C)
 
 file(GLOB_RECURSE ColtHeaders "colt/src/*.h")
 file(GLOB_RECURSE ColtUnits "colt/src/*.c")
@@ -16,7 +16,7 @@ set(CMAKE_BUILD_TYPE "Release")
 set(COLTI_ABI_MAJOR 0)
 set(COLTI_ABI_MINOR 0)
 set(COLTI_ABI_PATCH 0)
-set(COLTI_ABI_TWEAK 6)
+set(COLTI_ABI_TWEAK 7)
 
 target_include_directories(colt PUBLIC "${CMAKE_SOURCE_DIR}/colt/src/util" "${CMAKE_SOURCE_DIR}/colt/src/byte-code" "${CMAKE_SOURCE_DIR}/colt/src")
 
