@@ -61,36 +61,36 @@ static const TypeInfo ColtLString	= { .name.start = ColtLString_str,  .name.end 
 /// @brief Check for if a type is built-in
 /// @param type The type to check for
 /// @return True if the type is built-in
-bool is_type_builtin(uint64_t type);
+bool is_type_builtin(Type type);
 
 /// @brief Check if a type is a built-in signed integer
 /// @param type The type_id to check for
 /// @return True if the type is a signed integer
-bool is_type_signed_int(uint64_t type);
+bool is_type_signed_int(Type type);
 
 /// @brief Check if a type is a built-in unsigned integer
 /// @param type The type_id to check for
 /// @return True if the type is an unsigned integer
-bool is_type_unsigned_int(uint64_t type);
+bool is_type_unsigned_int(Type type);
 
 /// @brief Checks if a type is a built-in integer regardless of its sign
 /// @param type The type_id to check for
 /// @return True if the type is an unsigned/signed integer
-bool is_type_integral(uint64_t type);
+bool is_type_integral(Type type);
 
 /// @brief Check if a type is a built-in floating point type
 /// @param type The type_id to check for
 /// @return True if the type is a ColtFloat_t/ColtDouble_t
-bool is_type_floating(uint64_t type);
+bool is_type_floating(Type type);
 
 /// @brief Returns the sign equivalent Type of an unsigned type ID
 /// @param type The unsigned type ID
 /// @return The signed type equivalent
-TypeInfo type_unsigned_to_signed(uint64_t type);
+Type type_unsigned_to_signed(Type type);
 
 /// @brief Returns the type from a BuiltinTypeID
 /// @param id The ID to representing a buit-in type
 /// @return A Type corresponding to the ID
-TypeInfo type_get_from_id(BuiltinTypeID id);
+TypeInfo* TypeInfoGetBuiltInFromID(BuiltinTypeID id);
 
 #endif //HG_COLT_TYPE
