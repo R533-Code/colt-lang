@@ -33,7 +33,7 @@ String* ScannerGetLString(const Scanner* scan)
 
 Type ScannerGetTypename(const Scanner* scan)
 {
-	return type_get_from_id((BuiltinTypeID)scan->parsed_value.u64);
+	return TypeInfoGetBuiltInFromID((BuiltinTypeID)scan->parsed_value.u64);
 }
 
 QWORD ScannerGetParsedQWORD(const Scanner* scan)
