@@ -91,7 +91,7 @@ Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line,
 	ptr->lexeme = lexeme;
 
 	DO_IF_DEBUG_BUILD(
-		switch (type.type_id)
+		switch (TypeGetID(type))
 		{
 		case ID_COLT_BOOL:
 		case ID_COLT_FLOAT:
@@ -164,7 +164,7 @@ Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, Type expr_type
 
 Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView line, StringView lexeme)
 {
-	if (convert_to.type_id == expr->expr_type.type_id)
+	if (TypeEqualTypeID(convert_to, TypeGetID(expr->expr_type)))
 		return expr;
 
 	ConvertExpr* ptr = safe_malloc(sizeof(BinaryExpr));
@@ -252,7 +252,8 @@ Expr* makeScopeExpr(ScopeExpr* parent_scope)
 	ScopeExpr* ptr = safe_malloc(sizeof(ScopeExpr));
 
 	ptr->identifier = EXPR_SCOPE;
-	ptr->expr_type = ColtVoid;
+	ptr->expr_type.is_const = false;
+	ptr->expr_type.typeinfo = &ColtVoid;
 	ExprArrayInit(&ptr->array);
 	ptr->var_count = 0;
 	ptr->parent_scope = parent_scope;
@@ -296,7 +297,7 @@ void freeExpr(Expr* ptr)
 	break; case EXPR_LITERAL:
 	{
 		LiteralExpr* lexpr = (LiteralExpr*)ptr;
-		if (ptr->expr_type.type_id == ID_COLT_LSTRING)
+		if (TypeEqualTypeID(ptr->expr_type, ID_COLT_LSTRING))
 		{
 			StringFree(lexpr->value.string_ptr);
 			safe_free(lexpr->value.string_ptr);
@@ -337,21 +338,20 @@ IMPLEMENTATION HELPER
 
 Type builtin_inter_type(Type lhs, Type rhs)
 {
-	colt_assert(lhs.type_id <= ID_COLT_DOUBLE && rhs.type_id <= ID_COLT_DOUBLE, "Type should be built-in types!");
-	
-	uint64_t real_lhs = is_type_signed_int(lhs.type_id) ? lhs.type_id - 4 : lhs.type_id;
-	uint64_t real_rhs = is_type_signed_int(rhs.type_id) ? rhs.type_id - 4 : rhs.type_id;
+	colt_assert(TypeGetID(lhs) <= ID_COLT_DOUBLE && TypeGetID(rhs) <= ID_COLT_DOUBLE, "Type should be built-in types!");
+
+	uint64_t real_lhs = is_type_signed_int(lhs) ? TypeGetID(lhs) - 4 : TypeGetID(lhs);
+	uint64_t real_rhs = is_type_signed_int(rhs) ? TypeGetID(rhs) - 4 : TypeGetID(rhs);
 	if (real_lhs > real_rhs)
 		//swap so that the lhs has the lowest type
 		return builtin_inter_type(rhs, lhs);
 
-	if (is_type_signed_int((BuiltinTypeID)rhs.type_id
-		&& is_type_unsigned_int((BuiltinTypeID)lhs.type_id)))
+	if (is_type_signed_int(rhs) && is_type_unsigned_int(lhs))
 	{
 		//We return the biggest integer be it signed or unsigned
 		//The + 4 comes from the fact that unsigned integer ID is - 4
 		//from that of signed integer ID
-		return (lhs.type_id + 4 < rhs.type_id) ? rhs : lhs;
+		return (TypeGetID(lhs) + 4 < TypeGetID(rhs)) ? rhs : lhs;
 	}
 	else //We return the greater type
 		return rhs;
