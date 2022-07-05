@@ -244,10 +244,13 @@ Expr* parse_binary(AST* ast, int op_precedence)
 	if (!left)
 		return NULL;
 
-	Token bin_operator = ast->current_tkn;
-	if (is_assignment_token(bin_operator))
-		return parse_assignment(ast, left, bin_operator);
+	//Assignments are handled differently:
+	// 10 + 10 + 10 is read as ((10 + 10) + 10), (left associative) while for an assignment
+	// a1 = a2 = a3 = 10 is read as (a1 = (a2 = (a3 = 10))), (right associative)
+	if (is_assignment_token(ast->current_tkn))
+		return parse_assignment(ast, left, ast->current_tkn);
 
+	Token bin_operator = ast->current_tkn;
 	switch (bin_operator)
 	{
 	case TKN_ERROR:
@@ -281,20 +284,12 @@ Expr* parse_binary(AST* ast, int op_precedence)
 		if (!right) //propagate error
 			return left; // we don't want memory leaks
 
-		Type expr_type;
-
-		if (is_assignment_token(bin_operator))
-		{
-			expr_type = left->expr_type;
-			right = makeConvertExpr(right, left->expr_type,
-				right->line_nb, right->line, right->lexeme);
-		}
-		else
-		{
-			ast_handle_conversion(&left, &right);
-			expr_type = ast_operator_return_type(ast, left->expr_type, bin_operator, right->expr_type,
-				line_nb, line_strv, lexeme_strv);
-		}
+		//Convert both expressions to the same type
+		ast_handle_conversion(&left, &right);
+		//Get the return type of the operator associated to the binary operator token
+		//because operators like ==, >=, ... returns bool
+		Type expr_type = ast_operator_return_type(ast, left->expr_type, bin_operator, right->expr_type,
+			line_nb, line_strv, lexeme_strv);
 
 		//Pratt's parsing, which allows operators priority
 		left = makeBinaryExpr(left, bin_operator, right, expr_type,
@@ -313,6 +308,8 @@ Expr* parse_binary(AST* ast, int op_precedence)
 		case TKN_RIGHT_PAREN:
 		case TKN_SEMICOLON:
 			return left;
+		default:
+			break;
 		}
 
 		precedence = ast_op_precedence(ast, bin_operator);
@@ -336,26 +333,30 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 	uint64_t line_nb = ast->scan.current_line;
 
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
-	Expr* value = parse_binary(ast, -1);
-	if (value == NULL)
+	Expr* rhs = parse_binary(ast, -1);
+	if (rhs == NULL)
 		return lhs;
+	
+	//Convert 'rhs' to the same type as 'lhs'
+	if (rhs->expr_type.type_id != lhs->expr_type.type_id)
+		rhs = makeConvertExpr(rhs, lhs->expr_type, rhs->line_nb, rhs->line, rhs->lexeme);
 
 	switch (assignment_tkn)
 	{
 	break; case TKN_OPERATOR_AND_EQUAL:
-		value = makeBinaryExpr(lhs, TKN_OPERATOR_AND, value, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_AND, rhs, lhs->expr_type, line_nb, line, lexeme);
 	break; case TKN_OPERATOR_XOR_EQUAL:
-		value = makeBinaryExpr(lhs, TKN_OPERATOR_XOR, value, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_XOR, rhs, lhs->expr_type, line_nb, line, lexeme);
 	break; case TKN_OPERATOR_OR_EQUAL:
-		value = makeBinaryExpr(lhs, TKN_OPERATOR_OR, value, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_OR, rhs, lhs->expr_type, line_nb, line, lexeme);
 	break; case TKN_OPERATOR_MINUS_EQUAL:
-		value = makeBinaryExpr(lhs, TKN_OPERATOR_MINUS, value, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_MINUS, rhs, lhs->expr_type, line_nb, line, lexeme);
 	break; case TKN_OPERATOR_PLUS_EQUAL:
-		value = makeBinaryExpr(lhs, TKN_OPERATOR_PLUS, value, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_PLUS, rhs, lhs->expr_type, line_nb, line, lexeme);
 	break; case TKN_OPERATOR_STAR_EQUAL:
-		value = makeBinaryExpr(lhs, TKN_OPERATOR_STAR, value, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_STAR, rhs, lhs->expr_type, line_nb, line, lexeme);
 	break; case TKN_OPERATOR_SLASH_EQUAL:
-		value = makeBinaryExpr(lhs, TKN_OPERATOR_SLASH, value, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_SLASH, rhs, lhs->expr_type, line_nb, line, lexeme);
 	break; default:
 		break;
 	}
@@ -364,13 +365,13 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 	if (lhs->identifier == EXPR_GLOB_READ)
 	{
 		ret = makeGlobalWriteExpr(
-			((GlobalReadExpr*)lhs)->var_name, lhs->expr_type, value, lhs->line_nb, lhs->line, lhs->lexeme
+			((GlobalReadExpr*)lhs)->var_name, lhs->expr_type, rhs, lhs->line_nb, lhs->line, lhs->lexeme
 		);
 	}
 	else //EXPR_LOCAL_READ
 	{
 		ret = makeLocalWriteExpr(
-			((LocalReadExpr*)lhs)->var_name, lhs->expr_type, ((LocalReadExpr*)lhs)->offset, value, lhs->line_nb, lhs->line, lhs->lexeme
+			((LocalReadExpr*)lhs)->var_name, lhs->expr_type, ((LocalReadExpr*)lhs)->offset, rhs, lhs->line_nb, lhs->line, lhs->lexeme
 		);
 	}
 
