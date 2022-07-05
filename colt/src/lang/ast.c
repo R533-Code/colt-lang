@@ -343,7 +343,7 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 		return lhs;
 	
 	//Convert 'rhs' to the same type as 'lhs'
-	if (rhs->expr_type.type_id != lhs->expr_type.type_id)
+	if (!ExprTypeEqualExprType(rhs, lhs))
 		rhs = makeConvertExpr(rhs, lhs->expr_type, rhs->line_nb, rhs->line, rhs->lexeme);
 
 	switch (assignment_tkn)
@@ -517,7 +517,7 @@ Expr* parse_unary(AST* ast)
 		//TODO: add option check
 		ast_gen_warning(ast, child->line_nb, child->line, child->lexeme, 
 			"Implicit conversion from '%s' to '%s'!", 
-			BuiltinTypeIDToString(TypeGetID(child->expr_type), BuiltinTypeIDToString((BuiltinTypeID)TypeGetID(child->expr_type) + 4))
+			BuiltinTypeIDToString(TypeGetID(child->expr_type)), BuiltinTypeIDToString((BuiltinTypeID)TypeGetID(child->expr_type) + 4)
 		);
 		child = makeConvertExpr(child, type_unsigned_to_signed(child->expr_type),
 			child->line_nb, child->line, child->lexeme
@@ -627,10 +627,10 @@ Expr* parse_variable_declaration(AST* ast)
 		);
 		return NULL;
 	}
-	Type var_type;
+	Type var_type = { .is_const = false };
 	
 	if (tkn_type != TKN_KEYWORD_VAR)
-		var_type = ScannerGetTypename(&ast->scan);
+		var_type.typeinfo = ScannerGetTypename(&ast->scan);
 	
 	StringView decl_identifier = ScannerGetIdentifier(&ast->scan);
 	StringView identifier_line = ScannerGetCurrentLine(&ast->scan);
@@ -662,7 +662,7 @@ Expr* parse_variable_declaration(AST* ast)
 			}
 
 			QWORD zero = { .u64 = 0 };
-			var_type = ScannerGetTypename(&ast->scan);
+			var_type.typeinfo = ScannerGetTypename(&ast->scan);
 			VariableTableSet(&ast->table.glob_table, decl_identifier, zero, var_type);
 
 			return makeGlobalWriteExpr(decl_identifier, var_type,
@@ -679,7 +679,7 @@ Expr* parse_variable_declaration(AST* ast)
 		}
 
 		QWORD zero = { .u64 = 0 };
-		var_type = ScannerGetTypename(&ast->scan);
+		var_type.typeinfo = ScannerGetTypename(&ast->scan);
 		uint64_t var_offset = ast->current_scope->var_count++ + ScopeExprGetOffset(ast->current_scope);
 
 		return makeLocalWriteExpr(decl_identifier, var_type, var_offset,
