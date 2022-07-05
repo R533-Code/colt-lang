@@ -122,6 +122,7 @@ int ast_op_precedence(AST* ast, Token token);
 Expr* parse_binary(AST* ast, int op_precedence);
 
 /// @brief Parses an assignment expression
+/// @param ast The AST from which to parse
 /// @param lhs The left hand side of the expression
 /// @param assignment_tkn The assignment token
 /// @return An Expr* representing a variable assignment or NULL
