@@ -8,6 +8,7 @@ const char* BuiltinTypeIDToString(BuiltinTypeID id)
 {
 	switch (id)
 	{
+	case ID_COLT_VOID:		return ColtVoid_str;
 	case ID_COLT_BOOL:		return ColtBool_str;
 	case ID_COLT_DOUBLE:	return ColtDouble_str;
 	case ID_COLT_FLOAT:		return ColtFloat_str;
