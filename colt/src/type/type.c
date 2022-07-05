@@ -45,7 +45,7 @@ Type type_unsigned_to_signed(Type type)
 	return ret;
 }
 
-TypeInfo* TypeInfoGetBuiltInFromID(BuiltinTypeID id)
+const TypeInfo* TypeInfoGetBuiltInFromID(BuiltinTypeID id)
 {
 	switch (id)
 	{

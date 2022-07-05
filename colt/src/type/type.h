@@ -96,6 +96,6 @@ Type type_unsigned_to_signed(Type type);
 /// @brief Returns the type from a BuiltinTypeID
 /// @param id The ID to representing a buit-in type
 /// @return A Type corresponding to the ID
-TypeInfo* TypeInfoGetBuiltInFromID(BuiltinTypeID id);
+const TypeInfo* TypeInfoGetBuiltInFromID(BuiltinTypeID id);
 
 #endif //HG_COLT_TYPE
