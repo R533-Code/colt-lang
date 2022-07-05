@@ -3,13 +3,13 @@
 */
 #include "ast.h"
 
-Expr* expr_array_front(ExprArray* array)
+const Expr* expr_array_front(const ExprArray* array)
 {
 	colt_assert(array->count != 0, "Array was empty!");
 	return array->expressions[0];
 }
 
-Expr* expr_array_back(ExprArray* array)
+const Expr* expr_array_back(const ExprArray* array)
 {
 	colt_assert(array->count != 0, "Array was empty!");
 	return array->expressions[array->count - 1];

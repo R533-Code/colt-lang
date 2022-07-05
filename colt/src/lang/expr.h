@@ -85,12 +85,12 @@ typedef struct
 /// @brief Returns the first item in the array, without checking for boundaries
 /// @param array The array from which to fetch the value
 /// @return The first Expr* pushed
-Expr* expr_array_front(ExprArray* array);
+const Expr* expr_array_front(const ExprArray* array);
 
 /// @brief Returns the last item in the array, without checking for boundaries
 /// @param array The array from which to fetch the value
 /// @return The last Expr* pushed
-Expr* expr_array_back(ExprArray* array);
+const Expr* expr_array_back(const ExprArray* array);
 
 /// @brief Initializes an ExprArray
 /// @param array The array to initialize
