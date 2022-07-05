@@ -630,7 +630,7 @@ Expr* parse_variable_declaration(AST* ast)
 	Type var_type = { .is_const = false };
 	
 	if (tkn_type != TKN_KEYWORD_VAR)
-		var_type.typeinfo = ScannerGetTypename(&ast->scan);
+		var_type.typeinfo = ScannerGetTypeInfo(&ast->scan);
 	
 	StringView decl_identifier = ScannerGetIdentifier(&ast->scan);
 	StringView identifier_line = ScannerGetCurrentLine(&ast->scan);
@@ -662,7 +662,7 @@ Expr* parse_variable_declaration(AST* ast)
 			}
 
 			QWORD zero = { .u64 = 0 };
-			var_type.typeinfo = ScannerGetTypename(&ast->scan);
+			var_type.typeinfo = ScannerGetTypeInfo(&ast->scan);
 			VariableTableSet(&ast->table.glob_table, decl_identifier, zero, var_type);
 
 			return makeGlobalWriteExpr(decl_identifier, var_type,
@@ -679,7 +679,7 @@ Expr* parse_variable_declaration(AST* ast)
 		}
 
 		QWORD zero = { .u64 = 0 };
-		var_type.typeinfo = ScannerGetTypename(&ast->scan);
+		var_type.typeinfo = ScannerGetTypeInfo(&ast->scan);
 		uint64_t var_offset = ast->current_scope->var_count++ + ScopeExprGetOffset(ast->current_scope);
 
 		return makeLocalWriteExpr(decl_identifier, var_type, var_offset,
