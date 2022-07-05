@@ -4,69 +4,69 @@
 #include "byte_code_generator.h"
 
 /// @brief Generates the byte-code necessary for an addition, and its checks
-#define gen_binary_plus()	do { if (is_type_signed_int(ptr->expr_type.type_id)) \
-								gen_signed_addition_checks(chunk, (BuiltinTypeID)ptr->expr_type.type_id); \
+#define gen_binary_plus()	do { if (is_type_signed_int(ptr->expr_type)) \
+								gen_signed_addition_checks(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); \
 							ChunkWriteOpCode(chunk, OP_ADD); \
-							ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id); } while (0)
+							ChunkWriteOperand(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 /// @brief Generates the byte-code necessary for a subtraction, and its checks
-#define gen_binary_minus() do { if (is_type_signed_int(ptr->expr_type.type_id)) \
-								gen_signed_subtraction_checks(chunk, (BuiltinTypeID)ptr->expr_type.type_id); \
+#define gen_binary_minus() do { if (is_type_signed_int(ptr->expr_type)) \
+								gen_signed_subtraction_checks(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); \
 							ChunkWriteOpCode(chunk, OP_SUBTRACT); \
-							ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id); } while (0)
+							ChunkWriteOperand(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 /// @brief Generates the byte-code necessary for a multiplication, and its checks
-#define gen_binary_star() do { if (is_type_signed_int(ptr->expr_type.type_id)) \
-								gen_signed_multiplication_checks(chunk, (BuiltinTypeID)ptr->expr_type.type_id); \
+#define gen_binary_star() do { if (is_type_signed_int(ptr->expr_type)) \
+								gen_signed_multiplication_checks(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); \
 							ChunkWriteOpCode(chunk, OP_MULTIPLY); \
-							ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id); } while (0)
+							ChunkWriteOperand(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 /// @brief Generates the byte-code necessary for a division, and its checks
-#define gen_binary_slash() do { if (is_type_signed_int(ptr->expr_type.type_id)) \
-									gen_signed_division_checks(chunk, (BuiltinTypeID)ptr->expr_type.type_id); \
+#define gen_binary_slash() do { if (is_type_signed_int(ptr->expr_type)) \
+									gen_signed_division_checks(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); \
 								/*prohibit zero division for integers*/ \
-								if (is_type_integral((BuiltinTypeID)ptr->expr_type.type_id)) \
+								if (is_type_integral(ptr->expr_type)) \
 								{ \
 									QWORD zero = { .u64 = 0 }; \
-									gen_integral_short_jmp(chunk, OP_SJUMP_NOT_EQUAL, zero, (BuiltinTypeID)ptr->expr_type.type_id); \
+									gen_integral_short_jmp(chunk, OP_SJUMP_NOT_EQUAL, zero, (BuiltinTypeID)TypeGetID(ptr->expr_type)); \
 								} \
 								ChunkWriteOpCode(chunk, OP_DIVIDE); \
-								ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id); } while (0)
+								ChunkWriteOperand(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 /// @brief Generates the byte-code necessary for a modulo operation, and its checks
 #define gen_binary_modulo() do { /*prohibit zero division for integers*/ \
-								if (is_type_integral((BuiltinTypeID)ptr->expr_type.type_id)) \
+								if (is_type_integral(ptr->expr_type)) \
 								{ \
 									QWORD zero = { .u64 = 0 }; \
-									gen_integral_short_jmp(chunk, OP_SJUMP_NOT_EQUAL, zero, (BuiltinTypeID)ptr->expr_type.type_id); \
+									gen_integral_short_jmp(chunk, OP_SJUMP_NOT_EQUAL, zero, (BuiltinTypeID)TypeGetID(ptr->expr_type)); \
 								} \
 								ChunkWriteOpCode(chunk, OP_DIVIDE); \
-								ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id); } while (0)
+								ChunkWriteOperand(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 /// @brief Generates the byte-code necessary for a bitwise AND, and its checks
-#define gen_binary_and() do { colt_assert(is_type_integral(ptr->expr_type.type_id), "Type should be integral!"); \
+#define gen_binary_and() do { colt_assert(is_type_integral(ptr->expr_type), "Type should be integral!"); \
 							ChunkWriteOpCode(chunk, OP_BIT_AND); \
-							ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id); } while (0)
+							ChunkWriteOperand(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 /// @brief Generates the byte-code necessary for a bitwise OR, and its checks
-#define gen_binary_or() do { colt_assert(is_type_integral(ptr->expr_type.type_id), "Type should be integral!"); \
+#define gen_binary_or() do { colt_assert(is_type_integral(ptr->expr_type), "Type should be integral!"); \
 							ChunkWriteOpCode(chunk, OP_BIT_OR); \
-							ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id); } while (0)
+							ChunkWriteOperand(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 /// @brief Generates the byte-code necessary for a bitwise XOR, and its checks
-#define gen_binary_xor() do { colt_assert(is_type_integral(ptr->expr_type.type_id), "Type should be integral!"); \
+#define gen_binary_xor() do { colt_assert(is_type_integral(ptr->expr_type), "Type should be integral!"); \
 							ChunkWriteOpCode(chunk, OP_BIT_XOR); \
-							ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id); } while (0)
+							ChunkWriteOperand(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 /// @brief Generates the byte-code necessary for a bitwise left shift, and its checks
 #define gen_binary_lshift() do { gen_bitshift_ub_checks(chunk, ptr->expr_type); \
 							ChunkWriteOpCode(chunk, OP_BIT_SHIFT_L); \
-							ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id); } while (0)
+							ChunkWriteOperand(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 /// @brief Generates the byte-code necessary for a bitwise right shift, and its checks
 #define gen_binary_rshift() do { gen_bitshift_ub_checks(chunk, ptr->expr_type); \
 							ChunkWriteOpCode(chunk, OP_BIT_SHIFT_R); \
-							ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id); } while (0)
+							ChunkWriteOperand(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 
 bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* array, bool print_last_expr)
@@ -97,19 +97,19 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 	{
 		is_valid = gen_byte_code(chunk, table, array->expressions[i]);
 		//As we only implemented expressions, after an expression, we pop the result
-		if (array->expressions[i]->expr_type.type_id != ID_COLT_VOID)
+		if (TypeGetID(array->expressions[i]->expr_type) != ID_COLT_VOID)
 			ChunkWriteOpCode(chunk, OP_POP);
 	}
 	is_valid = gen_byte_code(chunk, table, array->expressions[array->count - 1]);
 	if (is_valid)
 	{		
-		if (print_last_expr && array->expressions[array->count - 1]->expr_type.type_id != ID_COLT_VOID)
+		if (print_last_expr && ExprTypeEqualTypeID(array->expressions[array->count - 1], ID_COLT_VOID))
 		{
 			//Print the last expression
 			ChunkWriteOpCode(chunk, OP_PRINT);
-			ChunkWriteOperand(chunk, (BuiltinTypeID)array->expressions[array->count - 1]->expr_type.type_id);
+			ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(array->expressions[array->count - 1]));
 		}
-		if (array->expressions[array->count - 1]->expr_type.type_id != ID_COLT_VOID)
+		if (TypeGetID(array->expressions[array->count - 1]->expr_type) != ID_COLT_VOID)
 			ChunkWriteOpCode(chunk, OP_POP);
 
 		//EXIT with code 0
@@ -218,7 +218,7 @@ uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* table)
 		if (table->glob_table.entries[i].key.ptr == NULL)
 			continue;
 		*((uint64_t*)(chunk->code + debug_begin) + table->glob_table.entries[i].counter_nb * 2)
-			= table->glob_table.entries[i].type.type_id;
+			= TypeGetID(table->glob_table.entries[i].type);
 		*((uint64_t*)(chunk->code + debug_begin) + table->glob_table.entries[i].counter_nb * 2 + 1)
 			= string_literal_begin;
 
@@ -271,19 +271,19 @@ bool gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* ptr)
 	{
 	break; case TKN_OPERATOR_MINUS:
 		ChunkWriteOpCode(chunk, OP_NEGATE);
-		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->child->expr_type.type_id);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->child));
 	break; case TKN_OPERATOR_PLUS:
 		//DOES NOT DO ANYTHING
 	break; case TKN_OPERATOR_BANG:
 		ChunkWriteOpCode(chunk, OP_BOOL_NOT);
-		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->child->expr_type.type_id);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->child));
 	break; case TKN_KEYWORD_STATIC_PRINT:
 		ChunkWriteOpCode(chunk, OP_PRINT);
-		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->child->expr_type.type_id);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->child));
 		ChunkWriteOpCode(chunk, OP_POP);
 	break; case TKN_OPERATOR_TILDE:
 		ChunkWriteOpCode(chunk, OP_BIT_NOT);
-		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr));
 	break; default:
 		colt_unreachable("Operator was not unary!");
 	}
@@ -307,7 +307,7 @@ bool gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 	gen_byte_code(chunk, table, ptr->lhs);
 	gen_byte_code(chunk, table, ptr->rhs);
 
-	colt_assert(ptr->expr_type.type_id <= ID_COLT_DOUBLE, "Type ID should be of that of a built-in type!");
+	colt_assert(TypeGetID(ptr->expr_type) <= ID_COLT_DOUBLE, "Type ID should be of that of a built-in type!");
 	switch (ptr->expr_operator)
 	{
 	case TKN_OPERATOR_PLUS:
@@ -351,29 +351,30 @@ bool gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 		* COMPARISON OPCODES
 		****************************************/
 
+		//We write the left hand side's ID as byte-code comparisons expects the type of the QWORDs to compare
 	case TKN_OPERATOR_GREATER:
 		ChunkWriteOpCode(chunk, OP_CMP_GREATER);
-		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->lhs));
 		return true;
 	case TKN_OPERATOR_GREATER_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_GREATER_EQ);
-		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->lhs));
 		return true;
 	case TKN_OPERATOR_LESS:
 		ChunkWriteOpCode(chunk, OP_CMP_LESS);
-		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->lhs));
 		return true;
 	case TKN_OPERATOR_LESS_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_LESS_EQ);
-		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->lhs));
 		return true;
 	case TKN_OPERATOR_EQUAL_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_EQUAL);
-		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->lhs));
 		return true;
 	case TKN_OPERATOR_BANG_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_NOT_EQUAL);
-		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->lhs->expr_type.type_id);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->lhs));
 		return true;	
 
 	default:
@@ -383,7 +384,7 @@ bool gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 
 bool gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* ptr)
 {
-	switch (ptr->expr_type.type_id)
+	switch (TypeGetID(ptr->expr_type))
 	{
 	case ID_COLT_I8:
 	case ID_COLT_U8:
@@ -430,8 +431,8 @@ bool gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* pt
 {
 	gen_byte_code(chunk, table, ptr->child);
 	ChunkWriteOpCode(chunk, OP_CONVERT);
-	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->child->expr_type.type_id);
-	ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);	
+	ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->child));
+	ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr));
 	return true;
 }
 
@@ -470,7 +471,7 @@ bool gen_code_scope(Chunk* chunk, const ASTTable* table, const ScopeExpr* ptr)
 	for (size_t i = 0; i < ptr->array.count && is_valid; i++)
 	{
 		is_valid = gen_byte_code(chunk, table, ptr->array.expressions[i]);
-		if (ptr->array.expressions[i]->expr_type.type_id != ID_COLT_VOID)
+		if (!ExprTypeEqualTypeID(ptr->array.expressions[i],ID_COLT_VOID))
 			ChunkWriteOpCode(chunk, OP_POP);
 	}
 
@@ -494,7 +495,7 @@ bool gen_global_read(Chunk* chunk, const ASTTable* table, const GlobalReadExpr* 
 	ChunkWriteOpCode(chunk, OP_LOAD_GLOBAL);
 	ChunkWriteQWORD(chunk, offset);
 	
-	if (ptr->expr_type.type_id == ID_COLT_LSTRING)
+	if (ExprTypeEqualTypeID(ptr, ID_COLT_LSTRING))
 		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);
 
 	return true;
@@ -508,7 +509,7 @@ bool gen_global_write(Chunk* chunk, const ASTTable* table, const GlobalWriteExpr
 	//Optimize lstring assignment:
 	//as every lstring loading writes a OP_LOAD_LSTRING,
 	//there is no point in OP_STORE_LSTRING, we rather pop OP_LOAD_LSTRING
-	if (ptr->value->expr_type.type_id == ID_COLT_LSTRING)
+	if (ExprTypeEqualTypeID(ptr, ID_COLT_LSTRING))
 		chunk->count--;
 
 	const GlobalEntry* entry = variable_table_find_entry(table->glob_table.entries, table->glob_table.capacity, ptr->var_name);
@@ -518,14 +519,15 @@ bool gen_global_write(Chunk* chunk, const ASTTable* table, const GlobalWriteExpr
 	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
 	ChunkWriteOpCode(chunk, OP_STORE_GLOBAL);
 	ChunkWriteQWORD(chunk, offset);
-	if (ptr->expr_type.type_id == ID_COLT_LSTRING)
+	
+	if (ExprTypeEqualTypeID(ptr, ID_COLT_LSTRING))
 		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);
 	return true;
 }
 
 bool gen_and_and_bool_comparison(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 {
-	colt_assert(ptr->expr_type.type_id == ID_COLT_BOOL, "Operands of && should be of type bool!");
+	colt_assert(TypeGetID(ptr->expr_type) == ID_COLT_BOOL, "Operands of && should be of type bool!");
 	gen_byte_code(chunk, table, ptr->lhs);
 	
 	//If the condition is false, we do not evaluate the second, by jumping over it
@@ -546,7 +548,7 @@ bool gen_and_and_bool_comparison(Chunk* chunk, const ASTTable* table, const Bina
 
 bool gen_or_or_bool_comparison(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 {
-	colt_assert(ptr->expr_type.type_id == ID_COLT_BOOL, "Operands of || should be of type bool!");
+	colt_assert(TypeGetID(ptr->expr_type) == ID_COLT_BOOL, "Operands of || should be of type bool!");
 	gen_byte_code(chunk, table, ptr->lhs);
 	
 	//If the condition is true, we do not evaluate the second, by jumping over it
@@ -593,11 +595,11 @@ void gen_bitshift_ub_checks(Chunk* chunk, Type type)
 {
 	QWORD zero = { .u64 = 0 };
 	QWORD bit_size = { .u64 = 0 };
-	bit_size.u64 = type.byte_size * 8;
+	bit_size.u64 = type.typeinfo->byte_size * 8;
 	//Cannot shift by a negative number
-	gen_integral_short_jmp(chunk, OP_SJUMP_GREATER_EQ, zero, (BuiltinTypeID)type.type_id);
+	gen_integral_short_jmp(chunk, OP_SJUMP_GREATER_EQ, zero, (BuiltinTypeID)TypeGetID(type));
 	//Cannot shift by a number greater than the bit size of the left hand side
-	gen_integral_short_jmp(chunk, OP_SJUMP_LESS, bit_size, (BuiltinTypeID)type.type_id);
+	gen_integral_short_jmp(chunk, OP_SJUMP_LESS, bit_size, (BuiltinTypeID)TypeGetID(type));
 }
 
 void gen_signed_addition_checks(Chunk* chunk, BuiltinTypeID type)
