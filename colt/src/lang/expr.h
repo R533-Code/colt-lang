@@ -120,6 +120,14 @@ typedef struct
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on its content
 	Type expr_type;
+	
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
+	
 	/// @brief The unary operator
 	Token expr_operator;
 	/// @brief The expression on which the unary operator is applied
@@ -141,6 +149,14 @@ typedef struct
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on its content
 	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
+
 	/// @brief The unary operator
 	Token expr_operator;
 	/// @brief The left hand side of the expression
@@ -163,6 +179,14 @@ typedef struct
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on the type of 'value'
 	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
+
 	/// @brief The literal value
 	QWORD value;
 } LiteralExpr;
@@ -180,6 +204,14 @@ typedef struct
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on its content
 	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression (or the cast)
+	StringView lexeme;
+
 	/// @brief The expression to be casted
 	Expr* child;
 } ConvertExpr;
@@ -197,6 +229,14 @@ typedef struct
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on the type of 'value'
 	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
+
 	/// @brief The literal value
 	StringView var_name;
 } GlobalReadExpr;
@@ -214,6 +254,14 @@ typedef struct
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on the type of 'var_name'
 	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
+
 	/// @brief The literal value
 	StringView var_name;
 	/// @brief The value to write to the global
@@ -235,6 +283,14 @@ typedef struct
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on the type of 'value'
 	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
+
 	/// @brief The literal value
 	StringView var_name;
 	/// @brief The stack offset of the variable
@@ -256,6 +312,14 @@ typedef struct
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on the type of 'var_name'
 	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
+
 	/// @brief The variable name
 	StringView var_name;
 	/// @brief The stack offset of the variable
@@ -280,6 +344,14 @@ struct ScopeExpr
 	ExprIdentifier identifier;
 	/// @brief The expression type, which should be 'void'
 	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
+
 	/// @brief The array of expressions contained in the scope
 	ExprArray array;
 	/// @brief The variable count
