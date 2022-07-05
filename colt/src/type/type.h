@@ -19,7 +19,7 @@
 /// @brief Get the type ID of a Type
 #define TypeGetID(type) ((type).typeinfo->type_id)
 
-/// @brief Represents a type, which is a name and an ID
+/// @brief Represents a type's informations, which is a name and an ID
 typedef struct
 {
 	/// @brief The name of the Type
@@ -30,9 +30,12 @@ typedef struct
 	uint64_t byte_size;
 } TypeInfo;
 
+/// @brief Represents a type, by storing its informations and a 'const' flag
 typedef struct
 {
+	/// @brief The informations about the Type
 	const TypeInfo* typeinfo;
+	/// @brief If true, than the type is marked 'const'
 	bool is_const;
 } Type;
 
