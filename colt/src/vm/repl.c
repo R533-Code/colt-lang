@@ -1,5 +1,34 @@
 #include "repl.h"
 
+void ColtRun(const char* byte_code_out, StringView to_parse)
+{
+	AST ast;
+	ASTInit(&ast);
+	ColtScanOptions options;
+	//Choose default options
+	memset(&options, 0, sizeof(ColtScanOptions));
+
+	if (ASTParse(&ast, to_parse, &options))
+	{
+		Chunk chunk;
+		ChunkInit(&chunk);
+		if (generateByteCode(&chunk, &ast.table, &ast.expr, false))
+		{
+			if (byte_code_out != NULL)
+				ChunkSerialize(&chunk, byte_code_out);
+			StackVM vm;
+			StackVMInit(&vm);
+			if (StackVMRun(&vm, &chunk) == 0)
+				fputc('\n', stdout);
+			else
+				fputs(CONSOLE_FOREGROUND_BRIGHT_RED"\nError: "CONSOLE_COLOR_RESET "VM did not run successfully!\n", stdout);
+			StackVMFree(&vm);
+		}
+		ChunkFree(&chunk);
+	}
+	ASTFree(&ast);
+}
+
 void ColtREPL(const char* byte_code_out)
 {
 	AST ast;
