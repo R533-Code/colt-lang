@@ -14,6 +14,11 @@
 #include "type/colt_string_value.h"
 #include "structs/struct_string.h"
 
+/// @brief Compares a Type to a TypeID
+#define TypeEqualTypeID(type, ID) ((type).typeinfo->type_id == (ID))
+/// @brief Get the type ID of a Type
+#define TypeGetID(type) ((type).typeinfo->type_id)
+
 /// @brief Represents a type, which is a name and an ID
 typedef struct
 {
