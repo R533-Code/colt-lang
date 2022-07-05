@@ -65,6 +65,13 @@ typedef struct
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on its content
 	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
 } Expr;
 
 
