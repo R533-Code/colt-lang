@@ -32,7 +32,7 @@ typedef struct
 
 typedef struct
 {
-	TypeInfo* typeinfo;
+	const TypeInfo* typeinfo;
 	bool is_const;
 } Type;
 
