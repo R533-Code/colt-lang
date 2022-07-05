@@ -100,10 +100,10 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 		if (TypeGetID(array->expressions[i]->expr_type) != ID_COLT_VOID)
 			ChunkWriteOpCode(chunk, OP_POP);
 	}
-	is_valid = gen_byte_code(chunk, table, array->expressions[array->count - 1]);
+	is_valid = gen_byte_code(chunk, table, expr_array_back(array));
 	if (is_valid)
 	{		
-		if (print_last_expr && !ExprTypeEqualTypeID(array->expressions[array->count - 1], ID_COLT_VOID))
+		if (print_last_expr && !ExprTypeEqualTypeID(expr_array_back(array), ID_COLT_VOID))
 		{
 			//Print the last expression
 			ChunkWriteOpCode(chunk, OP_PRINT);
