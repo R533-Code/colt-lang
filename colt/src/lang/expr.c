@@ -3,6 +3,18 @@
 */
 #include "ast.h"
 
+Expr* expr_array_front(ExprArray* array)
+{
+	colt_assert(array->count != 0, "Array was empty!");
+	return array->expressions[0];
+}
+
+Expr* expr_array_back(ExprArray* array)
+{
+	colt_assert(array->count != 0, "Array was empty!");
+	return array->expressions[array->count - 1];
+}
+
 void ExprArrayInit(ExprArray* array)
 {
 	array->capacity = 10;
@@ -17,6 +29,13 @@ void ExprArrayFree(ExprArray* array)
 	safe_free(array->expressions);
 	DO_IF_DEBUG_BUILD(array->count = 0);
 	DO_IF_DEBUG_BUILD(array->capacity = 0);
+}
+
+void ExprArrayClear(ExprArray* array)
+{
+	for (size_t i = 0; i < array->count; i++)
+		freeExpr(array->expressions[i]);
+	array->count = 0;
 }
 
 void ExprArrayPushBack(ExprArray* array, Expr* expr)
