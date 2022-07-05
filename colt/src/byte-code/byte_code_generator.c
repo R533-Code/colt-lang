@@ -377,8 +377,7 @@ bool gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 		return true;	
 
 	default:
-		colt_assert(false, "NOT IMPLEMENTED!");
-		return false;
+		colt_unreachable("NOT IMPLEMENTED!");
 	}
 }
 
@@ -422,8 +421,7 @@ bool gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* pt
 		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);
 	}
 	break; default:
-		colt_assert(false, "Type ID should be of that of a built-in type!");
-		return false;
+		colt_unreachable("Type ID should be of that of a built-in type!");
 	}
 	return true;
 }

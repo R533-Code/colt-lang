@@ -106,7 +106,7 @@ Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line,
 		case ID_COLT_U64:
 		case ID_COLT_LSTRING:
 		break; default:
-			colt_assert(false, "'type' was not a valid type!");
+			colt_unreachable("'type' was not a valid type!");
 		}
 	);
 
@@ -135,7 +135,7 @@ Expr* makeUnaryExpr(Token unary_operator, Expr* child, Type type, uint64_t line_
 		case TKN_OPERATOR_MINUS:
 		case TKN_KEYWORD_STATIC_PRINT:
 		break; default:
-			colt_assert(false, "'unary_operator' was not a valid unary operator!");
+			colt_unreachable("'unary_operator' was not a valid unary operator!");
 		}
 	);
 
@@ -341,7 +341,7 @@ Type impl_operator_type(Type lhs, Token binary_operator, Type rhs)
 	if (lhs.type_id > ID_COLT_DOUBLE || rhs.type_id > ID_COLT_DOUBLE)
 	{
 		//Check operator overloads table
-		colt_assert(false, "NOT IMPLEMENTED YET");
+		colt_unreachable("NOT IMPLEMENTED YET");
 		exit(1);
 	}
 	else if (lhs.type_id != rhs.type_id)
