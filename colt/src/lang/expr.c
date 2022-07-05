@@ -35,7 +35,9 @@ void ExprArrayPushBack(ExprArray* array, Expr* expr)
 
 uint64_t ScopeExprGetOffset(ScopeExpr* scope)
 {
-	if (scope->parent_scope == NULL)
+	if (scope == NULL)
+		return 0;
+	else if (scope->parent_scope == NULL)
 		return 0;
 	return scope->parent_scope->var_count + ScopeExprGetOffset(scope->parent_scope->parent_scope);
 }
@@ -131,7 +133,7 @@ Expr* makeUnaryExpr(Token unary_operator, Expr* child, Type type, uint64_t line_
 		case TKN_OPERATOR_BANG:
 		case TKN_OPERATOR_PLUS:
 		case TKN_OPERATOR_MINUS:
-
+		case TKN_KEYWORD_STATIC_PRINT:
 		break; default:
 			colt_assert(false, "'unary_operator' was not a valid unary operator!");
 		}

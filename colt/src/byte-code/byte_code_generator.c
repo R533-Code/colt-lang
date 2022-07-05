@@ -277,6 +277,10 @@ bool gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* ptr)
 	break; case TKN_OPERATOR_BANG:
 		ChunkWriteOpCode(chunk, OP_BOOL_NOT);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->child->expr_type.type_id);
+	break; case TKN_KEYWORD_STATIC_PRINT:
+		ChunkWriteOpCode(chunk, OP_PRINT);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->child->expr_type.type_id);
+		ChunkWriteOpCode(chunk, OP_POP);
 	break; case TKN_OPERATOR_TILDE:
 		ChunkWriteOpCode(chunk, OP_BIT_NOT);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ptr->expr_type.type_id);

@@ -443,6 +443,7 @@ Expr* parse_primary(AST* ast)
 	case TKN_OPERATOR_PLUS:
 	case TKN_OPERATOR_TILDE:
 	case TKN_OPERATOR_BANG:
+	case TKN_KEYWORD_STATIC_PRINT:
 		//there is no need updating current token as a unary expression's internal already does that
 		primary = parse_unary(ast);
 		return primary;
@@ -517,6 +518,8 @@ Expr* parse_unary(AST* ast)
 	Type expr_type;
 	switch (unary_op)
 	{
+	break; case TKN_KEYWORD_STATIC_PRINT:
+		expr_type = ColtVoid;
 	break; case TKN_OPERATOR_BANG:
 		expr_type = ColtBool;
 	break; default:
@@ -573,7 +576,6 @@ Expr* parse_expression(AST* ast)
 	if (ast->current_tkn == TKN_LEFT_CURLY)
 	{
 		expr = parse_scope(ast);
-		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	}
 	else //expressions that need an ending ';'
 	{
@@ -583,10 +585,12 @@ Expr* parse_expression(AST* ast)
 		case TKN_BUILTIN_TYPE:
 			expr = parse_variable_declaration(ast);
 		break; case TKN_SEMICOLON:
-			return NULL;
+			//EMPTY EXPRESSION, the AST will not save it
+			expr = NULL;
+
 		break; default:
 			expr = parse_binary(ast, -1);
-			if (ast->options->no_warn_unused_result == false && !is_assignment_expr(expr))
+			if (ast->options->no_warn_unused_result == false && (!is_assignment_expr(expr) || expr->expr_type.type_id != ID_COLT_VOID))
 				ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
 		}
 		if (ast->current_tkn != TKN_SEMICOLON && ast->current_tkn != TKN_ERROR && ast->current_tkn != TKN_EOF)
@@ -705,8 +709,7 @@ Expr* parse_variable_declaration(AST* ast)
 				return NULL;
 			}
 
-			QWORD zero = { .u64 = 0 };
-			var_type = ScannerGetTypename(&ast->scan);
+			QWORD zero = { .u64 = 0 };			
 			VariableTableSet(&ast->table.glob_table, decl_identifier, zero, var_type);
 
 			return makeGlobalWriteExpr(decl_identifier, var_type, to_assign,
@@ -722,7 +725,6 @@ Expr* parse_variable_declaration(AST* ast)
 			return NULL;
 		}
 
-		//FIXME: fix recursion for size of scope
 		uint64_t var_offset = ast->current_scope->var_count++ + ScopeExprGetOffset(ast->current_scope);
 		
 		return makeLocalWriteExpr(decl_identifier, var_type, var_offset,
@@ -774,11 +776,7 @@ bool is_assignment_token(Token tkn)
 
 bool is_assignment_expr(Expr* expr)
 {
-	if (expr->identifier == EXPR_BINARY)
-	{
-		if (is_assignment_token(((BinaryExpr*)expr)->expr_operator))
-			return true;
-		return false;
-	}
+	if (expr->identifier == EXPR_GLOB_WRITE || expr->identifier)
+		return true;
 	return false;
 }
