@@ -44,38 +44,3 @@ Type type_unsigned_to_signed(Type type)
 	}
 	return ret;
 }
-
-const TypeInfo* TypeInfoGetBuiltInFromID(BuiltinTypeID id)
-{
-	switch (id)
-	{
-	case ID_COLT_VOID:
-		return &ColtVoid;
-	case ID_COLT_BOOL:
-		return &ColtBool;
-	case ID_COLT_I8:
-		return &ColtI8;
-	case ID_COLT_I16:
-		return &ColtI16;
-	case ID_COLT_I32:
-		return &ColtI32;
-	case ID_COLT_I64:
-		return &ColtI64;
-	case ID_COLT_U8:
-		return &ColtU8;
-	case ID_COLT_U16:
-		return &ColtU16;
-	case ID_COLT_U32:
-		return &ColtU32;
-	case ID_COLT_U64:
-		return &ColtU64;
-	case ID_COLT_FLOAT:
-		return &ColtFloat;
-	case ID_COLT_DOUBLE:
-		return &ColtFloat;
-	case ID_COLT_LSTRING:
-		return &ColtLString;
-	default:
-		colt_unreachable("Invalid argument!");
-	}
-}

@@ -93,9 +93,4 @@ bool is_type_floating(Type type);
 /// @return The signed type equivalent
 Type type_unsigned_to_signed(Type type);
 
-/// @brief Returns the type from a BuiltinTypeID
-/// @param id The ID to representing a buit-in type
-/// @return A Type corresponding to the ID
-const TypeInfo* TypeInfoGetBuiltInFromID(BuiltinTypeID id);
-
 #endif //HG_COLT_TYPE
