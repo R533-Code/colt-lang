@@ -23,34 +23,40 @@ typedef struct
 	uint64_t type_id;
 	/// @brief The size in memory of the Type
 	uint64_t byte_size;
+} TypeInfo;
+
+typedef struct
+{
+	TypeInfo* typeinfo;
+	bool is_const;
 } Type;
 
 
-static const Type ColtVoid		= { .name.start = ColtVoid_str,		.name.end = ColtVoid_str + 4,		.type_id = ID_COLT_VOID,		.byte_size = 0 };
+static const TypeInfo ColtVoid		= { .name.start = ColtVoid_str,		.name.end = ColtVoid_str + 4,		.type_id = ID_COLT_VOID,		.byte_size = 0 };
 /// @brief Type representing a built-in bool
-static const Type ColtBool		= { .name.start = ColtBool_str,		.name.end = ColtBool_str + 4,		.type_id = ID_COLT_BOOL,		.byte_size = sizeof(ColtBool_t) };
+static const TypeInfo ColtBool		= { .name.start = ColtBool_str,		.name.end = ColtBool_str + 4,		.type_id = ID_COLT_BOOL,		.byte_size = sizeof(ColtBool_t) };
 /// @brief Type representing a built-in unsigned 8-bit integer
-static const Type ColtU8		= { .name.start = ColtU8_str,		.name.end = ColtU8_str + 3,			.type_id = ID_COLT_U8,			.byte_size = sizeof(ColtU8_t) };
+static const TypeInfo ColtU8		= { .name.start = ColtU8_str,		.name.end = ColtU8_str + 3,			.type_id = ID_COLT_U8,			.byte_size = sizeof(ColtU8_t) };
 /// @brief Type representing a built-in unsigned 16-bit integer
-static const Type ColtU16		= { .name.start = ColtU16_str,		.name.end = ColtU16_str + 3,		.type_id = ID_COLT_U16,			.byte_size = sizeof(ColtU16_t) };
+static const TypeInfo ColtU16		= { .name.start = ColtU16_str,		.name.end = ColtU16_str + 3,		.type_id = ID_COLT_U16,			.byte_size = sizeof(ColtU16_t) };
 /// @brief Type representing a built-in unsigned 32-bit integer
-static const Type ColtU32		= { .name.start = ColtU32_str,		.name.end = ColtU32_str + 3,		.type_id = ID_COLT_U32,			.byte_size = sizeof(ColtU32_t) };
+static const TypeInfo ColtU32		= { .name.start = ColtU32_str,		.name.end = ColtU32_str + 3,		.type_id = ID_COLT_U32,			.byte_size = sizeof(ColtU32_t) };
 /// @brief Type representing a built-in unsigned 64-bit integer
-static const Type ColtU64		= { .name.start = ColtU64_str,		.name.end = ColtU64_str + 3,		.type_id = ID_COLT_U64,			.byte_size = sizeof(ColtU64_t) };
+static const TypeInfo ColtU64		= { .name.start = ColtU64_str,		.name.end = ColtU64_str + 3,		.type_id = ID_COLT_U64,			.byte_size = sizeof(ColtU64_t) };
 /// @brief Type representing a built-in signed 8-bit integer
-static const Type ColtI8		= { .name.start = ColtI8_str,		.name.end = ColtI8_str + 2,			.type_id = ID_COLT_I8,			.byte_size = sizeof(ColtI8_t) };
+static const TypeInfo ColtI8		= { .name.start = ColtI8_str,		.name.end = ColtI8_str + 2,			.type_id = ID_COLT_I8,			.byte_size = sizeof(ColtI8_t) };
 /// @brief Type representing a built-in signed 16-bit integer
-static const Type ColtI16		= { .name.start = ColtI16_str,		.name.end = ColtI16_str + 3,		.type_id = ID_COLT_I16,			.byte_size = sizeof(ColtI16_t) };
+static const TypeInfo ColtI16		= { .name.start = ColtI16_str,		.name.end = ColtI16_str + 3,		.type_id = ID_COLT_I16,			.byte_size = sizeof(ColtI16_t) };
 /// @brief Type representing a built-in signed 32-bit integer
-static const Type ColtI32		= { .name.start = ColtI32_str,		.name.end = ColtI32_str + 3,		.type_id = ID_COLT_I32,			.byte_size = sizeof(ColtI32_t) };
+static const TypeInfo ColtI32		= { .name.start = ColtI32_str,		.name.end = ColtI32_str + 3,		.type_id = ID_COLT_I32,			.byte_size = sizeof(ColtI32_t) };
 /// @brief Type representing a built-in signed 64-bit integer
-static const Type ColtI64		= { .name.start = ColtI64_str,		.name.end = ColtI64_str + 3,		.type_id = ID_COLT_I64,			.byte_size = sizeof(ColtI64_t) };
+static const TypeInfo ColtI64		= { .name.start = ColtI64_str,		.name.end = ColtI64_str + 3,		.type_id = ID_COLT_I64,			.byte_size = sizeof(ColtI64_t) };
 /// @brief Type representing a built-in float
-static const Type ColtFloat		= { .name.start = ColtFloat_str,	.name.end = ColtFloat_str + 5,		.type_id = ID_COLT_FLOAT,		.byte_size = sizeof(ColtFloat_t) };
+static const TypeInfo ColtFloat		= { .name.start = ColtFloat_str,	.name.end = ColtFloat_str + 5,		.type_id = ID_COLT_FLOAT,		.byte_size = sizeof(ColtFloat_t) };
 /// @brief Type representing a built-in double
-static const Type ColtDouble	= { .name.start = ColtDouble_str,	.name.end = ColtDouble_str + 6,		.type_id = ID_COLT_DOUBLE,		.byte_size = sizeof(ColtDouble_t) };
+static const TypeInfo ColtDouble	= { .name.start = ColtDouble_str,	.name.end = ColtDouble_str + 6,		.type_id = ID_COLT_DOUBLE,		.byte_size = sizeof(ColtDouble_t) };
 /// @brief Type representing a built-in literal
-static const Type ColtLString	= { .name.start = ColtLString_str,  .name.end = ColtLString_str + 7,	.type_id = ID_COLT_LSTRING,		.byte_size = sizeof(ColtLString_t) };
+static const TypeInfo ColtLString	= { .name.start = ColtLString_str,  .name.end = ColtLString_str + 7,	.type_id = ID_COLT_LSTRING,		.byte_size = sizeof(ColtLString_t) };
 
 /// @brief Check for if a type is built-in
 /// @param type The type to check for
@@ -80,11 +86,11 @@ bool is_type_floating(uint64_t type);
 /// @brief Returns the sign equivalent Type of an unsigned type ID
 /// @param type The unsigned type ID
 /// @return The signed type equivalent
-Type type_unsigned_to_signed(uint64_t type);
+TypeInfo type_unsigned_to_signed(uint64_t type);
 
 /// @brief Returns the type from a BuiltinTypeID
 /// @param id The ID to representing a buit-in type
 /// @return A Type corresponding to the ID
-Type type_get_from_id(BuiltinTypeID id);
+TypeInfo type_get_from_id(BuiltinTypeID id);
 
 #endif //HG_COLT_TYPE
