@@ -82,15 +82,15 @@ typedef struct
 	Expr** expressions;
 } ExprArray;
 
-/// @brief Returns the first item in the array
+/// @brief Returns the first item in the array, without checking for boundaries
 /// @param array The array from which to fetch the value
-/// @return A valid array or NULL
-Expr* ExprArrayFront(ExprArray* array);
+/// @return The first Expr* pushed
+Expr* expr_array_front(ExprArray* array);
 
-/// @brief Returns the last item in the array
+/// @brief Returns the last item in the array, without checking for boundaries
 /// @param array The array from which to fetch the value
-/// @return A valid array or NULL
-Expr* ExprArrayBack(ExprArray* array);
+/// @return The last Expr* pushed
+Expr* expr_array_back(ExprArray* array);
 
 /// @brief Initializes an ExprArray
 /// @param array The array to initialize
