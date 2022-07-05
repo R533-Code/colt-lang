@@ -207,7 +207,7 @@ typedef struct
 	Expr* child;
 } ConvertExpr;
 
-/// @brief Represents a global variable read/write
+/// @brief Represents a global variable read
 typedef struct
 {
 	/// @brief should be EXPR_GLOB_READ
@@ -226,7 +226,7 @@ typedef struct
 	StringView var_name;
 } GlobalReadExpr;
 
-/// @brief Represents a global variable read/write
+/// @brief Represents a global variable write
 typedef struct
 {
 	/// @brief should be EXPR_GLOB_READ
