@@ -4,6 +4,14 @@
 
 #include "stack_based_vm.h"
 
+#ifdef COLT_DEBUG_BUILD
+	#define STACK_VM_DEBUG_STATE()  uint64_t size = StackVMSize(vm); \
+									printf("\nStack contains %"PRIu64" QWORD%c.", size, size == 1 ? '\0' : 's'); \
+									printf("\nStack contains %"PRIu64" active variable%c.", vm->active_locals, vm->active_locals == 1 ? '\0' : 's');
+#else
+	#define STACK_VM_DEBUG_STATE()
+#endif
+
 void StackVMInit(StackVM* vm)
 {
 	//Point to index 0 of the stack (which means empty)
@@ -424,9 +432,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		}
 		break; case OP_EXIT:
 		{
-			uint64_t size = StackVMSize(vm);
-			printf("\nStack contains %"PRIu64" QWORD%c.", size, size == 1 ? '\0' : 's');
-			printf("\nStack contains %"PRIu64" active variable%c.", vm->active_locals, vm->active_locals == 1 ? '\0' : 's');
+			STACK_VM_DEBUG_STATE();
 			return unsafe_get_qword(&ip).i64;
 		}
 		break; default:
@@ -434,3 +440,5 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		}
 	}
 }
+
+#undef STACK_VM_DEBUG_STATE
