@@ -61,7 +61,7 @@ String* ScannerGetLString(const Scanner* scan);
 /// @brief Returns the last parsed type name
 /// @param scan The scanner from which to get the value
 /// @return A Type representing the last parsed type name
-TypeInfo ScannerGetTypeInfo(const Scanner* scan);
+const TypeInfo* ScannerGetTypeInfo(const Scanner* scan);
 
 /// @brief Returns the last parsed double/float/integral as a QWORD
 /// @param scan The scanner from which to get the value

@@ -31,36 +31,36 @@ String* ScannerGetLString(const Scanner* scan)
 	return to_ret;
 }
 
-TypeInfo ScannerGetTypeInfo(const Scanner* scan)
+const TypeInfo* ScannerGetTypeInfo(const Scanner* scan)
 {
 	switch (scan->parsed_value.u64)
 	{
 	case ID_COLT_VOID:
-		return ColtVoid;
+		return &ColtVoid;
 	case ID_COLT_BOOL:
-		return ColtBool;
+		return &ColtBool;
 	case ID_COLT_I8:
-		return ColtI8;
+		return &ColtI8;
 	case ID_COLT_I16:
-		return ColtI16;
+		return &ColtI16;
 	case ID_COLT_I32:
-		return ColtI32;
+		return &ColtI32;
 	case ID_COLT_I64:
-		return ColtI64;
+		return &ColtI64;
 	case ID_COLT_U8:
-		return ColtU8;
+		return &ColtU8;
 	case ID_COLT_U16:
-		return ColtU16;
+		return &ColtU16;
 	case ID_COLT_U32:
-		return ColtU32;
+		return &ColtU32;
 	case ID_COLT_U64:
-		return ColtU64;
+		return &ColtU64;
 	case ID_COLT_FLOAT:
-		return ColtFloat;
+		return &ColtFloat;
 	case ID_COLT_DOUBLE:
-		return ColtFloat;
+		return &ColtFloat;
 	case ID_COLT_LSTRING:
-		return ColtLString;
+		return &ColtLString;
 	default:
 		colt_unreachable("Invalid argument!");
 	}
