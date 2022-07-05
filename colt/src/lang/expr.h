@@ -392,13 +392,6 @@ void freeExpr(Expr* ptr);
 IMPLEMENTATION HELPER
 *******************************/
 
-/// @brief Returns the type that should be returned by an operator taking 'lhs' and 'rhs'
-/// @param lhs The left hand side of the operator
-/// @param binary_operator The token representing the operator
-/// @param rhs The right hand side of the operator
-/// @return The Type of the operator, or an outputs an error
-Type impl_operator_type(Type lhs, Token binary_operator, Type rhs);
-
 /// @brief Returns the best suitable built-in type for 2 types
 /// @param lhs The first type
 /// @param rhs The second type

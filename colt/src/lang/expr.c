@@ -335,23 +335,6 @@ void freeExpr(Expr* ptr)
 IMPLEMENTATION HELPER
 *******************************/
 
-Type impl_operator_type(Type lhs, Token binary_operator, Type rhs)
-{
-	//AT LEAST ONE IS NOT BUILT-IN TYPES
-	if (lhs.type_id > ID_COLT_DOUBLE || rhs.type_id > ID_COLT_DOUBLE)
-	{
-		//Check operator overloads table
-		colt_unreachable("NOT IMPLEMENTED YET");
-		exit(1);
-	}
-	else if (lhs.type_id != rhs.type_id)
-	{
-		return builtin_inter_type(lhs, rhs);
-	}	
-	else //if both are the same
-		return lhs;
-}
-
 Type builtin_inter_type(Type lhs, Type rhs)
 {
 	colt_assert(lhs.type_id <= ID_COLT_DOUBLE && rhs.type_id <= ID_COLT_DOUBLE, "Type should be built-in types!");
