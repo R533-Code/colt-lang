@@ -9,9 +9,9 @@
 #define HG_COLT_TYPE
 
 #include "common.h"
-#include "type/colti_floating_value.h"
-#include "type/colti_integer_value.h"
-#include "type/colti_string_value.h"
+#include "type/colt_floating_value.h"
+#include "type/colt_integer_value.h"
+#include "type/colt_string_value.h"
 #include "structs/struct_string.h"
 
 /// @brief Represents a type, which is a name and an ID

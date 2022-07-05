@@ -48,9 +48,9 @@
 
 #include "memory.h"
 #include "console_colors.h"
-#include "type/colti_floating_value.h"
-#include "type/colti_integer_value.h"
-#include "type/colti_string_value.h"
+#include "type/colt_floating_value.h"
+#include "type/colt_integer_value.h"
+#include "type/colt_string_value.h"
 
 /// @brief Common exit codes to use in place of ints
 typedef enum
