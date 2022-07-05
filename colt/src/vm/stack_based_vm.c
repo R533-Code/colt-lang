@@ -5,10 +5,12 @@
 #include "stack_based_vm.h"
 
 #ifdef COLT_DEBUG_BUILD
+	/// @brief On Debug configuration only, outputs the current QWORD count on the Stack, and the number of active variables
 	#define STACK_VM_DEBUG_STATE()  uint64_t size = StackVMSize(vm); \
 									printf("\nStack contains %"PRIu64" QWORD%c.", size, size == 1 ? '\0' : 's'); \
 									printf("\nStack contains %"PRIu64" active variable%c.", vm->active_locals, vm->active_locals == 1 ? '\0' : 's');
 #else
+	/// @brief On Debug configuration only, outputs the current QWORD count on the Stack, and the number of active variables
 	#define STACK_VM_DEBUG_STATE()
 #endif
 
