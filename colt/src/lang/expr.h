@@ -61,12 +61,6 @@ typedef enum
 /// actual type. 'expr_type' is the Colt type of the expression.
 typedef struct
 {
-	/// @brief The line number
-	uint64_t line_nb;
-	/// @brief The line from which the expression was created
-	StringView line;
-	/// @brief The lexeme representing the expression
-	StringView lexeme;
 	/// @brief Allows to cast the expression to the right expression type
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on its content
@@ -88,6 +82,16 @@ typedef struct
 	Expr** expressions;
 } ExprArray;
 
+/// @brief Returns the first item in the array
+/// @param array The array from which to fetch the value
+/// @return A valid array or NULL
+Expr* ExprArrayFront(ExprArray* array);
+
+/// @brief Returns the last item in the array
+/// @param array The array from which to fetch the value
+/// @return A valid array or NULL
+Expr* ExprArrayBack(ExprArray* array);
+
 /// @brief Initializes an ExprArray
 /// @param array The array to initialize
 void ExprArrayInit(ExprArray* array);
@@ -95,6 +99,10 @@ void ExprArrayInit(ExprArray* array);
 /// @brief Frees resources used up by an ExprArray
 /// @param array The array whose resources to free
 void ExprArrayFree(ExprArray* array);
+
+/// @brief Clears all the active Expr* stored
+/// @param array The array whose resources to free
+void ExprArrayClear(ExprArray* array);
 
 /// @brief Pushes an Expr* at the end of an ExprArray, handling reallocations
 /// @param array The array to modify
@@ -110,12 +118,6 @@ void ExprArrayPushBack(ExprArray* array, Expr* expr);
 /// and the expression to which the operator is applied
 typedef struct
 {
-	/// @brief The line number
-	uint64_t line_nb;
-	/// @brief The line from which the expression was created
-	StringView line;
-	/// @brief The lexeme representing the expression
-	StringView lexeme;
 	/// @brief should be EXPR_UNARY
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on its content
@@ -139,12 +141,6 @@ typedef struct
 /// on which the operator is applied
 typedef struct
 {
-	/// @brief The line number
-	uint64_t line_nb;
-	/// @brief The line from which the expression was created
-	StringView line;
-	/// @brief The lexeme representing the expression
-	StringView lexeme;
 	/// @brief should be EXPR_BINARY
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on its content
@@ -169,12 +165,6 @@ typedef struct
 /// A LiteralExpr can contain literal integer, floating point, or boolean
 typedef struct
 {
-	/// @brief The line number
-	uint64_t line_nb;
-	/// @brief The line from which the expression was created
-	StringView line;
-	/// @brief The lexeme representing the expression
-	StringView lexeme;
 	/// @brief should be EXPR_LITERAL
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on the type of 'value'
@@ -194,12 +184,6 @@ typedef struct
 /// @brief Represents a conversion expression
 typedef struct
 {
-	/// @brief The line number
-	uint64_t line_nb;
-	/// @brief The line from which the expression was created
-	StringView line;
-	/// @brief The lexeme representing the expression
-	StringView lexeme;
 	/// @brief Allows to cast the expression to the right expression type
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on its content
@@ -219,12 +203,6 @@ typedef struct
 /// @brief Represents a global variable read/write
 typedef struct
 {
-	/// @brief The line number
-	uint64_t line_nb;
-	/// @brief The line from which the expression was created
-	StringView line;
-	/// @brief The lexeme representing the expression
-	StringView lexeme;
 	/// @brief should be EXPR_GLOB_READ
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on the type of 'value'
@@ -244,12 +222,6 @@ typedef struct
 /// @brief Represents a global variable read/write
 typedef struct
 {
-	/// @brief The line number
-	uint64_t line_nb;
-	/// @brief The line from which the expression was created
-	StringView line;
-	/// @brief The lexeme representing the expression
-	StringView lexeme;
 	/// @brief should be EXPR_GLOB_READ
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on the type of 'var_name'
@@ -273,12 +245,6 @@ typedef struct
 /// which allows some optimizations in functions such as ScopeExprIsVarDeclared.
 typedef struct
 {
-	/// @brief The line number
-	uint64_t line_nb;
-	/// @brief The line from which the expression was created
-	StringView line;
-	/// @brief The lexeme representing the expression
-	StringView lexeme;
 	/// @brief should be EXPR_GLOB_READ
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on the type of 'value'
@@ -302,12 +268,6 @@ typedef struct
 /// which allows some optimizations in functions such as ScopeExprIsVarDeclared.
 typedef struct
 {
-	/// @brief The line number
-	uint64_t line_nb;
-	/// @brief The line from which the expression was created
-	StringView line;
-	/// @brief The lexeme representing the expression
-	StringView lexeme;
 	/// @brief should be EXPR_GLOB_READ
 	ExprIdentifier identifier;
 	/// @brief The expression type, which depends on the type of 'var_name'
@@ -334,12 +294,6 @@ typedef struct ScopeExpr ScopeExpr;
 /// @brief Represents a scope.
 struct ScopeExpr
 {
-	/// @brief The line number
-	uint64_t line_nb;
-	/// @brief The line from which the expression was created
-	StringView line;
-	/// @brief The lexeme representing the expression
-	StringView lexeme;
 	/// @brief should be EXPR_SCOPE
 	ExprIdentifier identifier;
 	/// @brief The expression type, which should be 'void'
