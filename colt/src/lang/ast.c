@@ -139,15 +139,15 @@ void ast_handle_conversion(Expr** plhs, Expr** prhs)
 	Expr* lhs = *plhs;
 	Expr* rhs = *prhs;
 
-	if (lhs->expr_type.type_id == ID_COLT_LSTRING || rhs->expr_type.type_id == ID_COLT_LSTRING)
+	if (ExprTypeEqualTypeID(lhs, ID_COLT_LSTRING) || ExprTypeEqualTypeID(rhs, ID_COLT_LSTRING))
 		return;
 
-	if (lhs->expr_type.type_id != rhs->expr_type.type_id)
+	if (ExprTypeEqualExprType(lhs, rhs))
 	{
 		Type cnv = builtin_inter_type(lhs->expr_type, rhs->expr_type);
-		if (lhs->expr_type.type_id != cnv.type_id)
+		if (!ExprTypeEqualTypeID(lhs, cnv.typeinfo->type_id))
 			*plhs = makeConvertExpr(lhs, cnv, lhs->line_nb, lhs->line, lhs->lexeme);
-		if (rhs->expr_type.type_id != cnv.type_id)
+		if (!ExprTypeEqualTypeID(lhs, cnv.typeinfo->type_id))
 			*prhs = makeConvertExpr(rhs, cnv, rhs->line_nb, rhs->line, rhs->lexeme);
 	}
 	return;
@@ -155,10 +155,11 @@ void ast_handle_conversion(Expr** plhs, Expr** prhs)
 
 Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme)
 {
-	if (lhs.type_id == ID_COLT_LSTRING || rhs.type_id == ID_COLT_LSTRING)
+	if (TypeEqualTypeID(lhs, ID_COLT_LSTRING) || TypeEqualTypeID(rhs, ID_COLT_LSTRING))
 	{
 		ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' cannot have an 'lstring' as operand!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
-		return ColtVoid;
+		Type ret = { .is_const = false, .typeinfo = &ColtVoid };
+		return ret;
 	}
 
 	switch (binary_op)
@@ -182,12 +183,13 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 	case TKN_OPERATOR_OR_EQUAL:
 	case TKN_OPERATOR_XOR_EQUAL:
 	case TKN_OPERATOR_MODULO:
-		if (is_type_integral(lhs.type_id) && is_type_integral(rhs.type_id))
+		if (is_type_integral(lhs) && is_type_integral(rhs))
 			return lhs;
 		else
 		{
 			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' expects integral operands!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
-			return ColtVoid;
+			Type ret = { .is_const = false, .typeinfo = &ColtVoid };
+			return ret;
 		}
 	case TKN_OPERATOR_GREATER:
 	case TKN_OPERATOR_GREATER_EQUAL:
@@ -197,7 +199,10 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 	case TKN_OPERATOR_BANG_EQUAL:
 	case TKN_OPERATOR_AND_AND:
 	case TKN_OPERATOR_OR_OR:
-		return ColtBool;
+	{
+		Type ret = { .is_const = false, .typeinfo = &ColtBool };
+		return ret;
+	}
 
 	default:
 		colt_unreachable("Invalid token");
@@ -389,7 +394,7 @@ Expr* parse_primary(AST* ast)
 	//Zero initialize value. This is a really important step,
 	//as it allows faster conversions in OpCode_Convert
 	QWORD value = { .u64 = 0 };
-	Type type;
+	Type type = { .is_const = false };
 
 	switch (ast->current_tkn)
 	{
@@ -397,42 +402,42 @@ Expr* parse_primary(AST* ast)
 
 	break; case TKN_I8:
 		value.i8 = ast->scan.parsed_value.i8;
-		type = ColtI8;
+		type.typeinfo = &ColtI8;
 	break; case TKN_I16:
 		value.i16 = ast->scan.parsed_value.i16;
-		type = ColtI16;
+		type.typeinfo = &ColtI16;
 	break; case TKN_I32:
 		value.i32 = ast->scan.parsed_value.i32;
-		type = ColtI32;
+		type.typeinfo = &ColtI32;
 	break; case TKN_I64:
 		value.i64 = ast->scan.parsed_value.i64;
-		type = ColtI64;
+		type.typeinfo = &ColtI64;
 	break; case TKN_U8:
 		value.u8 = ast->scan.parsed_value.u8;
-		type = ColtU8;
+		type.typeinfo = &ColtU8;
 	break; case TKN_U16:
 		value.u16 = ast->scan.parsed_value.u16;
-		type = ColtU16;
+		type.typeinfo = &ColtU16;
 	break; case TKN_U32:
 		value.u32 = ast->scan.parsed_value.u32;
-		type = ColtU32;
+		type.typeinfo = &ColtU32;
 	break; case TKN_U64:
 		value.u64 = ast->scan.parsed_value.u64;
-		type = ColtU64;
+		type.typeinfo = &ColtU64;
 	break; case TKN_FLOAT:
 		value.f = ast->scan.parsed_value.f;
-		type = ColtFloat;
+		type.typeinfo = &ColtFloat;
 	break; case TKN_DOUBLE:
 		value.d = ast->scan.parsed_value.d;
-		type = ColtDouble;
+		type.typeinfo = &ColtDouble;
 	break; case TKN_BOOL:
 		value.b = ast->scan.parsed_value.b;
-		type = ColtBool;
+		type.typeinfo = &ColtBool;
 
 	break; case TKN_STRING:
 	{
 		value.string_ptr = ScannerGetLString(&ast->scan);
-		type = ColtLString;
+		type.typeinfo = &ColtLString;
 		//Add string to string literal table
 		StringTableAdd(&ast->table.str_table, value.string_ptr);
 	}
@@ -507,11 +512,14 @@ Expr* parse_unary(AST* ast)
 		return NULL; //propagate the error
 
 	//a minus followed by a unsigned type is converted to a signed type
-	if (is_type_unsigned_int(child->expr_type.type_id) && unary_op == TKN_OPERATOR_MINUS)
+	if (is_type_unsigned_int(child->expr_type) && unary_op == TKN_OPERATOR_MINUS)
 	{
 		//TODO: add option check
-		ast_gen_warning(ast, child->line_nb, child->line, child->lexeme, "Implicit conversion from '%s' to '%s'!", BuiltinTypeIDToString(child->expr_type.type_id), BuiltinTypeIDToString((BuiltinTypeID)child->expr_type.type_id + 4));
-		child = makeConvertExpr(child, type_unsigned_to_signed(child->expr_type.type_id),
+		ast_gen_warning(ast, child->line_nb, child->line, child->lexeme, 
+			"Implicit conversion from '%s' to '%s'!", 
+			BuiltinTypeIDToString(TypeGetID(child->expr_type), BuiltinTypeIDToString((BuiltinTypeID)TypeGetID(child->expr_type) + 4))
+		);
+		child = makeConvertExpr(child, type_unsigned_to_signed(child->expr_type),
 			child->line_nb, child->line, child->lexeme
 		);
 	}
@@ -520,9 +528,9 @@ Expr* parse_unary(AST* ast)
 	switch (unary_op)
 	{
 	break; case TKN_KEYWORD_STATIC_PRINT:
-		expr_type = ColtVoid;
+		expr_type.typeinfo = &ColtVoid;
 	break; case TKN_OPERATOR_BANG:
-		expr_type = ColtBool;
+		expr_type.typeinfo = &ColtBool;
 	break; default:
 		expr_type = child->expr_type;
 	}
@@ -591,7 +599,7 @@ Expr* parse_expression(AST* ast)
 
 		break; default:
 			expr = parse_binary(ast, -1);
-			if (ast->options->no_warn_unused_result == false && (!is_assignment_expr(expr) || expr->expr_type.type_id != ID_COLT_VOID))
+			if (ast->options->no_warn_unused_result == false && (!is_assignment_expr(expr) ||  !ExprTypeEqualTypeID(expr, ID_COLT_VOID)))
 				ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
 		}
 		if (ast->current_tkn != TKN_SEMICOLON && ast->current_tkn != TKN_ERROR && ast->current_tkn != TKN_EOF)
@@ -691,7 +699,7 @@ Expr* parse_variable_declaration(AST* ast)
 		
 		if (tkn_type == TKN_KEYWORD_VAR)
 			var_type = to_assign->expr_type;
-		else if (var_type.type_id != to_assign->expr_type.type_id)
+		else if (ExprTypeEqualTypeID(to_assign, TypeGetID(var_type)))
 		{
 			//TODO: issue conversion warnings
 			to_assign = makeConvertExpr(to_assign, var_type,
