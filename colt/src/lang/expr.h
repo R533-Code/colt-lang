@@ -19,6 +19,11 @@
 #include "token.h"
 #include "type/type.h"
 
+/// @brief Compares an expression's type ID to an ID using '=='
+#define ExprTypeEqualTypeID(expr, ID) ((expr)->expr_type.typeinfo->type_id == (ID))
+/// @brief Compares an expression's type ID to another expression's type ID
+#define ExprTypeEqualExprType(expr1, expr2) ((expr1)->expr_type.typeinfo->type_id == (expr2)->expr_type.typeinfo->type_id)
+
 /// @brief Represent the type of the expression holden by an Expr*.
 /// As C does not have inheritance, every expression class contains
 /// an 'identifier' member at the same layout location. By using this
