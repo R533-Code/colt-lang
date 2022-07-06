@@ -132,8 +132,7 @@ uint64_t gen_global_pool(Chunk* chunk, const GlobalTable* glob_table)
 		//not active entry
 		if (glob_table->entries[i].key.ptr == NULL)
 			continue;
-		//FIXME: when type contains const flag
-		//if (!glob_table->entries[i].is_const) //we are generating non-const
+		if (!glob_table->entries[i].type.is_const) //we are generating non-const
 		{
 			*((QWORD*)(chunk->code + global_begin) + glob_table->entries[i].counter_nb) = glob_table->entries[i].value;
 			chunk->count += sizeof(QWORD);
@@ -153,9 +152,8 @@ uint64_t gen_const_pool(Chunk* chunk, const GlobalTable* glob_table)
 		//not active entry
 		if (glob_table->entries[i].key.ptr == NULL)
 			continue;
-		//FIXME: when type contains const flag
-		//if (!glob_table->entries[i].is_const) //we are generating const
-		if (false)
+
+		if (glob_table->entries[i].type.is_const) //we are generating const
 		{
 			*((QWORD*)(chunk->code + const_begin) + glob_table->entries[i].counter_nb) = glob_table->entries[i].value;
 			chunk->count += sizeof(QWORD);
