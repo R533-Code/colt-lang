@@ -709,7 +709,7 @@ Expr* parse_variable_declaration(AST* ast, bool is_const)
 			return to_assign;
 		
 		if (tkn_type == TKN_KEYWORD_VAR)
-			var_type = to_assign->expr_type;
+			var_type.typeinfo = to_assign->expr_type.typeinfo;
 		else if (ExprTypeEqualTypeID(to_assign, TypeGetID(var_type)))
 		{
 			//TODO: issue conversion warnings
