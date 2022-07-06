@@ -774,6 +774,8 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 	break; case 'c':
 		if (strcmp(str, "case") == 0)
 			return TKN_KEYWORD_CASE;
+		else if (strcmp(str, "const") == 0)
+			return TKN_KEYWORD_CONST;
 		else if (strcmp(str, "continue") == 0)
 			return TKN_KEYWORD_CONTINUE;
 	break; case 'd':
