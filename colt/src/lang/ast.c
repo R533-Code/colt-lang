@@ -517,14 +517,14 @@ Expr* parse_unary(AST* ast)
 		//TODO: add option check
 		ast_gen_warning(ast, child->line_nb, child->line, child->lexeme, 
 			"Implicit conversion from '%s' to '%s'!", 
-			BuiltinTypeIDToString(TypeGetID(child->expr_type)), BuiltinTypeIDToString((BuiltinTypeID)TypeGetID(child->expr_type) + 4)
+			BuiltinTypeIDToString((BuiltinTypeID)TypeGetID(child->expr_type)), BuiltinTypeIDToString((BuiltinTypeID)TypeGetID(child->expr_type) + 4)
 		);
 		child = makeConvertExpr(child, type_unsigned_to_signed(child->expr_type),
 			child->line_nb, child->line, child->lexeme
 		);
 	}
 
-	Type expr_type;
+	Type expr_type = { .is_const = false };
 	switch (unary_op)
 	{
 	break; case TKN_KEYWORD_STATIC_PRINT:
@@ -598,7 +598,12 @@ Expr* parse_expression(AST* ast)
 		{
 		case TKN_KEYWORD_VAR:
 		case TKN_BUILTIN_TYPE:
-			expr = parse_variable_declaration(ast);
+			expr = parse_variable_declaration(ast, false);
+		break; case TKN_KEYWORD_CONST:
+			//Consume 'const'
+			ast->current_tkn = ScannerGetNextToken(&ast->scan);
+			expr = parse_variable_declaration(ast, true);
+		
 		break; case TKN_SEMICOLON:
 			//EMPTY EXPRESSION, the AST will not save it
 			expr = NULL;
@@ -621,7 +626,7 @@ Expr* parse_expression(AST* ast)
 	return expr;
 }
 
-Expr* parse_variable_declaration(AST* ast)
+Expr* parse_variable_declaration(AST* ast, bool is_const)
 {
 	Token tkn_type = ast->current_tkn;
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
@@ -633,7 +638,7 @@ Expr* parse_variable_declaration(AST* ast)
 		);
 		return NULL;
 	}
-	Type var_type = { .is_const = false };
+	Type var_type = { .is_const = is_const };
 	
 	if (tkn_type != TKN_KEYWORD_VAR)
 		var_type.typeinfo = ScannerGetTypeInfo(&ast->scan);

@@ -153,8 +153,9 @@ Expr* parse_scope(AST* ast);
 
 /// @brief Parses a variable declaration, and adds the variable to the 'glob_table'
 /// @param ast The AST from which to parse
+/// @param is_const True if the variable parsed should be const
 /// @return An Expr* representing the parsed expression or NULL for errors
-Expr* parse_variable_declaration(AST* ast);
+Expr* parse_variable_declaration(AST* ast, bool is_const);
 
 /// @brief 
 /// @param ast 
