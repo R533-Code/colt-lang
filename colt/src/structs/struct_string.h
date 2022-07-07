@@ -132,7 +132,7 @@ void StringClear(String* str);
 /// @param size The number of bytes to add to the capacity
 void StringReserve(String* str, size_t size);
 
-/// @brief Asks the user for input, and returns it as a string
+/// @brief Asks the user for input, ensuring every ([{ is closed, and returns it as a string
 /// @return The string containing the input
 String StringREPLGetLine();
 
