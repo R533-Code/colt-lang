@@ -762,7 +762,8 @@ Expr* parse_variable_declaration(AST* ast, bool is_const)
 			to_assign, identifier_line_nb, identifier_line, decl_identifier
 		);
 	}
-	//TODO: add error expected an assignment or ';'
+	ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+		"Expected an '=' or ';'!");
 	return NULL;
 }
 
