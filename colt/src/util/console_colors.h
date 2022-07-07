@@ -100,6 +100,8 @@ OTHER MODIFIERS FOR CONSOLE
 #define CONSOLE_FONT_BOLD					"\x1B[2m"
 /// @brief Sets the font to underline
 #define CONSOLE_FONT_UNDERLINE				"\x1B[4m"
+/// @brief Makes the font flicker
+#define CONSOLE_FONT_FLICKER				"\x1B[5m"
 
 // 3 italic on Windows
 // 5 animates on Windows
@@ -144,6 +146,7 @@ OTHER MODIFIERS FOR CONSOLE
 #define CONSOLE_COLOR_REVERSE
 #define CONSOLE_FONT_BOLD
 #define CONSOLE_FONT_UNDERLINE
+#define CONSOLE_FONT_FLICKER
 
 #endif
 
