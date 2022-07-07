@@ -808,9 +808,9 @@ bool is_assignment_token(Token tkn)
 	}
 }
 
-bool is_assignment_expr(Expr* expr)
+bool is_assignment_expr(const Expr* expr)
 {
-	if (expr->identifier == EXPR_GLOB_WRITE || expr->identifier)
+	if (expr->identifier == EXPR_GLOB_WRITE || expr->identifier == EXPR_GLOB_READ)
 		return true;
 	return false;
 }
