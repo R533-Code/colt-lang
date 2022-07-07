@@ -472,7 +472,7 @@ Expr* parse_primary(AST* ast)
 		
 		Expr* var_ptr = ScopeExprFindVar(ast->current_scope, variable_name);
 		if (var_ptr == NULL)
-			return global_variable_expr(ast, variable_name);
+			return make_global_read_expr(ast, variable_name);
 		
 		var_ptr = makeLocalReadExpr(variable_name, var_ptr->expr_type, ((LocalReadExpr*)var_ptr)->offset,
 			ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan)
@@ -767,7 +767,7 @@ Expr* parse_variable_declaration(AST* ast, bool is_const)
 	return NULL;
 }
 
-Expr* global_variable_expr(AST* ast, StringView variable_name)
+Expr* make_global_read_expr(AST* ast, StringView variable_name)
 {
 	const GlobalEntry* table_entry = VariableTableGetEntry(&ast->table.glob_table, variable_name);
 	if (table_entry == NULL)

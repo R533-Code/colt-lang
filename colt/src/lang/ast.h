@@ -157,11 +157,11 @@ Expr* parse_scope(AST* ast);
 /// @return An Expr* representing the parsed expression or NULL for errors
 Expr* parse_variable_declaration(AST* ast, bool is_const);
 
-/// @brief 
-/// @param ast 
-/// @param variable_name 
-/// @return 
-Expr* global_variable_expr(AST* ast, StringView variable_name);
+/// @brief Searches for 'variable_name' in the AST's global table, and if not found, generates an error
+/// @param ast The AST whose table to search in
+/// @param variable_name The name of the variable to search for
+/// @return NULL if the variable was not found, else, a GlobalReadExpr representing the found global
+Expr* make_global_read_expr(AST* ast, StringView variable_name);
 
 /// @brief Returns true if the token represents an assignment
 /// @param tkn The token to check for
