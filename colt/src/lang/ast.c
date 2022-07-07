@@ -367,7 +367,7 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 	}
 
 	if (lhs->expr_type.is_const)
-		ast_gen_error(ast, lhs->line_nb, lhs->line, lhs->lexeme, "Assignment to 'const' is prohibited!");
+		ast_gen_error(ast, lhs->line_nb, lhs->line, lhs->lexeme, "Cannot assign to 'const' expressions!");
 
 	Expr* ret;
 	if (lhs->identifier == EXPR_GLOB_READ)
@@ -771,12 +771,14 @@ Expr* global_variable_expr(AST* ast, StringView variable_name)
 		);
 		return NULL;
 	}
-	ast->current_tkn = ScannerGetNextToken(&ast->scan);
-
-	return makeGlobalReadExpr(variable_name, table_entry->type,
+	Expr* ret = makeGlobalReadExpr(variable_name, table_entry->type,
 		ast->scan.current_line,
 		ScannerGetCurrentLine(&ast->scan),
 		ScannerGetCurrentLexeme(&ast->scan));
+	
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+	
+	return ret;
 }
 
 bool is_assignment_token(Token tkn)
