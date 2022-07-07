@@ -260,6 +260,13 @@ void StringReserve(String* str, size_t size)
 	str->ptr = temp;
 }
 
+String StringREPLGetLine()
+{
+	String str;
+	str.ptr = unsafe_string_repl_getline(&str.size, &str.capacity);
+	return str;
+}
+
 String StringGetLine()
 {
 	String str;
@@ -404,9 +411,9 @@ void impl_string_grow_size(String* str, size_t by)
 
 char* unsafe_string_getline(size_t* length, size_t* capacity)
 {
-	char* str = safe_malloc(10);
+	char* str = safe_malloc(64);
 	size_t current_char = 0;
-	size_t current_capacity = 10;
+	size_t current_capacity = 64;
 
 	for (;;)
 	{
@@ -426,6 +433,67 @@ char* unsafe_string_getline(size_t* length, size_t* capacity)
 		{
 			str[current_char++] = '\0';
 			break;
+		}
+	}
+
+	*capacity = current_capacity;
+	*length = current_char;
+	return str;
+}
+
+char* unsafe_string_repl_getline(size_t* length, size_t* capacity)
+{
+	char* str = safe_malloc(64);
+	size_t current_char = 0;
+	size_t current_capacity = 64;
+
+	// (
+	size_t open_parens = 0;
+	// {
+	size_t open_curly = 0;
+	// [
+	size_t open_square = 0;
+	
+	for (;;)
+	{
+		if (current_char == current_capacity)
+		{
+			char* temp = safe_malloc(current_capacity *= 2);
+			memcpy(temp, str, current_char);
+			safe_free(str);
+			str = temp;
+		}
+		
+		char gchar = (char)getc(stdin);
+
+		switch (gchar)
+		{
+		break; case '(':
+			++open_parens;
+		break; case '[':
+			++open_square;
+		break; case '{':
+			++open_curly;
+		break; case ')':
+			--open_parens;
+		break; case ']':
+			--open_square;
+		break; case '}':
+			--open_curly;
+		}
+
+		if (gchar != '\n' && gchar != EOF)
+		{
+			str[current_char++] = gchar;
+		}
+		else if (open_parens == 0 && open_square == 0 && open_curly == 0)
+		{
+			str[current_char++] = '\0';
+			break;
+		}
+		else
+		{
+			str[current_char++] = gchar;
 		}
 	}
 
