@@ -654,10 +654,18 @@ Expr* parse_variable_declaration(AST* ast, bool is_const)
 
 	if (ast->current_tkn == TKN_SEMICOLON)
 	{
+		if (is_const == true)
+		{
+			ast_gen_error(ast,
+				identifier_line_nb, identifier_line, decl_identifier,
+				"Variable declared as 'const'%s should always be initialized!", (tkn_type == TKN_KEYWORD_VAR ? " and 'var'" : "")
+			);
+			return NULL;
+		}
 		if (tkn_type == TKN_KEYWORD_VAR)
 		{
 			ast_gen_error(ast,
-				ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+				identifier_line_nb, identifier_line, decl_identifier,
 				"Variable declared with 'var' should always be initialized!"
 			);
 			return NULL;
