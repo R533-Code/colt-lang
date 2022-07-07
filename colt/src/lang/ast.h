@@ -171,6 +171,6 @@ bool is_assignment_token(Token tkn);
 /// @brief Returns true if the expression is a binary expression representing an assignment
 /// @param expr The expression to check for
 /// @return True if the expression is binary having an assignment token
-bool is_assignment_expr(Expr* expr);
+bool is_assignment_expr(const Expr* expr);
 
 #endif //HG_COLT_AST
