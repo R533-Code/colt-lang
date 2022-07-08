@@ -801,6 +801,9 @@ bool is_assignment_token(Token tkn)
 	case TKN_OPERATOR_MINUS_EQUAL:
 	case TKN_OPERATOR_STAR_EQUAL:
 	case TKN_OPERATOR_SLASH_EQUAL:
+	case TKN_OPERATOR_LESS_LESS_EQUAL:
+	case TKN_OPERATOR_GREATER_GREATER_EQUAL:
+	case TKN_OPERATOR_MODULO_EQUAL:
 		return true;
 	default:
 		return false;
