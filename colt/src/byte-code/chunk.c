@@ -71,7 +71,7 @@ uint64_t ChunkGetCODESection(const Chunk* chunk)
 
 uint64_t unsafe_chunk_get_global_end(const Chunk* chunk)
 {
-	colt_assert(ChunkGetCONSTSection(chunk) != 0, "GLOBAL section does not exist!");
+	colt_assert(ChunkGetGLOBALSection(chunk) != 0, "GLOBAL section does not exist!");
 	uint64_t ret = *((uint64_t*)chunk->code + 3);
 	if (ret != 0)
 		return ret;
