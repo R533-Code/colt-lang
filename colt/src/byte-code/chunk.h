@@ -64,11 +64,6 @@ uint64_t ChunkGetABI(const Chunk* chunk);
 /// @param offset The offset to write
 void ChunkWriteGLOBALSection(Chunk* chunk, uint64_t offset);
 
-/// @brief Writes the offset to the beginning of the CONST section
-/// @param chunk The Chunk where to write the value
-/// @param offset The offset to write
-void ChunkWriteCONSTSection(Chunk* chunk, uint64_t offset);
-
 /// @brief Writes the offset to the beginning of the STRING section
 /// @param chunk The Chunk where to write the value
 /// @param offset The offset to write
@@ -88,11 +83,6 @@ void ChunkWriteCODESection(Chunk* chunk, uint64_t offset);
 /// @param chunk The Chunk from which to read the value
 /// @return The byte offset or 0 if the section doesn't exist
 uint64_t ChunkGetGLOBALSection(const Chunk* chunk);
-
-/// @brief Returns the offset to the beginning of the CONST section
-/// @param chunk The Chunk from which to read the value
-/// @return The byte offset or 0 if the section doesn't exist
-uint64_t ChunkGetCONSTSection(const Chunk* chunk);
 
 /// @brief Returns the offset to the beginning of the STRING section
 /// @param chunk The Chunk from which to read the value
@@ -115,12 +105,6 @@ uint64_t ChunkGetCODESection(const Chunk* chunk);
 /// @param chunk The Chunk from which to read the value
 /// @return The byte offset or 0 if the section doesn't exist
 uint64_t unsafe_chunk_get_global_end(const Chunk* chunk);
-
-/// @brief Returns the end of the CONST section
-/// Preconditions: The CONST section should exist (ChunkGetCONSTSection != 0)
-/// @param chunk The Chunk from which to read the value
-/// @return The byte offset or 0 if the section doesn't exist
-uint64_t unsafe_chunk_get_const_end(const Chunk* chunk);
 
 /// @brief Returns the end of the STRING section
 /// Preconditions: The STRING section should exist (ChunkGetSTRINGSection != 0)
