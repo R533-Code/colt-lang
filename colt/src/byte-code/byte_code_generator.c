@@ -489,7 +489,6 @@ bool gen_global_write(Chunk* chunk, const ASTTable* table, const GlobalWriteExpr
 
 	const GlobalEntry* entry = variable_table_find_entry(table->glob_table.entries, table->glob_table.capacity, ptr->var_name);
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
-	colt_assert(entry->type.is_const == false, "Variable was const!");
 
 	//byte-offset from where to read
 	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
