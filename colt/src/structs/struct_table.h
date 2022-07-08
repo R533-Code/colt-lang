@@ -45,11 +45,6 @@ typedef struct
 /// For an entry of a GlobalTable to be considered uninitialized, its key->ptr is equal to NULL.
 typedef struct
 {
-	/// @brief A counter incremented at each pushed global item
-	uint64_t global_counter;
-	/// @brief A counter incremented at each pushed const item
-	uint64_t const_counter;
-
 	/// @brief The number of active variables in the GlobalTable
 	uint64_t count;
 	/// @brief The capacity of the GlobalTable

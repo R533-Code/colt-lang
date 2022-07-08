@@ -55,7 +55,6 @@ void StringTableAdd(StringTable* table, const String* to_add)
 
 void VariableTableInit(GlobalTable* table)
 {
-	table->global_counter = 0;
 	table->capacity = 10;
 	table->count = 0;
 	table->entries = safe_malloc(sizeof(GlobalEntry) * 10);
@@ -104,16 +103,14 @@ bool VariableTableSet(GlobalTable* table, StringView strv, QWORD value, Type typ
 	GlobalEntry* entry = variable_table_find_entry(table->entries, table->capacity, strv);
 	bool is_new = (entry->key.ptr == NULL);
 	if (is_new)
-	{	
-		entry->counter_nb = table->global_counter++; //update both global_counter and count
-		table->count++;
+	{
+		entry->counter_nb = table->count++;
 	}
 	
 	StringViewToString(strv, &entry->key);
 	entry->value = value;
 	entry->type = type;
-	//FIXME: add way to specify const
-	//entry->is_const = false;
+
 	return is_new;
 }
 
