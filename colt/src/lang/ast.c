@@ -181,6 +181,9 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 	case TKN_OPERATOR_OR_EQUAL:
 	case TKN_OPERATOR_XOR_EQUAL:
 	case TKN_OPERATOR_MODULO:
+	case TKN_OPERATOR_LESS_LESS_EQUAL:
+	case TKN_OPERATOR_GREATER_GREATER_EQUAL:
+	case TKN_OPERATOR_MODULO_EQUAL:
 		if (is_type_integral(lhs) && is_type_integral(rhs))
 			return lhs;
 		else
@@ -361,6 +364,12 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_STAR, rhs, ret_type, op_line_nb, op_line, op_lexeme);
 	break; case TKN_OPERATOR_SLASH_EQUAL:
 		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_SLASH, rhs, ret_type, op_line_nb, op_line, op_lexeme);
+	break; case TKN_OPERATOR_LESS_LESS_EQUAL:
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_LESS_LESS, rhs, ret_type, op_line_nb, op_line, op_lexeme);
+	break; case TKN_OPERATOR_GREATER_GREATER_EQUAL:
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_GREATER_GREATER, rhs, ret_type, op_line_nb, op_line, op_lexeme);
+	break; case TKN_OPERATOR_MODULO_EQUAL:
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_MODULO, rhs, ret_type, op_line_nb, op_line, op_lexeme);
 	break; default:
 		break;
 	}
