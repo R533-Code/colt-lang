@@ -2,18 +2,16 @@
 * Contains the Chunk struct, which is used to provide simpler operations for storing and writing byte-code.
 * A Chunk can be seen as a contiguous dynamic array which handles resizes automatically
 * when writing byte-code to it.
-* A Chunk usually contains 6 sections:
+* A Chunk usually contains 5 sections:
 * - The HEADER: 2 uint64_t giving informations about the Chunk, 5 uint64_t giving the offsets of the 5 other sections
 *	- First uint64_t   -> ABI
-*	- Second uint64_t  -> Unused (now)
+*	- Second uint64_t  -> Unused (for now)
 *	- Third uint64_t   -> byte offset to GLOBAL section or 0 if this section does not exist
-*	- Fourth uint64_t  -> byte offset to CONST section or 0 if this section does not exist
-*	- Fifth uint64_t   -> byte offset to STRING section or 0 if this section does not exist
-*	- Sixth uint64_t   -> byte offset to DEBUG section or 0 if this section does not exist
-*	- Seventh uint64_t -> byte offset to CODE section or 0 if this section does not exist
+*	- Fourth uint64_t   -> byte offset to STRING section or 0 if this section does not exist
+*	- Fifth uint64_t   -> byte offset to DEBUG section or 0 if this section does not exist
+*	- Sixth uint64_t -> byte offset to CODE section or 0 if this section does not exist
 *	- The offsets are in bytes, which should be added to Chunk.code
 * - The GLOBAL pool: contains all modifiable global variables
-* - The CONST pool: contains all non-modifiable const variables
 * - The STRING pool: starts with the number of string literals, and contains all string literals
 * - The DEBUG pool: contains type informations for both const and global variables
 * - The CODE section: contains the byte-code to execute
@@ -34,7 +32,7 @@
 #include "byte_code.h" //Contains the byte-code enum
 
 /// @brief The count of QWORDs in the header section of an initialized Chunk
-#define CHUNK_HEADER_QWORD_COUNT 7
+#define CHUNK_HEADER_QWORD_COUNT 6
 
 /// @brief Represents a stream of instructions
 typedef struct

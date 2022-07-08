@@ -34,24 +34,19 @@ void ChunkWriteGLOBALSection(Chunk* chunk, uint64_t offset)
 	*((uint64_t*)(chunk->code) + 2) = offset;
 }
 
-void ChunkWriteCONSTSection(Chunk* chunk, uint64_t offset)
+void ChunkWriteSTRINGSection(Chunk* chunk, uint64_t offset)
 {
 	*((uint64_t*)chunk->code + 3) = offset;
 }
 
-void ChunkWriteSTRINGSection(Chunk* chunk, uint64_t offset)
+void ChunkWriteDEBUGSection(Chunk* chunk, uint64_t offset)
 {
 	*((uint64_t*)chunk->code + 4) = offset;
 }
 
-void ChunkWriteDEBUGSection(Chunk* chunk, uint64_t offset)
-{
-	*((uint64_t*)chunk->code + 5) = offset;
-}
-
 void ChunkWriteCODESection(Chunk* chunk, uint64_t offset)
 {
-	*((uint64_t*)chunk->code + 6) = offset;
+	*((uint64_t*)chunk->code + 5) = offset;
 }
 
 uint64_t ChunkGetGLOBALSection(const Chunk* chunk)
@@ -59,31 +54,25 @@ uint64_t ChunkGetGLOBALSection(const Chunk* chunk)
 	return *((uint64_t*)chunk->code + 2);
 }
 
-uint64_t ChunkGetCONSTSection(const Chunk* chunk)
+uint64_t ChunkGetSTRINGSection(const Chunk* chunk)
 {
 	return *((uint64_t*)chunk->code + 3);
 }
 
-uint64_t ChunkGetSTRINGSection(const Chunk* chunk)
+uint64_t ChunkGetDEBUGSection(const Chunk* chunk)
 {
 	return *((uint64_t*)chunk->code + 4);
 }
 
-uint64_t ChunkGetDEBUGSection(const Chunk* chunk)
+uint64_t ChunkGetCODESection(const Chunk* chunk)
 {
 	return *((uint64_t*)chunk->code + 5);
 }
 
-uint64_t ChunkGetCODESection(const Chunk* chunk)
-{
-	return *((uint64_t*)chunk->code + 6);
-}
-
 uint64_t unsafe_chunk_get_global_end(const Chunk* chunk)
 {
-	colt_assert(ChunkGetGLOBALSection(chunk) != 0, "GLOBAL section does not exist!");
+	colt_assert(ChunkGetCONSTSection(chunk) != 0, "GLOBAL section does not exist!");
 	uint64_t ret = *((uint64_t*)chunk->code + 3);
-	//unrolled the cases rather than using a loop
 	if (ret != 0)
 		return ret;
 	else
@@ -96,33 +85,6 @@ uint64_t unsafe_chunk_get_global_end(const Chunk* chunk)
 			ret = *((uint64_t*)chunk->code + 5);
 			if (ret != 0)
 				return ret;
-			else
-			{
-				ret = *((uint64_t*)chunk->code + 6);
-				if (ret != 0)
-					return ret;
-				return chunk->count;
-			}
-		}
-	}
-}
-
-uint64_t unsafe_chunk_get_const_end(const Chunk* chunk)
-{
-	colt_assert(ChunkGetCONSTSection(chunk) != 0, "CONST section does not exist!");
-	uint64_t ret = *((uint64_t*)chunk->code + 4);
-	if (ret != 0)
-		return ret;
-	else
-	{
-		ret = *((uint64_t*)chunk->code + 5);
-		if (ret != 0)
-			return ret;
-		else
-		{
-			ret = *((uint64_t*)chunk->code + 6);
-			if (ret != 0)
-				return ret;
 			return chunk->count;
 		}
 	}
@@ -131,12 +93,12 @@ uint64_t unsafe_chunk_get_const_end(const Chunk* chunk)
 uint64_t unsafe_chunk_get_string_end(const Chunk* chunk)
 {
 	colt_assert(ChunkGetSTRINGSection(chunk) != 0, "STRING section does not exist!");
-	uint64_t ret = *((uint64_t*)chunk->code + 5);
+	uint64_t ret = *((uint64_t*)chunk->code + 4);
 	if (ret != 0)
 		return ret;
 	else
 	{
-		ret = *((uint64_t*)chunk->code + 6);
+		ret = *((uint64_t*)chunk->code + 5);
 		if (ret != 0)
 			return ret;
 		return chunk->count;
@@ -146,7 +108,7 @@ uint64_t unsafe_chunk_get_string_end(const Chunk* chunk)
 uint64_t unsafe_chunk_get_debug_end(const Chunk* chunk)
 {
 	colt_assert(ChunkGetDEBUGSection(chunk) != 0, "DEBUG section does not exist!");
-	uint64_t ret = *((uint64_t*)chunk->code + 6);
+	uint64_t ret = *((uint64_t*)chunk->code + 5);
 	if (ret != 0)
 		return ret;
 	return chunk->count;
@@ -154,7 +116,7 @@ uint64_t unsafe_chunk_get_debug_end(const Chunk* chunk)
 
 uint64_t unsafe_chunk_get_code_end(const Chunk* chunk)
 {
-	colt_assert(ChunkGetSTRINGSection(chunk) != 0, "CODE section does not exist!");
+	colt_assert(ChunkGetCODESection(chunk) != 0, "CODE section does not exist!");
 	return chunk->count;
 }
 
