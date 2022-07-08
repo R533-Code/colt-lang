@@ -123,7 +123,7 @@ uint64_t unsafe_chunk_get_code_end(const Chunk* chunk)
 uint64_t unsafe_chunk_get_lstring_count(const Chunk* chunk)
 {
 	colt_assert(ChunkGetSTRINGSection(chunk) != 0, "STRING section does not exist!");
-	return *(uint64_t*)(chunk->code + *((uint64_t*)chunk->code + 4));
+	return *(uint64_t*)(chunk->code + *((uint64_t*)chunk->code + 3));
 }
 
 void ChunkWriteOpCode(Chunk* chunk, OpCode code)
