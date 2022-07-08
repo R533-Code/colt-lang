@@ -27,9 +27,8 @@ bool ASTParse(AST* ast, StringView to_parse, const ColtScanOptions* options)
 	ast->options = options;
 	ast->current_scope = NULL;
 
-	//TODO: add a ExprArrayReset function
-	ExprArrayFree(&ast->expr);
-	ExprArrayInit(&ast->expr);
+	//Reset the array
+	ExprArrayClear(&ast->expr);
 
 	ScannerInit(&ast->scan, to_parse);
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
