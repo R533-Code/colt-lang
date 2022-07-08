@@ -80,15 +80,13 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 	// * 3: as debug data uses 2 QWORDs per variable and a variable is 1 QWORD
 	ChunkReserve(chunk, table->str_table.all_str_size + (table->str_table.count + 1) * sizeof(QWORD) + table->glob_table.count * 3 * sizeof(QWORD));
 
-	//write GLOBAL offset
-	ChunkWriteGLOBALSection(chunk, gen_global_pool(chunk, &table->glob_table));
-	//write CONST offset
-	ChunkWriteCONSTSection(chunk, gen_const_pool(chunk, &table->glob_table));
+	//write GLOBAL and CONST offset
+	gen_global_pool(chunk, &table->glob_table);
 	//write string literals in the constant pool
-	ChunkWriteSTRINGSection(chunk, gen_string_literal_pool(chunk, &table->str_table));
-
+	gen_string_literal_pool(chunk, &table->str_table);
 	//write DEBUG offset
-	ChunkWriteDEBUGSection(chunk, gen_debug_pool(chunk, table));
+	gen_debug_pool(chunk, table);
+	
 	//write CODE offset
 	ChunkWriteCODESection(chunk, chunk->count);
 
@@ -121,10 +119,10 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 	return false;
 }
 
-uint64_t gen_global_pool(Chunk* chunk, const GlobalTable* glob_table)
+void gen_global_pool(Chunk* chunk, const GlobalTable* glob_table)
 {
 	if (glob_table->count == 0)
-		return 0;
+		return;
 	const uint64_t global_begin = chunk->count;
 
 	for (size_t i = 0; i < glob_table->capacity; i++)
@@ -132,40 +130,18 @@ uint64_t gen_global_pool(Chunk* chunk, const GlobalTable* glob_table)
 		//not active entry
 		if (glob_table->entries[i].key.ptr == NULL)
 			continue;
-		if (!glob_table->entries[i].type.is_const) //we are generating non-const
-		{
-			*((QWORD*)(chunk->code + global_begin) + glob_table->entries[i].counter_nb) = glob_table->entries[i].value;
-			chunk->count += sizeof(QWORD);
-		}
+		
+		*((QWORD*)(chunk->code + global_begin) + glob_table->entries[i].counter_nb) = glob_table->entries[i].value;
+		chunk->count += sizeof(QWORD);
 	}
-	return global_begin;
+
+	ChunkWriteGLOBALSection(chunk, global_begin);
 }
 
-uint64_t gen_const_pool(Chunk* chunk, const GlobalTable* glob_table)
-{
-	if (glob_table->count - glob_table->global_counter == 0)
-		return 0;
-	const uint64_t const_begin = chunk->count;
-
-	for (size_t i = 0; i < glob_table->capacity; i++)
-	{
-		//not active entry
-		if (glob_table->entries[i].key.ptr == NULL)
-			continue;
-
-		if (glob_table->entries[i].type.is_const) //we are generating const
-		{
-			*((QWORD*)(chunk->code + const_begin) + glob_table->entries[i].counter_nb) = glob_table->entries[i].value;
-			chunk->count += sizeof(QWORD);
-		}
-	}
-	return const_begin;
-}
-
-uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
+void gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 {
 	if (str_table->count == 0)
-		return 0;
+		return;
 
 	const uint64_t string_begin = chunk->count;
 	//Write the literal count first
@@ -198,13 +174,14 @@ uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 	uint64_t padding = 8 - (chunk->count % 8);
 	for (size_t i = 0; i < padding; i++)
 		chunk_write_byte(chunk, 205); //CD in hex
-	return string_begin;
+	
+	ChunkWriteSTRINGSection(chunk, string_begin);
 }
 
-uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* table)
+void gen_debug_pool(Chunk* chunk, const ASTTable* table)
 {
 	if (table->glob_table.count == 0)
-		return 0;
+		return;
 	const uint64_t debug_begin = chunk->count;
 
 	uint64_t string_literal_begin = debug_begin + table->glob_table.count * 2 * sizeof(QWORD);
@@ -226,7 +203,7 @@ uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* table)
 		string_literal_begin += table->glob_table.entries[i].key.size;
 	}	
 	
-	return debug_begin;
+	ChunkWriteDEBUGSection(chunk, debug_begin);
 }
 
 /*************************************
@@ -489,7 +466,7 @@ bool gen_global_read(Chunk* chunk, const ASTTable* table, const GlobalReadExpr* 
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
 
 	//byte-offset to QWORD to load
-	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
+	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk)  };
 	ChunkWriteOpCode(chunk, OP_LOAD_GLOBAL);
 	ChunkWriteQWORD(chunk, offset);
 	
@@ -512,9 +489,10 @@ bool gen_global_write(Chunk* chunk, const ASTTable* table, const GlobalWriteExpr
 
 	const GlobalEntry* entry = variable_table_find_entry(table->glob_table.entries, table->glob_table.capacity, ptr->var_name);
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
+	colt_assert(entry->type.is_const == false, "Variable was const!");
 
 	//byte-offset from where to read
-	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
+	QWORD offset = { .u64 = (entry->counter_nb + (entry->type.is_const ? table->glob_table.global_counter : 0)) * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
 	ChunkWriteOpCode(chunk, OP_STORE_GLOBAL);
 	ChunkWriteQWORD(chunk, offset);
 	

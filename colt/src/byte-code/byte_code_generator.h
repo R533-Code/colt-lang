@@ -26,29 +26,22 @@ bool generateByteCode(Chunk* chunk, const ASTTable* glob_table, const ExprArray*
 IMPLEMENTATION HELPERS
 *************************************/
 
-/// @brief Generates the global memory pool, and return the offset to its beginning
+/// @brief Generates the global and const memory pool, and return the offset to its beginning
 /// @param chunk The Chunk where to write the byte-code
 /// @param glob_table The GlobalTable whose non-const entries to write
-/// @return The offset to the GLOBAL section
-uint64_t gen_global_pool(Chunk* chunk, const GlobalTable* glob_table);
-
-/// @brief Generates the const memory pool, and return the offset to its beginning
-/// @param chunk The Chunk where to write the byte-code
-/// @param glob_table The GlobalTable whose const entries to write
-/// @return The offset to the CONST section
-uint64_t gen_const_pool(Chunk* chunk, const GlobalTable* glob_table);
+void gen_global_pool(Chunk* chunk, const GlobalTable* glob_table);
 
 /// @brief Write the offsets and string literals
 /// @param chunk The Chunk where to write the byte-code
 /// @param str_table The StringTable whose entries to write
 /// @return The offset to the GLOBAL section
-uint64_t gen_string_literal_pool(Chunk* chunk, const StringTable* str_table);
+void gen_string_literal_pool(Chunk* chunk, const StringTable* str_table);
 
 /// @brief Generates the debug pool, and return the offset to its beginning
 /// @param chunk The Chunk where to write the byte-code
 /// @param glob_table The GlobalTable whose entries to write
 /// @return The offset to the DEBUG section
-uint64_t gen_debug_pool(Chunk* chunk, const ASTTable* glob_table);
+void gen_debug_pool(Chunk* chunk, const ASTTable* glob_table);
 
 /// @brief Function which dispatches the expression to the write `gen_code_...`
 /// @param chunk The Chunk where to write the byte-code
