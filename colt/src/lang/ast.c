@@ -142,15 +142,13 @@ void ast_handle_conversion(Expr** plhs, Expr** prhs)
 	if (ExprTypeEqualTypeID(lhs, ID_COLT_LSTRING) || ExprTypeEqualTypeID(rhs, ID_COLT_LSTRING))
 		return;
 
-	if (ExprTypeEqualExprType(lhs, rhs))
+	if (!ExprTypeEqualExprType(lhs, rhs))
 	{
 		Type cnv = builtin_inter_type(lhs->expr_type, rhs->expr_type);
-		if (!ExprTypeEqualTypeID(lhs, cnv.typeinfo->type_id))
-			*plhs = makeConvertExpr(lhs, cnv, lhs->line_nb, lhs->line, lhs->lexeme);
-		if (!ExprTypeEqualTypeID(lhs, cnv.typeinfo->type_id))
-			*prhs = makeConvertExpr(rhs, cnv, rhs->line_nb, rhs->line, rhs->lexeme);
+		//makeConvertExpr returns the expression if the type matches
+		*plhs = makeConvertExpr(lhs, cnv, lhs->line_nb, lhs->line, lhs->lexeme);
+		*prhs = makeConvertExpr(rhs, cnv, rhs->line_nb, rhs->line, rhs->lexeme);
 	}
-	return;
 }
 
 Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme)
@@ -333,9 +331,9 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 		return lhs;
 	}
 
-	StringView line = ScannerGetCurrentLine(&ast->scan);
-	StringView lexeme = ScannerGetCurrentLexeme(&ast->scan);
-	uint64_t line_nb = ast->scan.current_line;
+	StringView op_line = ScannerGetCurrentLine(&ast->scan);
+	StringView op_lexeme = ScannerGetCurrentLexeme(&ast->scan);
+	uint64_t op_line_nb = ast->scan.current_line;
 
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	Expr* rhs = parse_binary(ast, -1);
@@ -343,25 +341,26 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 		return lhs;
 	
 	//Convert 'rhs' to the same type as 'lhs'
-	if (!ExprTypeEqualExprType(rhs, lhs))
-		rhs = makeConvertExpr(rhs, lhs->expr_type, rhs->line_nb, rhs->line, rhs->lexeme);
+	ast_handle_conversion(&lhs, &rhs);
+	//Generates error if necessary
+	Type ret_type = ast_operator_return_type(ast, lhs->expr_type, assignment_tkn, rhs->expr_type, op_line_nb, op_line, op_lexeme);
 
 	switch (assignment_tkn)
 	{
 	break; case TKN_OPERATOR_AND_EQUAL:
-		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_AND, rhs, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_AND, rhs, ret_type, op_line_nb, op_line, op_lexeme);
 	break; case TKN_OPERATOR_XOR_EQUAL:
-		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_XOR, rhs, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_XOR, rhs, ret_type, op_line_nb, op_line, op_lexeme);
 	break; case TKN_OPERATOR_OR_EQUAL:
-		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_OR, rhs, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_OR, rhs, ret_type, op_line_nb, op_line, op_lexeme);
 	break; case TKN_OPERATOR_MINUS_EQUAL:
-		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_MINUS, rhs, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_MINUS, rhs, ret_type, op_line_nb, op_line, op_lexeme);
 	break; case TKN_OPERATOR_PLUS_EQUAL:
-		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_PLUS, rhs, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_PLUS, rhs, ret_type, op_line_nb, op_line, op_lexeme);
 	break; case TKN_OPERATOR_STAR_EQUAL:
-		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_STAR, rhs, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_STAR, rhs, ret_type, op_line_nb, op_line, op_lexeme);
 	break; case TKN_OPERATOR_SLASH_EQUAL:
-		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_SLASH, rhs, lhs->expr_type, line_nb, line, lexeme);
+		rhs = makeBinaryExpr(lhs, TKN_OPERATOR_SLASH, rhs, ret_type, op_line_nb, op_line, op_lexeme);
 	break; default:
 		break;
 	}

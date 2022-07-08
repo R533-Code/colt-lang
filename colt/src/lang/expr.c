@@ -361,9 +361,8 @@ Type builtin_inter_type(Type lhs, Type rhs)
 
 	uint64_t real_lhs = is_type_signed_int(lhs) ? TypeGetID(lhs) - 4 : TypeGetID(lhs);
 	uint64_t real_rhs = is_type_signed_int(rhs) ? TypeGetID(rhs) - 4 : TypeGetID(rhs);
-	if (real_lhs > real_rhs)
-		//swap so that the lhs has the lowest type
-		return builtin_inter_type(rhs, lhs);
+	if (real_lhs > real_rhs)		
+		return builtin_inter_type(rhs, lhs); //swap so that the 'lhs' has the lowest type
 
 	if (is_type_signed_int(rhs) && is_type_unsigned_int(lhs))
 	{
