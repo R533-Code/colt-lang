@@ -42,6 +42,8 @@ typedef enum
 	TKN_OPERATOR_LESS_LESS,
 	/// @brief <=
 	TKN_OPERATOR_LESS_EQUAL,
+	/// @brief <<=
+	TKN_OPERATOR_LESS_LESS_EQUAL,
 
 	/// @brief >
 	TKN_OPERATOR_GREATER,
@@ -49,6 +51,8 @@ typedef enum
 	TKN_OPERATOR_GREATER_GREATER,
 	/// @brief >=
 	TKN_OPERATOR_GREATER_EQUAL,
+	/// @brief >>=
+	TKN_OPERATOR_GREATER_GREATER_EQUAL,
 
 	/// @brief =
 	TKN_OPERATOR_EQUAL,
@@ -84,6 +88,7 @@ typedef enum
 
 	/// @brief %
 	TKN_OPERATOR_MODULO,
+	TKN_OPERATOR_MODULO_EQUAL,
 
 	/// @brief <:
 	TKN_OPERATOR_LESS_COLON,
@@ -185,7 +190,7 @@ typedef enum
 
 	/// @brief Returned after the whole string is parsed
 	TKN_EOF,
-	/// @brief Returned for unterminated string and not recognized characters
+	/// @brief Returned for unterminated string, invalid literals and not recognized characters
 	TKN_ERROR
 } Token;
 
