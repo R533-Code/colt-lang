@@ -160,6 +160,11 @@ Token ScannerGetNextToken(Scanner* scan)
 		return TKN_SEMICOLON;
 	case '%':
 		scan->current_char = impl_get_next_char(scan);
+		if (scan->current_char == '=')
+		{
+			scan->current_char = impl_get_next_char(scan);
+			return TKN_OPERATOR_MODULO_EQUAL;
+		}
 		return TKN_OPERATOR_MODULO;
 	}
 
@@ -679,6 +684,11 @@ Token impl_scanner_handle_less(Scanner* scan)
 		return TKN_OPERATOR_LESS_EQUAL;
 	break; case '<':
 		scan->current_char = impl_get_next_char(scan);
+		if (scan->current_char == '=')
+		{
+			scan->current_char = impl_get_next_char(scan);
+			return TKN_OPERATOR_LESS_LESS_EQUAL;
+		}
 		return TKN_OPERATOR_LESS_LESS;
 	break; case ':':
 		scan->current_char = impl_get_next_char(scan);
@@ -698,6 +708,11 @@ Token impl_scanner_handle_greater(Scanner* scan)
 		return TKN_OPERATOR_GREATER_EQUAL;
 	break; case '>':
 		scan->current_char = impl_get_next_char(scan);
+		if (scan->current_char == '=')
+		{
+			scan->current_char = impl_get_next_char(scan);
+			return TKN_OPERATOR_GREATER_GREATER_EQUAL;
+		}
 		return TKN_OPERATOR_GREATER_GREATER;
 	break; default:
 		return TKN_OPERATOR_GREATER;
