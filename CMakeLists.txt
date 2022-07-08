@@ -19,7 +19,8 @@ set(COLTI_ABI_PATCH 0)
 set(COLTI_ABI_TWEAK 8)
 
 if (${COLTI_ABI_TWEAK} GREATER 65536 OR ${COLTI_ABI_PATCH} GREATER 65536 OR ${COLTI_ABI_MINOR} GREATER 65536 OR ${COLTI_ABI_MAJOR} GREATER 65536)
-	message(FATAL_ERROR "Check ABI: no value should be greater than 65536!");
+	message(SEND_ERROR "Check ABI: no value should be greater than 65536!")
+endif()
 
 target_include_directories(colt PUBLIC "${CMAKE_SOURCE_DIR}/colt/src/util" "${CMAKE_SOURCE_DIR}/colt/src/byte-code" "${CMAKE_SOURCE_DIR}/colt/src")
 
