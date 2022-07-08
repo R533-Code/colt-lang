@@ -88,6 +88,7 @@ typedef enum
 
 	/// @brief %
 	TKN_OPERATOR_MODULO,
+	/// @brief %=
 	TKN_OPERATOR_MODULO_EQUAL,
 
 	/// @brief <:
