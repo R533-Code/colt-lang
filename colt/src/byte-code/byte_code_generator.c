@@ -492,7 +492,7 @@ bool gen_global_write(Chunk* chunk, const ASTTable* table, const GlobalWriteExpr
 	colt_assert(entry->type.is_const == false, "Variable was const!");
 
 	//byte-offset from where to read
-	QWORD offset = { .u64 = (entry->counter_nb + (entry->type.is_const ? table->glob_table.global_counter : 0)) * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
+	QWORD offset = { .u64 = entry->counter_nb * sizeof(QWORD) + ChunkGetGLOBALSection(chunk) };
 	ChunkWriteOpCode(chunk, OP_STORE_GLOBAL);
 	ChunkWriteQWORD(chunk, offset);
 	
