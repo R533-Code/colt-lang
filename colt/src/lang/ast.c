@@ -218,18 +218,19 @@ int ast_op_precedence(AST* ast, Token token)
 {
 	static const int operator_precedence_table[] =
 	{
-		10, 13, 0,
-		10, 13, 0,
-		11, 0,
-		11, 0,
-		8, 9, 8,
-		8, 9, 8,
-		0, 7,
-		12, 7,
-		6, 0, 3,
-		4, 0, 2,
-		5, 0,
-		12, 11
+		10, 13, 0,	// +
+		10, 13, 0,	// -
+		11, 0,		// *
+		11, 0,		// /
+		8, 9, 8, 0,	// <<
+		8, 9, 8, 0, // >>
+		0, 7,		// =
+		12, 7,		// !
+		6, 0, 3,	// &
+		4, 0, 2,	// |
+		5, 0,		// ^
+		12,			// ~
+		11, 0		// %
 	};
 	colt_assert(token >= 0, "Token should be greater or equal to 0!");
 	if (token < TKN_OPERATOR_LESS_COLON)
