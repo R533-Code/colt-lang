@@ -719,13 +719,16 @@ Expr* parse_variable_declaration(AST* ast, bool is_const)
 	else if (ast->current_tkn == TKN_OPERATOR_EQUAL)
 	{
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+
+		//save the old error
+		uint16_t old_error = ast->error_nb;
 		Expr* to_assign = parse_binary(ast, -1);
 
 		if (!to_assign)
 			return NULL;
 		
 		//we don't want to register the variable if the expression is not valid
-		if (ast->current_tkn != TKN_SEMICOLON)
+		if (ast->current_tkn != TKN_SEMICOLON || old_error != ast->error_nb)
 			return to_assign;
 		
 		if (tkn_type == TKN_KEYWORD_VAR)
