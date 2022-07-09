@@ -719,7 +719,8 @@ Expr* parse_variable_declaration(AST* ast, bool is_const)
 	else if (ast->current_tkn == TKN_OPERATOR_EQUAL)
 	{
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
-		Expr* to_assign = parse_binary(ast, 0);
+		Expr* to_assign = parse_binary(ast, -1);
+
 		if (!to_assign)
 			return NULL;
 		
