@@ -5,7 +5,9 @@ colt_config.h
 # SCRIPT GENERATED FILE
 highlighted_codes.html
 # DOXYGEN OUTPUT
-docs
+docs/Doxyfile.out
+docs/latex
+docs/html
 # PYTHON OUTPUT
 __pycache__
 # VSCODE
