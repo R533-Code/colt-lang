@@ -595,15 +595,29 @@ Expr* parse_scope(AST* ast)
 	return (Expr*)scope;
 }
 
+Expr* parse_conditional(AST* ast)
+{
+	if (ScannerGetNextToken(&ast->scan) != TKN_LEFT_PAREN)
+	{
+		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Expected a left parenthesis '('!");
+		return NULL;
+	}
+	//Consume '('
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+
+}
+
 Expr* parse_expression(AST* ast)
 {
 	Expr* expr;
 
-	if (ast->current_tkn == TKN_LEFT_CURLY)
+	switch (ast->current_tkn)
 	{
+	break; case TKN_LEFT_CURLY:
 		expr = parse_scope(ast);
-	}
-	else //expressions that need an ending ';'
+	break; case TKN_KEYWORD_IF:
+		expr = parse_conditional(ast);		
+	break; default:
 	{
 		switch (ast->current_tkn)
 		{
@@ -614,14 +628,14 @@ Expr* parse_expression(AST* ast)
 			//Consume 'const'
 			ast->current_tkn = ScannerGetNextToken(&ast->scan);
 			expr = parse_variable_declaration(ast, true);
-		
+
 		break; case TKN_SEMICOLON:
 			//EMPTY EXPRESSION, the AST will not save it
 			expr = NULL;
 
 		break; default:
 			expr = parse_binary(ast, -1);
-			if (ast->options->no_warn_unused_result == false && (!is_assignment_expr(expr) ||  !ExprTypeEqualTypeID(expr, ID_COLT_VOID)))
+			if (ast->options->no_warn_unused_result == false && (!is_assignment_expr(expr) || !ExprTypeEqualTypeID(expr, ID_COLT_VOID)))
 				ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
 		}
 		if (ast->current_tkn != TKN_SEMICOLON && ast->current_tkn != TKN_ERROR && ast->current_tkn != TKN_EOF)
@@ -631,6 +645,7 @@ Expr* parse_expression(AST* ast)
 				"Expected a semicolon ';'!"
 			);
 		}
+	}
 	}
 	
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);

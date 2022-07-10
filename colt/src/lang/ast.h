@@ -149,7 +149,14 @@ Expr* parse_parenthesis(AST* ast);
 Expr* parse_expression(AST* ast);
 
 /// @brief Parses a scope expression, verifying it is well enclosed
+/// @param ast The AST from which to parse
+/// @return An Expr* representing the parsed expression or NULL for errors
 Expr* parse_scope(AST* ast);
+
+/// @brief Parses a conditional expression
+/// @param ast The AST from which to parse
+/// @return An Expr* representing the parsed expression or NULL for errors
+Expr* parse_conditional(AST* ast);
 
 /// @brief Parses a variable declaration, and adds the variable to the 'glob_table'
 /// @param ast The AST from which to parse
