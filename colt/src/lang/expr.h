@@ -51,7 +51,9 @@ typedef enum
 	/// @brief LiteralExpr type
 	EXPR_LITERAL,
 	/// @brief ConvertExpr type
-	EXPR_CONVERT
+	EXPR_CONVERT,
+	/// @brief ConditionType
+	EXPR_CONDITION,
 } ExprIdentifier;
 
 /// @brief Represents an unspecialized expression.
@@ -337,6 +339,33 @@ Expr* ScopeExprFindVar(ScopeExpr* scope, StringView name);
 /// @param scope The scope whose begin offset is to be computed
 /// @return An uint64_t representing the count of variable of all the parents scopes added together
 uint64_t ScopeExprGetOffset(ScopeExpr* scope);
+
+/// @brief Represents an if/elif/else chain
+typedef struct
+{
+	/// @brief should be EXPR_CONDITION
+	ExprIdentifier identifier;
+	/// @brief The expression type, which should be 'void'
+	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
+
+	/// @brief The if condition (which cannot be NULL)
+	Expr* if_condition;
+	/// @brief The expression to execute if 'if_condition' evaluates to true
+	Expr* if_execute;
+	/// @brief The conditions of each elif
+	ExprArray elif_condition;
+	/// @brief The expression to execute for each of the 'elif_condition'
+	ExprArray elif_execute;
+	/// @brief The expression to execute if all the preceding elif conditions evaluates to false (which can be NULL)
+	Expr* else_in_expr;
+} ConditionExpr;
 
 /// @brief Allocates a new literal expression on the heap, initializing it
 /// @param value The value of the literal expression
