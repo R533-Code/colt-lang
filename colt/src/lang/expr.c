@@ -212,6 +212,8 @@ Expr* makeConditionExpr()
 	
 	ptr->expr_type.is_const = false;
 	ptr->expr_type.typeinfo = &ColtVoid;
+
+	return (Expr*)ptr;
 }
 
 Expr* makeGlobalReadExpr(StringView var_name, Type var_type, uint64_t line_nb, StringView line, StringView lexeme)
@@ -352,7 +354,7 @@ void freeExpr(Expr* ptr)
 		freeExpr(cexpr->if_execute);
 
 		if (cexpr->else_execute != NULL)
-			freeExpr(cexpr);
+			freeExpr(cexpr->else_execute);
 
 		//Free each expression in the scope
 		ExprArrayFree(&cexpr->elif_conditions);
