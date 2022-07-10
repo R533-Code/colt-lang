@@ -18,15 +18,16 @@ cmake --build build
 ```
 
 ## Implemented Features:
-- [X] Scanner, which breaks a string into lexemes
-  - [X] Fix floating-point and integer literals
-- [X] AST, which represents expressions in a tree-like structure
-  - [X] Error reporting
-  - [X] Type conversions and warnings
-- [X] `generateByteCode` function, which generate byte-code from an AST
-  - [X] Implement more operations
-  - [X] Implement more byte-code
-  - [ ] Implement variables
+- `Scanner`: Breaks the string to parse into lexemes
+- `AST` and `Expr`: Represents the parsed string in a tree-like form
+- `generateByteCode`: Generates byte-code from an AST
+- `StackVM`: Runs byte-code
+
+The language (for now) supports:
+- global variables
+- string literals
+- a rudimentary type system
+- local variables (Scopes)
 
 ## Error Codes:
 - 0: Successful
