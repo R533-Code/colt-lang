@@ -40,7 +40,7 @@
 									QWORD zero = { .u64 = 0 }; \
 									gen_integral_short_jmp(chunk, OP_SJUMP_NOT_EQUAL, zero, (BuiltinTypeID)TypeGetID(ptr->expr_type)); \
 								} \
-								ChunkWriteOpCode(chunk, OP_DIVIDE); \
+								ChunkWriteOpCode(chunk, OP_MODULO); \
 								ChunkWriteOperand(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 /// @brief Generates the byte-code necessary for a bitwise AND, and its checks
