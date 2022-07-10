@@ -344,6 +344,21 @@ void freeExpr(Expr* ptr)
 		ExprArrayFree(&scexpr->array);
 		safe_free(ptr);
 	}
+	break; case EXPR_CONDITION:
+	{
+		ConditionExpr* cexpr = (ConditionExpr*)ptr;
+
+		freeExpr(cexpr->if_condition);
+		freeExpr(cexpr->if_execute);
+
+		if (cexpr->else_execute != NULL)
+			freeExpr(cexpr);
+
+		//Free each expression in the scope
+		ExprArrayFree(&cexpr->elif_conditions);
+		ExprArrayFree(&cexpr->elif_executes);
+		safe_free(ptr);
+	}
 	break; case EXPR_GLOB_WRITE:
 	{
 		GlobalWriteExpr* rexpr = (GlobalWriteExpr*)ptr;
