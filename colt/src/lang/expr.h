@@ -360,11 +360,11 @@ typedef struct
 	/// @brief The expression to execute if 'if_condition' evaluates to true
 	Expr* if_execute;
 	/// @brief The conditions of each elif
-	ExprArray elif_condition;
-	/// @brief The expression to execute for each of the 'elif_condition'
-	ExprArray elif_execute;
+	ExprArray elif_conditions;
+	/// @brief The expression to execute for each of the 'elif_conditions'
+	ExprArray elif_executes;
 	/// @brief The expression to execute if all the preceding elif conditions evaluates to false (which can be NULL)
-	Expr* else_in_expr;
+	Expr* else_execute;
 } ConditionExpr;
 
 /// @brief Allocates a new literal expression on the heap, initializing it
@@ -405,6 +405,10 @@ Expr* makeBinaryExpr(Expr* lhs, Token binary_operator, Expr* rhs, Type expr_type
 /// @param lexeme A StringView over the lexeme representing the expression
 /// @return A pointer to a heap allocated ConvertExpr
 Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView line, StringView lexeme);
+
+/// @brief Allocates a new ConditionExpr on the heap, initializing some of its fields
+/// @return A pointer to a heap allocated ConditionExpr
+Expr* makeConditionExpr();
 
 /// @brief Allocates a new variable expression on the heap, initializing it
 /// @param var_name The variable name

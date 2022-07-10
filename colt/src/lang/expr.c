@@ -186,7 +186,7 @@ Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView 
 	if (TypeEqualTypeID(convert_to, TypeGetID(expr->expr_type)))
 		return expr;
 
-	ConvertExpr* ptr = safe_malloc(sizeof(BinaryExpr));
+	ConvertExpr* ptr = safe_malloc(sizeof(ConvertExpr));
 	//type for casting
 	ptr->identifier = EXPR_CONVERT;
 	
@@ -198,6 +198,20 @@ Expr* makeConvertExpr(Expr* expr, Type convert_to, uint64_t line_nb, StringView 
 	ptr->lexeme = lexeme;
 
 	return (Expr*)ptr;
+}
+
+Expr* makeConditionExpr()
+{
+	ConditionExpr* ptr = safe_malloc(sizeof(ConditionExpr));
+	
+	ptr->identifier = EXPR_CONDITION;
+	ExprArrayInit(&ptr->elif_executes);
+	ExprArrayInit(&ptr->elif_conditions);
+
+	ptr->else_execute = NULL;
+	
+	ptr->expr_type.is_const = false;
+	ptr->expr_type.typeinfo = &ColtVoid;
 }
 
 Expr* makeGlobalReadExpr(StringView var_name, Type var_type, uint64_t line_nb, StringView line, StringView lexeme)
