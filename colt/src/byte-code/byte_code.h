@@ -209,6 +209,15 @@ typedef enum
 	/// [OP_SJUMP_NOT_TRUE][JUMP_OFFSET]
 	/// The JUMP_OFFSET is an unsigned byte which is added to the instruction pointer of the VM.
 	OP_SJUMP_NOT_TRUE,
+	
+	/// @brief Jump if True, if the top QWORD.b == 1, if it evaluates to a true, perform a jump
+	/// [OP_SJUMP_NOT_TRUE][PADDING]?[JUMP_OFFSET]
+	/// The JUMP_OFFSET is a int32_t which is added to the instruction pointer of the VM.
+	OP_JUMP_TRUE,
+	/// @brief Jump if Not True, if the top QWORD.b == 0, if it evaluates to a true, perform a jump
+	/// [OP_SJUMP_NOT_TRUE][PADDING]?[JUMP_OFFSET]
+	/// The JUMP_OFFSET is a int32_t which is added to the instruction pointer of the VM.
+	OP_JUMP_NOT_TRUE,
 	/// @brief Unconditional Jump
 	/// [OP_JUMP][PADDING]?[JUMP_OFFSET]
 	/// The JUMP_OFFSET is a int32_t which is added to the instruction pointer of the VM.
