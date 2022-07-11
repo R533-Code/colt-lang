@@ -80,6 +80,13 @@ bool gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* pt
 /// @return True if no error are encountered
 bool gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* ptr);
 
+/// @brief Generate code necessary for conditionals
+/// @param chunk The Chunk where to write the byte-code
+/// @param table GlobalTable containing variables
+/// @param ptr The expression to convert to byte-code
+/// @return True if no error are encountered
+bool gen_code_condition(Chunk* chunk, const ASTTable* table, const ConditionExpr* ptr);
+
 /// @brief Generate code necessary for variable to r-value conversion
 /// @param chunk The Chunk where to write the byte-code
 /// @param table The variable table

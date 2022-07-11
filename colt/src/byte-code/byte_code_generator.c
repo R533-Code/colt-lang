@@ -223,6 +223,8 @@ bool gen_byte_code(Chunk* chunk, const ASTTable* table, const Expr* expr)
 		return gen_code_literal(chunk, table, (const LiteralExpr*)expr);
 	case EXPR_CONVERT:
 		return gen_code_convert(chunk, table, (const ConvertExpr*)expr);
+	case EXPR_CONDITION:
+		return gen_code_condition(chunk, table, (const ConditionExpr*)expr);
 	case EXPR_SCOPE:
 		return gen_code_scope(chunk, table, (const ScopeExpr*)expr);
 	case EXPR_LOCAL_READ:
@@ -408,6 +410,42 @@ bool gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* pt
 	ChunkWriteOpCode(chunk, OP_CONVERT);
 	ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->child));
 	ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr));
+	return true;
+}
+
+bool gen_code_condition(Chunk* chunk, const ASTTable* table, const ConditionExpr* ptr)
+{
+	colt_assert(ptr->elif_conditions.count == ptr->elif_executes.count, "elif conditions count should match elif executes count!");
+
+	gen_byte_code(chunk, table, ptr->if_condition);
+	ChunkWriteOpCode(chunk, OP_JUMP_NOT_TRUE);
+	
+	DWORD uninitialized_offset = { .i32 = 0xffffffff };
+	
+	uint32_t* to_override_jmp = (uint32_t*)(chunk->code + chunk->count);
+	to_override_jmp = (uint32_t*)((uint8_t*)to_override_jmp + ChunkWriteDWORD(chunk, uninitialized_offset));
+
+	gen_byte_code(chunk, table, ptr->if_execute);
+	//Write the jump offset
+	*to_override_jmp = (uint32_t)chunk->count;
+
+	for (size_t i = 0; i < ptr->elif_conditions.count; i++)
+	{
+		gen_byte_code(chunk, table, ptr->elif_conditions.expressions[i]);
+		ChunkWriteOpCode(chunk, OP_JUMP_NOT_TRUE);
+
+		to_override_jmp = (uint32_t*)(chunk->code + chunk->count);
+		to_override_jmp = (uint32_t*)((uint8_t*)to_override_jmp + ChunkWriteDWORD(chunk, uninitialized_offset));
+
+
+		gen_byte_code(chunk, table, ptr->elif_executes.expressions[i]);
+		//Write the jump offset
+		*to_override_jmp = (uint32_t)chunk->count;
+	}
+	
+	if (ptr->else_execute != NULL)
+		gen_byte_code(chunk, table, ptr->else_execute);
+
 	return true;
 }
 
