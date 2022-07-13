@@ -153,52 +153,52 @@ void ChunkWriteBytes(Chunk* chunk, const uint8_t* const bytes, uint32_t size)
 uint64_t ChunkWriteWORD(Chunk* chunk, WORD value)
 {
 	//We need to pad if needed
-	uint64_t offset = 2 - (uint64_t)(chunk->code + chunk->count) & 1; //same as % 2
-	if (!(chunk->count + offset + sizeof(uint16_t) < chunk->capacity)) //Grow if needed
+	uint64_t padding = 2 - (uint64_t)(chunk->code + chunk->count) & 1; //same as % 2
+	if (!(chunk->count + padding + sizeof(uint16_t) < chunk->capacity)) //Grow if needed
 		impl_chunk_grow_double(chunk);
 
 	//Set the padding byte to CD on Debug build
-	DO_IF_DEBUG_BUILD(if (offset != 0) chunk->code[chunk->count] = 205;);
+	DO_IF_DEBUG_BUILD(if (padding != 0) chunk->code[chunk->count] = 205;);
 
 	//Copy the bytes of the integer to the aligned memory
-	memcpy(chunk->code + (chunk->count += offset), &value, sizeof(uint16_t));
-	//We already added offset to 'count' ^
+	memcpy(chunk->code + (chunk->count += padding), &value, sizeof(uint16_t));
+	//We already added padding to 'count' ^
 	chunk->count += sizeof(uint16_t);
 
-	return offset;
+	return padding;
 }
 
 uint64_t ChunkWriteDWORD(Chunk* chunk, DWORD value)
 {
-	uint64_t offset = 4 - (uint64_t)(chunk->code + chunk->count) & 3; //same as % 4
-	if (!(chunk->count + offset + sizeof(uint32_t) < chunk->capacity)) //Grow if needed
+	uint64_t padding = 4 - (chunk->count & 3); //same as % 4
+	if (!(chunk->count + padding + sizeof(uint32_t) < chunk->capacity)) //Grow if needed
 		impl_chunk_grow_double(chunk);
 
 	//Set the padding bytes to CD on Debug build
-	DO_IF_DEBUG_BUILD(if (offset != 0) memset(chunk->code + chunk->count, 205, offset););
+	DO_IF_DEBUG_BUILD(if (padding != 0) memset(chunk->code + chunk->count, 205, padding););
 
 	//Copy the bytes of the integer to the aligned memory
-	memcpy(chunk->code + (chunk->count += offset), &value, sizeof(uint32_t));
+	memcpy(chunk->code + (chunk->count += padding), &value, sizeof(uint32_t));
 	//We already added offset to 'count' ^
 	chunk->count += sizeof(uint32_t);
 	
-	return offset;
+	return padding;
 }
 
 uint64_t ChunkWriteQWORD(Chunk* chunk, QWORD value)
 {
-	uint64_t offset = 8 - (uint64_t)(chunk->code + chunk->count) & 7; //same as % 8
-	if (!(chunk->count + offset + sizeof(uint64_t) < chunk->capacity)) //Grow if needed
+	uint64_t padding = 8 - (uint64_t)(chunk->code + chunk->count) & 7; //same as % 8
+	if (!(chunk->count + padding + sizeof(uint64_t) < chunk->capacity)) //Grow if needed
 		impl_chunk_grow_double(chunk);
 
 	//Set the padding bytes to CD on Debug build
-	DO_IF_DEBUG_BUILD(if (offset != 0) memset(chunk->code + chunk->count, 205, offset););
+	DO_IF_DEBUG_BUILD(if (padding != 0) memset(chunk->code + chunk->count, 205, padding););
 
 	//Copy the bytes of the integer to the aligned memory
-	memcpy(chunk->code + (chunk->count += offset), &value, sizeof(uint64_t));
-	//We already added offset to 'count' ^
+	memcpy(chunk->code + (chunk->count += padding), &value, sizeof(uint64_t));
+	//We already added padding to 'count' ^
 	chunk->count += sizeof(uint64_t);
-	return offset;
+	return padding;
 }
 
 BYTE ChunkGetBYTE(const Chunk* chunk, uint64_t* offset)
@@ -214,7 +214,7 @@ WORD ChunkGetWORD(const Chunk* chunk, uint64_t* offset)
 	//As the offset points to OP_PUSH_WORD, we also need to add 1
 	uint64_t local_offset = *offset + 1;
 	//We add the padding to the offset, which means we are now pointing to the int16
-	local_offset += (2 - (uint64_t)(chunk->code + local_offset) & 1);
+	local_offset += (2 - (local_offset & 1));
 
 	//Extract the int16 from the bytes
 	WORD return_val = { .u16 = *(int16_t*)(chunk->code + local_offset) };
@@ -229,7 +229,7 @@ DWORD ChunkGetDWORD(const Chunk* chunk, uint64_t* offset)
 	//As the offset points to OP_PUSH_DWORD, we also need to add 1
 	uint64_t local_offset = *offset + 1;
 	//We add the padding to the offset, which means we are now pointing to the int32
-	local_offset += (4 - (uint64_t)(chunk->code + local_offset) & 3); //same as % 4
+	local_offset += (4 - (local_offset & 3)); //same as % 4
 
 
 	DWORD return_val;
@@ -245,7 +245,7 @@ QWORD ChunkGetQWORD(const Chunk* chunk, uint64_t* offset)
 	//As the offset points to OP_PUSH_QWORD, we also need to add 1
 	uint64_t local_offset = *offset + 1;
 	//We add the padding to the offset, which means we are now pointing to the int64
-	local_offset += (8 - (uint64_t)(chunk->code + local_offset) & 7); //same as % 8
+	local_offset += (8 - (local_offset & 7)); //same as % 8
 
 	QWORD return_val;
 	return_val.u64 = *(int64_t*)(chunk->code + local_offset);
