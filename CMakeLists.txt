@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(Colt-Lang VERSION 0.0.24.2 LANGUAGES C)
+project(Colt-Lang VERSION 0.0.24.3 LANGUAGES C)
 
 file(GLOB_RECURSE ColtHeaders "colt/src/*.h")
 file(GLOB_RECURSE ColtUnits "colt/src/*.c")
@@ -16,7 +16,7 @@ set(CMAKE_BUILD_TYPE "Release")
 set(COLTI_ABI_MAJOR 0)
 set(COLTI_ABI_MINOR 0)
 set(COLTI_ABI_PATCH 0)
-set(COLTI_ABI_TWEAK 9)
+set(COLTI_ABI_TWEAK 10)
 
 if (${COLTI_ABI_TWEAK} GREATER 65536 OR ${COLTI_ABI_PATCH} GREATER 65536 OR ${COLTI_ABI_MINOR} GREATER 65536 OR ${COLTI_ABI_MAJOR} GREATER 65536)
 	message(SEND_ERROR "Check ABI: no value should be greater than 65536!")
