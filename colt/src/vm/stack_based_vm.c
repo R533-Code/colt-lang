@@ -6,9 +6,9 @@
 
 #ifdef COLT_DEBUG_BUILD
 	/// @brief On Debug configuration only, outputs the current QWORD count on the Stack, and the number of active variables
-	#define STACK_VM_DEBUG_STATE()  uint64_t size = StackVMSize(vm); \
+	#define STACK_VM_DEBUG_STATE()  do { uint64_t size = StackVMSize(vm); \
 									printf("\nStack contains %"PRIu64" QWORD%c.", size, size == 1 ? '\0' : 's'); \
-									printf("\nStack contains %"PRIu64" active variable%c.", vm->active_locals, vm->active_locals == 1 ? '\0' : 's');
+									printf("\nStack contains %"PRIu64" active variable%c.", vm->active_locals, vm->active_locals == 1 ? '\0' : 's'); } while (0)
 #else
 	/// @brief On Debug configuration only, outputs the current QWORD count on the Stack, and the number of active variables
 	#define STACK_VM_DEBUG_STATE()
@@ -418,6 +418,27 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 
 		/******************************************************/
 
+		break; case OP_JUMP_TRUE:
+		{
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			DWORD value = unsafe_get_dword(&ip);
+			if (StackVMPop(vm).b == true)
+				ip = chunk->code + value.u32;
+		}
+		break; case OP_JUMP_NOT_TRUE:
+		{
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			DWORD value = unsafe_get_dword(&ip);
+			if (StackVMPop(vm).b == false)
+				ip = chunk->code + value.u32;
+		}
+		break; case OP_JUMP:
+		{
+			ip = chunk->code + unsafe_get_dword(&ip).u32;
+		}
+
+		/******************************************************/
+
 		break; case OP_PRINT:
 		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
@@ -438,6 +459,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			return unsafe_get_qword(&ip).i64;
 		}
 		break; default:
+			colt_unreachable("Unknown byte-code!");
 			break;
 		}
 	}
