@@ -153,7 +153,7 @@ void ChunkWriteBytes(Chunk* chunk, const uint8_t* const bytes, uint32_t size)
 uint64_t ChunkWriteWORD(Chunk* chunk, WORD value)
 {
 	//We need to pad if needed
-	uint64_t padding = 2 - (uint64_t)(chunk->code + chunk->count) & 1; //same as % 2
+	uint64_t padding = 2 - (chunk->count & 1); //same as % 2
 	if (!(chunk->count + padding + sizeof(uint16_t) < chunk->capacity)) //Grow if needed
 		impl_chunk_grow_double(chunk);
 
@@ -170,7 +170,7 @@ uint64_t ChunkWriteWORD(Chunk* chunk, WORD value)
 
 uint64_t ChunkWriteDWORD(Chunk* chunk, DWORD value)
 {
-	uint64_t padding = 4 - (chunk->count & 3); //same as % 4
+	uint64_t padding = 4 - (chunk->count & 3); //same as % 8
 	if (!(chunk->count + padding + sizeof(uint32_t) < chunk->capacity)) //Grow if needed
 		impl_chunk_grow_double(chunk);
 
@@ -187,7 +187,7 @@ uint64_t ChunkWriteDWORD(Chunk* chunk, DWORD value)
 
 uint64_t ChunkWriteQWORD(Chunk* chunk, QWORD value)
 {
-	uint64_t padding = 8 - (uint64_t)(chunk->code + chunk->count) & 7; //same as % 8
+	uint64_t padding = 8 - (chunk->count & 7); //same as % 8
 	if (!(chunk->count + padding + sizeof(uint64_t) < chunk->capacity)) //Grow if needed
 		impl_chunk_grow_double(chunk);
 
@@ -318,7 +318,7 @@ BYTE unsafe_get_byte(uint8_t** ptr)
 
 WORD unsafe_get_word(uint8_t** ptr)
 {
-	*ptr += (2 - (uint64_t)(*ptr) & 1); //read past padding
+	*ptr += (2 - ((uint64_t)(*ptr) & 1)); //read past padding
 	WORD return_val;
 	return_val.u16 = *((uint16_t*)*ptr);
 	*ptr += sizeof(int16_t);
@@ -327,7 +327,7 @@ WORD unsafe_get_word(uint8_t** ptr)
 
 DWORD unsafe_get_dword(uint8_t** ptr)
 {
-	*ptr += (4 - (uint64_t)(*ptr) & 3); //read past padding
+	*ptr += (4 - ((uint64_t)(*ptr) & 3)); //read past padding
 	DWORD return_val;
 	return_val.u32 = *((uint32_t*)*ptr);
 	*ptr += sizeof(int32_t);
@@ -336,7 +336,7 @@ DWORD unsafe_get_dword(uint8_t** ptr)
 
 QWORD unsafe_get_qword(uint8_t** ptr)
 {
-	*ptr += (8 - (uint64_t)(*ptr) & 7); //read past padding
+	*ptr += (8 - ((uint64_t)(*ptr) & 7)); //read past padding
 	QWORD return_val;
 	return_val.u64 = *((uint64_t*)*ptr);
 	*ptr += sizeof(int64_t);
