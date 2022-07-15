@@ -432,8 +432,6 @@ bool gen_code_condition(Chunk* chunk, const ASTTable* table, const ConditionExpr
 	to_override_jmp_next += ChunkWriteDWORD(chunk, uninitialized_offset);
 
 	gen_byte_code(chunk, table, ptr->if_execute);
-	//Override 0xffffffff
-	*((uint32_t*)(chunk->code + to_override_jmp_next)) = (uint32_t)chunk->count;
 
 	//byte offset to the uint32_t to override
 	uint64_t to_override_jmp_out = 0;
@@ -444,7 +442,9 @@ bool gen_code_condition(Chunk* chunk, const ASTTable* table, const ConditionExpr
 		to_override_jmp_out = chunk->count; 
 		to_override_jmp_out += ChunkWriteDWORD(chunk, uninitialized_offset);
 	}
-	
+	//Override 0xffffffff
+	*((uint32_t*)(chunk->code + to_override_jmp_next)) = (uint32_t)chunk->count;
+
 	//Heap allocated array of DWORD to override for elif jumps
 	uint64_t* to_override_jmp_out_array = NULL;
 
