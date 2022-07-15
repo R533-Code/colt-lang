@@ -246,7 +246,7 @@ typedef enum
 	ID_COLT_FLOAT		= COLTI_FLOAT_ID,
 
 	/// @brief Represents a pointer to a literal string
-	ID_COLT_LSTRING = COLTI_LSTRING_ID,
+	ID_COLT_LSTRING		= COLTI_LSTRING_ID,
 
 	/// @brief Represents a signed 8-bit integer
 	ID_COLT_I8			= COLTI_I8_ID,
