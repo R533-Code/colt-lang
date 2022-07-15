@@ -239,12 +239,12 @@ QWORD unsafe_get_qword(uint8_t** ptr);
 
 /// @brief Doubles the capacity of a chunk
 /// @param chunk The chunk to modify
-void impl_chunk_grow_double(Chunk* chunk);
+void chunk_grow_double(Chunk* chunk);
 
 /// @brief Augments the capacity of a chunk by 'size'
 /// @param chunk The chunk to modify
 /// @param size The capacity to add
-void impl_chunk_grow_size(Chunk* chunk, size_t size);
+void chunk_grow_size(Chunk* chunk, size_t size);
 
 /// @brief Appends a byte at the end of the chunk
 /// @param chunk The chunk to modify
