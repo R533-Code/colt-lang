@@ -59,8 +59,8 @@ void StringTableAdd(StringTable* table, const String* to_add)
 			table->insertion_order = new_ptr;
 		}
 		//Store pointer in order array
-		table->insertion_order[table->count++] = entry;
-		
+		table->insertion_order[table->count] = entry;
+		entry->counter_nb = table->count++;
 		table->all_str_size += to_add->size;
 		StringCopy(&entry->key, to_add);
 	}
@@ -206,7 +206,14 @@ void string_table_grow_capacity(StringTable* table, uint64_t capacity)
 			continue;
 
 		StringEntry* dest = string_table_find_entry(entries, capacity, StringToStringView(&entry->key));
-		dest->key = entry->key;
+		
+		table->insertion_order[entry->counter_nb] = dest;
+		//Copy entry to new location
+		memcpy(dest, entry, sizeof(StringEntry));
+		
+		//We need to fix the pointers as String have a small buffer optimization
+		if (StringIsStackAllocated(&dest->key))
+			dest->key.ptr = dest->key.buffer;
 	}
 
 	safe_free(table->str_entries);

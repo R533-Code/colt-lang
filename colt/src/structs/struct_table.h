@@ -37,6 +37,8 @@ typedef struct
 {
 	/// @brief The key which is the actual string
 	String key;
+	/// @brief The insertion number
+	uint64_t counter_nb;
 } StringEntry;
 
 /// @brief A hash-table used for global variables of a program.
