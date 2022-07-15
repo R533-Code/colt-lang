@@ -170,7 +170,7 @@ uint64_t ChunkWriteWORD(Chunk* chunk, WORD value)
 
 uint64_t ChunkWriteDWORD(Chunk* chunk, DWORD value)
 {
-	uint64_t padding = 4 - (chunk->count & 3); //same as % 8
+	uint64_t padding = 4 - (chunk->count & 3); //same as % 4
 	if (!(chunk->count + padding + sizeof(uint32_t) < chunk->capacity)) //Grow if needed
 		chunk_grow_double(chunk);
 
@@ -322,7 +322,7 @@ WORD unsafe_get_word(uint8_t** ptr)
 DWORD unsafe_get_dword(uint8_t** ptr)
 {
 	*ptr += (4 - ((uint64_t)(*ptr) & 3)); //read past padding
-	DWORD return_val = {.u32 = *((uint32_t*)*ptr) };
+	DWORD return_val = { .u32 = *((uint32_t*)*ptr) };
 	*ptr += sizeof(int32_t);
 	return return_val;
 }
