@@ -580,7 +580,7 @@ bool gen_and_and_bool_comparison(Chunk* chunk, const ASTTable* table, const Bina
 	ChunkWriteOpCode(chunk, OP_JUMP_NOT_TRUE);
 	
 	DWORD uninitialized_offset = { .u32 = 0xffffffff };
-	uint32_t* jump_to = chunk->code + chunk->count + ChunkWriteDWORD(chunk, uninitialized_offset);
+	uint32_t* jump_to = (uint32_t*)(chunk->code + chunk->count + ChunkWriteDWORD(chunk, uninitialized_offset));
 	
 	//If it is true, we pop the true, to evaluate the second condition
 	ChunkWriteOpCode(chunk, OP_POP);
@@ -601,7 +601,7 @@ bool gen_or_or_bool_comparison(Chunk* chunk, const ASTTable* table, const Binary
 	ChunkWriteOpCode(chunk, OP_JUMP_TRUE);
 	
 	DWORD uninitialized_offset = { .u32 = 0xffffffff };
-	uint32_t* jump_to = chunk->code + chunk->count + ChunkWriteDWORD(chunk, uninitialized_offset);
+	uint32_t* jump_to = (uint32_t*)(chunk->code + chunk->count + ChunkWriteDWORD(chunk, uninitialized_offset));
 	
 	//If it is false, we pop the false, to evaluate the second condition
 	ChunkWriteOpCode(chunk, OP_POP);
