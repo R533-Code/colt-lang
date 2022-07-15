@@ -73,6 +73,7 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 
 	for (;;)
 	{
+		colt_assert(ip < chunk->code + chunk->count, "VM is reading outside of the Chunk!");
 		switch (*(ip++)) //Dereferences then advances the pointer
 		{
 
