@@ -168,7 +168,7 @@ void gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 	chunk->count += str_table->all_str_size + (str_table->count + 1) * sizeof(QWORD);
 	
 	//Pad so that the next section does not have to worry about alignment
-	uint64_t padding = 8 - (chunk->count % 8);
+	uint64_t padding = 8 - (chunk->count & 7); // % 8
 	for (size_t i = 0; i < padding; i++)
 		chunk_write_byte(chunk, 205); //CD in hex
 	
