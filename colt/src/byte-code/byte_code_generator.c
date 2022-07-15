@@ -428,60 +428,58 @@ bool gen_code_condition(Chunk* chunk, const ASTTable* table, const ConditionExpr
 	
 	DWORD uninitialized_offset = { .i32 = 0xffffffff };
 	
-	uint32_t* to_override_jmp_next = (uint32_t*)(chunk->code + chunk->count);
-	to_override_jmp_next = (uint32_t*)((uint8_t*)to_override_jmp_next + ChunkWriteDWORD(chunk, uninitialized_offset));
+	uint64_t to_override_jmp_next = chunk->count;
+	to_override_jmp_next += ChunkWriteDWORD(chunk, uninitialized_offset);
 
 	gen_byte_code(chunk, table, ptr->if_execute);
-	*to_override_jmp_next = (uint32_t)chunk->count;
+	//Override 0xffffffff
+	*((uint32_t*)(chunk->code + to_override_jmp_next)) = (uint32_t)chunk->count;
 
-	uint32_t* to_override_jmp_out = NULL;
+	//byte offset to the uint32_t to override
+	uint64_t to_override_jmp_out = 0;
 	if (ptr->elif_conditions.count != 0 || ptr->else_execute != NULL)
 	{
 		//Write the jump to 'exit' of the if execute expression
 		ChunkWriteOpCode(chunk, OP_JUMP);
-		to_override_jmp_out = (uint32_t*)(chunk->code + chunk->count);
-		to_override_jmp_out = (uint32_t*)((uint8_t*)to_override_jmp_out + ChunkWriteDWORD(chunk, uninitialized_offset));
-	
-		//Write the jump offset, which is after the 'exit'
-		*to_override_jmp_next = (uint32_t)chunk->count;
+		to_override_jmp_out = chunk->count; 
+		to_override_jmp_out += ChunkWriteDWORD(chunk, uninitialized_offset);
 	}
 	
-	
 	//Heap allocated array of DWORD to override for elif jumps
-	uint32_t** to_override_jmp_out_array = NULL;
+	uint64_t* to_override_jmp_out_array = NULL;
 
 	if (ptr->elif_conditions.count != 0)
-		to_override_jmp_out_array = safe_malloc(ptr->elif_conditions.count * sizeof(uint32_t*));
+		to_override_jmp_out_array = safe_malloc(ptr->elif_conditions.count * sizeof(uint32_t));
 
 	for (size_t i = 0; i < ptr->elif_conditions.count; i++)
 	{
 		gen_byte_code(chunk, table, ptr->elif_conditions.expressions[i]);
 		ChunkWriteOpCode(chunk, OP_JUMP_NOT_TRUE);
-
-		to_override_jmp_next = (uint32_t*)(chunk->code + chunk->count);
-		to_override_jmp_next = (uint32_t*)((uint8_t*)to_override_jmp_next + ChunkWriteDWORD(chunk, uninitialized_offset));
+		//Store the jump to the next condition to test
+		to_override_jmp_next = chunk->count;
+		to_override_jmp_next += ChunkWriteDWORD(chunk, uninitialized_offset);
 
 		gen_byte_code(chunk, table, ptr->elif_executes.expressions[i]);
 		
 		//Write the jump to 'exit' of the elif execute expression
 		ChunkWriteOpCode(chunk, OP_JUMP);
-		to_override_jmp_out_array[i] = (uint32_t*)(chunk->code + chunk->count);
-		to_override_jmp_out_array[i] = (uint32_t*)((uint8_t*)to_override_jmp_out_array[i] + ChunkWriteDWORD(chunk, uninitialized_offset));
+		to_override_jmp_out_array[i] = chunk->count;
+		to_override_jmp_out_array[i] += ChunkWriteDWORD(chunk, uninitialized_offset);
 		
 		//Write the jump offset, which is after the 'exit' jump
-		*to_override_jmp_next = (uint32_t)chunk->count;
+		*((uint32_t*)(chunk->code + to_override_jmp_next)) = (uint32_t)chunk->count;
 	}
 	
 	if (ptr->else_execute != NULL)
 		gen_byte_code(chunk, table, ptr->else_execute);
 	
 	//If the interior of the if is executed, we need to jump to after all the elif, and else byte-code
-	if (to_override_jmp_out != NULL)
-		*to_override_jmp_out = (uint32_t)chunk->count;
+	if (to_override_jmp_out != 0)
+		*((uint32_t*)(chunk->code + to_override_jmp_out)) = (uint32_t)chunk->count;
 	if (to_override_jmp_out_array != NULL)
 	{
 		for (size_t i = 0; i < ptr->elif_conditions.count; i++)
-			*(to_override_jmp_out_array[i]) = (uint32_t)chunk->count;
+			*((uint32_t*)(chunk->code + to_override_jmp_out_array[i])) = (uint32_t)chunk->count;
 		safe_free(to_override_jmp_out_array);
 	}
 
@@ -586,14 +584,14 @@ bool gen_and_and_bool_comparison(Chunk* chunk, const ASTTable* table, const Bina
 	ChunkWriteOpCode(chunk, OP_JUMP_NOT_TRUE);
 	
 	DWORD uninitialized_offset = { .u32 = 0xffffffff };
-	uint32_t* jump_to = (uint32_t*)(chunk->code + chunk->count + ChunkWriteDWORD(chunk, uninitialized_offset));
+	uint32_t jump_to = (uint32_t)(chunk->count + ChunkWriteDWORD(chunk, uninitialized_offset));
 	
 	//If it is true, we pop the true, to evaluate the second condition
 	ChunkWriteOpCode(chunk, OP_POP);
 	gen_byte_code(chunk, table, ptr->rhs);
 	
 	//Override jump offset
-	*jump_to = (uint32_t)chunk->count;
+	*((uint32_t*)(chunk->code + jump_to)) = (uint32_t)chunk->count;
 	
 	return true;
 }
@@ -607,14 +605,14 @@ bool gen_or_or_bool_comparison(Chunk* chunk, const ASTTable* table, const Binary
 	ChunkWriteOpCode(chunk, OP_JUMP_TRUE);
 	
 	DWORD uninitialized_offset = { .u32 = 0xffffffff };
-	uint32_t* jump_to = (uint32_t*)(chunk->code + chunk->count + ChunkWriteDWORD(chunk, uninitialized_offset));
+	uint32_t jump_to = (uint32_t)(chunk->count + ChunkWriteDWORD(chunk, uninitialized_offset));
 	
 	//If it is false, we pop the false, to evaluate the second condition
 	ChunkWriteOpCode(chunk, OP_POP);
 	gen_byte_code(chunk, table, ptr->rhs);
 	
 	//Override jump offset
-	*jump_to = (uint32_t)chunk->count;
+	*((uint32_t*)(chunk->code + jump_to)) = (uint32_t)chunk->count;
 
 	return true;
 }
