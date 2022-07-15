@@ -37,8 +37,6 @@ typedef struct
 {
 	/// @brief The key which is the actual string
 	String key;
-	/// @brief The number of the literal (which is used for offsets)
-	uint64_t counter_nb;
 } StringEntry;
 
 /// @brief A hash-table used for global variables of a program.
@@ -57,9 +55,13 @@ typedef struct
 /// For an entry of a StringTable to be considered uninitialized, its key->ptr is equal to NULL.
 typedef struct
 {
-	/// @brief The number of active variables in the GlobalTable
+	/// @brief Heap allocated array of pointers
+	StringEntry** insertion_order;
+	/// @brief The capacity of the 'insertion_order' array
+	uint64_t insertion_alloc_capacity;
+	/// @brief The number of active variables in the StringTable
 	uint64_t count;
-	/// @brief The capacity of the GlobalTable
+	/// @brief The capacity of the StringTable
 	uint64_t capacity;
 	/// @brief The sum of the size of all the active string length
 	uint64_t all_str_size;

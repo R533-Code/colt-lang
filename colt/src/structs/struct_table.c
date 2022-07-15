@@ -18,6 +18,8 @@ void ASTTableFree(ASTTable* table)
 
 void StringTableInit(StringTable* table)
 {
+	table->insertion_alloc_capacity = 10;
+	table->insertion_order = safe_malloc(sizeof(StringEntry*) * 10);
 	table->capacity = 10;
 	table->count = 0;
 	table->all_str_size = 0;
@@ -42,12 +44,23 @@ void StringTableAdd(StringTable* table, const String* to_add)
 	{
 		string_table_grow_capacity(table, table->capacity * 2);
 	}
+	
 
 	StringEntry* entry = string_table_find_entry(table->str_entries, table->capacity, StringToStringView(to_add));
 	if (entry->key.ptr == NULL)
 	{
+		//Reallocate array
+		if (table->count == table->insertion_alloc_capacity)
+		{
+			StringEntry** new_ptr = safe_malloc((table->insertion_alloc_capacity *= 2) * sizeof(StringEntry));
+			memcpy(new_ptr, table->insertion_order, sizeof(StringEntry) * table->count);
+			safe_free(table->insertion_order);
+			table->insertion_order = new_ptr;
+		}
+		//Store pointer in order array
+		table->insertion_order[table->count++] = entry;
+		
 		table->all_str_size += to_add->size;
-		entry->counter_nb = table->count++;
 		StringCopy(&entry->key, to_add);
 	}
 	//Do not do anything if string already exists
