@@ -639,7 +639,11 @@ Expr* parse_conditional(AST* ast)
 	}
 
 	if (ast->current_tkn == TKN_KEYWORD_ELSE)
+	{
+		//Consume 'else'
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		cond->else_execute = parse_expression(ast);
+	}
 
 	return (Expr*)cond;
 }
