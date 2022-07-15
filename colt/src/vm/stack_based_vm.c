@@ -393,28 +393,6 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			}
 			ip++;
 		}
-		break; case OP_SJUMP_TRUE:
-		{
-			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
-			QWORD value = StackVMTop(vm);			
-			if (value.b)
-			{
-				ip += *ip;
-				continue;
-			}
-			ip++;
-		}
-		break; case OP_SJUMP_NOT_TRUE:
-		{
-			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
-			QWORD value = StackVMTop(vm);
-			if (!value.b)
-			{
-				ip += *ip;
-				continue;
-			}
-			ip++;
-		}
 
 		/******************************************************/
 

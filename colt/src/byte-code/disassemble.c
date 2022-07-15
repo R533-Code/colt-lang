@@ -262,17 +262,7 @@ uint64_t dis_chunk_print_code(const Chunk* chunk, uint64_t offset)
 		return dis_print_sjump_instruction("OP_SJUMP_EQUAL", chunk->code[offset + 1], chunk->code[offset + 2], offset);
 	case OP_SJUMP_NOT_EQUAL:
 		return dis_print_sjump_instruction("OP_SJUMP_NOT_EQUAL", chunk->code[offset + 1], chunk->code[offset + 2], offset);
-	case OP_SJUMP_TRUE:
-		printf(CONSOLE_FOREGROUND_YELLOW "%-20s "
-			CONSOLE_FOREGROUND_CYAN "TO: '%"PRIu64"'\n"
-			CONSOLE_COLOR_RESET, "OP_SJUMP_TRUE", offset + chunk->code[offset + 1]);
-		return offset + 2;
-	case OP_SJUMP_NOT_TRUE:
-		printf(CONSOLE_FOREGROUND_YELLOW "%-20s "
-			CONSOLE_FOREGROUND_CYAN "TO: '%"PRIu64"'\n"
-			CONSOLE_COLOR_RESET, "OP_SJUMP_NOT_TRUE", offset + chunk->code[offset + 1]);
-		return offset + 2;
-
+	
 	case OP_JUMP_NOT_TRUE:
 		printf(CONSOLE_FOREGROUND_YELLOW "%-20s "
 			CONSOLE_FOREGROUND_CYAN "TO: '%"PRIu32"'\n"
