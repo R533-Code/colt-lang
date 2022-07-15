@@ -35,6 +35,7 @@ void StringTableFree(StringTable* table)
 		if (table->str_entries[i].key.ptr != NULL)
 			StringFree(&table->str_entries[i].key);
 	}
+	safe_free(table->insertion_order);
 	safe_free(table->str_entries);
 }
 
