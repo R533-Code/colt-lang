@@ -676,8 +676,12 @@ Expr* parse_expression(AST* ast)
 
 		break; default:
 			expr = parse_binary(ast, -1);
-			if (ast->options->no_warn_unused_result == false && (!is_assignment_expr(expr) || !ExprTypeEqualTypeID(expr, ID_COLT_VOID)))
+			if (ast->options->no_warn_unused_result == false && !(is_assignment_expr(expr) || ExprTypeEqualTypeID(expr, ID_COLT_VOID)))
+			{
 				ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
+				freeExpr(expr);
+				return NULL;
+			}
 		}
 		if (ast->current_tkn != TKN_SEMICOLON && ast->current_tkn != TKN_ERROR && ast->current_tkn != TKN_EOF)
 		{
