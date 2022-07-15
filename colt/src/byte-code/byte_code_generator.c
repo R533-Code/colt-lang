@@ -148,24 +148,21 @@ void gen_string_literal_pool(Chunk* chunk, const StringTable* str_table)
 	*((uint64_t*)(chunk->code + string_begin)) = str_table->count;
 
 	uint64_t string_literal_begin = string_begin + (str_table->count + 1) * sizeof(QWORD);
-	for (size_t i = 0; i < str_table->capacity; i++)
+	for (size_t i = 0; i < str_table->count; i++)
 	{
-		//not active entry
-		if (str_table->str_entries[i].key.ptr == NULL)
-			continue;
 		//Write the byte offset to the beginning of the literal string
 		//As each string contains a 'counter_nb', which goes from 0 -> count
 		//we use that counter as the offset to add to the beginning of the string section
 		//to get to the byte offset to the beginning of the literal string.
 		// + 1 as the string section begins with the string literal count.
-		*((uint64_t*)(chunk->code + string_begin) + str_table->str_entries[i].counter_nb + 1)
+		*((uint64_t*)(chunk->code + string_begin) + i + 1)
 			= string_literal_begin;
 
 		//Copy the string literal at the end of the byte offset section of the STRING section
 		//This can be done as we reserved enough memory before having this function called
-		memcpy(chunk->code + string_literal_begin, str_table->str_entries[i].key.ptr, 
-			str_table->str_entries[i].key.size);
-		string_literal_begin += str_table->str_entries[i].key.size;
+		memcpy(chunk->code + string_literal_begin, str_table->insertion_order[i]->key.ptr,
+			str_table->insertion_order[i]->key.size);
+		string_literal_begin += str_table->insertion_order[i]->key.size;
 	}
 	//Update size of chunk
 	chunk->count += str_table->all_str_size + (str_table->count + 1) * sizeof(QWORD);
@@ -392,8 +389,17 @@ bool gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* pt
 		const StringEntry* entry = string_table_find_entry(table->str_table.str_entries, table->str_table.capacity,
 			StringToStringView(ptr->value.string_ptr));
 		colt_assert(entry != NULL, "Could not find string literal entry!");
+		
+		QWORD offset = { .u64 = 0 };
+		for (size_t i = 0; i < table->str_table.count; i++)
+		{
+			if (entry == table->str_table.insertion_order[i])
+			{
+				offset.u64 = i;
+				break;
+			}
+		}
 		//We write the string number
-		QWORD offset = { .u64 = entry->counter_nb };
 		ChunkWriteQWORD(chunk, offset);
 		//Then load it (the interpreter converts it to a const char*)
 		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);
