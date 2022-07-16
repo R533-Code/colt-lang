@@ -237,6 +237,9 @@ typedef enum
 	ID_COLT_VOID		= COLTI_VOID_ID,
 	/// @brief Represents a bool
 	ID_COLT_BOOL		= COLTI_BOOL_ID,
+	/// @brief Represents a char
+	ID_COLT_CHAR		= COLTI_CHAR_ID,
+
 	/// @brief Represents a 64-bit double-precision float
 	ID_COLT_DOUBLE		= COLTI_DOUBLE_ID,
 	/// @brief Represents a 32-bit single-precision float
