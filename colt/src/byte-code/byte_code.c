@@ -75,10 +75,13 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 	break; case ID_COLT_FLOAT:
 		switch (from)
 		{
-		case COLTI_I8_ID:
-		case COLTI_I16_ID:
-		case COLTI_I32_ID:
-		case COLTI_I64_ID:
+		break; case COLTI_I8_ID:
+			ret.f = (float)value.i8;
+		break; case COLTI_I16_ID:
+			ret.f = (float)value.i16;
+		break; case COLTI_I32_ID:
+			ret.f = (float)value.i32;
+		break; case COLTI_I64_ID:
 			ret.f = (float)value.i64;
 			break;
 		case COLTI_U8_ID:
@@ -96,10 +99,13 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 	break; case ID_COLT_DOUBLE:
 		switch (from)
 		{
-		case COLTI_I8_ID:
-		case COLTI_I16_ID:
-		case COLTI_I32_ID:
-		case COLTI_I64_ID:
+		break; case COLTI_I8_ID:
+			ret.d = (double)value.i8;
+		break; case COLTI_I16_ID:
+			ret.d = (double)value.i16;
+		break; case COLTI_I32_ID:
+			ret.d = (double)value.i32;
+		break; case COLTI_I64_ID:
 			ret.d = (double)value.i64;
 			break;
 		case COLTI_U8_ID:
@@ -213,10 +219,13 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 	case ID_COLT_U64:
 		switch (from)
 		{
-		case COLTI_I8_ID:
-		case COLTI_I16_ID:
-		case COLTI_I32_ID:
-		case COLTI_I64_ID:
+		break; case COLTI_I8_ID:
+			ret.u64 = (uint64_t)value.i8;
+		break; case COLTI_I16_ID:
+			ret.u64 = (uint64_t)value.i16;
+		break; case COLTI_I32_ID:
+			ret.u64 = (uint64_t)value.i32;
+		break; case COLTI_I64_ID:
 			ret.u64 = (uint64_t)value.i64;
 		break; case COLTI_BOOL_ID:
 			ret.u64 = (value.b == 0 ? 0 : 1);
