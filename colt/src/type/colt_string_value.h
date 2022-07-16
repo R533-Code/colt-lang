@@ -15,7 +15,7 @@ typedef const char* ColtLString_t;
 static const char ColtLString_str[] = "lstring";
 
 /// @brief One byte character
-typedef char ColtChar;
+typedef char ColtChar_t;
 /// @brief The type-id of a Colt char
 #define COLTI_CHAR_ID 13
 /// @brief A string representing a Colt char string
