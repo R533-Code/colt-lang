@@ -71,9 +71,6 @@ typedef enum
 	/// @brief Pops the top of the stack and uses it as a byte offset to an lstring, then pushes the pointer to the beginning of the lstring.
 	/// [OP_LOAD_LSTRING]
 	OP_LOAD_LSTRING,
-	/// @brief Pops the top of the stack and turns it back to a byte offset which is then pushed to the top of the stack
-	/// [OP_STORE_LSTRING]
-	OP_STORE_LSTRING,
 
 	/// @brief Negates the top of the stack.
 	/// [OP_NEGATE][TYPE]
