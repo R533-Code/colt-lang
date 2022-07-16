@@ -10,6 +10,7 @@ const char* BuiltinTypeIDToString(BuiltinTypeID id)
 	{
 	case ID_COLT_VOID:		return ColtVoid_str;
 	case ID_COLT_BOOL:		return ColtBool_str;
+	case ID_COLT_CHAR:		return ColtChar_str;
 	case ID_COLT_DOUBLE:	return ColtDouble_str;
 	case ID_COLT_FLOAT:		return ColtFloat_str;
 	case ID_COLT_I8:		return ColtI8_str;
@@ -21,7 +22,7 @@ const char* BuiltinTypeIDToString(BuiltinTypeID id)
 	case ID_COLT_U32:		return ColtU32_str;
 	case ID_COLT_U64:		return ColtU64_str;
 	case ID_COLT_LSTRING:	return ColtLString_str;
-	default:				return "UNKOWN";
+	default:				colt_unreachable("Invalid operand!");
 	}
 }
 
