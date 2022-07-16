@@ -236,17 +236,7 @@ typedef enum
 	/// @brief Represents the absence of type
 	ID_COLT_VOID		= COLTI_VOID_ID,
 	/// @brief Represents a bool
-	ID_COLT_BOOL		= COLTI_BOOL_ID,
-	/// @brief Represents a char
-	ID_COLT_CHAR		= COLTI_CHAR_ID,
-
-	/// @brief Represents a 64-bit double-precision float
-	ID_COLT_DOUBLE		= COLTI_DOUBLE_ID,
-	/// @brief Represents a 32-bit single-precision float
-	ID_COLT_FLOAT		= COLTI_FLOAT_ID,
-
-	/// @brief Represents a pointer to a literal string
-	ID_COLT_LSTRING		= COLTI_LSTRING_ID,
+	ID_COLT_BOOL		= COLTI_BOOL_ID,	
 
 	/// @brief Represents a signed 8-bit integer
 	ID_COLT_I8			= COLTI_I8_ID,
@@ -264,7 +254,17 @@ typedef enum
 	/// @brief Represents an unsigned 32-bit integer
 	ID_COLT_U32			= COLTI_U32_ID,
 	/// @brief Represents an unsigned 64-bit integer
-	ID_COLT_U64			= COLTI_U64_ID,	
+	ID_COLT_U64			= COLTI_U64_ID,
+
+	/// @brief Represents a 32-bit single-precision float
+	ID_COLT_FLOAT = COLTI_FLOAT_ID,
+	/// @brief Represents a 64-bit double-precision float
+	ID_COLT_DOUBLE = COLTI_DOUBLE_ID,
+
+	/// @brief Represents a pointer to a literal string
+	ID_COLT_LSTRING = COLTI_LSTRING_ID,
+	/// @brief Represents a char
+	ID_COLT_CHAR = COLTI_CHAR_ID,
 } BuiltinTypeID;
 
 /// @brief Converts a built-in type ID to a const char*
