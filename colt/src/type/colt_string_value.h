@@ -14,4 +14,11 @@ typedef const char* ColtLString_t;
 /// @brief A string representing a Colt literal string
 static const char ColtLString_str[] = "lstring";
 
+/// @brief One byte character
+typedef char ColtChar;
+/// @brief The type-id of a Colt char
+#define COLTI_CHAR_ID 13
+/// @brief A string representing a Colt char string
+static const char ColtChar_str[] = "char";
+
 #endif //HG_COLT_INTEGER_VALUE
