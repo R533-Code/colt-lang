@@ -40,9 +40,12 @@ typedef struct
 } Type;
 
 
+/// @brief Type representing the absence of type
 static const TypeInfo ColtVoid		= { .name.start = ColtVoid_str,		.name.end = ColtVoid_str + 4,		.type_id = ID_COLT_VOID,		.byte_size = 0 };
 /// @brief Type representing a built-in bool
 static const TypeInfo ColtBool		= { .name.start = ColtBool_str,		.name.end = ColtBool_str + 4,		.type_id = ID_COLT_BOOL,		.byte_size = sizeof(ColtBool_t) };
+/// @brief Type representing a built-in single-byte character
+static const TypeInfo ColtChar		= { .name.start = ColtChar_str,		.name.end = ColtChar_str + 4,		.type_id = ID_COLT_CHAR,		.byte_size = sizeof(ColtChar_t) };
 /// @brief Type representing a built-in unsigned 8-bit integer
 static const TypeInfo ColtU8		= { .name.start = ColtU8_str,		.name.end = ColtU8_str + 3,			.type_id = ID_COLT_U8,			.byte_size = sizeof(ColtU8_t) };
 /// @brief Type representing a built-in unsigned 16-bit integer
