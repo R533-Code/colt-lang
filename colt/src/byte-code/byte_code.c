@@ -608,6 +608,7 @@ void OpCode_Print(QWORD value, BuiltinTypeID type)
 	break; case COLTI_FLOAT_ID:		printf("%g", value.f);
 	break; case COLTI_DOUBLE_ID:	printf("%g", value.d);
 	break; case COLTI_LSTRING_ID:	printf("%s", value.lstring);
+	break; case COLTI_CHAR_ID:		printf("%c", value.c);
 	break; default: colt_unreachable("Invalid operand for OP_PRINT!");
 	}
 }
