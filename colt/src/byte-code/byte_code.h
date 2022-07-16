@@ -238,15 +238,6 @@ typedef enum
 	/// @brief Represents a bool
 	ID_COLT_BOOL		= COLTI_BOOL_ID,	
 
-	/// @brief Represents a signed 8-bit integer
-	ID_COLT_I8			= COLTI_I8_ID,
-	/// @brief Represents a signed 16-bit integer
-	ID_COLT_I16			= COLTI_I16_ID,
-	/// @brief Represents a signed 32-bit integer
-	ID_COLT_I32			= COLTI_I32_ID,
-	/// @brief Represents a signed 64-bit integer
-	ID_COLT_I64			= COLTI_I64_ID,
-
 	/// @brief Represents an unsigned 8-bit integer
 	ID_COLT_U8			= COLTI_U8_ID,
 	/// @brief Represents an unsigned 16-bit integer
@@ -255,6 +246,15 @@ typedef enum
 	ID_COLT_U32			= COLTI_U32_ID,
 	/// @brief Represents an unsigned 64-bit integer
 	ID_COLT_U64			= COLTI_U64_ID,
+
+	/// @brief Represents a signed 8-bit integer
+	ID_COLT_I8			= COLTI_I8_ID,
+	/// @brief Represents a signed 16-bit integer
+	ID_COLT_I16			= COLTI_I16_ID,
+	/// @brief Represents a signed 32-bit integer
+	ID_COLT_I32			= COLTI_I32_ID,
+	/// @brief Represents a signed 64-bit integer
+	ID_COLT_I64			= COLTI_I64_ID,
 
 	/// @brief Represents a 32-bit single-precision float
 	ID_COLT_FLOAT = COLTI_FLOAT_ID,
