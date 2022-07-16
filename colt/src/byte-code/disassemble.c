@@ -158,9 +158,6 @@ uint64_t dis_chunk_print_code(const Chunk* chunk, uint64_t offset)
 	case OP_LOAD_LSTRING:
 		return dis_print_simple_instruction("OP_LOAD_LSTRING", offset);
 
-	case OP_STORE_LSTRING:
-		return dis_print_simple_instruction("OP_STORE_LSTRING", offset);
-
 	case OP_PUSH_BYTE:
 		dis_print_hex_instruction("OP_PUSH_BYTE", ChunkGetBYTE(chunk, &offset).u8);
 		return offset;
