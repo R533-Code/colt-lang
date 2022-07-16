@@ -68,6 +68,8 @@ typedef enum
 /// @brief Represents a Byte, which can be type-punned to a more useful type
 typedef union
 {
+	/// @brief Char member
+	ColtChar_t c;
 	/// @brief Bool member
 	ColtBool_t b;
 	/// @brief 8-bit signed integer
@@ -79,6 +81,8 @@ typedef union
 /// @brief Represents a Word (2 bytes), which can be type-punned to a more useful type
 typedef union
 {
+	/// @brief Char member
+	ColtChar_t c;
 	/// @brief Bool member
 	ColtBool_t b;
 	/// @brief 8-bit signed integer
@@ -97,6 +101,8 @@ typedef union
 /// @brief Represents a Double Word (4 bytes), which can be type-punned to a more useful type
 typedef union
 {
+	/// @brief Char member
+	ColtChar_t c;
 	/// @brief Bool member
 	ColtBool_t b;
 	/// @brief 8-bit signed integer
@@ -124,6 +130,8 @@ typedef union
 /// @brief Represents a Quad Word (8 bytes), which can be type-punned to a more useful type
 typedef union
 {
+	/// @brief Char member
+	ColtChar_t c;
 	/// @brief Bool member
 	ColtBool_t b;
 	/// @brief 8-bit signed integer
