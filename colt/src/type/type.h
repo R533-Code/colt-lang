@@ -35,7 +35,7 @@ typedef enum
 typedef struct
 {
 	/// @brief Pointer to an array a bool 
-	TypeConvert* valid_conversions;
+	const TypeConvert* valid_conversions;
 	/// @brief The name of the Type
 	StringView name;
 	/// @brief The ID of the Type
