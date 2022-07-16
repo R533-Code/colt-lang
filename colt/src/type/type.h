@@ -57,8 +57,8 @@ typedef struct
 static const TypeConvert ColtVoidConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_INVALID, //bool
-	CONV_INVALID, CONV_INVALID, CONV_INVALID, CONV_INVALID, //signed int
 	CONV_INVALID, CONV_INVALID, CONV_INVALID, CONV_INVALID, //unsigned int
+	CONV_INVALID, CONV_INVALID, CONV_INVALID, CONV_INVALID, //signed int
 	CONV_INVALID, CONV_INVALID,	//floating points
 	CONV_INVALID, CONV_INVALID //lstring & char
 };
@@ -67,48 +67,8 @@ static const TypeConvert ColtVoidConvTo[14] = {
 static const TypeConvert ColtBoolConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
-	CONV_VALID, CONV_VALID, CONV_INVALID, CONV_INVALID, //signed int
 	CONV_VALID, CONV_VALID, CONV_INVALID, CONV_INVALID, //unsigned int
-	CONV_VALID, CONV_VALID,	//floating points
-	CONV_INVALID, CONV_INVALID //lstring & char
-};
-
-/// @brief Represents the possible built-in conversions of ColtI8_t
-static const TypeConvert ColtI8ConvTo[14] = {
-	CONV_INVALID, //void
-	CONV_VALID, //bool
-	CONV_VALID, CONV_VALID, CONV_VALID, CONV_VALID, //signed int
-	CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, //unsigned int
-	CONV_VALID, CONV_VALID,	//floating points
-	CONV_INVALID, CONV_INVALID //lstring & char
-};
-
-/// @brief Represents the possible built-in conversions of ColtI16_t
-static const TypeConvert ColtI16ConvTo[14] = {
-	CONV_INVALID, //void
-	CONV_VALID, //bool
-	CONV_WLOSSY, CONV_VALID, CONV_VALID, CONV_VALID, //signed int
-	CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, //unsigned int
-	CONV_VALID, CONV_VALID,	//floating points
-	CONV_INVALID, CONV_INVALID //lstring & char
-};
-
-/// @brief Represents the possible built-in conversions of ColtI32_t
-static const TypeConvert ColtI32ConvTo[14] = {
-	CONV_INVALID, //void
-	CONV_VALID, //bool
-	CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, CONV_VALID, //signed int
-	CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, //unsigned int
-	CONV_VALID, CONV_VALID,	//floating points
-	CONV_INVALID, CONV_INVALID //lstring & char
-};
-
-/// @brief Represents the possible built-in conversions of ColtI64_t
-static const TypeConvert ColtI64ConvTo[14] = {
-	CONV_INVALID, //void
-	CONV_VALID, //bool
-	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, //signed int
-	CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, //unsigned int
+	CONV_VALID, CONV_VALID, CONV_INVALID, CONV_INVALID, //signed int
 	CONV_VALID, CONV_VALID,	//floating points
 	CONV_INVALID, CONV_INVALID //lstring & char
 };
@@ -117,8 +77,8 @@ static const TypeConvert ColtI64ConvTo[14] = {
 static const TypeConvert ColtU8ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
-	CONV_WLOSSY, CONV_VALID, CONV_VALID, CONV_VALID, //signed int
 	CONV_VALID, CONV_VALID, CONV_VALID, CONV_VALID, //unsigned int
+	CONV_WLOSSY, CONV_VALID, CONV_VALID, CONV_VALID, //signed int
 	CONV_VALID, CONV_VALID,	//floating points
 	CONV_INVALID, CONV_INVALID //lstring & char
 };
@@ -127,18 +87,8 @@ static const TypeConvert ColtU8ConvTo[14] = {
 static const TypeConvert ColtU16ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
-	CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, CONV_VALID, //signed int
 	CONV_WLOSSY, CONV_VALID, CONV_VALID, CONV_VALID, //unsigned int
-	CONV_VALID, CONV_VALID,	//floating points
-	CONV_INVALID, CONV_INVALID //lstring & char
-};
-
-/// @brief Represents the possible built-in conversions of ColtI64_t
-static const TypeConvert ColtU16ConvTo[14] = {
-	CONV_INVALID, //void
-	CONV_VALID, //bool
 	CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, CONV_VALID, //signed int
-	CONV_WLOSSY, CONV_VALID, CONV_VALID, CONV_VALID, //unsigned int
 	CONV_VALID, CONV_VALID,	//floating points
 	CONV_INVALID, CONV_INVALID //lstring & char
 };
@@ -147,8 +97,8 @@ static const TypeConvert ColtU16ConvTo[14] = {
 static const TypeConvert ColtU32ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
-	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, //signed int
 	CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, CONV_VALID, //unsigned int
+	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, //signed int
 	CONV_VALID, CONV_VALID,	//floating points
 	CONV_INVALID, CONV_INVALID //lstring & char
 };
@@ -157,18 +107,48 @@ static const TypeConvert ColtU32ConvTo[14] = {
 static const TypeConvert ColtU64ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
-	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, //signed int
 	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, //unsigned int
+	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, //signed int
 	CONV_VALID, CONV_VALID,	//floating points
 	CONV_INVALID, CONV_INVALID //lstring & char
 };
 
-/// @brief Represents the possible built-in conversions of ColtU64_t
-static const TypeConvert ColtU64ConvTo[14] = {
+/// @brief Represents the possible built-in conversions of ColtI8_t
+static const TypeConvert ColtI8ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
-	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, //signed int
-	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, //unsigned int
+	CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, //unsigned int
+	CONV_VALID, CONV_VALID, CONV_VALID, CONV_VALID, //signed int
+	CONV_VALID, CONV_VALID,	//floating points
+	CONV_INVALID, CONV_INVALID //lstring & char
+};
+
+/// @brief Represents the possible built-in conversions of ColtI16_t
+static const TypeConvert ColtI16ConvTo[14] = {
+	CONV_INVALID, //void
+	CONV_VALID, //bool
+	CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, //unsigned int
+	CONV_WLOSSY, CONV_VALID, CONV_VALID, CONV_VALID, //signed int
+	CONV_VALID, CONV_VALID,	//floating points
+	CONV_INVALID, CONV_INVALID //lstring & char
+};
+
+/// @brief Represents the possible built-in conversions of ColtI32_t
+static const TypeConvert ColtI32ConvTo[14] = {
+	CONV_INVALID, //void
+	CONV_VALID, //bool
+	CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, //unsigned int
+	CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, CONV_VALID, //signed int
+	CONV_VALID, CONV_VALID,	//floating points
+	CONV_INVALID, CONV_INVALID //lstring & char
+};
+
+/// @brief Represents the possible built-in conversions of ColtI64_t
+static const TypeConvert ColtI64ConvTo[14] = {
+	CONV_INVALID, //void
+	CONV_VALID, //bool
+	CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, //unsigned int
+	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, //signed int
 	CONV_VALID, CONV_VALID,	//floating points
 	CONV_INVALID, CONV_INVALID //lstring & char
 };
@@ -177,8 +157,8 @@ static const TypeConvert ColtU64ConvTo[14] = {
 static const TypeConvert ColtFloatConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
-	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, //signed int
 	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, //unsigned int
+	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, //signed int
 	CONV_VALID, CONV_VALID,	//floating points
 	CONV_INVALID, CONV_INVALID //lstring & char
 };
@@ -187,41 +167,155 @@ static const TypeConvert ColtFloatConvTo[14] = {
 static const TypeConvert ColtDoubleConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
-	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, //signed int
 	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, //unsigned int
+	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, //signed int
 	CONV_WLOSSY, CONV_VALID,	//floating points
 	CONV_INVALID, CONV_INVALID //lstring & char
 };
 
+/// @brief Represents the possible built-in conversions of ColtDouble_t
+static const TypeConvert ColtLStringConvTo[14] = {
+	CONV_INVALID, //void
+	CONV_INVALID, //bool
+	CONV_INVALID, CONV_INVALID, CONV_INVALID, CONV_INVALID, //unsigned int
+	CONV_INVALID, CONV_INVALID, CONV_INVALID, CONV_INVALID, //signed int
+	CONV_INVALID, CONV_INVALID,	//floating points
+	CONV_VALID, CONV_INVALID //lstring & char
+};
+
+/// @brief Represents the possible built-in conversions of ColtDouble_t
+static const TypeConvert ColtCharConvTo[14] = {
+	CONV_INVALID, //void
+	CONV_INVALID, //bool
+	CONV_VALID, CONV_INVALID, CONV_INVALID, CONV_INVALID, //unsigned int
+	CONV_VALID, CONV_INVALID, CONV_INVALID, CONV_INVALID, //signed int
+	CONV_INVALID, CONV_INVALID,	//floating points
+	CONV_INVALID, CONV_VALID //lstring & char
+};
 
 /// @brief Type representing the absence of type
-static const TypeInfo ColtVoid		= { .name.start = ColtVoid_str,		.name.end = ColtVoid_str + 4,		.type_id = ID_COLT_VOID,		.byte_size = 0,						.valid_conversions = ColtVoidConvTo };
+static const TypeInfo ColtVoid = {
+	.name.start = ColtVoid_str,
+	.name.end = ColtVoid_str + 4,
+	.type_id = ID_COLT_VOID,
+	.byte_size = 0,
+	.valid_conversions = ColtVoidConvTo
+};
+
 /// @brief Type representing a built-in bool
-static const TypeInfo ColtBool		= { .name.start = ColtBool_str,		.name.end = ColtBool_str + 4,		.type_id = ID_COLT_BOOL,		.byte_size = sizeof(ColtBool_t) };
+static const TypeInfo ColtBool = {
+	.name.start = ColtBool_str,	
+	.name.end = ColtBool_str + 4,
+	.type_id = ID_COLT_BOOL,
+	.byte_size = sizeof(ColtBool_t),
+	.valid_conversions = ColtBoolConvTo
+};
+
 /// @brief Type representing a built-in unsigned 8-bit integer
-static const TypeInfo ColtU8		= { .name.start = ColtU8_str,		.name.end = ColtU8_str + 3,			.type_id = ID_COLT_U8,			.byte_size = sizeof(ColtU8_t) };
+static const TypeInfo ColtU8 = {
+	.name.start = ColtU8_str,
+	.name.end = ColtU8_str + 3,
+	.type_id = ID_COLT_U8,
+	.byte_size = sizeof(ColtU8_t),
+	.valid_conversions = ColtU8ConvTo
+};
+
 /// @brief Type representing a built-in unsigned 16-bit integer
-static const TypeInfo ColtU16		= { .name.start = ColtU16_str,		.name.end = ColtU16_str + 3,		.type_id = ID_COLT_U16,			.byte_size = sizeof(ColtU16_t) };
+static const TypeInfo ColtU16 = {
+	.name.start = ColtU16_str,
+	.name.end = ColtU16_str + 3,
+	.type_id = ID_COLT_U16,
+	.byte_size = sizeof(ColtU16_t),
+	.valid_conversions = ColtU16ConvTo
+};
+
 /// @brief Type representing a built-in unsigned 32-bit integer
-static const TypeInfo ColtU32		= { .name.start = ColtU32_str,		.name.end = ColtU32_str + 3,		.type_id = ID_COLT_U32,			.byte_size = sizeof(ColtU32_t) };
+static const TypeInfo ColtU32 = {
+	.name.start = ColtU32_str,
+	.name.end = ColtU32_str + 3,
+	.type_id = ID_COLT_U32,
+	.byte_size = sizeof(ColtU32_t),
+	.valid_conversions = ColtU32ConvTo
+};
+
 /// @brief Type representing a built-in unsigned 64-bit integer
-static const TypeInfo ColtU64		= { .name.start = ColtU64_str,		.name.end = ColtU64_str + 3,		.type_id = ID_COLT_U64,			.byte_size = sizeof(ColtU64_t) };
+static const TypeInfo ColtU64 = {
+	.name.start = ColtU64_str,
+	.name.end = ColtU64_str + 3,
+	.type_id = ID_COLT_U64,
+	.byte_size = sizeof(ColtU64_t),
+	.valid_conversions = ColtU64ConvTo
+};
+
 /// @brief Type representing a built-in signed 8-bit integer
-static const TypeInfo ColtI8		= { .name.start = ColtI8_str,		.name.end = ColtI8_str + 2,			.type_id = ID_COLT_I8,			.byte_size = sizeof(ColtI8_t) };
+static const TypeInfo ColtI8 = {
+	.name.start = ColtI8_str,
+	.name.end = ColtI8_str + 2,
+	.type_id = ID_COLT_I8,
+	.byte_size = sizeof(ColtI8_t),
+	.valid_conversions = ColtI8ConvTo
+};
+
 /// @brief Type representing a built-in signed 16-bit integer
-static const TypeInfo ColtI16		= { .name.start = ColtI16_str,		.name.end = ColtI16_str + 3,		.type_id = ID_COLT_I16,			.byte_size = sizeof(ColtI16_t) };
+static const TypeInfo ColtI16 = {
+	.name.start = ColtI16_str,
+	.name.end = ColtI16_str + 3,
+	.type_id = ID_COLT_I16,
+	.byte_size = sizeof(ColtI16_t),
+	.valid_conversions = ColtI16ConvTo
+};
+
 /// @brief Type representing a built-in signed 32-bit integer
-static const TypeInfo ColtI32		= { .name.start = ColtI32_str,		.name.end = ColtI32_str + 3,		.type_id = ID_COLT_I32,			.byte_size = sizeof(ColtI32_t) };
+static const TypeInfo ColtI32 = {
+	.name.start = ColtI32_str,
+	.name.end = ColtI32_str + 3,
+	.type_id = ID_COLT_I32,
+	.byte_size = sizeof(ColtI32_t),
+	.valid_conversions = ColtI32ConvTo
+};
+
 /// @brief Type representing a built-in signed 64-bit integer
-static const TypeInfo ColtI64		= { .name.start = ColtI64_str,		.name.end = ColtI64_str + 3,		.type_id = ID_COLT_I64,			.byte_size = sizeof(ColtI64_t) };
+static const TypeInfo ColtI64 = {
+	.name.start = ColtI64_str,
+	.name.end = ColtI64_str + 3,
+	.type_id = ID_COLT_I64,
+	.byte_size = sizeof(ColtI64_t),
+	.valid_conversions = ColtI64ConvTo
+};
+
 /// @brief Type representing a built-in float
-static const TypeInfo ColtFloat		= { .name.start = ColtFloat_str,	.name.end = ColtFloat_str + 5,		.type_id = ID_COLT_FLOAT,		.byte_size = sizeof(ColtFloat_t) };
+static const TypeInfo ColtFloat = {
+	.name.start = ColtFloat_str,
+	.name.end = ColtFloat_str + 5,
+	.type_id = ID_COLT_FLOAT,
+	.byte_size = sizeof(ColtFloat_t),
+	.valid_conversions = ColtFloatConvTo
+};
+
 /// @brief Type representing a built-in double
-static const TypeInfo ColtDouble	= { .name.start = ColtDouble_str,	.name.end = ColtDouble_str + 6,		.type_id = ID_COLT_DOUBLE,		.byte_size = sizeof(ColtDouble_t) };
+static const TypeInfo ColtDouble = {
+	.name.start = ColtDouble_str,
+	.name.end = ColtDouble_str + 6,
+	.type_id = ID_COLT_DOUBLE,
+	.byte_size = sizeof(ColtDouble_t),
+	.valid_conversions = ColtDoubleConvTo
+};
 /// @brief Type representing a built-in literal
-static const TypeInfo ColtLString	= { .name.start = ColtLString_str,  .name.end = ColtLString_str + 7,	.type_id = ID_COLT_LSTRING,		.byte_size = sizeof(ColtLString_t) };
+static const TypeInfo ColtLString = {
+	.name.start = ColtLString_str,
+	.name.end = ColtLString_str + 7,
+	.type_id = ID_COLT_LSTRING,
+	.byte_size = sizeof(ColtLString_t),
+	.valid_conversions = ColtLStringConvTo
+};
 /// @brief Type representing a built-in single-byte character
-static const TypeInfo ColtChar		= { .name.start = ColtChar_str,		.name.end = ColtChar_str + 4,		.type_id = ID_COLT_CHAR,		.byte_size = sizeof(ColtChar_t) };
+static const TypeInfo ColtChar = {
+	.name.start = ColtChar_str,
+	.name.end = ColtChar_str + 4,
+	.type_id = ID_COLT_CHAR,
+	.byte_size = sizeof(ColtChar_t),
+	.valid_conversions = ColtCharConvTo
+};
 
 /// @brief Check for if a type is built-in
 /// @param type The type to check for
