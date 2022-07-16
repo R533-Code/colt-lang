@@ -2,7 +2,7 @@
 
 bool is_type_builtin(Type type)
 {
-	return type.typeinfo->type_id <= ID_COLT_LSTRING;
+	return type.typeinfo->type_id <= ID_COLT_CHAR;
 }
 
 bool is_type_signed_int(Type type)
