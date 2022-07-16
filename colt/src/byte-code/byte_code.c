@@ -566,6 +566,8 @@ QWORD OpCode_Equal(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		result.b = left.u64 == right.u64;
 	break; case COLTI_FLOAT_ID:		result.b = left.f == right.f;
 	break; case COLTI_DOUBLE_ID:	result.b = left.d == right.d;
+	break; case COLTI_LSTRING_ID:	result.b = left.lstring == right.lstring;
+	break; case COLTI_CHAR_ID:		result.b = left.c == right.c;
 	break; default: colt_unreachable("Invalid operand for OP_CMP_EQUAL!");
 	}
 	return result;
@@ -587,6 +589,8 @@ QWORD OpCode_NotEqual(QWORD left, QWORD right, BuiltinTypeID type)
 	break; case COLTI_U64_ID:		result.b = left.u64 != right.u64;
 	break; case COLTI_FLOAT_ID:		result.b = left.f != right.f;
 	break; case COLTI_DOUBLE_ID:	result.b = left.d != right.d;
+	break; case COLTI_LSTRING_ID:	result.b = left.lstring != right.lstring;
+	break; case COLTI_CHAR_ID:		result.b = left.c != right.c;
 	break; default: colt_unreachable("Invalid operand for OP_CMP_NOT_EQUAL!");
 	}
 	return result;
