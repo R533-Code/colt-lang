@@ -210,24 +210,24 @@ void ast_convert_to_highest_type(AST* ast, Expr** plhs, Expr** prhs)
 
 Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme)
 {
-	if ((TypeEqualTypeID(lhs, ID_COLT_LSTRING) || TypeEqualTypeID(rhs, ID_COLT_LSTRING)) && !(binary_op == TKN_OPERATOR_EQUAL_EQUAL || binary_op == TKN_OPERATOR_BANG_EQUAL))
-	{
-		ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' cannot have an 'lstring' as operand!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
-		Type ret = { .is_const = false, .typeinfo = &ColtVoid };
-		return ret;
-	}
-
 	switch (binary_op)
 	{
 	case TKN_OPERATOR_PLUS:
 	case TKN_OPERATOR_MINUS:
 	case TKN_OPERATOR_STAR:
 	case TKN_OPERATOR_SLASH:
-	case TKN_OPERATOR_EQUAL:
 	case TKN_OPERATOR_PLUS_EQUAL:
 	case TKN_OPERATOR_MINUS_EQUAL:
 	case TKN_OPERATOR_STAR_EQUAL:
 	case TKN_OPERATOR_SLASH_EQUAL:
+		if (TypeGetID(lhs) == ID_COLT_LSTRING || TypeGetID(rhs) == ID_COLT_LSTRING)
+		{
+			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' cannot have an 'lstring' as operand!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
+			Type ret = { .is_const = false, .typeinfo = &ColtVoid };
+			return ret;
+		}
+	//Fall through done on purpose
+	case TKN_OPERATOR_EQUAL:
 		return lhs;
 	case TKN_OPERATOR_AND:
 	case TKN_OPERATOR_OR:
@@ -253,10 +253,20 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 	case TKN_OPERATOR_GREATER_EQUAL:
 	case TKN_OPERATOR_LESS:
 	case TKN_OPERATOR_LESS_EQUAL:
-	case TKN_OPERATOR_EQUAL_EQUAL:
-	case TKN_OPERATOR_BANG_EQUAL:
 	case TKN_OPERATOR_AND_AND:
 	case TKN_OPERATOR_OR_OR:
+	{
+		if (TypeGetID(lhs) == ID_COLT_LSTRING || TypeGetID(rhs) == ID_COLT_LSTRING)
+		{
+			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' cannot have an 'lstring' as operand!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
+			Type ret = { .is_const = false, .typeinfo = &ColtVoid };
+			return ret;
+		}
+		Type ret = { .is_const = false, .typeinfo = &ColtBool };
+		return ret;
+	}
+	case TKN_OPERATOR_EQUAL_EQUAL:
+	case TKN_OPERATOR_BANG_EQUAL:
 	{
 		Type ret = { .is_const = false, .typeinfo = &ColtBool };
 		return ret;
