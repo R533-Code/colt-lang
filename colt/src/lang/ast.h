@@ -88,9 +88,10 @@ void ast_gen_error(AST* ast, uint64_t line_nb, StringView line, StringView lexem
 void ast_enter_panic_mode(AST* ast);
 
 /// @brief Converts two expressions so that their types match
+/// @param ast The AST from which to report errors
 /// @param lhs A pointer to the left hand side
 /// @param rhs A pointer to the right hand side
-void ast_handle_conversion(Expr** lhs, Expr** rhs);
+void ast_convert_to_highest_type(AST* ast, Expr** lhs, Expr** rhs);
 
 /// @brief Does the type checking and error handling of built-in operators.
 /// This function returns the return type of built-in operators, handling errors

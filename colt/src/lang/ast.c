@@ -133,26 +133,84 @@ void ast_enter_panic_mode(AST* ast)
 	}
 }
 
-void ast_handle_conversion(Expr** plhs, Expr** prhs)
+Expr* ast_convert_to(AST* ast, Expr* ptr, Type to)
+{
+	TypeConversion conv = ptr->expr_type.typeinfo->valid_conversions[TypeGetID(to)];
+	if (conv == CONV_INVALID)
+	{
+		ast_gen_error(ast, ptr->line_nb, ptr->line, ptr->lexeme,
+			"Incompatible types, invalid conversion from '%.*s' to '%.*s'!",
+			(uint32_t)(ptr->expr_type.typeinfo->name.end - ptr->expr_type.typeinfo->name.start), ptr->expr_type.typeinfo->name.start,
+			(uint32_t)(to.typeinfo->name.end - to.typeinfo->name.start), to.typeinfo->name.start);
+		return ptr;
+	}
+
+	if (conv & CONV_WLOSSY)
+	{
+		ast_gen_warning(ast, ptr->line_nb, ptr->line, ptr->lexeme,
+			"Truncation from '%.*s' to '%.*s'!",
+			(uint32_t)(ptr->expr_type.typeinfo->name.end - ptr->expr_type.typeinfo->name.start), ptr->expr_type.typeinfo->name.start,
+			(uint32_t)(to.typeinfo->name.end - to.typeinfo->name.start), to.typeinfo->name.start);
+	}
+	if (conv & CONV_WSIGN)
+	{
+		ast_gen_warning(ast, ptr->line_nb, ptr->line, ptr->lexeme,
+			"Sign mismatch conversion from '%.*s' to '%.*s'!",
+			(uint32_t)(ptr->expr_type.typeinfo->name.end - ptr->expr_type.typeinfo->name.start), ptr->expr_type.typeinfo->name.start,
+			(uint32_t)(to.typeinfo->name.end - to.typeinfo->name.start), to.typeinfo->name.start);
+	}
+
+	return makeConvertExpr(ptr, to, ptr->line_nb, ptr->line, ptr->lexeme);
+}
+
+void ast_convert_to_highest_type(AST* ast, Expr** plhs, Expr** prhs)
 {
 	Expr* lhs = *plhs;
 	Expr* rhs = *prhs;
 
-	if (ExprTypeEqualTypeID(lhs, ID_COLT_LSTRING) || ExprTypeEqualTypeID(rhs, ID_COLT_LSTRING))
+	if (ExprTypeEqualExprType(lhs, rhs))
 		return;
 
-	if (!ExprTypeEqualExprType(lhs, rhs))
+	if (ExprGetID(lhs) > ExprGetID(rhs))
 	{
-		Type cnv = builtin_inter_type(lhs->expr_type, rhs->expr_type);
-		//makeConvertExpr returns the expression if the type matches
-		*plhs = makeConvertExpr(lhs, cnv, lhs->line_nb, lhs->line, lhs->lexeme);
-		*prhs = makeConvertExpr(rhs, cnv, rhs->line_nb, rhs->line, rhs->lexeme);
+		//Swap pointers
+		Expr* temp = lhs;
+		lhs = rhs;
+		rhs = temp;
 	}
+
+	TypeConversion conv = lhs->expr_type.typeinfo->valid_conversions[ExprGetID(rhs)];
+	if (conv == CONV_INVALID)
+	{
+		ast_gen_error(ast, lhs->line_nb, lhs->line, lhs->lexeme,
+			"Incompatible types, invalid conversion from '%.*s' to '%.*s'!",
+			(uint32_t)(lhs->expr_type.typeinfo->name.end - lhs->expr_type.typeinfo->name.start), lhs->expr_type.typeinfo->name.start,
+			(uint32_t)(rhs->expr_type.typeinfo->name.end - rhs->expr_type.typeinfo->name.start), rhs->expr_type.typeinfo->name.start);
+		return;
+	}
+
+	if (conv & CONV_WLOSSY)
+	{
+		ast_gen_warning(ast, lhs->line_nb, lhs->line, lhs->lexeme,
+			"Truncation from '%.*s' to '%.*s'!",
+			(uint32_t)(lhs->expr_type.typeinfo->name.end - lhs->expr_type.typeinfo->name.start), lhs->expr_type.typeinfo->name.start,
+			(uint32_t)(rhs->expr_type.typeinfo->name.end - rhs->expr_type.typeinfo->name.start), rhs->expr_type.typeinfo->name.start);
+	}
+	if (conv & CONV_WSIGN)
+	{
+		ast_gen_warning(ast, lhs->line_nb, lhs->line, lhs->lexeme,
+			"Sign mismatch conversion from '%.*s' to '%.*s'!",
+			(uint32_t)(lhs->expr_type.typeinfo->name.end - lhs->expr_type.typeinfo->name.start), lhs->expr_type.typeinfo->name.start,
+			(uint32_t)(rhs->expr_type.typeinfo->name.end - rhs->expr_type.typeinfo->name.start), rhs->expr_type.typeinfo->name.start);
+	}
+
+	Type conv_expr = builtin_inter_type(lhs->expr_type, rhs->expr_type);
+	*plhs = makeConvertExpr(lhs, conv_expr, lhs->line_nb, lhs->line, lhs->lexeme);
 }
 
 Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme)
 {
-	if (TypeEqualTypeID(lhs, ID_COLT_LSTRING) || TypeEqualTypeID(rhs, ID_COLT_LSTRING))
+	if ((TypeEqualTypeID(lhs, ID_COLT_LSTRING) || TypeEqualTypeID(rhs, ID_COLT_LSTRING)) && !(binary_op == TKN_OPERATOR_EQUAL_EQUAL || binary_op == TKN_OPERATOR_BANG_EQUAL))
 	{
 		ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' cannot have an 'lstring' as operand!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
 		Type ret = { .is_const = false, .typeinfo = &ColtVoid };
@@ -291,7 +349,7 @@ Expr* parse_binary(AST* ast, int op_precedence)
 			return left; // we don't want memory leaks
 
 		//Convert both expressions to the same type
-		ast_handle_conversion(&left, &right);
+		ast_convert_to_highest_type(ast, &left, &right);
 		//Get the return type of the operator associated to the binary operator token
 		//because operators like ==, >=, ... returns bool
 		Type expr_type = ast_operator_return_type(ast, left->expr_type, bin_operator, right->expr_type,
@@ -344,7 +402,7 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 		return lhs;
 	
 	//Convert 'rhs' to the same type as 'lhs'
-	ast_handle_conversion(&lhs, &rhs);
+	rhs = ast_convert_to(ast, rhs, lhs->expr_type);
 	//Generates error if necessary
 	Type ret_type = ast_operator_return_type(ast, lhs->expr_type, assignment_tkn, rhs->expr_type, op_line_nb, op_line, op_lexeme);
 
