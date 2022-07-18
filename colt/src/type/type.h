@@ -117,7 +117,7 @@ static const TypeConversion ColtU64ConvTo[14] = {
 static const TypeConversion ColtI8ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
-	CONV_WSIGN, CONV_VALID, CONV_VALID, CONV_VALID, //unsigned int
+	CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, //unsigned int
 	CONV_VALID, CONV_VALID, CONV_VALID, CONV_VALID, //signed int
 	CONV_VALID, CONV_VALID,	//floating points
 	CONV_INVALID, CONV_INVALID //lstring & char
@@ -127,7 +127,7 @@ static const TypeConversion ColtI8ConvTo[14] = {
 static const TypeConversion ColtI16ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
-	CONV_WLOSSY | CONV_WSIGN, CONV_WSIGN, CONV_VALID, CONV_VALID, //unsigned int
+	CONV_WLOSSY | CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, //unsigned int
 	CONV_WLOSSY, CONV_VALID, CONV_VALID, CONV_VALID, //signed int
 	CONV_VALID, CONV_VALID,	//floating points
 	CONV_INVALID, CONV_INVALID //lstring & char
@@ -137,7 +137,7 @@ static const TypeConversion ColtI16ConvTo[14] = {
 static const TypeConversion ColtI32ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
-	CONV_WLOSSY | CONV_WSIGN, CONV_WLOSSY | CONV_WSIGN, CONV_WSIGN, CONV_VALID, //unsigned int
+	CONV_WLOSSY | CONV_WSIGN, CONV_WLOSSY | CONV_WSIGN, CONV_WSIGN, CONV_WSIGN, //unsigned int
 	CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, CONV_VALID, //signed int
 	CONV_VALID, CONV_VALID,	//floating points
 	CONV_INVALID, CONV_INVALID //lstring & char
