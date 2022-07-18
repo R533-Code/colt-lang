@@ -29,13 +29,13 @@ typedef enum
 	CONV_WSIGN = 2,
 	/// @brief Represents a warned lossy-conversion
 	CONV_WLOSSY = 4,
-} TypeConvert;
+} TypeConversion;
 
 /// @brief Represents a type's informations, which is a name and an ID
 typedef struct
 {
 	/// @brief Pointer to an array a bool 
-	const TypeConvert* valid_conversions;
+	const TypeConversion* valid_conversions;
 	/// @brief The name of the Type
 	StringView name;
 	/// @brief The ID of the Type
@@ -54,7 +54,7 @@ typedef struct
 } Type;
 
 /// @brief Represents the possible built-in conversions of ColtVoid_t
-static const TypeConvert ColtVoidConvTo[14] = {
+static const TypeConversion ColtVoidConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_INVALID, //bool
 	CONV_INVALID, CONV_INVALID, CONV_INVALID, CONV_INVALID, //unsigned int
@@ -64,7 +64,7 @@ static const TypeConvert ColtVoidConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtBool_t
-static const TypeConvert ColtBoolConvTo[14] = {
+static const TypeConversion ColtBoolConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
 	CONV_VALID, CONV_VALID, CONV_INVALID, CONV_INVALID, //unsigned int
@@ -74,7 +74,7 @@ static const TypeConvert ColtBoolConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtU8_t
-static const TypeConvert ColtU8ConvTo[14] = {
+static const TypeConversion ColtU8ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
 	CONV_VALID, CONV_VALID, CONV_VALID, CONV_VALID, //unsigned int
@@ -84,7 +84,7 @@ static const TypeConvert ColtU8ConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtU16_t
-static const TypeConvert ColtU16ConvTo[14] = {
+static const TypeConversion ColtU16ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
 	CONV_WLOSSY, CONV_VALID, CONV_VALID, CONV_VALID, //unsigned int
@@ -94,7 +94,7 @@ static const TypeConvert ColtU16ConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtU32_t
-static const TypeConvert ColtU32ConvTo[14] = {
+static const TypeConversion ColtU32ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
 	CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, CONV_VALID, //unsigned int
@@ -104,7 +104,7 @@ static const TypeConvert ColtU32ConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtU64_t
-static const TypeConvert ColtU64ConvTo[14] = {
+static const TypeConversion ColtU64ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
 	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_VALID, //unsigned int
@@ -114,7 +114,7 @@ static const TypeConvert ColtU64ConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtI8_t
-static const TypeConvert ColtI8ConvTo[14] = {
+static const TypeConversion ColtI8ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
 	CONV_WSIGN, CONV_VALID, CONV_VALID, CONV_VALID, //unsigned int
@@ -124,7 +124,7 @@ static const TypeConvert ColtI8ConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtI16_t
-static const TypeConvert ColtI16ConvTo[14] = {
+static const TypeConversion ColtI16ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
 	CONV_WLOSSY | CONV_WSIGN, CONV_WSIGN, CONV_VALID, CONV_VALID, //unsigned int
@@ -134,7 +134,7 @@ static const TypeConvert ColtI16ConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtI32_t
-static const TypeConvert ColtI32ConvTo[14] = {
+static const TypeConversion ColtI32ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
 	CONV_WLOSSY | CONV_WSIGN, CONV_WLOSSY | CONV_WSIGN, CONV_WSIGN, CONV_VALID, //unsigned int
@@ -144,7 +144,7 @@ static const TypeConvert ColtI32ConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtI64_t
-static const TypeConvert ColtI64ConvTo[14] = {
+static const TypeConversion ColtI64ConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
 	CONV_WLOSSY | CONV_WSIGN, CONV_WLOSSY | CONV_WSIGN, CONV_WLOSSY | CONV_WSIGN, CONV_WSIGN, //unsigned int
@@ -154,7 +154,7 @@ static const TypeConvert ColtI64ConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtFloat_t
-static const TypeConvert ColtFloatConvTo[14] = {
+static const TypeConversion ColtFloatConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
 	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, //unsigned int
@@ -164,7 +164,7 @@ static const TypeConvert ColtFloatConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtDouble_t
-static const TypeConvert ColtDoubleConvTo[14] = {
+static const TypeConversion ColtDoubleConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_VALID, //bool
 	CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, CONV_WLOSSY, //unsigned int
@@ -174,7 +174,7 @@ static const TypeConvert ColtDoubleConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtDouble_t
-static const TypeConvert ColtLStringConvTo[14] = {
+static const TypeConversion ColtLStringConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_INVALID, //bool
 	CONV_INVALID, CONV_INVALID, CONV_INVALID, CONV_INVALID, //unsigned int
@@ -184,7 +184,7 @@ static const TypeConvert ColtLStringConvTo[14] = {
 };
 
 /// @brief Represents the possible built-in conversions of ColtDouble_t
-static const TypeConvert ColtCharConvTo[14] = {
+static const TypeConversion ColtCharConvTo[14] = {
 	CONV_INVALID, //void
 	CONV_INVALID, //bool
 	CONV_VALID, CONV_INVALID, CONV_INVALID, CONV_INVALID, //unsigned int
