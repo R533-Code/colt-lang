@@ -124,6 +124,7 @@ Expr* makeLiteralExpr(QWORD value, Type type, uint64_t line_nb, StringView line,
 		case ID_COLT_U32:
 		case ID_COLT_U64:
 		case ID_COLT_LSTRING:
+		case ID_COLT_CHAR:
 		break; default:
 			colt_unreachable("'type' was not a valid type!");
 		}
