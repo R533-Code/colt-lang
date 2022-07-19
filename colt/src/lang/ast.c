@@ -259,14 +259,14 @@ Expr* parse_binary(AST* ast, int op_precedence)
 	case TKN_RIGHT_PAREN:
 	case TKN_SEMICOLON:
 		return left;
+	default: break;
 	}
 
 	uint64_t line_nb = ast->scan.current_line;
 	StringView lexeme_strv = ScannerGetCurrentLexeme(&ast->scan);
 	StringView line_strv = ScannerGetCurrentLine(&ast->scan);
 
-	int precedence = ast_op_precedence(ast, bin_operator);
-
+	uint8_t precedence = ast_op_precedence(ast, bin_operator);
 	while (precedence > op_precedence)
 	{
 		if (precedence == UINT8_MAX) //token was not an operator: error
@@ -580,6 +580,8 @@ Expr* parse_scope(AST* ast)
 	if (ast->current_tkn != TKN_RIGHT_CURLY)
 		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
 			"Expected a closing bracket '}'!");
+	//Consume '}'
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
 	if (scope->array.count == 0)
 	{
@@ -686,10 +688,10 @@ Expr* parse_expression(AST* ast)
 				"Expected a semicolon ';'!"
 			);
 		}
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	}
 	}
 	
-	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	return expr;
 }
 
