@@ -65,28 +65,6 @@ void ASTReset(AST* ast);
 IMPLEMENTATION HELPERS
 ************************************/
 
-/// @brief Prints a warning
-/// @param ast The AST from which to extract the current line and lexeme
-/// @param line_nb The line number
-/// @param line A StringView over the line
-/// @param lexeme A StringView over the lexeme
-/// @param format The warning (printf format)
-/// @param ... The arguments to format
-void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lexeme, const char* format, ...);
-
-/// @brief Prints an error and enters panic mode
-/// @param ast The AST from which to extract the current line and lexeme
-/// @param line_nb The line number
-/// @param line A StringView over the line
-/// @param lexeme A StringView over the lexeme
-/// @param format The error (printf format)
-/// @param ... The arguments to format
-void ast_gen_error(AST* ast, uint64_t line_nb, StringView line, StringView lexeme, const char* format, ...);
-
-/// @brief Consumes token until an TKN_EOF/TKN_SEMICOLON/TKN_RIGHT_PAREN/TKN_RIGHT_CURLY is hit, and update error counter
-/// @param ast The AST whose tokens to consume
-void ast_enter_panic_mode(AST* ast);
-
 /// @brief Converts two expressions so that their types match
 /// @param ast The AST from which to report errors
 /// @param lhs A pointer to the left hand side
@@ -180,5 +158,27 @@ bool is_assignment_token(Token tkn);
 /// @param expr The expression to check for
 /// @return True if the expression is binary having an assignment token
 bool is_assignment_expr(const Expr* expr);
+
+/// @brief Prints a warning
+/// @param ast The AST from which to extract the current line and lexeme
+/// @param line_nb The line number
+/// @param line A StringView over the line
+/// @param lexeme A StringView over the lexeme
+/// @param format The warning (printf format)
+/// @param ... The arguments to format
+void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lexeme, const char* format, ...);
+
+/// @brief Prints an error and enters panic mode
+/// @param ast The AST from which to extract the current line and lexeme
+/// @param line_nb The line number
+/// @param line A StringView over the line
+/// @param lexeme A StringView over the lexeme
+/// @param format The error (printf format)
+/// @param ... The arguments to format
+void ast_gen_error(AST* ast, uint64_t line_nb, StringView line, StringView lexeme, const char* format, ...);
+
+/// @brief Consumes token until an TKN_EOF/TKN_SEMICOLON/TKN_RIGHT_PAREN/TKN_RIGHT_CURLY is hit, and update error counter
+/// @param ast The AST whose tokens to consume
+void ast_enter_panic_mode(AST* ast);
 
 #endif //HG_COLT_AST

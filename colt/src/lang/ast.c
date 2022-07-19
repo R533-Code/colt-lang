@@ -22,6 +22,7 @@ bool ASTParse(AST* ast, StringView to_parse, const ColtScanOptions* options)
 {
 	colt_assert(options != NULL, "Options should not be NULL!");
 	
+	//Reset state and options
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
 	ast->options = options;
@@ -49,88 +50,12 @@ bool ASTParse(AST* ast, StringView to_parse, const ColtScanOptions* options)
 
 void ASTReset(AST* ast)
 {
-	ExprArrayFree(&ast->expr);
-	ExprArrayInit(&ast->expr);
-
+	ExprArrayClear(&ast->expr);
+	//TODO: add VariableTableFree
 	VariableTableFree(&ast->table.glob_table);
 	VariableTableInit(&ast->table.glob_table);
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
-}
-
-void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lexeme, const char* format, ...)
-{
-	ast->warning_nb++;
-	//We still update the warning number, but do not print anything
-	if (ast->options->no_warning == true)
-		return;
-
-	fprintf(stdout, CONSOLE_FOREGROUND_BRIGHT_YELLOW "Warning: "
-		CONSOLE_COLOR_RESET "On line %"PRIu64": ", line_nb);
-	//prints the error
-	va_list args;
-	va_start(args, format);
-	vfprintf(stdout, format, args);
-	va_end(args);
-	fputc('\n', stdout);
-
-	//To highlight the error lexeme, we need to break down the line in 3 parts:
-	//The part before the error, the error, and the part after the error
-	fprintf(stdout, "%.*s"CONSOLE_FOREGROUND_BRIGHT_YELLOW"%.*s"CONSOLE_COLOR_RESET"%.*s\n",
-		(uint32_t)(lexeme.start - line.start), line.start,
-		(uint32_t)(lexeme.end - lexeme.start), lexeme.start,
-		(uint32_t)(line.end - lexeme.end), lexeme.end
-	);
-}
-
-void ast_gen_error(AST* ast, uint64_t line_nb, StringView current_line, StringView current_lexeme, const char* format, ...)
-{
-	//We clear all the token till we hit an EOF or ';' or '}' or ')'
-	//This allows to clear an expression that is wrong
-	//also updates error number
-	ast_enter_panic_mode(ast);
-
-	//We do not want to print anything
-	if (ast->options->no_error == true)
-		return;
-
-	fprintf(stderr, CONSOLE_FOREGROUND_BRIGHT_RED "Error: "
-		CONSOLE_COLOR_RESET "On line %"PRIu64": ", line_nb);
-	//prints the error
-	va_list args;
-	va_start(args, format);
-	vfprintf(stderr, format, args);
-	va_end(args);
-	fputc('\n', stderr);
-
-	if ((uint32_t)(current_lexeme.end - current_lexeme.start) == 0)
-	{
-		//To highlight the error lexeme, we need to break down the line in 3 parts:
-		//The part before the error, the error, and the part after the error
-		fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED" "CONSOLE_COLOR_RESET"%.*s\n",
-			(uint32_t)(current_lexeme.start - current_line.start), current_line.start,
-			(uint32_t)(current_line.end - current_lexeme.end), current_lexeme.end
-		);
-	}
-	else
-	{
-		//To highlight the error lexeme, we need to break down the line in 3 parts:
-		//The part before the error, the error, and the part after the error
-		fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED"%.*s"CONSOLE_COLOR_RESET"%.*s\n",
-			(uint32_t)(current_lexeme.start - current_line.start), current_line.start,
-			(uint32_t)(current_lexeme.end - current_lexeme.start), current_lexeme.start,
-			(uint32_t)(current_line.end - current_lexeme.end), current_lexeme.end
-		);
-	}
-}
-
-void ast_enter_panic_mode(AST* ast)
-{
-	ast->error_nb++;
-	while (ast->current_tkn != TKN_RIGHT_PAREN && ast->current_tkn != TKN_RIGHT_CURLY && ast->current_tkn != TKN_EOF && ast->current_tkn != TKN_SEMICOLON)
-	{
-		ast->current_tkn = ScannerGetNextToken(&ast->scan);
-	}
 }
 
 Expr* ast_convert_to(AST* ast, Expr* ptr, Type to)
@@ -171,7 +96,7 @@ void ast_convert_to_highest_type(AST* ast, Expr** plhs, Expr** prhs)
 	if (ExprTypeEqualExprType(lhs, rhs))
 		return;
 
-	if (ExprGetID(lhs) > ExprGetID(rhs))
+	if (is_type_greater(lhs->expr_type, rhs->expr_type))
 	{
 		//Swap pointers
 		Expr* temp = lhs;
@@ -281,9 +206,9 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 IMPLEMENTATION HELPERS
 ************************************/
 
-int ast_op_precedence(AST* ast, Token token)
+uint8_t ast_op_precedence(AST* ast, Token token)
 {
-	static const int operator_precedence_table[] =
+	static const uint8_t operator_precedence_table[] =
 	{
 		10, 13, 0,	// +
 		10, 13, 0,	// -
@@ -302,12 +227,12 @@ int ast_op_precedence(AST* ast, Token token)
 	colt_assert(token >= 0, "Token should be greater or equal to 0!");
 	if (token < TKN_OPERATOR_LESS_COLON)
 		return operator_precedence_table[token];
-	return 100;
+	return UINT8_MAX;
 }
 
 Expr* parse_binary(AST* ast, int op_precedence)
 {
-	if (op_precedence == 100) //token was not an operator: error
+	if (op_precedence == UINT8_MAX) //token was not an operator: error
 	{
 		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
 			"Expected an operator!");
@@ -344,7 +269,7 @@ Expr* parse_binary(AST* ast, int op_precedence)
 
 	while (precedence > op_precedence)
 	{
-		if (precedence == 100) //token was not an operator: error
+		if (precedence == UINT8_MAX) //token was not an operator: error
 		{
 			ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
 				"Expected an operator!");
@@ -959,4 +884,79 @@ bool is_assignment_expr(const Expr* expr)
 	if (expr->identifier == EXPR_GLOB_WRITE || expr->identifier == EXPR_GLOB_READ)
 		return true;
 	return false;
+}
+
+void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lexeme, const char* format, ...)
+{
+	ast->warning_nb++;
+	//We still update the warning number, but do not print anything
+	if (ast->options->no_warning == true)
+		return;
+
+	fprintf(stdout, CONSOLE_FOREGROUND_BRIGHT_YELLOW "Warning: "
+		CONSOLE_COLOR_RESET "On line %"PRIu64": ", line_nb);
+	//prints the error
+	va_list args;
+	va_start(args, format);
+	vfprintf(stdout, format, args);
+	va_end(args);
+	fputc('\n', stdout);
+
+	//To highlight the error lexeme, we need to break down the line in 3 parts:
+	//The part before the error, the error, and the part after the error
+	fprintf(stdout, "%.*s"CONSOLE_FOREGROUND_BRIGHT_YELLOW"%.*s"CONSOLE_COLOR_RESET"%.*s\n",
+		(uint32_t)(lexeme.start - line.start), line.start,
+		(uint32_t)(lexeme.end - lexeme.start), lexeme.start,
+		(uint32_t)(line.end - lexeme.end), lexeme.end
+	);
+}
+
+void ast_gen_error(AST* ast, uint64_t line_nb, StringView current_line, StringView current_lexeme, const char* format, ...)
+{
+	//We clear all the token till we hit an EOF or ';' or '}' or ')'
+	//This allows to clear an expression that is wrong
+	//also updates error number
+	ast_enter_panic_mode(ast);
+
+	//We do not want to print anything
+	if (ast->options->no_error == true)
+		return;
+
+	fprintf(stderr, CONSOLE_FOREGROUND_BRIGHT_RED "Error: "
+		CONSOLE_COLOR_RESET "On line %"PRIu64": ", line_nb);
+	//prints the error
+	va_list args;
+	va_start(args, format);
+	vfprintf(stderr, format, args);
+	va_end(args);
+	fputc('\n', stderr);
+
+	if ((uint32_t)(current_lexeme.end - current_lexeme.start) == 0)
+	{
+		//To highlight the error lexeme, we need to break down the line in 3 parts:
+		//The part before the error, the error, and the part after the error
+		fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED" "CONSOLE_COLOR_RESET"%.*s\n",
+			(uint32_t)(current_lexeme.start - current_line.start), current_line.start,
+			(uint32_t)(current_line.end - current_lexeme.end), current_lexeme.end
+		);
+	}
+	else
+	{
+		//To highlight the error lexeme, we need to break down the line in 3 parts:
+		//The part before the error, the error, and the part after the error
+		fprintf(stderr, "%.*s"CONSOLE_BACKGROUND_BRIGHT_RED"%.*s"CONSOLE_COLOR_RESET"%.*s\n",
+			(uint32_t)(current_lexeme.start - current_line.start), current_line.start,
+			(uint32_t)(current_lexeme.end - current_lexeme.start), current_lexeme.start,
+			(uint32_t)(current_line.end - current_lexeme.end), current_lexeme.end
+		);
+	}
+}
+
+void ast_enter_panic_mode(AST* ast)
+{
+	ast->error_nb++;
+	while (ast->current_tkn != TKN_RIGHT_PAREN && ast->current_tkn != TKN_RIGHT_CURLY && ast->current_tkn != TKN_EOF && ast->current_tkn != TKN_SEMICOLON)
+	{
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+	}
 }
