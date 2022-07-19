@@ -34,14 +34,16 @@ typedef enum
 /// @brief Represents a type's informations, which is a name and an ID
 typedef struct
 {
-	/// @brief Pointer to an array a bool 
-	const TypeConversion* valid_conversions;
 	/// @brief The name of the Type
 	StringView name;
 	/// @brief The ID of the Type
 	uint64_t type_id;
 	/// @brief The size in memory of the Type
 	uint64_t byte_size;
+	/// @brief Array of possible built-in conversions
+	const TypeConversion* valid_conversions;
+	/// @brief The alignment of the Type
+	uint64_t alignment;
 } TypeInfo;
 
 /// @brief Represents a type, by storing its informations and a 'const' flag
@@ -193,22 +195,24 @@ static const TypeConversion ColtCharConvTo[14] = {
 	CONV_INVALID, CONV_VALID //lstring & char
 };
 
-/// @brief Type representing the absence of type
-static const TypeInfo ColtVoid = {
-	.name.start = ColtVoid_str,
-	.name.end = ColtVoid_str + 4,
-	.type_id = ID_COLT_VOID,
-	.byte_size = 0,
-	.valid_conversions = ColtVoidConvTo
+/// @brief Type representing a built-in single-byte character
+static const TypeInfo ColtChar = {
+	.name.start = ColtChar_str,
+	.name.end = ColtChar_str + 4,
+	.type_id = ID_COLT_CHAR,
+	.byte_size = sizeof(ColtChar_t),
+	.valid_conversions = ColtCharConvTo,
+	.alignment = _Alignof(ColtChar_t)
 };
 
 /// @brief Type representing a built-in bool
 static const TypeInfo ColtBool = {
-	.name.start = ColtBool_str,	
+	.name.start = ColtBool_str,
 	.name.end = ColtBool_str + 4,
 	.type_id = ID_COLT_BOOL,
 	.byte_size = sizeof(ColtBool_t),
-	.valid_conversions = ColtBoolConvTo
+	.valid_conversions = ColtBoolConvTo,
+	.alignment = _Alignof(ColtBool_t)
 };
 
 /// @brief Type representing a built-in unsigned 8-bit integer
@@ -217,7 +221,8 @@ static const TypeInfo ColtU8 = {
 	.name.end = ColtU8_str + 3,
 	.type_id = ID_COLT_U8,
 	.byte_size = sizeof(ColtU8_t),
-	.valid_conversions = ColtU8ConvTo
+	.valid_conversions = ColtU8ConvTo,
+	.alignment = _Alignof(ColtU8_t)
 };
 
 /// @brief Type representing a built-in unsigned 16-bit integer
@@ -226,7 +231,8 @@ static const TypeInfo ColtU16 = {
 	.name.end = ColtU16_str + 3,
 	.type_id = ID_COLT_U16,
 	.byte_size = sizeof(ColtU16_t),
-	.valid_conversions = ColtU16ConvTo
+	.valid_conversions = ColtU16ConvTo,
+	.alignment = _Alignof(ColtU16_t)
 };
 
 /// @brief Type representing a built-in unsigned 32-bit integer
@@ -235,7 +241,8 @@ static const TypeInfo ColtU32 = {
 	.name.end = ColtU32_str + 3,
 	.type_id = ID_COLT_U32,
 	.byte_size = sizeof(ColtU32_t),
-	.valid_conversions = ColtU32ConvTo
+	.valid_conversions = ColtU32ConvTo,
+	.alignment = _Alignof(ColtU32_t)
 };
 
 /// @brief Type representing a built-in unsigned 64-bit integer
@@ -244,7 +251,8 @@ static const TypeInfo ColtU64 = {
 	.name.end = ColtU64_str + 3,
 	.type_id = ID_COLT_U64,
 	.byte_size = sizeof(ColtU64_t),
-	.valid_conversions = ColtU64ConvTo
+	.valid_conversions = ColtU64ConvTo,
+	.alignment = _Alignof(ColtU64_t)
 };
 
 /// @brief Type representing a built-in signed 8-bit integer
@@ -253,7 +261,8 @@ static const TypeInfo ColtI8 = {
 	.name.end = ColtI8_str + 2,
 	.type_id = ID_COLT_I8,
 	.byte_size = sizeof(ColtI8_t),
-	.valid_conversions = ColtI8ConvTo
+	.valid_conversions = ColtI8ConvTo,
+	.alignment = _Alignof(ColtI8_t)
 };
 
 /// @brief Type representing a built-in signed 16-bit integer
@@ -262,7 +271,8 @@ static const TypeInfo ColtI16 = {
 	.name.end = ColtI16_str + 3,
 	.type_id = ID_COLT_I16,
 	.byte_size = sizeof(ColtI16_t),
-	.valid_conversions = ColtI16ConvTo
+	.valid_conversions = ColtI16ConvTo,
+	.alignment = _Alignof(ColtI16_t)
 };
 
 /// @brief Type representing a built-in signed 32-bit integer
@@ -271,7 +281,8 @@ static const TypeInfo ColtI32 = {
 	.name.end = ColtI32_str + 3,
 	.type_id = ID_COLT_I32,
 	.byte_size = sizeof(ColtI32_t),
-	.valid_conversions = ColtI32ConvTo
+	.valid_conversions = ColtI32ConvTo,
+	.alignment = _Alignof(ColtI32_t)
 };
 
 /// @brief Type representing a built-in signed 64-bit integer
@@ -280,7 +291,8 @@ static const TypeInfo ColtI64 = {
 	.name.end = ColtI64_str + 3,
 	.type_id = ID_COLT_I64,
 	.byte_size = sizeof(ColtI64_t),
-	.valid_conversions = ColtI64ConvTo
+	.valid_conversions = ColtI64ConvTo,
+	.alignment = _Alignof(ColtI64_t)
 };
 
 /// @brief Type representing a built-in float
@@ -289,7 +301,8 @@ static const TypeInfo ColtFloat = {
 	.name.end = ColtFloat_str + 5,
 	.type_id = ID_COLT_FLOAT,
 	.byte_size = sizeof(ColtFloat_t),
-	.valid_conversions = ColtFloatConvTo
+	.valid_conversions = ColtFloatConvTo,
+	.alignment = _Alignof(ColtFloat_t)
 };
 
 /// @brief Type representing a built-in double
@@ -298,23 +311,28 @@ static const TypeInfo ColtDouble = {
 	.name.end = ColtDouble_str + 6,
 	.type_id = ID_COLT_DOUBLE,
 	.byte_size = sizeof(ColtDouble_t),
-	.valid_conversions = ColtDoubleConvTo
+	.valid_conversions = ColtDoubleConvTo,
+	.alignment = _Alignof(ColtDouble_t)
 };
+
 /// @brief Type representing a built-in literal
 static const TypeInfo ColtLString = {
 	.name.start = ColtLString_str,
 	.name.end = ColtLString_str + 7,
 	.type_id = ID_COLT_LSTRING,
 	.byte_size = sizeof(ColtLString_t),
-	.valid_conversions = ColtLStringConvTo
+	.valid_conversions = ColtLStringConvTo,
+	.alignment = _Alignof(ColtLString_t)
 };
-/// @brief Type representing a built-in single-byte character
-static const TypeInfo ColtChar = {
-	.name.start = ColtChar_str,
-	.name.end = ColtChar_str + 4,
-	.type_id = ID_COLT_CHAR,
-	.byte_size = sizeof(ColtChar_t),
-	.valid_conversions = ColtCharConvTo
+
+/// @brief Type representing the absence of type
+static const TypeInfo ColtVoid = {
+	.name.start = ColtVoid_str,
+	.name.end = ColtVoid_str + 4,
+	.type_id = ID_COLT_VOID,
+	.byte_size = 0,
+	.valid_conversions = ColtVoidConvTo,
+	.alignment = 0
 };
 
 /// @brief Check for if a type is built-in
