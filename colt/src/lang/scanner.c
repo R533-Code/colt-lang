@@ -61,6 +61,8 @@ const TypeInfo* ScannerGetTypeInfo(const Scanner* scan)
 		return &ColtFloat;
 	case ID_COLT_LSTRING:
 		return &ColtLString;
+	case ID_COLT_CHAR:
+		return &ColtChar;
 	default:
 		colt_unreachable("Invalid argument!");
 	}
@@ -78,91 +80,91 @@ Token ScannerGetNextToken(Scanner* scan)
 	{
 		if (scan->current_char == '\n')
 			scan->current_line += 1;
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 	}
 
 	//we store the current offset, which is the beginning of the current lexeme
 	scan->lexeme_begin = scan->offset - 1;
 
 	if (isalpha(scan->current_char) || scan->current_char == '_')
-		return impl_scanner_handle_identifier(scan);
+		return scan_handle_identifier(scan);
 	else if (isdigit(scan->current_char))
-		return impl_scanner_handle_digit(scan);
+		return scan_handle_digit(scan);
 	
 	switch (scan->current_char)
 	{	
 	case '+':
-		return impl_scanner_handle_plus(scan);
+		return scan_handle_plus(scan);
 	case '-':
-		return impl_scanner_handle_minus(scan);
+		return scan_handle_minus(scan);
 	case '*':
-		return impl_scanner_handle_star(scan);
+		return scan_handle_star(scan);
 	case '/':
-		return impl_scanner_handle_slash(scan);
+		return scan_handle_slash(scan);
 	case '.':
-		return impl_scanner_handle_dot(scan);
+		return scan_handle_dot(scan);
 	case '<':
-		return impl_scanner_handle_less(scan);
+		return scan_handle_less(scan);
 	case '>':
-		return impl_scanner_handle_greater(scan);
+		return scan_handle_greater(scan);
 	case '&':
-		return impl_scanner_handle_and(scan);
+		return scan_handle_and(scan);
 	case '|':
-		return impl_scanner_handle_or(scan);
+		return scan_handle_or(scan);
 	case '^':
-		return impl_scanner_handle_xor(scan);
+		return scan_handle_xor(scan);
 	case '=':
-		return impl_scanner_handle_equal(scan);
+		return scan_handle_equal(scan);
 	case '"':
-		return impl_scanner_handle_string(scan);
+		return scan_handle_string(scan);
 	case ':':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		if (scan->current_char == '>')
 		{
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			return TKN_OPERATOR_COLON_GREATER;
 		}
 		return TKN_COLON;
 	case '!':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		if (scan->current_char == '=')
 		{
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			return TKN_OPERATOR_BANG_EQUAL;
 		}
 		return TKN_OPERATOR_BANG;
 	case '~':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_TILDE;
 	case ',':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_COMMA;
 	case '{':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_LEFT_CURLY;
 	case '}':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_RIGHT_CURLY;
 	case '(':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_LEFT_PAREN;
 	case ')':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_RIGHT_PAREN;
 	case '[':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_LEFT_SQUARE;
 	case ']':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_RIGHT_SQUARE;
 	case ';':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_SEMICOLON;
 	case '%':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		if (scan->current_char == '=')
 		{
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			return TKN_OPERATOR_MODULO_EQUAL;
 		}
 		return TKN_OPERATOR_MODULO;
@@ -222,7 +224,7 @@ StringView ScannerGetCurrentLexeme(const Scanner* scan)
 IMPLEMENTATION HELPERS
 **********************************/
 
-void impl_scanner_print_error(const Scanner* scan, const char* error, ...)
+void scan_print_error(const Scanner* scan, const char* error, ...)
 {
 	fprintf(stderr, CONSOLE_FOREGROUND_BRIGHT_RED"Error: "CONSOLE_COLOR_RESET"On line %"PRIu64": ", scan->current_line);
 	
@@ -275,7 +277,7 @@ void impl_scanner_print_error(const Scanner* scan, const char* error, ...)
 	);
 }
 
-void impl_scanner_print_unclosed_comment(const Scanner* scan)
+void scan_print_unclosed_comment(const Scanner* scan)
 {
 	fprintf(stderr, CONSOLE_FOREGROUND_BRIGHT_RED"Error: "CONSOLE_COLOR_RESET"On line %"PRIu64": Unterminated multi-line comment!\n", scan->current_line);
 	size_t line_begin = 0;
@@ -310,14 +312,14 @@ void impl_scanner_print_unclosed_comment(const Scanner* scan)
 		(uint32_t)(line_end - scan->lexeme_begin), scan->view.start + scan->lexeme_begin);
 }
 
-char impl_get_next_char(Scanner* scan)
+char scan_get_next_char(Scanner* scan)
 {
 	if (scan->offset < (uint64_t)(scan->view.end - scan->view.start))
 		return scan->view.start[scan->offset++];
 	return EOF;
 }
 
-char impl_peek_next_char(const Scanner* scan, uint64_t offset)
+char scan_peek_next_char(const Scanner* scan, uint64_t offset)
 {
 	if (scan->offset + offset < (uint64_t)(scan->view.end - scan->view.start))
 		return scan->view.start[scan->offset + offset];
@@ -326,19 +328,19 @@ char impl_peek_next_char(const Scanner* scan, uint64_t offset)
 
 char impl_rewind_char(Scanner* scan)
 {
-	colt_assert(scan->offset > 1, "Should at least call impl_get_next_char 1 times before");
+	colt_assert(scan->offset > 1, "Should at least call scan_get_next_char 1 times before");
 	//- 1 as the offset points to the NEXT character, not the current one
 	return scan->view.start[--scan->offset - 1];
 }
 
-char impl_rewind_chars(Scanner* scan, uint64_t nb)
+char scan_rewind_chars(Scanner* scan, uint64_t nb)
 {
-	colt_assert(scan->offset > 1, "Should at least call impl_get_next_char 'nb' times before!");
+	colt_assert(scan->offset > 1, "Should at least call scan_get_next_char 'nb' times before!");
 	//- 1 as the offset points to the NEXT character, not the current one
 	return scan->view.start[(scan->offset -= nb) - 1];
 }
 
-Token impl_scanner_handle_identifier(Scanner* scan)
+Token scan_handle_identifier(Scanner* scan)
 {
 	//Clear the string
 	StringClear(&scan->parsed_string);
@@ -346,18 +348,18 @@ Token impl_scanner_handle_identifier(Scanner* scan)
 	
 	scan->parsed_identifier.start = scan->view.start + scan->offset - 1;
 
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	while (isalnum(scan->current_char) || scan->current_char == '_')
 	{
 		StringAppendChar(&scan->parsed_string, scan->current_char);
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 	}
 	
 	scan->parsed_identifier.end = scan->view.start + scan->offset - 1;
-	return impl_token_identifier_or_keyword(scan);
+	return scan_get_identifier_or_keyword(scan);
 }
 
-Token impl_scanner_handle_digit(Scanner* scan)
+Token scan_handle_digit(Scanner* scan)
 {
 	//Allows some optimization for when the AST needs to extract the values from the Scanner
 	scan->parsed_value.u64 = 0;
@@ -368,7 +370,7 @@ Token impl_scanner_handle_digit(Scanner* scan)
 
 	if (scan->current_char == '0') //Could be 0x, 0b, 0o
 	{
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		int base = 10;
 		switch (scan->current_char)
 		{
@@ -385,10 +387,10 @@ Token impl_scanner_handle_digit(Scanner* scan)
 				return ScannerGetNextToken(scan);
 			}
 			else
-				return impl_token_str_to_integral(scan);
+				return token_str_to_integral(scan);
 		}
 
-		scan->current_char = impl_parse_alnum(scan);
+		scan->current_char = scan_parse_alnum(scan);
 
 		if (scan->parsed_string.size == 2) //Contains only the '0'
 		{
@@ -404,20 +406,20 @@ Token impl_scanner_handle_digit(Scanner* scan)
 			break; default: //should never happen
 				range_str = "ERROR";
 			}
-			impl_scanner_print_error(scan, "'0%c' should be followed by characters in range %s!", scan->current_char, range_str);
+			scan_print_error(scan, "'0%c' should be followed by characters in range %s!", scan->current_char, range_str);
 			return TKN_ERROR;
 		}
-		return impl_token_str_to_u64(scan, base);
+		return token_str_to_u64(scan, base);
 	}
 
 	//Parse as many digits as possible
-	scan->current_char = impl_parse_digits(scan);
+	scan->current_char = scan_parse_digits(scan);
 
 	bool isfloat = false;
 	// [0-9]+ followed by a .[0-9] is a float
 	if (scan->current_char == '.')
 	{
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		if (isdigit(scan->current_char))
 		{
 			isfloat = true;
@@ -425,60 +427,60 @@ Token impl_scanner_handle_digit(Scanner* scan)
 			StringAppendChar(&scan->parsed_string, scan->current_char);
 			
 			//Parse as many digits as possible
-			scan->current_char = impl_parse_digits(scan);
+			scan->current_char = scan_parse_digits(scan);
 		}
 		else
 		{
 			//The dot is not followed by a digit, this is not a float,
 			//but rather should be the dot followed by an identifier for a function call
 			scan->current_char = impl_rewind_char(scan);
-			return impl_token_str_to_u64(scan, 10);
+			return token_str_to_u64(scan, 10);
 		}
 	}
-	char after_e = impl_peek_next_char(scan, 0);
+	char after_e = scan_peek_next_char(scan, 0);
 	// [0-9]+(.[0-9]+)?e[+-][0-9]+ is a float
 	if (scan->current_char == 'e' && (after_e == '+' || after_e == '-' || isdigit(after_e)))
 	{
 		isfloat = true;
 		StringAppendChar(&scan->parsed_string, scan->current_char);
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		if (scan->current_char == '+') //skip the + after the exponent
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 
 		StringAppendChar(&scan->parsed_string, scan->current_char);
 		
 		//Parse as many digits as possible
-		scan->current_char = impl_parse_digits(scan);
+		scan->current_char = scan_parse_digits(scan);
 	}
 
 	if (isfloat)
 	{
-		switch (impl_scanner_get_floating_suffix(scan))
+		switch (scan_get_floating_suffix(scan))
 		{
 		case TKN_FLOAT:
-			return impl_token_str_to_float(scan);
+			return token_str_to_float(scan);
 		case TKN_DOUBLE:
-			return impl_token_str_to_double(scan);
+			return token_str_to_double(scan);
 		default:
 			colt_unreachable("Floating suffix was invalid!");
 		}
 	}
 	else
-		return impl_token_str_to_integral(scan);
+		return token_str_to_integral(scan);
 }
 
-Token impl_scanner_handle_string(Scanner* scan)
+Token scan_handle_string(Scanner* scan)
 {
 	StringClear(&scan->parsed_string);
 	
 	//Consume the "
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 
 	while (scan->current_char != '"' && scan->current_char != '\n' && scan->current_char != EOF)
 	{
 		if (scan->current_char == '\\')
 		{
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			switch (scan->current_char)
 			{
 			break; case '\'':
@@ -506,83 +508,83 @@ Token impl_scanner_handle_string(Scanner* scan)
 			break; default:
 				//Consume whole string literal
 				while (scan->current_char != ';' && scan->current_char != '\n' && scan->current_char != EOF)
-					scan->current_char = impl_get_next_char(scan);
-				impl_scanner_print_error(scan, "Invalid escape sequence!");
+					scan->current_char = scan_get_next_char(scan);
+				scan_print_error(scan, "Invalid escape sequence!");
 				return TKN_ERROR;
 			}
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			continue;
 		}
 		StringAppendChar(&scan->parsed_string, scan->current_char);
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 	}
 
 	if (scan->current_char == '\n' || scan->current_char == EOF)
 	{
-		impl_scanner_print_error(scan, "Unterminated string literal!");
+		scan_print_error(scan, "Unterminated string literal!");
 		return TKN_ERROR;
 	}
 	//Consume the "
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	return TKN_STRING;
 }
 
-Token impl_scanner_handle_plus(Scanner* scan)
+Token scan_handle_plus(Scanner* scan)
 {
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	switch (scan->current_char)
 	{
 	break; case '=':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_PLUS_EQUAL;
 	break; case '+':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_PLUS_PLUS;
 	break; default:
 		return TKN_OPERATOR_PLUS;
 	}
 }
 
-Token impl_scanner_handle_minus(Scanner* scan)
+Token scan_handle_minus(Scanner* scan)
 {
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	switch (scan->current_char)
 	{
 	break; case '=':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_MINUS_EQUAL;
 	break; case '-':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_MINUS_MINUS;
 	break; default:
 		return TKN_OPERATOR_MINUS;
 	}
 }
 
-Token impl_scanner_handle_star(Scanner* scan)
+Token scan_handle_star(Scanner* scan)
 {
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	if (scan->current_char == '=')
 	{
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_STAR_EQUAL;
 	}
 	return TKN_OPERATOR_STAR;
 }
 
-Token impl_scanner_handle_slash(Scanner* scan)
+Token scan_handle_slash(Scanner* scan)
 {
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	switch (scan->current_char)
 	{
 	case '=':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_SLASH_EQUAL;
 	case '/': // one line comment
 	{
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		while (scan->current_char != EOF && scan->current_char != '\n')
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 		
 		if (scan->current_char == '\n')
 			scan->current_line++;
@@ -593,27 +595,27 @@ Token impl_scanner_handle_slash(Scanner* scan)
 		//in the case of an unterminated multi-line comment, we want
 		//to print the line of the beginning of the multi-line comment.
 		size_t line_count = 0;
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		while (scan->current_char != EOF)
 		{
 			if (scan->current_char == '\n')
 				line_count++;
 			if (scan->current_char == '*')
 			{
-				scan->current_char = impl_get_next_char(scan);
+				scan->current_char = scan_get_next_char(scan);
 				if (scan->current_char == '/')
 				{
 					//update the line count
 					scan->current_line += line_count;
 
 					//consume closing /
-					scan->current_char = impl_get_next_char(scan);
+					scan->current_char = scan_get_next_char(scan);
 					return ScannerGetNextToken(scan); //recurse and return the token after the comment
 				}
 			}
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 		}
-		impl_scanner_print_unclosed_comment(scan);
+		scan_print_unclosed_comment(scan);
 		return TKN_EOF; //Compilation should fail directly
 	}
 	default:
@@ -621,20 +623,20 @@ Token impl_scanner_handle_slash(Scanner* scan)
 	}
 }
 
-Token impl_scanner_handle_equal(Scanner* scan)
+Token scan_handle_equal(Scanner* scan)
 {
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	if (scan->current_char == '=')
 	{
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_EQUAL_EQUAL;
 	}
 	return TKN_OPERATOR_EQUAL;
 }
 
-Token impl_scanner_handle_dot(Scanner* scan)
+Token scan_handle_dot(Scanner* scan)
 {
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	if (isdigit(scan->current_char))
 	{
 		//Clear the string
@@ -642,28 +644,28 @@ Token impl_scanner_handle_dot(Scanner* scan)
 		StringAppendChar(&scan->parsed_string, '.');
 		StringAppendChar(&scan->parsed_string, scan->current_char);
 
-		scan->current_char = impl_parse_digits(scan);
+		scan->current_char = scan_parse_digits(scan);
 
-		char after_e = impl_peek_next_char(scan, 0);
+		char after_e = scan_peek_next_char(scan, 0);
 		// [0-9]+(.[0-9]+)?e[+-][0-9]+ is a float
 		if (scan->current_char == 'e' && (after_e == '+' || after_e == '-' || isdigit(after_e)))
 		{
 			StringAppendChar(&scan->parsed_string, scan->current_char);
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			if (scan->current_char == '+') //skip the + after the exponent
-				scan->current_char = impl_get_next_char(scan);
+				scan->current_char = scan_get_next_char(scan);
 
 			StringAppendChar(&scan->parsed_string, scan->current_char);
 
 			//Parse as many digits as possible
-			scan->current_char = impl_parse_digits(scan);
+			scan->current_char = scan_parse_digits(scan);
 		}
-		switch (impl_scanner_get_floating_suffix(scan))
+		switch (scan_get_floating_suffix(scan))
 		{
 		case TKN_FLOAT:
-			return impl_token_str_to_float(scan);
+			return token_str_to_float(scan);
 		case TKN_DOUBLE:
-			return impl_token_str_to_double(scan);
+			return token_str_to_double(scan);
 		default:
 			colt_unreachable("Floating suffix was invalid!");
 		}
@@ -674,43 +676,43 @@ Token impl_scanner_handle_dot(Scanner* scan)
 	}
 }
 
-Token impl_scanner_handle_less(Scanner* scan)
+Token scan_handle_less(Scanner* scan)
 {
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	switch (scan->current_char)
 	{
 	break; case '=':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_LESS_EQUAL;
 	break; case '<':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		if (scan->current_char == '=')
 		{
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			return TKN_OPERATOR_LESS_LESS_EQUAL;
 		}
 		return TKN_OPERATOR_LESS_LESS;
 	break; case ':':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_LESS_COLON;
 	break; default:
 		return TKN_OPERATOR_LESS;
 	}	
 }
 
-Token impl_scanner_handle_greater(Scanner* scan)
+Token scan_handle_greater(Scanner* scan)
 {
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	switch (scan->current_char)
 	{
 	break; case '=':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_GREATER_EQUAL;
 	break; case '>':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		if (scan->current_char == '=')
 		{
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			return TKN_OPERATOR_GREATER_GREATER_EQUAL;
 		}
 		return TKN_OPERATOR_GREATER_GREATER;
@@ -719,52 +721,52 @@ Token impl_scanner_handle_greater(Scanner* scan)
 	}
 }
 
-Token impl_scanner_handle_and(Scanner* scan)
+Token scan_handle_and(Scanner* scan)
 {
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	switch (scan->current_char)
 	{
 	break; case '=':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_AND_EQUAL;
 	break; case '&':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_AND_AND;
 	break; default:
 		return TKN_OPERATOR_AND;
 	}
 }
 
-Token impl_scanner_handle_or(Scanner* scan)
+Token scan_handle_or(Scanner* scan)
 {
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	switch (scan->current_char)
 	{
 	break; case '=':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_OR_EQUAL;
 	break; case '|':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_OR_OR;
 	break; default:
 		return TKN_OPERATOR_OR;
 	}
 }
 
-Token impl_scanner_handle_xor(Scanner* scan)
+Token scan_handle_xor(Scanner* scan)
 {
-	scan->current_char = impl_get_next_char(scan);
+	scan->current_char = scan_get_next_char(scan);
 	switch (scan->current_char)
 	{
 	break; case '=':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_OPERATOR_XOR_EQUAL;	
 	break; default:
 		return TKN_OPERATOR_XOR;
 	}
 }
 
-Token impl_token_identifier_or_keyword(Scanner* scan)
+Token scan_get_identifier_or_keyword(Scanner* scan)
 {
 	const char* str = scan->parsed_string.ptr;
 	
@@ -899,269 +901,269 @@ Token impl_token_identifier_or_keyword(Scanner* scan)
 	return TKN_IDENTIFIER;
 }
 
-Token impl_scanner_get_floating_suffix(Scanner* scan)
+Token scan_get_floating_suffix(Scanner* scan)
 {
 	switch (tolower(scan->current_char))
 	{
 	break; case 'f':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_FLOAT;
 	break; case 'd':
-		scan->current_char = impl_get_next_char(scan);
+		scan->current_char = scan_get_next_char(scan);
 		return TKN_DOUBLE;
 	break; default:
 		return TKN_DOUBLE;
 	}
 }
 
-Token impl_token_str_to_double(Scanner* scan)
+Token token_str_to_double(Scanner* scan)
 {
 	char* end;
 	double value = strtod(scan->parsed_string.ptr, &end);
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'double' literal.", *end);
+		scan_print_error(scan, "Unexpected character '%c' while parsing 'double' literal.", *end);
 		return TKN_ERROR;
 	}
 	else if (value == HUGE_VAL && errno == ERANGE)
 	{
 		errno = 0;
-		impl_scanner_print_error(scan, "'double' literal is not representable!");
+		scan_print_error(scan, "'double' literal is not representable!");
 		return TKN_ERROR;
 	}
 	scan->parsed_value.d = value;
 	return TKN_DOUBLE;
 }
 
-Token impl_token_str_to_float(Scanner* scan)
+Token token_str_to_float(Scanner* scan)
 {
 	char* end;
 	float value = strtof(scan->parsed_string.ptr, &end);
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'float' literal.", *end);
+		scan_print_error(scan, "Unexpected character '%c' while parsing 'float' literal.", *end);
 		return TKN_ERROR;
 	}
 	else if (value == HUGE_VALF && errno == ERANGE)
 	{
 		errno = 0;
-		impl_scanner_print_error(scan, "'float' literal is not representable!");
+		scan_print_error(scan, "'float' literal is not representable!");
 		return TKN_ERROR;
 	}
 	scan->parsed_value.f = value;
 	return TKN_FLOAT;
 }
 
-Token impl_scanner_get_integral_suffix(Scanner* scan)
+Token scan_get_integral_suffix(Scanner* scan)
 {
 	//finite automata
 	switch (tolower(scan->current_char))
 	{
 	break; case 'u':		
-		switch (scan->current_char = impl_get_next_char(scan))
+		switch (scan->current_char = scan_get_next_char(scan))
 		{
 		break; case '8':
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			return TKN_U8;
 		break; case '1':
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			if (scan->current_char == '6')
 			{
-				scan->current_char = impl_get_next_char(scan);
+				scan->current_char = scan_get_next_char(scan);
 				return TKN_U16;
 			}
 			else
 			{
-				scan->current_char = impl_rewind_chars(scan, 2);
+				scan->current_char = scan_rewind_chars(scan, 2);
 			}
 		break; case '3':
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			if (scan->current_char == '2')
 			{
-				scan->current_char = impl_get_next_char(scan);
+				scan->current_char = scan_get_next_char(scan);
 				return TKN_U32;
 			}
 			else
 			{
-				scan->current_char = impl_rewind_chars(scan, 2);
+				scan->current_char = scan_rewind_chars(scan, 2);
 			}
 		break; case '6':
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			if (scan->current_char == '4')
 			{
-				scan->current_char = impl_get_next_char(scan);
+				scan->current_char = scan_get_next_char(scan);
 				return TKN_U64;
 			}
 			else
 			{
-				scan->current_char = impl_rewind_chars(scan, 2);
+				scan->current_char = scan_rewind_chars(scan, 2);
 			}
 		}
 	break; case 'i':
-		switch (scan->current_char = impl_get_next_char(scan))
+		switch (scan->current_char = scan_get_next_char(scan))
 		{
 		break; case '8':
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			return TKN_I8;
 		break; case '1':
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			if (scan->current_char == '6')
 			{
-				scan->current_char = impl_get_next_char(scan);
+				scan->current_char = scan_get_next_char(scan);
 				return TKN_I16;
 			}
 			else
 			{
-				scan->current_char = impl_rewind_chars(scan, 2);
+				scan->current_char = scan_rewind_chars(scan, 2);
 			}
 		break; case '3':
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			if (scan->current_char == '2')
 			{
-				scan->current_char = impl_get_next_char(scan);
+				scan->current_char = scan_get_next_char(scan);
 				return TKN_I32;
 			}
 			else
 			{
-				scan->current_char = impl_rewind_chars(scan, 2);
+				scan->current_char = scan_rewind_chars(scan, 2);
 			}
 		break; case '6':
-			scan->current_char = impl_get_next_char(scan);
+			scan->current_char = scan_get_next_char(scan);
 			if (scan->current_char == '4')
 			{
-				scan->current_char = impl_get_next_char(scan);
+				scan->current_char = scan_get_next_char(scan);
 				return TKN_I64;
 			}
 			else
 			{
-				scan->current_char = impl_rewind_chars(scan, 2);
+				scan->current_char = scan_rewind_chars(scan, 2);
 			}
 		}
 	}
 	return TKN_I32;
 }
 
-Token impl_token_str_to_u64(Scanner* scan, int base)
+Token token_str_to_u64(Scanner* scan, int base)
 {
 	char* end;
 	uint64_t value = strtoull(scan->parsed_string.ptr, &end, base);
 	
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'u64' literal.", *end);
+		scan_print_error(scan, "Unexpected character '%c' while parsing 'u64' literal.", *end);
 		return TKN_ERROR;
 	}
 	else if (value == ULLONG_MAX && errno == ERANGE)
 	{
 		errno = 0;
-		impl_scanner_print_error(scan, "Unsigned integer literal is not representable in a 'u64'.");
+		scan_print_error(scan, "Unsigned integer literal is not representable in a 'u64'.");
 		return TKN_ERROR;
 	}
 	scan->parsed_value.u64 = value;
 	return TKN_U64;
 }
 
-Token impl_token_str_to_i64(Scanner* scan, int base)
+Token token_str_to_i64(Scanner* scan, int base)
 {
 	char* end;
 	int64_t value = strtoll(scan->parsed_string.ptr, &end, base);
 
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'i64' literal.", *end);
+		scan_print_error(scan, "Unexpected character '%c' while parsing 'i64' literal.", *end);
 		return TKN_ERROR;
 	}
 	else if (value == LLONG_MAX && errno == ERANGE)
 	{
 		errno = 0;
-		impl_scanner_print_error(scan, "Signed integer literal is not representable in a 'i64'.");
+		scan_print_error(scan, "Signed integer literal is not representable in a 'i64'.");
 		return TKN_ERROR;
 	}
 	scan->parsed_value.i64 = value;
 	return TKN_I64;
 }
 
-Token impl_token_str_to_u32(Scanner* scan, int base)
+Token token_str_to_u32(Scanner* scan, int base)
 {
 	char* end;
 	uint32_t value = strtoul(scan->parsed_string.ptr, &end, base);
 
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'u32' literal.", *end);
+		scan_print_error(scan, "Unexpected character '%c' while parsing 'u32' literal.", *end);
 		return TKN_ERROR;
 	}
 	else if (value == ULONG_MAX && errno == ERANGE)
 	{
 		errno = 0;
-		impl_scanner_print_error(scan, "Unsigned integer literal is not representable in a 'u32'.");
+		scan_print_error(scan, "Unsigned integer literal is not representable in a 'u32'.");
 		return TKN_ERROR;
 	}
 	scan->parsed_value.u32 = value;
 	return TKN_U32;
 }
 
-Token impl_token_str_to_i32(Scanner* scan, int base)
+Token token_str_to_i32(Scanner* scan, int base)
 {
 	char* end;
 	int32_t value = strtol(scan->parsed_string.ptr, &end, base);
 
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'i32' literal.", *end);
+		scan_print_error(scan, "Unexpected character '%c' while parsing 'i32' literal.", *end);
 		return TKN_ERROR;
 	}
 	else if (value == LONG_MAX && errno == ERANGE)
 	{
 		errno = 0;
-		impl_scanner_print_error(scan, "Signed integer literal is not representable in a 'i32'.");
+		scan_print_error(scan, "Signed integer literal is not representable in a 'i32'.");
 		return TKN_ERROR;
 	}
 	scan->parsed_value.i32 = value;
 	return TKN_I32;
 }
 
-Token impl_token_str_to_u16(Scanner* scan, int base)
+Token token_str_to_u16(Scanner* scan, int base)
 {
 	char* end;
 	uint32_t value = strtoul(scan->parsed_string.ptr, &end, base);
 
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'u16' literal.", *end);
+		scan_print_error(scan, "Unexpected character '%c' while parsing 'u16' literal.", *end);
 		return TKN_ERROR;
 	}
 	else if ((value > USHRT_MAX) || errno == ERANGE)
 	{
 		errno = 0;
-		impl_scanner_print_error(scan, "Unsigned integer literal is not representable in a 'u16'.");
+		scan_print_error(scan, "Unsigned integer literal is not representable in a 'u16'.");
 		return TKN_ERROR;
 	}
 	scan->parsed_value.u16 = (uint16_t)value;
 	return TKN_U16;
 }
 
-Token impl_token_str_to_i16(Scanner* scan, int base)
+Token token_str_to_i16(Scanner* scan, int base)
 {
 	char* end;
 	int32_t value = strtol(scan->parsed_string.ptr, &end, base);
 
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'i16' literal.", *end);
+		scan_print_error(scan, "Unexpected character '%c' while parsing 'i16' literal.", *end);
 		return TKN_ERROR;
 	}
 	else if ((value > SHRT_MAX || value < SHRT_MIN) || errno == ERANGE)
 	{
 		errno = 0;
-		impl_scanner_print_error(scan, "Signed integer literal is not representable in a 'i16'.");
+		scan_print_error(scan, "Signed integer literal is not representable in a 'i16'.");
 		return TKN_ERROR;
 	}
 	scan->parsed_value.i16 = (int16_t)value;
 	return TKN_I16;
 }
 
-Token impl_token_str_to_u8(Scanner* scan, int base)
+Token token_str_to_u8(Scanner* scan, int base)
 {
 	char* end;
 	//as no overload can convert a string to an uint8_t, we convert to a long value
@@ -1170,7 +1172,7 @@ Token impl_token_str_to_u8(Scanner* scan, int base)
 
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'u8' literal.", *end);
+		scan_print_error(scan, "Unexpected character '%c' while parsing 'u8' literal.", *end);
 		return TKN_ERROR;
 	}
 	//as we are converting a long, if an ERANGE error is returned, than
@@ -1178,14 +1180,14 @@ Token impl_token_str_to_u8(Scanner* scan, int base)
 	else if ((value > UCHAR_MAX) || errno == ERANGE)
 	{
 		errno = 0;
-		impl_scanner_print_error(scan, "Unsigned integer literal is not representable in a 'u8'.");
+		scan_print_error(scan, "Unsigned integer literal is not representable in a 'u8'.");
 		return TKN_ERROR;
 	}
 	scan->parsed_value.u8 = (uint8_t)value;
 	return TKN_U8;
 }
 
-Token impl_token_str_to_i8(Scanner* scan, int base)
+Token token_str_to_i8(Scanner* scan, int base)
 {
 	char* end;
 	//as no overload can convert a string to an int8_t, we convert to a long value
@@ -1194,7 +1196,7 @@ Token impl_token_str_to_i8(Scanner* scan, int base)
 
 	if (end != scan->parsed_string.ptr + scan->parsed_string.size - 1)
 	{
-		impl_scanner_print_error(scan, "Unexpected character '%c' while parsing 'i8' literal.", *end);
+		scan_print_error(scan, "Unexpected character '%c' while parsing 'i8' literal.", *end);
 		return TKN_ERROR;
 	}
 	//as we are converting a long, if an ERANGE error is returned, than
@@ -1202,56 +1204,56 @@ Token impl_token_str_to_i8(Scanner* scan, int base)
 	else if ((value > CHAR_MAX || value < CHAR_MIN) || errno == ERANGE)
 	{
 		errno = 0;
-		impl_scanner_print_error(scan, "Signed integer literal is not representable in a 'i8'.");
+		scan_print_error(scan, "Signed integer literal is not representable in a 'i8'.");
 		return TKN_ERROR;
 	}
 	scan->parsed_value.i8 = (int8_t)value;
 	return TKN_I8;
 }
 
-Token impl_token_str_to_integral(Scanner* scan)
+Token token_str_to_integral(Scanner* scan)
 {
-	switch (impl_scanner_get_integral_suffix(scan))
+	switch (scan_get_integral_suffix(scan))
 	{
 	case TKN_I8:
-		return impl_token_str_to_i8(scan, 10);
+		return token_str_to_i8(scan, 10);
 	case TKN_I16:
-		return impl_token_str_to_i16(scan, 10);
+		return token_str_to_i16(scan, 10);
 	case TKN_I32:
-		return impl_token_str_to_i32(scan, 10);
+		return token_str_to_i32(scan, 10);
 	case TKN_I64:
-		return impl_token_str_to_i64(scan, 10);
+		return token_str_to_i64(scan, 10);
 	case TKN_U8:
-		return impl_token_str_to_u8(scan, 10);
+		return token_str_to_u8(scan, 10);
 	case TKN_U16:
-		return impl_token_str_to_u16(scan, 10);
+		return token_str_to_u16(scan, 10);
 	case TKN_U32:
-		return impl_token_str_to_u32(scan, 10);
+		return token_str_to_u32(scan, 10);
 	case TKN_U64:
-		return impl_token_str_to_u64(scan, 10);
+		return token_str_to_u64(scan, 10);
 	default:
 		colt_unreachable("Integral suffix was invalid!");
 	}
 }
 
-char impl_parse_alnum(Scanner* scan)
+char scan_parse_alnum(Scanner* scan)
 {
-	char next_char = impl_get_next_char(scan);
+	char next_char = scan_get_next_char(scan);
 	while (isalnum(next_char))
 	{
 		StringAppendChar(&scan->parsed_string, next_char);
-		next_char = impl_get_next_char(scan);
+		next_char = scan_get_next_char(scan);
 	}
 	return next_char;
 }
 
-char impl_parse_digits(Scanner* scan)
+char scan_parse_digits(Scanner* scan)
 {
-	char next_char = impl_get_next_char(scan);
+	char next_char = scan_get_next_char(scan);
 	while (isdigit(next_char))
 	{
 		StringAppendChar(&scan->parsed_string, next_char);
-		next_char = impl_get_next_char(scan);
+		next_char = scan_get_next_char(scan);
 	}
 	return next_char;
 }
