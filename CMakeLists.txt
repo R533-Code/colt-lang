@@ -73,10 +73,19 @@ configure_file("${CMAKE_SOURCE_DIR}/resources/cmake/cmake_colt_config.in"
 enable_testing()
 
 add_test(NAME GlobalVar COMMAND colt ../resources/tests/global_var.ct)
-set_property(TEST GlobalVar PROPERTY PASS_REGULAR_EXPRESSION "102020")
+set_property(TEST GlobalVar PROPERTY PASS_REGULAR_EXPRESSION "^102020")
 
 add_test(NAME LocalVar COMMAND colt ../resources/tests/local_var.ct )
-set_property(TEST LocalVar PROPERTY PASS_REGULAR_EXPRESSION "102020")
+set_property(TEST LocalVar PROPERTY PASS_REGULAR_EXPRESSION "^102020")
+
+add_test(NAME StaticPrint COMMAND colt ../resources/tests/static_print.ct)
+set_property(TEST StaticPrint PROPERTY PASS_REGULAR_EXPRESSION "^1-11-11-11-1trueaEverything worked!")
+
+add_test(NAME GlobalErr COMMAND colt ../resources/tests/err_decl_global.ct)
+set_property(TEST GlobalErr PROPERTY PASS_REGULAR_EXPRESSION "Error")
+
+add_test(NAME Condition COMMAND colt ../resources/tests/condition.ct)
+set_property(TEST Condition PROPERTY PASS_REGULAR_EXPRESSION "^Working")
 
 # DOXYGEN
 option(BUILD_DOC "Build documentation" ON)
