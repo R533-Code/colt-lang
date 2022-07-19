@@ -117,6 +117,8 @@ Token ScannerGetNextToken(Scanner* scan)
 		return scan_handle_equal(scan);
 	case '"':
 		return scan_handle_string(scan);
+	case '\'':
+		return scan_handle_char(scan);
 	case ':':
 		scan->current_char = scan_get_next_char(scan);
 		if (scan->current_char == '>')
@@ -159,7 +161,7 @@ Token ScannerGetNextToken(Scanner* scan)
 		return TKN_RIGHT_SQUARE;
 	case ';':
 		scan->current_char = scan_get_next_char(scan);
-		return TKN_SEMICOLON;
+		return TKN_SEMICOLON;	
 	case '%':
 		scan->current_char = scan_get_next_char(scan);
 		if (scan->current_char == '=')
@@ -527,6 +529,71 @@ Token scan_handle_string(Scanner* scan)
 	//Consume the "
 	scan->current_char = scan_get_next_char(scan);
 	return TKN_STRING;
+}
+
+Token scan_handle_char(Scanner* scan)
+{
+	//To simplify conversions
+	scan->parsed_value.u64 = 0;
+	
+	//Consume the '
+	scan->current_char = scan_get_next_char(scan);
+	if (scan->current_char == '\'')
+	{
+		scan->current_char = scan_get_next_char(scan);
+		scan_print_error(scan, "A char literal should at least contain a character!");
+		return TKN_ERROR;
+	}
+	else if (scan->current_char == '\\')
+	{
+		scan->current_char = scan_get_next_char(scan);
+		switch (scan->current_char)
+		{
+		break; case '\'':
+			scan->parsed_value.c = '\'';
+		break; case '\"':
+			scan->parsed_value.c = '\"';
+		break; case '\\':
+			scan->parsed_value.c = '\\';
+		break; case '0':
+			scan->parsed_value.c = '\0';
+		break; case 'a':
+			scan->parsed_value.c = '\a';
+		break; case 'b':
+			scan->parsed_value.c = '\b';
+		break; case 'f':
+			scan->parsed_value.c = '\f';
+		break; case 'n':
+			scan->parsed_value.c = '\n';
+		break; case 'r':
+			scan->parsed_value.c = '\r';
+		break; case 't':
+			scan->parsed_value.c = '\t';
+		break; case 'v':
+			scan->parsed_value.c = '\v';
+		break; default:
+			//Consume whole string literal
+			while (scan->current_char != ';' && scan->current_char != '\n' && scan->current_char != EOF && scan->current_char != '\'')
+				scan->current_char = scan_get_next_char(scan);
+			scan_print_error(scan, "Invalid escape sequence!");
+			return TKN_ERROR;
+		}
+	}
+	else
+	{
+		scan->parsed_value.c = scan->current_char;
+	}
+	scan->current_char = scan_get_next_char(scan);
+	if (scan->current_char != '\'')
+	{
+		scan_print_error(scan, "Invalid char literal!");
+		while (scan->current_char != ';' && scan->current_char != '\n' && scan->current_char != EOF && scan->current_char != '\'')
+			scan->current_char = scan_get_next_char(scan);
+		return TKN_ERROR;
+	}
+	//Consume the ''
+	scan->current_char = scan_get_next_char(scan);
+	return TKN_CHAR;
 }
 
 Token scan_handle_plus(Scanner* scan)

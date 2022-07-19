@@ -141,6 +141,11 @@ Token scan_handle_digit(Scanner* scan);
 /// @return TKN_STRING or TKN_ERROR if an error is encountered
 Token scan_handle_string(Scanner* scan);
 
+/// @brief Handles char literals '.'
+/// @param scan The scanner from which to get the char
+/// @return TKN_CHAR or TKN_ERROR if an error is encountered
+Token scan_handle_char(Scanner* scan);
+
 /// @brief Handles +, +=, ++
 /// @param scan The scanner from which to parse
 /// @return Token representing the parsed lexeme
