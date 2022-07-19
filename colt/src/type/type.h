@@ -335,6 +335,18 @@ static const TypeInfo ColtVoid = {
 	.alignment = 0
 };
 
+/// @brief Check if two types are equal (regardless of their sign-ess)
+/// @param lhs The left hand side
+/// @param rhs The right hand side
+/// @return True if both type's true ID are the same
+bool is_type_equal(Type lhs, Type rhs);
+
+/// @brief Check if a type is greater than another (regardless of their sign-ess)
+/// @param lhs The left hand side
+/// @param rhs The right hand side
+/// @return True if the first type's true ID is greater than the second's
+bool is_type_greater(Type lhs, Type rhs);
+
 /// @brief Check for if a type is built-in
 /// @param type The type to check for
 /// @return True if the type is built-in
@@ -364,5 +376,11 @@ bool is_type_floating(Type type);
 /// @param type The unsigned type ID
 /// @return The signed type equivalent
 Type type_unsigned_to_signed(Type type);
+
+/// @brief Returns the best suitable built-in type for 2 types
+/// @param lhs The first type
+/// @param rhs The second type
+/// @return The intersection of the types
+Type builtin_inter_type(Type lhs, Type rhs);
 
 #endif //HG_COLT_TYPE
