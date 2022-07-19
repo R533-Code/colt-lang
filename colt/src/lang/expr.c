@@ -382,27 +382,3 @@ void freeExpr(Expr* ptr)
 		colt_unreachable("Expression identifier was invalid!");
 	}
 }
-
-/*******************************
-IMPLEMENTATION HELPER
-*******************************/
-
-Type builtin_inter_type(Type lhs, Type rhs)
-{
-	colt_assert(TypeGetID(lhs) <= ID_COLT_DOUBLE && TypeGetID(rhs) <= ID_COLT_DOUBLE, "Type should be built-in types!");
-
-	uint64_t real_lhs = is_type_signed_int(lhs) ? TypeGetID(lhs) - 4 : TypeGetID(lhs);
-	uint64_t real_rhs = is_type_signed_int(rhs) ? TypeGetID(rhs) - 4 : TypeGetID(rhs);
-	if (real_lhs > real_rhs)		
-		return builtin_inter_type(rhs, lhs); //swap so that the 'lhs' has the lowest type
-
-	if (is_type_signed_int(rhs) && is_type_unsigned_int(lhs))
-	{
-		//We return the biggest integer be it signed or unsigned
-		//The + 4 comes from the fact that unsigned integer ID is - 4
-		//from that of signed integer ID
-		return (TypeGetID(lhs) + 4 < TypeGetID(rhs)) ? rhs : lhs;
-	}
-	else //We return the greater type
-		return rhs;
-}

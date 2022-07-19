@@ -461,14 +461,4 @@ Expr* makeScopeExpr(ScopeExpr* parent_scope);
 /// @param ptr The Expr* to free
 void freeExpr(Expr* ptr);
 
-/*******************************
-IMPLEMENTATION HELPER
-*******************************/
-
-/// @brief Returns the best suitable built-in type for 2 types
-/// @param lhs The first type
-/// @param rhs The second type
-/// @return The intersection of the types
-Type builtin_inter_type(Type lhs, Type rhs);
-
 #endif //HG_COLT_EXPR
