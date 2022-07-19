@@ -25,3 +25,5 @@
 - When reporting errors, the output should use: `CONSOLE_FOREGROUND_BRIGHT_RED "Error: " CONSOLE_COLOR_RESET` followed by the message
   - `print_error_string` and `print_error_format` macros can be used to follow this convention
   - If a message is printed before exiting, it should be followed by a newline
+
+- When using `exit`, use the `ExitCode` enum values rather than arbitrary values
