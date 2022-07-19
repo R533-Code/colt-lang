@@ -104,6 +104,8 @@ typedef enum
 	TKN_IDENTIFIER,
 	/// @brief ".*?"
 	TKN_STRING,
+	/// @brief '.'
+	TKN_CHAR,
 	/// @brief [0-9]+[uU]8
 	TKN_U8,
 	/// @brief [0-9]+[iI]8
@@ -126,7 +128,7 @@ typedef enum
 	TKN_DOUBLE,
 	/// @brief true|false
 	TKN_BOOL,
-	/// @brief bool, float, double, [ui](8|16|32|64)
+	/// @brief bool, float, double, [ui](8|16|32|64), char, lstring
 	TKN_BUILTIN_TYPE,
 
 	/*********************
@@ -194,10 +196,5 @@ typedef enum
 	/// @brief Returned for unterminated string, invalid literals and not recognized characters
 	TKN_ERROR
 } Token;
-
-/// @brief Converts a Token to a c-string
-/// @param tkn The token to convert
-/// @return A string representing the valid Token or UNKNOWN
-const char* TokenToString(Token tkn);
 
 #endif //HG_COLT_TOKEN
