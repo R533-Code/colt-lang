@@ -71,11 +71,12 @@ configure_file("${CMAKE_SOURCE_DIR}/resources/cmake/cmake_colt_config.in"
 
 # Testing for CTest
 enable_testing()
-# Run the executable
-add_test(NAME GlobalVar
-	COMMAND colt ../resources/tests/global_var.ct PASS_REGULAR_EXPRESSION "102020")
-add_test(NAME LocalVar
-	COMMAND colt ../resources/tests/local_var.ct PASS_REGULAR_EXPRESSION "102020")
+
+add_test(NAME GlobalVar COMMAND colt ../resources/tests/global_var.ct)
+set_property(TEST GlobalVar PROPERTY PASS_REGULAR_EXPRESSION "102020")
+
+add_test(NAME LocalVar COMMAND colt ../resources/tests/local_var.ct )
+set_property(TEST LocalVar PROPERTY PASS_REGULAR_EXPRESSION "102020")
 
 # DOXYGEN
 option(BUILD_DOC "Build documentation" ON)
