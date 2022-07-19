@@ -520,6 +520,9 @@ Expr* parse_primary(AST* ast)
 		//Add string to string literal table
 		StringTableAdd(&ast->table.str_table, value.string_ptr);
 	}
+	break; case TKN_CHAR:
+		value.c = ast->scan.parsed_value.c;
+		type.typeinfo = &ColtChar;
 	break;
 
 		/**************** UNARY OPERATORS ****************/
