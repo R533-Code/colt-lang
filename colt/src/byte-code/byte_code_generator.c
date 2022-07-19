@@ -363,6 +363,7 @@ bool gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* pt
 	case ID_COLT_I8:
 	case ID_COLT_U8:
 	case ID_COLT_BOOL:
+	case ID_COLT_CHAR:
 		ChunkWriteOpCode(chunk, OP_PUSH_BYTE);
 		ChunkWriteBYTE(chunk, ptr->value.byte);
 		break;
