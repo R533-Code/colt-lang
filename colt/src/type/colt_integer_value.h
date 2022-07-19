@@ -8,12 +8,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/// @brief Absence of type: any expression with no result
-typedef void ColtVoid_t;
-/// @brief The type-id of a Colt void
-#define COLTI_VOID_ID 0
-/// @brief A string representing a Colt void
-static const char ColtVoid_str[] = "void";
+/// @brief One byte character
+typedef char ColtChar_t;
+/// @brief The type-id of a Colt char
+#define COLTI_CHAR_ID 0
+/// @brief A string representing a Colt char string
+static const char ColtChar_str[] = "char";
 
 /// @brief Byte representing a 2 state value 'true' (1) 'false' (0)
 typedef bool ColtBool_t;
@@ -77,5 +77,12 @@ typedef int64_t ColtI64_t;
 #define COLTI_I64_ID 9
 /// @brief A string representing a Colt signed 64-bit integer
 static const char ColtI64_str[] = "i64";
+
+/// @brief Absence of type: any expression with no result
+typedef void ColtVoid_t;
+/// @brief The type-id of a Colt void
+#define COLTI_VOID_ID 13
+/// @brief A string representing a Colt void
+static const char ColtVoid_str[] = "void";
 
 #endif //HG_COLT_INTEGER_VALUE
