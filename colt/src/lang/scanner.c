@@ -789,7 +789,12 @@ Token scan_get_identifier_or_keyword(Scanner* scan)
 			return TKN_BUILTIN_TYPE;
 		}
 	break; case 'c':
-		if (strcmp(str, "case") == 0)
+		if (strcmp(str, "char") == 0)
+		{
+			scan->parsed_value.u64 = ID_COLT_CHAR;
+			return TKN_BUILTIN_TYPE;
+		}
+		else if (strcmp(str, "case") == 0)
 			return TKN_KEYWORD_CASE;
 		else if (strcmp(str, "const") == 0)
 			return TKN_KEYWORD_CONST;
