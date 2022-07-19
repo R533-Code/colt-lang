@@ -450,7 +450,7 @@ bool gen_code_condition(Chunk* chunk, const ASTTable* table, const ConditionExpr
 	uint64_t* to_override_jmp_out_array = NULL;
 
 	if (ptr->elif_conditions.count != 0)
-		to_override_jmp_out_array = safe_malloc(ptr->elif_conditions.count * sizeof(uint32_t));
+		to_override_jmp_out_array = safe_malloc(ptr->elif_conditions.count * sizeof(uint64_t));
 
 	for (size_t i = 0; i < ptr->elif_conditions.count; i++)
 	{
