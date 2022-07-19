@@ -1,0 +1,23 @@
+var a = 10u64;
+
+var b = 10;
+
+{
+	if (a != b)
+	{
+		static_print "a == b\n";
+		static_print a;
+		static_print " ";
+		static_print b;
+	}
+	elif (true)
+		static_print("Working");
+	elif (true)
+		static_print("NotWorking");
+	else
+	{
+		static_print("a != b\n");
+		a += b;
+		static_print(a);
+	}
+}
