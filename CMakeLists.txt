@@ -72,6 +72,8 @@ message("")
 
 # Testing for CTest
 enable_testing()
+# Output on failure
+set(CTEST_OUTPUT_ON_FAILURE TRUE)
 
 message(STATUS "Searching for tests...")
 # Load tests
