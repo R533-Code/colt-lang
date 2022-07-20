@@ -1,0 +1,5 @@
+//Error:
+{
+	var test1 = 10;
+	var test1 = 10;
+}
