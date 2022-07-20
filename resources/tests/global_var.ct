@@ -1,7 +1,5 @@
-var test = 10;
-// 10
-static_print(test);
-// 1020
-static_print(test *= 2);
 //102020
+var test = 10;
+static_print(test);
+static_print(test *= 2);
 static_print(test);
