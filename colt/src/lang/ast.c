@@ -206,7 +206,7 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 IMPLEMENTATION HELPERS
 ************************************/
 
-uint8_t ast_op_precedence(AST* ast, Token token)
+uint8_t ast_op_precedence(Token token)
 {
 	static const uint8_t operator_precedence_table[] =
 	{
@@ -266,7 +266,7 @@ Expr* parse_binary(AST* ast, int op_precedence)
 	StringView lexeme_strv = ScannerGetCurrentLexeme(&ast->scan);
 	StringView line_strv = ScannerGetCurrentLine(&ast->scan);
 
-	uint8_t precedence = ast_op_precedence(ast, bin_operator);
+	uint8_t precedence = ast_op_precedence(bin_operator);
 	while (precedence > op_precedence)
 	{
 		if (precedence == UINT8_MAX) //token was not an operator: error
@@ -279,7 +279,7 @@ Expr* parse_binary(AST* ast, int op_precedence)
 		//Read the next token
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
-		Expr* right = parse_binary(ast, ast_op_precedence(ast, bin_operator));
+		Expr* right = parse_binary(ast, ast_op_precedence(bin_operator));
 		if (!right) //propagate error
 			return left; // we don't want memory leaks
 
@@ -311,7 +311,7 @@ Expr* parse_binary(AST* ast, int op_precedence)
 			break;
 		}
 
-		precedence = ast_op_precedence(ast, bin_operator);
+		precedence = ast_op_precedence(bin_operator);
 	}
 
 	return left;
@@ -620,7 +620,7 @@ Expr* parse_conditional(AST* ast)
 		if (ScannerGetNextToken(&ast->scan) != TKN_LEFT_PAREN)
 		{
 			ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Expected a left parenthesis '('!");
-			return NULL;
+			return (Expr*)cond;
 		}
 		//Consume '('
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);

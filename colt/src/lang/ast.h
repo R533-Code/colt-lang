@@ -92,7 +92,7 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 /// @param ast The AST use to print an error
 /// @param token The token to get the precedence of
 /// @return A value between 0-13 (with 13 being the highest precedence) or UINT8_MAX if an error has been detected
-uint8_t ast_op_precedence(AST* ast, Token token);
+uint8_t ast_op_precedence(Token token);
 
 /// @brief Parses a binary expression or a primary expression.
 /// @param ast The AST from which to parse
