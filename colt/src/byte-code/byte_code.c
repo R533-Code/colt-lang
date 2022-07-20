@@ -601,10 +601,10 @@ void OpCode_Print(QWORD value, BuiltinTypeID type)
 	switch (type)
 	{
 	break; case COLTI_BOOL_ID:		printf("%s", value.b ? "true" : "false");
-	break; case COLTI_I8_ID:		printf("%"PRId8, value.u8);
-	break; case COLTI_I16_ID:		printf("%"PRId16, value.u16);
-	break; case COLTI_I32_ID:		printf("%"PRId32, value.u32);
-	break; case COLTI_I64_ID:		printf("%"PRId64, value.u64);
+	break; case COLTI_I8_ID:		printf("%"PRIi8, value.i8);
+	break; case COLTI_I16_ID:		printf("%"PRIi16, value.i16);
+	break; case COLTI_I32_ID:		printf("%"PRIi32, value.i32);
+	break; case COLTI_I64_ID:		printf("%"PRIi64, value.i64);
 	break; case COLTI_U8_ID:		printf("%"PRIu8, value.u8);
 	break; case COLTI_U16_ID:		printf("%"PRIu16, value.u16);
 	break; case COLTI_U32_ID:		printf("%"PRIu32, value.u32);
