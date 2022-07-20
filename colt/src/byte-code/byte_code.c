@@ -219,6 +219,11 @@ QWORD OpCode_Convert(QWORD value, BuiltinTypeID from, BuiltinTypeID to)
 	case ID_COLT_U64:
 		switch (from)
 		{
+		case COLTI_U8_ID:
+		case COLTI_U16_ID:
+		case COLTI_U32_ID:
+		case COLTI_U64_ID:
+			ret.u64 = value.u64; //possible as all QWORDs are zeroed out
 		break; case COLTI_I8_ID:
 			ret.u64 = (uint64_t)value.i8;
 		break; case COLTI_I16_ID:
