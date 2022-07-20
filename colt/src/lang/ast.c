@@ -696,8 +696,9 @@ Expr* parse_while(AST* ast)
 
 	//Consume the WHILE
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
-
 	
+	Expr* cond = parse_paren_boolean(ast);
+	return makeWhileExpr(cond, parse_expression(ast));
 }
 
 Expr* parse_variable_declaration(AST* ast, bool is_const)
