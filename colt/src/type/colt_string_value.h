@@ -1,4 +1,4 @@
-/** @file colti_string_value.h
+/** @file colt_string_value.h
 * Contains typedefs representing string values in Colt.
 */
 

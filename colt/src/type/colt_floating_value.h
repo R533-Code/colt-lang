@@ -1,4 +1,4 @@
-/** @file colti_floating_value.h
+/** @file colt_floating_value.h
 * Contains typedefs representing floating point values in Colt.
 */
 

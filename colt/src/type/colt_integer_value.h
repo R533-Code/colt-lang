@@ -1,4 +1,4 @@
-/** @file colti_integer_value.h
+/** @file colt_integer_value.h
 * Contains typedefs representing integers and bool values in Colt.
 */
 
