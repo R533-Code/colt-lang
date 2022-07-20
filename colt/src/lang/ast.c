@@ -90,19 +90,19 @@ Expr* ast_convert_to(AST* ast, Expr* ptr, Type to)
 
 void ast_convert_to_highest_type(AST* ast, Expr** plhs, Expr** prhs)
 {
-	Expr* lhs = *plhs;
-	Expr* rhs = *prhs;
-
-	if (ExprTypeEqualExprType(lhs, rhs))
+	if (ExprTypeEqualExprType(*plhs, *prhs))
 		return;
 
-	if (is_type_greater(lhs->expr_type, rhs->expr_type))
+	if (is_type_greater((*plhs)->expr_type, (*prhs)->expr_type))
 	{
 		//Swap pointers
-		Expr* temp = lhs;
-		lhs = rhs;
-		rhs = temp;
+		Expr* temp = *plhs;
+		*plhs = *prhs;
+		*prhs = temp;
 	}
+	
+	Expr* lhs = *plhs;
+	Expr* rhs = *prhs;
 
 	TypeConversion conv = lhs->expr_type.typeinfo->valid_conversions[ExprGetID(rhs)];
 	if (conv == CONV_INVALID)
