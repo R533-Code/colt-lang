@@ -116,7 +116,8 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn);
 /// @return An Expr* representing the parsed expression
 Expr* parse_primary(AST* ast);
 
-/// @brief Parses a binary expression and converts it to a boolean expression if possible
+/// @brief Parses a binary expression which is wrapped in parenthesis and converts it to a boolean expression if possible.
+/// The ast->current_tkn should be the one before the expected opening parenthesis '('.
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression
 Expr* parse_paren_boolean(AST* ast);
