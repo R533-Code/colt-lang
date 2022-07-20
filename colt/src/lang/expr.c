@@ -1,7 +1,7 @@
 /** @file expr.c
 * Contains the definitions of the functions declared in 'expr.h'
 */
-#include "ast.h"
+#include "expr.h"
 
 const Expr* expr_array_front(const ExprArray* array)
 {
@@ -354,12 +354,13 @@ void freeExpr(Expr* ptr)
 		freeExpr(cexpr->if_condition);
 		freeExpr(cexpr->if_execute);
 
-		if (cexpr->else_execute != NULL)
-			freeExpr(cexpr->else_execute);
-
 		//Free each expression in the scope
 		ExprArrayFree(&cexpr->elif_conditions);
 		ExprArrayFree(&cexpr->elif_executes);
+		
+		if (cexpr->else_execute != NULL)
+			freeExpr(cexpr->else_execute);
+
 		safe_free(ptr);
 	}
 	break; case EXPR_GLOB_WRITE:
