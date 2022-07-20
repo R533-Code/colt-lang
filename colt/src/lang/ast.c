@@ -93,12 +93,15 @@ void ast_convert_to_highest_type(AST* ast, Expr** plhs, Expr** prhs)
 	if (ExprTypeEqualExprType(*plhs, *prhs))
 		return;
 
+	//TODO: optimize this boolean away
+	bool swapped = false;
 	if (is_type_greater((*plhs)->expr_type, (*prhs)->expr_type))
 	{
 		//Swap pointers
 		Expr* temp = *plhs;
 		*plhs = *prhs;
 		*prhs = temp;
+		swapped = true;
 	}
 	
 	Expr* lhs = *plhs;
@@ -131,6 +134,14 @@ void ast_convert_to_highest_type(AST* ast, Expr** plhs, Expr** prhs)
 
 	Type conv_expr = builtin_inter_type(lhs->expr_type, rhs->expr_type);
 	*plhs = makeConvertExpr(lhs, conv_expr, lhs->line_nb, lhs->line, lhs->lexeme);
+
+	if (swapped)
+	{
+		//Swap pointers
+		Expr* temp = *plhs;
+		*plhs = *prhs;
+		*prhs = temp;
+	}
 }
 
 Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme)
