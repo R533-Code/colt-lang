@@ -73,14 +73,14 @@ Expr* ast_convert_to(AST* ast, Expr* ptr, Type to)
 	if (conv & CONV_WLOSSY)
 	{
 		ast_gen_warning(ast, ptr->line_nb, ptr->line, ptr->lexeme,
-			"Truncation from '%.*s' to '%.*s'!",
+			"Lossy conversion from '%.*s' to '%.*s'!",
 			(uint32_t)(ptr->expr_type.typeinfo->name.end - ptr->expr_type.typeinfo->name.start), ptr->expr_type.typeinfo->name.start,
 			(uint32_t)(to.typeinfo->name.end - to.typeinfo->name.start), to.typeinfo->name.start);
 	}
 	if (conv & CONV_WSIGN)
 	{
 		ast_gen_warning(ast, ptr->line_nb, ptr->line, ptr->lexeme,
-			"Sign mismatch conversion from '%.*s' to '%.*s'!",
+			"Sign mismatch in conversion from '%.*s' to '%.*s'!",
 			(uint32_t)(ptr->expr_type.typeinfo->name.end - ptr->expr_type.typeinfo->name.start), ptr->expr_type.typeinfo->name.start,
 			(uint32_t)(to.typeinfo->name.end - to.typeinfo->name.start), to.typeinfo->name.start);
 	}
