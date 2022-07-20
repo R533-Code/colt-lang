@@ -116,7 +116,10 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn);
 /// @return An Expr* representing the parsed expression
 Expr* parse_primary(AST* ast);
 
-Expr* parse_boolean_condition(AST* ast);
+/// @brief Parses a binary expression and converts it to a boolean expression if possible
+/// @param ast The AST from which to parse
+/// @return An Expr* representing the parsed expression
+Expr* parse_paren_boolean(AST* ast);
 
 /// @brief Parses a unary expression
 /// @param ast The AST from which to parse
@@ -132,6 +135,11 @@ Expr* parse_parenthesis(AST* ast);
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression or NULL for errors
 Expr* parse_expression(AST* ast);
+
+/// @brief Parses a while-loop expression
+/// @param ast The AST from which to parse
+/// @return An Expr* representing the parsed expression or NULL for errors
+Expr* parse_while(AST* ast);
 
 /// @brief Parses a scope expression, verifying it is well enclosed
 /// @param ast The AST from which to parse

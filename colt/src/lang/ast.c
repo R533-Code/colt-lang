@@ -504,10 +504,26 @@ Expr* parse_primary(AST* ast)
 	return primary;
 }
 
-Expr* parse_boolean_condition(AST* ast)
+Expr* parse_paren_boolean(AST* ast)
 {
+	if (ScannerGetNextToken(&ast->scan) != TKN_LEFT_PAREN)
+	{
+		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Expected a left parenthesis '('!");
+		return NULL;
+	}
+	//Consume '('
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+
 	Type bool_t = { .typeinfo = &ColtBool, .is_const = false };
-	return ast_convert_to(ast, parse_binary(ast, -1), bool_t);
+	Expr* bin = parse_binary(ast, -1);
+	if (ast->current_tkn != TKN_RIGHT_PAREN)
+	{
+		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Expected a right parenthesis ')'!");
+		return bin;
+	}
+	//Consume ')'
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+	return ast_convert_to(ast, bin, bool_t);
 }
 
 Expr* parse_unary(AST* ast)
@@ -603,44 +619,13 @@ Expr* parse_conditional(AST* ast)
 {
 	ConditionExpr* cond = (ConditionExpr*)makeConditionExpr();
 
-	if (ScannerGetNextToken(&ast->scan) != TKN_LEFT_PAREN)
-	{
-		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Expected a left parenthesis '('!");
-		return NULL;
-	}
-	//Consume '('
-	ast->current_tkn = ScannerGetNextToken(&ast->scan);
-
 	//Parse the condition
-	cond->if_condition = parse_boolean_condition(ast);
-	if (ast->current_tkn != TKN_RIGHT_PAREN)
-	{
-		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Expected a right parenthesis ')'!");
-		return (Expr*)cond;
-	}
-	//Consume ')'
-	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+	cond->if_condition = parse_paren_boolean(ast);
 	cond->if_execute = parse_expression(ast);
 
 	while (ast->current_tkn == TKN_KEYWORD_ELIF)
 	{
-		if (ScannerGetNextToken(&ast->scan) != TKN_LEFT_PAREN)
-		{
-			ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Expected a left parenthesis '('!");
-			return (Expr*)cond;
-		}
-		//Consume '('
-		ast->current_tkn = ScannerGetNextToken(&ast->scan);
-		//Parse the condition
-		ExprArrayPushBack(&cond->elif_conditions, parse_boolean_condition(ast));
-
-		if (ast->current_tkn != TKN_RIGHT_PAREN)
-		{
-			ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Expected a right parenthesis ')'!");
-			return (Expr*)cond;
-		}
-		//Consume ')'
-		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+		ExprArrayPushBack(&cond->elif_conditions, parse_paren_boolean(ast));
 		ExprArrayPushBack(&cond->elif_executes, parse_expression(ast));
 	}
 
@@ -663,7 +648,9 @@ Expr* parse_expression(AST* ast)
 	break; case TKN_LEFT_CURLY:
 		expr = parse_scope(ast);
 	break; case TKN_KEYWORD_IF:
-		expr = parse_conditional(ast);		
+		expr = parse_conditional(ast);
+	break; case TKN_KEYWORD_WHILE:
+		expr = parse_while(ast);
 	break; default:
 	{
 		switch (ast->current_tkn)
@@ -701,6 +688,16 @@ Expr* parse_expression(AST* ast)
 	}
 	
 	return expr;
+}
+
+Expr* parse_while(AST* ast)
+{
+	colt_assert(ast->current_tkn == TKN_KEYWORD_WHILE, "Expected a while keyword!");
+
+	//Consume the WHILE
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+
+	
 }
 
 Expr* parse_variable_declaration(AST* ast, bool is_const)
