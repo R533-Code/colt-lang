@@ -389,7 +389,7 @@ Token scan_handle_digit(Scanner* scan)
 				return ScannerGetNextToken(scan);
 			}
 			else
-				return token_str_to_integral(scan);
+				return scan_str_to_integral(scan);
 		}
 
 		scan->current_char = scan_parse_alnum(scan);
@@ -411,7 +411,7 @@ Token scan_handle_digit(Scanner* scan)
 			scan_print_error(scan, "'0%c' should be followed by characters in range %s!", scan->current_char, range_str);
 			return TKN_ERROR;
 		}
-		return token_str_to_u64(scan, base);
+		return scan_str_to_u64(scan, base);
 	}
 
 	//Parse as many digits as possible
@@ -436,7 +436,7 @@ Token scan_handle_digit(Scanner* scan)
 			//The dot is not followed by a digit, this is not a float,
 			//but rather should be the dot followed by an identifier for a function call
 			scan->current_char = scan_rewind_char(scan);
-			return token_str_to_u64(scan, 10);
+			return scan_str_to_u64(scan, 10);
 		}
 	}
 	char after_e = scan_peek_next_char(scan, 0);
@@ -460,15 +460,15 @@ Token scan_handle_digit(Scanner* scan)
 		switch (scan_get_floating_suffix(scan))
 		{
 		case TKN_FLOAT:
-			return token_str_to_float(scan);
+			return scan_str_to_float(scan);
 		case TKN_DOUBLE:
-			return token_str_to_double(scan);
+			return scan_str_to_double(scan);
 		default:
 			colt_unreachable("Floating suffix was invalid!");
 		}
 	}
 	else
-		return token_str_to_integral(scan);
+		return scan_str_to_integral(scan);
 }
 
 Token scan_handle_string(Scanner* scan)
@@ -730,9 +730,9 @@ Token scan_handle_dot(Scanner* scan)
 		switch (scan_get_floating_suffix(scan))
 		{
 		case TKN_FLOAT:
-			return token_str_to_float(scan);
+			return scan_str_to_float(scan);
 		case TKN_DOUBLE:
-			return token_str_to_double(scan);
+			return scan_str_to_double(scan);
 		default:
 			colt_unreachable("Floating suffix was invalid!");
 		}
@@ -988,7 +988,7 @@ Token scan_get_floating_suffix(Scanner* scan)
 	}
 }
 
-Token token_str_to_double(Scanner* scan)
+Token scan_str_to_double(Scanner* scan)
 {
 	char* end;
 	double value = strtod(scan->parsed_string.ptr, &end);
@@ -1007,7 +1007,7 @@ Token token_str_to_double(Scanner* scan)
 	return TKN_DOUBLE;
 }
 
-Token token_str_to_float(Scanner* scan)
+Token scan_str_to_float(Scanner* scan)
 {
 	char* end;
 	float value = strtof(scan->parsed_string.ptr, &end);
@@ -1115,7 +1115,7 @@ Token scan_get_integral_suffix(Scanner* scan)
 	return TKN_I32;
 }
 
-Token token_str_to_u64(Scanner* scan, int base)
+Token scan_str_to_u64(Scanner* scan, int base)
 {
 	char* end;
 	uint64_t value = strtoull(scan->parsed_string.ptr, &end, base);
@@ -1135,7 +1135,7 @@ Token token_str_to_u64(Scanner* scan, int base)
 	return TKN_U64;
 }
 
-Token token_str_to_i64(Scanner* scan, int base)
+Token scan_str_to_i64(Scanner* scan, int base)
 {
 	char* end;
 	int64_t value = strtoll(scan->parsed_string.ptr, &end, base);
@@ -1155,7 +1155,7 @@ Token token_str_to_i64(Scanner* scan, int base)
 	return TKN_I64;
 }
 
-Token token_str_to_u32(Scanner* scan, int base)
+Token scan_str_to_u32(Scanner* scan, int base)
 {
 	char* end;
 	uint32_t value = strtoul(scan->parsed_string.ptr, &end, base);
@@ -1175,7 +1175,7 @@ Token token_str_to_u32(Scanner* scan, int base)
 	return TKN_U32;
 }
 
-Token token_str_to_i32(Scanner* scan, int base)
+Token scan_str_to_i32(Scanner* scan, int base)
 {
 	char* end;
 	int32_t value = strtol(scan->parsed_string.ptr, &end, base);
@@ -1195,7 +1195,7 @@ Token token_str_to_i32(Scanner* scan, int base)
 	return TKN_I32;
 }
 
-Token token_str_to_u16(Scanner* scan, int base)
+Token scan_str_to_u16(Scanner* scan, int base)
 {
 	char* end;
 	uint32_t value = strtoul(scan->parsed_string.ptr, &end, base);
@@ -1215,7 +1215,7 @@ Token token_str_to_u16(Scanner* scan, int base)
 	return TKN_U16;
 }
 
-Token token_str_to_i16(Scanner* scan, int base)
+Token scan_str_to_i16(Scanner* scan, int base)
 {
 	char* end;
 	int32_t value = strtol(scan->parsed_string.ptr, &end, base);
@@ -1235,7 +1235,7 @@ Token token_str_to_i16(Scanner* scan, int base)
 	return TKN_I16;
 }
 
-Token token_str_to_u8(Scanner* scan, int base)
+Token scan_str_to_u8(Scanner* scan, int base)
 {
 	char* end;
 	//as no overload can convert a string to an uint8_t, we convert to a long value
@@ -1259,7 +1259,7 @@ Token token_str_to_u8(Scanner* scan, int base)
 	return TKN_U8;
 }
 
-Token token_str_to_i8(Scanner* scan, int base)
+Token scan_str_to_i8(Scanner* scan, int base)
 {
 	char* end;
 	//as no overload can convert a string to an int8_t, we convert to a long value
@@ -1283,26 +1283,26 @@ Token token_str_to_i8(Scanner* scan, int base)
 	return TKN_I8;
 }
 
-Token token_str_to_integral(Scanner* scan)
+Token scan_str_to_integral(Scanner* scan)
 {
 	switch (scan_get_integral_suffix(scan))
 	{
 	case TKN_I8:
-		return token_str_to_i8(scan, 10);
+		return scan_str_to_i8(scan, 10);
 	case TKN_I16:
-		return token_str_to_i16(scan, 10);
+		return scan_str_to_i16(scan, 10);
 	case TKN_I32:
-		return token_str_to_i32(scan, 10);
+		return scan_str_to_i32(scan, 10);
 	case TKN_I64:
-		return token_str_to_i64(scan, 10);
+		return scan_str_to_i64(scan, 10);
 	case TKN_U8:
-		return token_str_to_u8(scan, 10);
+		return scan_str_to_u8(scan, 10);
 	case TKN_U16:
-		return token_str_to_u16(scan, 10);
+		return scan_str_to_u16(scan, 10);
 	case TKN_U32:
-		return token_str_to_u32(scan, 10);
+		return scan_str_to_u32(scan, 10);
 	case TKN_U64:
-		return token_str_to_u64(scan, 10);
+		return scan_str_to_u64(scan, 10);
 	default:
 		colt_unreachable("Integral suffix was invalid!");
 	}
