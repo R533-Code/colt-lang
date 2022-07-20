@@ -1,0 +1,6 @@
+//Warning
+var test = 10u64;
+{
+	"Test";
+	10 + 5;
+}

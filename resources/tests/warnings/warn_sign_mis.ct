@@ -1,0 +1,5 @@
+//Warning
+var test = 10; //i32
+{
+	test = 10u32; //Sign mismatch
+}
