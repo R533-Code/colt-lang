@@ -480,6 +480,8 @@ char* unsafe_string_repl_getline(size_t* length, size_t* capacity)
 			--open_square;
 		break; case '}':
 			--open_curly;
+		break; default:
+			break;
 		}
 
 		if (gchar != '\n' && gchar != EOF)
