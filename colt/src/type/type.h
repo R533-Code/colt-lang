@@ -19,6 +19,7 @@
 /// @brief Get the type ID of a Type
 #define TypeGetID(type) ((type).typeinfo->type_id)
 
+/// @brief Represents validity of built-in conversions, and possible warnings to output
 typedef enum
 {
 	/// @brief Represents a valid conversion
