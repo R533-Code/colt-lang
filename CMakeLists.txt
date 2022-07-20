@@ -67,32 +67,47 @@ endif()
 
 configure_file("${CMAKE_SOURCE_DIR}/resources/cmake/cmake_colt_config.in"
 	"${CMAKE_SOURCE_DIR}/colt/src/util/colt_config.h")
+message("")
 
 
 # Testing for CTest
 enable_testing()
 
-add_test(NAME GlobalVar COMMAND colt ../resources/tests/global_var.ct)
-set_property(TEST GlobalVar PROPERTY PASS_REGULAR_EXPRESSION "^102020")
+message(STATUS "Searching for tests...")
+# Load tests
+file(GLOB_RECURSE ColtTestsPath "resources/tests/*.ct")
+list(LENGTH ColtTestsPath testCount)
+message(STATUS "Found " ${testCount} " tests.")
 
-add_test(NAME LocalVar COMMAND colt ../resources/tests/local_var.ct )
-set_property(TEST LocalVar PROPERTY PASS_REGULAR_EXPRESSION "^102020")
+# TESTING:
+# Each file in resources/tests/ that ends with .ct
+# is a file to try to run.
+# The first line of these files is a comment '//.*'
+# which gives the regex to test the output of interpreting
+# the file against.
+foreach(testPath ${ColtTestsPath})
+	# Read all the lines of the file
+	file(STRINGS ${testPath} testLines)
+	# Store the first line
+	list(GET testLines 0 firstLine)
+	# Pop the 2 first characters which are //
+	string(REPLACE "//" "" RegexTest ${firstLine})
 
-add_test(NAME StaticPrint COMMAND colt ../resources/tests/static_print.ct)
-set_property(TEST StaticPrint PROPERTY PASS_REGULAR_EXPRESSION "^1-11-11-11-1trueaEverything worked!")
-
-add_test(NAME GlobalErr COMMAND colt ../resources/tests/err_decl_global.ct)
-set_property(TEST GlobalErr PROPERTY PASS_REGULAR_EXPRESSION "Error")
-
-add_test(NAME Condition COMMAND colt ../resources/tests/condition.ct)
-set_property(TEST Condition PROPERTY PASS_REGULAR_EXPRESSION "Working")
+	# Get test name
+	get_filename_component(testName ${testPath} NAME_WE)
+	string(TOUPPER ${testName} testName)
+	# Create test
+	add_test(NAME ${testName} COMMAND colt ${testPath})
+	set_property(TEST ${testName} PROPERTY PASS_REGULAR_EXPRESSION ${RegexTest})
+endforeach()
 
 # DOXYGEN
 option(BUILD_DOC "Build documentation" ON)
 
+message("")
+message(STATUS "Searching for Doxygen executable...")
 # check if Doxygen is installed
 find_package(Doxygen)
-message(STATUS "Searching for Doxygen executable...")
 if (DOXYGEN_FOUND)
 	message(STATUS "Found Doxygen executable.")
 	# set input and output files
@@ -111,3 +126,4 @@ if (DOXYGEN_FOUND)
 else (DOXYGEN_FOUND)
 	message(WARNING "Doxygen was not found! Doxygen need to be installed to generate the documentation!")
 endif (DOXYGEN_FOUND)
+message("")
