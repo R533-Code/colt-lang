@@ -294,6 +294,8 @@ Expr* makeWhileExpr(Expr* cond, Expr* body)
 
 	ptr->while_condition = cond;
 	ptr->while_body = body;
+
+	return (Expr*)ptr;
 }
 
 Expr* makeScopeExpr(ScopeExpr* parent_scope)

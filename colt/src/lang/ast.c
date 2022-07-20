@@ -585,6 +585,8 @@ Expr* parse_parenthesis(AST* ast)
 
 Expr* parse_scope(AST* ast)
 {
+	colt_assert(ast->current_tkn == TKN_LEFT_CURLY, "Expected {!");
+	
 	//Save the current scope of the AST
 	ScopeExpr* old_scope = ast->current_scope;
 
@@ -592,6 +594,7 @@ Expr* parse_scope(AST* ast)
 	//Update current scope to the scope being parsed
 	ast->current_scope = scope;
 	
+	//Consume {
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	while (ast->current_tkn != TKN_RIGHT_CURLY && ast->current_tkn != TKN_EOF)
 	{
@@ -693,10 +696,6 @@ Expr* parse_expression(AST* ast)
 Expr* parse_while(AST* ast)
 {
 	colt_assert(ast->current_tkn == TKN_KEYWORD_WHILE, "Expected a while keyword!");
-
-	//Consume the WHILE
-	ast->current_tkn = ScannerGetNextToken(&ast->scan);
-	
 	Expr* cond = parse_paren_boolean(ast);
 	return makeWhileExpr(cond, parse_expression(ast));
 }
