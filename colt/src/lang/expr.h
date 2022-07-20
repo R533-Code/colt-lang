@@ -52,8 +52,10 @@ typedef enum
 	EXPR_LITERAL,
 	/// @brief ConvertExpr type
 	EXPR_CONVERT,
-	/// @brief ConditionType
+	/// @brief ConditionExpr type
 	EXPR_CONDITION,
+	/// @brief WhileExpr type
+	EXPR_WHILE,
 } ExprIdentifier;
 
 /// @brief Represents an unspecialized expression.
@@ -367,6 +369,26 @@ typedef struct
 	Expr* else_execute;
 } ConditionExpr;
 
+typedef struct
+{
+	/// @brief should be EXPR_WHILE
+	ExprIdentifier identifier;
+	/// @brief The expression type, which should be 'void'
+	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
+
+	/// @brief The while condition (which cannot be NULL)
+	Expr* while_condition;
+	/// @brief The expression to execute while 'while_condition' evaluates to true
+	Expr* while_body;
+} WhileExpr;
+
 /// @brief Allocates a new literal expression on the heap, initializing it
 /// @param value The value of the literal expression
 /// @param type The type of the literal expression
@@ -449,6 +471,12 @@ Expr* makeLocalReadExpr(StringView var_name, Type var_type, uint64_t var_offset,
 /// @param lexeme A StringView over the lexeme representing the expression
 /// @return A pointer to a heap allocated LocalWriteExpr
 Expr* makeLocalWriteExpr(StringView var_name, Type var_type, uint64_t var_offset, Expr* value, uint64_t line_nb, StringView line, StringView lexeme);
+
+/// @brief Allocates a new While expression on the heap, initializing it
+/// @param cond The condition of the while-loop
+/// @param body The body to execute if the condition is true
+/// @return A pointer to a heap allocated WhileExpr
+Expr* makeWhileExpr(Expr* cond, Expr* body);
 
 /// @brief Allocates a new scope expression on the heap, initializing it
 /// @param parent_scope The parent scope, or NULL

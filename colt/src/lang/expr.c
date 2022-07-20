@@ -283,6 +283,19 @@ Expr* makeLocalWriteExpr(StringView var_name, Type var_type, uint64_t var_offset
 	return (Expr*)ptr;
 }
 
+Expr* makeWhileExpr(Expr* cond, Expr* body)
+{
+	WhileExpr* ptr = safe_malloc(sizeof(WhileExpr));
+	
+	ptr->identifier = EXPR_WHILE;
+
+	Type void_t = { .typeinfo = &ColtVoid, .is_const = false };
+	ptr->expr_type = void_t;
+
+	ptr->while_condition = cond;
+	ptr->while_body = body;
+}
+
 Expr* makeScopeExpr(ScopeExpr* parent_scope)
 {
 	ScopeExpr* ptr = safe_malloc(sizeof(ScopeExpr));
@@ -374,6 +387,13 @@ void freeExpr(Expr* ptr)
 		LocalWriteExpr* rexpr = (LocalWriteExpr*)ptr;
 		freeExpr(rexpr->value);
 		safe_free(ptr);
+	}
+	break; case EXPR_WHILE:
+	{
+		WhileExpr* wexpr = (WhileExpr*)ptr;
+		freeExpr(wexpr->while_body);
+		freeExpr(wexpr->while_condition);
+		safe_free(wexpr);
 	}
 	break;
 	case EXPR_GLOB_READ:
