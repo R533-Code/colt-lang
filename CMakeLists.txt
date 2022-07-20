@@ -77,7 +77,7 @@ set(CTEST_OUTPUT_ON_FAILURE TRUE)
 
 message(STATUS "Searching for tests...")
 # Load tests
-file(GLOB_RECURSE ColtTestsPath "resources/tests/*.ct")
+file(GLOB_RECURSE ColtTestsPath "tests/*.ct")
 list(LENGTH ColtTestsPath testCount)
 message(STATUS "Found " ${testCount} " tests.")
 
