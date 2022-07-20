@@ -34,13 +34,11 @@ void gen_global_pool(Chunk* chunk, const GlobalTable* glob_table);
 /// @brief Write the offsets and string literals
 /// @param chunk The Chunk where to write the byte-code
 /// @param str_table The StringTable whose entries to write
-/// @return The offset to the GLOBAL section
 void gen_string_literal_pool(Chunk* chunk, const StringTable* str_table);
 
 /// @brief Generates the debug pool, and return the offset to its beginning
 /// @param chunk The Chunk where to write the byte-code
 /// @param glob_table The GlobalTable whose entries to write
-/// @return The offset to the DEBUG section
 void gen_debug_pool(Chunk* chunk, const ASTTable* glob_table);
 
 /// @brief Function which dispatches the expression to the write `gen_code_...`
