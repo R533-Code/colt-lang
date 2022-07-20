@@ -116,6 +116,8 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn);
 /// @return An Expr* representing the parsed expression
 Expr* parse_primary(AST* ast);
 
+Expr* parse_boolean_condition(AST* ast);
+
 /// @brief Parses a unary expression
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression

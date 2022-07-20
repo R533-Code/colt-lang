@@ -504,6 +504,12 @@ Expr* parse_primary(AST* ast)
 	return primary;
 }
 
+Expr* parse_boolean_condition(AST* ast)
+{
+	Type bool_t = { .typeinfo = &ColtBool, .is_const = false };
+	return ast_convert_to(ast, parse_binary(ast, -1), bool_t);
+}
+
 Expr* parse_unary(AST* ast)
 {
 	//As C function argument order is not guaranteed
@@ -605,7 +611,8 @@ Expr* parse_conditional(AST* ast)
 	//Consume '('
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
-	cond->if_condition = parse_binary(ast, -1);
+	//Parse the condition
+	cond->if_condition = parse_boolean_condition(ast);
 	if (ast->current_tkn != TKN_RIGHT_PAREN)
 	{
 		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Expected a right parenthesis ')'!");
@@ -624,7 +631,8 @@ Expr* parse_conditional(AST* ast)
 		}
 		//Consume '('
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
-		ExprArrayPushBack(&cond->elif_conditions, parse_binary(ast, -1));
+		//Parse the condition
+		ExprArrayPushBack(&cond->elif_conditions, parse_boolean_condition(ast));
 
 		if (ast->current_tkn != TKN_RIGHT_PAREN)
 		{
