@@ -65,6 +65,13 @@ void ASTReset(AST* ast);
 IMPLEMENTATION HELPERS
 ************************************/
 
+/// @brief Converts an expression to another type, generating warnings/error when necessary
+/// @param ast The AST to use to generate errors
+/// @param ptr The expression to convert
+/// @param to The type to convert to
+/// @return The converted expression
+Expr* ast_convert_to(AST* ast, Expr* ptr, Type to);
+
 /// @brief Converts two expressions so that their types match
 /// @param ast The AST from which to report errors
 /// @param lhs A pointer to the left hand side
