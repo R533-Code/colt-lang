@@ -1,0 +1,2 @@
+//Implicit conversion from '.*' to '.*'!
+var hello = -10u64;

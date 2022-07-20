@@ -1,0 +1,5 @@
+//Lossy conversion from '.*' to '.*'!
+var test = 10u32;
+{
+	test = 10u64;
+}

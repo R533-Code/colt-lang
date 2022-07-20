@@ -1,4 +1,4 @@
-//Warning
+//Unused expression result!
 var test = 10u64;
 {
 	"Test";
