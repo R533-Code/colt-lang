@@ -224,6 +224,8 @@ bool gen_byte_code(Chunk* chunk, const ASTTable* table, const Expr* expr)
 		return gen_code_condition(chunk, table, (const ConditionExpr*)expr);
 	case EXPR_SCOPE:
 		return gen_code_scope(chunk, table, (const ScopeExpr*)expr);
+	case EXPR_WHILE:
+		return gen_code_while(chunk, table, (const WhileExpr*)expr);
 	case EXPR_LOCAL_READ:
 		return gen_local_read(chunk, table, (const LocalReadExpr*)expr);
 	case EXPR_LOCAL_WRITE:
@@ -507,6 +509,30 @@ bool gen_local_write(Chunk* chunk, const ASTTable* table, const LocalWriteExpr* 
 	ChunkWriteOpCode(chunk, OP_SSTORE_LOCAL);
 	BYTE byte = { .u8 = (uint8_t)ptr->offset };
 	ChunkWriteBYTE(chunk, byte);
+
+	return true;
+}
+
+bool gen_code_while(Chunk* chunk, const ASTTable* table, const WhileExpr* ptr)
+{
+	DWORD uninitialized_offset = { .i32 = 0xffffffff };
+
+	uint64_t cond_begin = chunk->count;
+	
+	gen_byte_code(chunk, table, ptr->while_condition);
+	ChunkWriteOpCode(chunk, OP_JUMP_NOT_TRUE);
+
+	uint64_t jump_out = chunk->count;
+	jump_out += ChunkWriteDWORD(chunk, uninitialized_offset);
+
+	gen_byte_code(chunk, table, ptr->while_body);
+	ChunkWriteOpCode(chunk, OP_JUMP);
+	uint64_t jmp_cond_begin = chunk->count;
+	jmp_cond_begin += ChunkWriteDWORD(chunk, uninitialized_offset);
+	*((uint32_t*)(chunk->code + jmp_cond_begin)) = (uint32_t)cond_begin;
+
+
+	*((uint32_t*)(chunk->code + jump_out)) = (uint32_t)chunk->count;
 
 	return true;
 }

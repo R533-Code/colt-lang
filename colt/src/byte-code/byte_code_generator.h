@@ -99,6 +99,13 @@ bool gen_local_read(Chunk* chunk, const ASTTable* table, const LocalReadExpr* pt
 /// @return True if no error are encountered
 bool gen_local_write(Chunk* chunk, const ASTTable* table, const LocalWriteExpr* ptr);
 
+/// @brief Generate the code necessary for a while loop
+/// @param chunk The Chunk where to write the byte-code
+/// @param table The variable table from which to extract the offsets
+/// @param ptr The pointer to the expression
+/// @return True if no error are encountered
+bool gen_code_while(Chunk* chunk, const ASTTable* table, const WhileExpr* ptr);
+
 /// @brief Generate the code necessary for a scope and its variables
 /// @param chunk The Chunk where to write the byte-code
 /// @param table The variable table
