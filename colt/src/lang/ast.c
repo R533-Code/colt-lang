@@ -625,6 +625,7 @@ Expr* parse_conditional(AST* ast)
 	//Parse the condition
 	cond->if_condition = parse_paren_boolean(ast);
 	cond->if_execute = parse_expression(ast);
+	//TODO: empty body error
 
 	while (ast->current_tkn == TKN_KEYWORD_ELIF)
 	{
