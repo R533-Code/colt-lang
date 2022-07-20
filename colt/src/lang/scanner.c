@@ -328,7 +328,7 @@ char scan_peek_next_char(const Scanner* scan, uint64_t offset)
 	return EOF;
 }
 
-char impl_rewind_char(Scanner* scan)
+char scan_rewind_char(Scanner* scan)
 {
 	colt_assert(scan->offset > 1, "Should at least call scan_get_next_char 1 times before");
 	//- 1 as the offset points to the NEXT character, not the current one
@@ -435,7 +435,7 @@ Token scan_handle_digit(Scanner* scan)
 		{
 			//The dot is not followed by a digit, this is not a float,
 			//but rather should be the dot followed by an identifier for a function call
-			scan->current_char = impl_rewind_char(scan);
+			scan->current_char = scan_rewind_char(scan);
 			return token_str_to_u64(scan, 10);
 		}
 	}

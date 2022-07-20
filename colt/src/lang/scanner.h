@@ -118,7 +118,7 @@ char scan_peek_next_char(const Scanner* scan, uint64_t offset);
 /// @brief Rewinds one character before the current one
 /// @param scan The scanner to rewind
 /// @return The character pointed to after rewinding
-char impl_rewind_char(Scanner* scan);
+char scan_rewind_char(Scanner* scan);
 
 /// @brief Rewinds 'nb' character before the current one
 /// @param scan The scanner to rewind
