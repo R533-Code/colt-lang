@@ -85,7 +85,7 @@ add_test(NAME GlobalErr COMMAND colt ../resources/tests/err_decl_global.ct)
 set_property(TEST GlobalErr PROPERTY PASS_REGULAR_EXPRESSION "Error")
 
 add_test(NAME Condition COMMAND colt ../resources/tests/condition.ct)
-set_property(TEST Condition PROPERTY PASS_REGULAR_EXPRESSION "^Working")
+set_property(TEST Condition PROPERTY PASS_REGULAR_EXPRESSION "Working")
 
 # DOXYGEN
 option(BUILD_DOC "Build documentation" ON)
