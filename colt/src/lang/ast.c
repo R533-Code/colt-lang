@@ -378,7 +378,7 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 		);
 	}
 	else //EXPR_LOCAL_READ
-	{		
+	{
 		ret = makeLocalWriteExpr(
 			((LocalReadExpr*)lhs)->var_name, lhs->expr_type, ((LocalReadExpr*)lhs)->offset, rhs, lhs->line_nb, lhs->line, lhs->lexeme
 		);
