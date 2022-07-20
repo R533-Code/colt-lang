@@ -297,7 +297,7 @@ typedef struct
 	Expr* value;
 } LocalWriteExpr;
 
-//Forward declare the struct as it includes a pointer to itself.
+/// @brief Forward declaration of ScopeExpr as ScopeExpr includes a pointer to itself
 typedef struct ScopeExpr ScopeExpr;
 
 /// @brief Represents a scope.
