@@ -198,9 +198,7 @@ Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uin
 			Type ret = { .is_const = false, .typeinfo = &ColtVoid };
 			return ret;
 		}
-		Type ret = { .is_const = false, .typeinfo = &ColtBool };
-		return ret;
-	}
+	} //fall through on purpose
 	case TKN_OPERATOR_EQUAL_EQUAL:
 	case TKN_OPERATOR_BANG_EQUAL:
 	{
@@ -974,8 +972,6 @@ void ast_gen_error(AST* ast, uint64_t line_nb, StringView current_line, StringVi
 void ast_enter_panic_mode(AST* ast)
 {
 	ast->error_nb++;
-	while (ast->current_tkn != TKN_RIGHT_PAREN && ast->current_tkn != TKN_RIGHT_CURLY && ast->current_tkn != TKN_EOF && ast->current_tkn != TKN_SEMICOLON)
-	{
+	while (ast->current_tkn != TKN_RIGHT_CURLY && ast->current_tkn != TKN_EOF && ast->current_tkn != TKN_SEMICOLON)
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
-	}
 }
