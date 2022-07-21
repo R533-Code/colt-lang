@@ -1,0 +1,10 @@
+//falsetruefalsetruefalsetrue
+var a0 = 10;
+var a1 = 2u64;
+
+static_print(a0 < a1); //false
+static_print(a0 > a1); //true
+static_print(a0 <= a1); //false
+static_print(a0 >= a1); //true
+static_print(a0 == a1); //false
+static_print(a0 != a1); //true
