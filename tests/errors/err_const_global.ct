@@ -1,4 +1,4 @@
-//Error:
+//Error: .* Cannot assign to 'const' variables!
 const var test1 = 10;
 {
 	test1 = 1;

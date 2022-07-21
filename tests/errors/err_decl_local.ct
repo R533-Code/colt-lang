@@ -1,4 +1,4 @@
-//Error:
+//Error: .* Variable with identifier '.*' already exists!
 {
 	var test1 = 10;
 	var test1 = 10;

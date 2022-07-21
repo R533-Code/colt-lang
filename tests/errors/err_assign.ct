@@ -1,0 +1,4 @@
+//Error: .* Expected a variable \(lvalue\)!
+{
+	10 = 100;
+}
