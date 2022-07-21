@@ -1,0 +1,10 @@
+//^987654321
+var test = 9u64;
+
+{
+	while (test != 0u64)
+	{
+		static_print(test);
+		test -= 1u64;
+	}
+}
