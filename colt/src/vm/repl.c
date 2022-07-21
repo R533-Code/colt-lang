@@ -42,7 +42,7 @@ void ColtREPL(const char* byte_code_out)
 	while (!feof(stdin))
 	{
 		fputs(CONSOLE_FOREGROUND_BRIGHT_GREEN "> " CONSOLE_COLOR_RESET, stdout);
-		String line = StringREPLGetLine();
+		String line = StringGetLine();
 		if (line.size != 1) //if string not empty
 		{
 			//append ';' if line does not end with one
