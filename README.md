@@ -7,7 +7,9 @@ Uses byte-code, and a stack-based virtual machine.
 ### The Colt Compiler:
 Not yet implemented: will use LLVM as a backend.
 
+
 ---
+
 
 ## Generating the Project:
 You can either manually create a `build` directory and run CMake:
@@ -21,6 +23,10 @@ You can use the `build_colt.py`, or run in the source directory:
 ```
 cmake --build build
 ```
+
+
+---
+
 
 ## Implemented Features:
 - Basic type system
