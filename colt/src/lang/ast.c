@@ -502,7 +502,7 @@ Expr* parse_primary(AST* ast)
 
 	break; default:
 		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
-			"Expected an expression, or a unary operator [+-~!]!");
+			"Expected an expression!");
 		return NULL;
 	}
 	primary = makeLiteralExpr(value, type,
@@ -707,7 +707,11 @@ Expr* parse_while(AST* ast)
 {
 	colt_assert(ast->current_tkn == TKN_KEYWORD_WHILE, "Expected a while keyword!");
 	Expr* cond = parse_paren_boolean(ast);
-	return makeWhileExpr(cond, parse_expression(ast));
+	Expr* body = parse_expression(ast);
+	if (body)
+		return makeWhileExpr(cond, body);
+	freeExpr(cond);
+	return NULL;
 }
 
 Expr* parse_variable_declaration(AST* ast, bool is_const)
