@@ -639,6 +639,8 @@ Expr* parse_conditional(AST* ast)
 
 	while (ast->current_tkn == TKN_KEYWORD_ELIF)
 	{
+		//Consume 'elif'
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		ExprArrayPushBack(&cond->elif_conditions, parse_paren_boolean(ast));
 		ExprArrayPushBack(&cond->elif_executes, parse_expression(ast));
 	}
