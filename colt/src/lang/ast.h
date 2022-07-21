@@ -130,7 +130,7 @@ Expr* parse_unary(AST* ast);
 /// @brief Parses a parenthesis expression, verifying it is well enclosed
 /// @param ast The AST from which to parse
 /// @return An Expr* representing the parsed expression
-Expr* parse_parenthesis(AST* ast);
+Expr* parse_paren_binary(AST* ast);
 
 /// @brief An expression is either a variable declaration or a binary expression: anything that returns a value on the stack
 /// @param ast The AST from which to parse

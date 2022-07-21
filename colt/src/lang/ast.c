@@ -473,7 +473,7 @@ Expr* parse_primary(AST* ast)
 		/**************** PARENTHESIS ****************/
 
 	break; case TKN_LEFT_PAREN:
-		primary = parse_parenthesis(ast);
+		primary = parse_paren_binary(ast);
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		return primary;
 
@@ -515,7 +515,7 @@ Expr* parse_primary(AST* ast)
 
 Expr* parse_paren_boolean(AST* ast)
 {
-	if (ScannerGetNextToken(&ast->scan) != TKN_LEFT_PAREN)
+	if (ast->current_tkn != TKN_LEFT_PAREN)
 	{
 		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Expected a left parenthesis '('!");
 		return NULL;
@@ -579,7 +579,7 @@ Expr* parse_unary(AST* ast)
 		lexeme_strv);
 }
 
-Expr* parse_parenthesis(AST* ast)
+Expr* parse_paren_binary(AST* ast)
 {
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	Expr* ret = parse_binary(ast, 0);
@@ -631,10 +631,11 @@ Expr* parse_conditional(AST* ast)
 {
 	ConditionExpr* cond = (ConditionExpr*)makeConditionExpr();
 
+	//Consume 'if'
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	//Parse the condition
 	cond->if_condition = parse_paren_boolean(ast);
 	cond->if_execute = parse_expression(ast);
-	//TODO: empty body error
 
 	while (ast->current_tkn == TKN_KEYWORD_ELIF)
 	{
@@ -706,6 +707,10 @@ Expr* parse_expression(AST* ast)
 Expr* parse_while(AST* ast)
 {
 	colt_assert(ast->current_tkn == TKN_KEYWORD_WHILE, "Expected a while keyword!");
+	
+	//Consume WHILE
+	ast->current_tkn = ScannerGetNextToken(&ast->scan);
+	
 	Expr* cond = parse_paren_boolean(ast);
 	Expr* body = parse_expression(ast);
 	if (body)
