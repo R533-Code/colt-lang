@@ -69,7 +69,7 @@
 							ChunkWriteOperand(chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 
-bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* array, bool print_last_expr)
+void generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* array)
 {
 	colt_assert(array->count != 0, "Cannot generate byte-code if AST reported an error!");
 	colt_assert(chunk->count == CHUNK_HEADER_QWORD_COUNT * sizeof(QWORD), "Chunk should be initialized!");
@@ -90,33 +90,28 @@ bool generateByteCode(Chunk* chunk, const ASTTable* table, const ExprArray* arra
 	//write CODE offset
 	ChunkWriteCODESection(chunk, chunk->count);
 
-	bool is_valid = true;
-	for (size_t i = 0; i < array->count - 1 && is_valid; i++)
+	for (size_t i = 0; i < array->count - 1; i++)
 	{
-		is_valid = gen_byte_code(chunk, table, array->expressions[i]);
+		gen_byte_code(chunk, table, array->expressions[i]);
 		//As we only implemented expressions, after an expression, we pop the result
 		if (TypeGetID(array->expressions[i]->expr_type) != ID_COLT_VOID)
 			ChunkWriteOpCode(chunk, OP_POP);
 	}
-	is_valid = gen_byte_code(chunk, table, expr_array_back(array));
-	if (is_valid)
-	{		
-		if (print_last_expr && !ExprTypeEqualTypeID(expr_array_back(array), ID_COLT_VOID))
-		{
-			//Print the last expression
-			ChunkWriteOpCode(chunk, OP_PRINT);
-			ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(array->expressions[array->count - 1]));
-		}
-		if (TypeGetID(array->expressions[array->count - 1]->expr_type) != ID_COLT_VOID)
-			ChunkWriteOpCode(chunk, OP_POP);
-
-		//EXIT with code 0
-		ChunkWriteOpCode(chunk, OP_EXIT);
-		QWORD exit_code = { .i64 = 0 };
-		ChunkWriteQWORD(chunk, exit_code);		
-		return true;
+	//TODO: set flag to print
+	gen_byte_code(chunk, table, expr_array_back(array));
+	if (!ExprTypeEqualTypeID(expr_array_back(array), ID_COLT_VOID))
+	{
+		//Print the last expression
+		ChunkWriteOpCode(chunk, OP_PRINT);
+		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(array->expressions[array->count - 1]));
 	}
-	return false;
+	if (TypeGetID(array->expressions[array->count - 1]->expr_type) != ID_COLT_VOID)
+		ChunkWriteOpCode(chunk, OP_POP);
+
+	//EXIT with code 0
+	ChunkWriteOpCode(chunk, OP_EXIT);
+	QWORD exit_code = { .i64 = 0 };
+	ChunkWriteQWORD(chunk, exit_code);
 }
 
 void gen_global_pool(Chunk* chunk, const GlobalTable* glob_table)
@@ -207,40 +202,39 @@ void gen_debug_pool(Chunk* chunk, const ASTTable* table)
 IMPLEMENTATION HELPERS
 *************************************/
 
-bool gen_byte_code(Chunk* chunk, const ASTTable* table, const Expr* expr)
+void gen_byte_code(Chunk* chunk, const ASTTable* table, const Expr* expr)
 {
 	colt_assert(expr != NULL, "Generation should never happen if AST was not valid!");
 	switch (expr->identifier)
 	{
-	case EXPR_UNARY:
-		return gen_code_unary(chunk, table, (const UnaryExpr*)expr);
-	case EXPR_BINARY:
-		return gen_code_binary(chunk, table, (const BinaryExpr*)expr);
-	case EXPR_LITERAL:
-		return gen_code_literal(chunk, table, (const LiteralExpr*)expr);
-	case EXPR_CONVERT:
-		return gen_code_convert(chunk, table, (const ConvertExpr*)expr);
-	case EXPR_CONDITION:
-		return gen_code_condition(chunk, table, (const ConditionExpr*)expr);
-	case EXPR_SCOPE:
-		return gen_code_scope(chunk, table, (const ScopeExpr*)expr);
-	case EXPR_WHILE:
-		return gen_code_while(chunk, table, (const WhileExpr*)expr);
-	case EXPR_LOCAL_READ:
-		return gen_local_read(chunk, table, (const LocalReadExpr*)expr);
-	case EXPR_LOCAL_WRITE:
-		return gen_local_write(chunk, table, (const LocalWriteExpr*)expr);
-	case EXPR_GLOB_READ:
-		return gen_global_read(chunk, table, (const GlobalReadExpr*)expr);
-	case EXPR_GLOB_WRITE:
-		return gen_global_write(chunk, table, (const GlobalWriteExpr*)expr);
-	default:
+	break; case EXPR_UNARY:
+		gen_code_unary(chunk, table, (const UnaryExpr*)expr);
+	break; case EXPR_BINARY:
+		gen_code_binary(chunk, table, (const BinaryExpr*)expr);
+	break; case EXPR_LITERAL:
+		gen_code_literal(chunk, table, (const LiteralExpr*)expr);
+	break; case EXPR_CONVERT:
+		gen_code_convert(chunk, table, (const ConvertExpr*)expr);
+	break; case EXPR_CONDITION:
+		gen_code_condition(chunk, table, (const ConditionExpr*)expr);
+	break; case EXPR_SCOPE:
+		gen_code_scope(chunk, table, (const ScopeExpr*)expr);
+	break; case EXPR_WHILE:
+		gen_code_while(chunk, table, (const WhileExpr*)expr);
+	break; case EXPR_LOCAL_READ:
+		gen_local_read(chunk, table, (const LocalReadExpr*)expr);
+	break; case EXPR_LOCAL_WRITE:
+		gen_local_write(chunk, table, (const LocalWriteExpr*)expr);
+	break; case EXPR_GLOB_READ:
+		gen_global_read(chunk, table, (const GlobalReadExpr*)expr);
+	break; case EXPR_GLOB_WRITE:
+		gen_global_write(chunk, table, (const GlobalWriteExpr*)expr);
+	break; default:
 		colt_unreachable("NOT IMPLEMENTED YET!");
 	}
-	return true;
 }
 
-bool gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* ptr)
+void gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* ptr)
 {
 	gen_byte_code(chunk, table, ptr->child);
 	switch (ptr->expr_operator)
@@ -263,20 +257,19 @@ bool gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* ptr)
 	break; default:
 		colt_unreachable("Operator was not unary!");
 	}
-	return true;
 }
 
-bool gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
+void gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 {
 	switch (ptr->expr_operator)
 	{	
-	case TKN_OPERATOR_AND_AND:
-		return gen_and_and_bool_comparison(chunk, table, ptr);
+	break; case TKN_OPERATOR_AND_AND:
+		gen_and_and_bool_comparison(chunk, table, ptr);
 
-	case TKN_OPERATOR_OR_OR:
-		return gen_or_or_bool_comparison(chunk, table, ptr);
+	break; case TKN_OPERATOR_OR_OR:
+		gen_or_or_bool_comparison(chunk, table, ptr);
 
-	default:
+	break; default:
 		break;
 	}
 
@@ -286,79 +279,62 @@ bool gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 	colt_assert(TypeGetID(ptr->expr_type) <= ID_COLT_DOUBLE, "Type ID should be of that of a built-in type!");
 	switch (ptr->expr_operator)
 	{
-	case TKN_OPERATOR_PLUS:
+	break; case TKN_OPERATOR_PLUS:
 		gen_binary_plus();
-		return true;
-	case TKN_OPERATOR_MINUS:
+	break; case TKN_OPERATOR_MINUS:
 		gen_binary_minus();
-		return true;
-	case TKN_OPERATOR_STAR:
+	break; case TKN_OPERATOR_STAR:
 		gen_binary_star();
-		return true;
-	case TKN_OPERATOR_SLASH:
+	break; case TKN_OPERATOR_SLASH:
 		gen_binary_slash();
-		return true;
-	case TKN_OPERATOR_MODULO:
+	break; case TKN_OPERATOR_MODULO:
 		gen_binary_modulo();
-		return true;
 
 		/****************************************
 		* BITWISE OPCODES
 		****************************************/
 
-	case TKN_OPERATOR_AND:
+	break; case TKN_OPERATOR_AND:
 		gen_binary_and();
-		return true;
-	case TKN_OPERATOR_OR:
+	break; case TKN_OPERATOR_OR:
 		gen_binary_or();
-		return true;
-	case TKN_OPERATOR_XOR:
+	break; case TKN_OPERATOR_XOR:
 		gen_binary_xor();
-		return true;
-
-	case TKN_OPERATOR_GREATER_GREATER:
+	break; case TKN_OPERATOR_GREATER_GREATER:
 		gen_binary_rshift();
-		return true;
-	case TKN_OPERATOR_LESS_LESS:
+	break; case TKN_OPERATOR_LESS_LESS:
 		gen_binary_lshift();
-		return true;
 	
 		/****************************************
 		* COMPARISON OPCODES
 		****************************************/
 
 		//We write the left hand side's ID as byte-code comparisons expects the type of the QWORDs to compare
-	case TKN_OPERATOR_GREATER:
+	break; case TKN_OPERATOR_GREATER:
 		ChunkWriteOpCode(chunk, OP_CMP_GREATER);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->lhs));
-		return true;
-	case TKN_OPERATOR_GREATER_EQUAL:
+	break; case TKN_OPERATOR_GREATER_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_GREATER_EQ);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->lhs));
-		return true;
-	case TKN_OPERATOR_LESS:
+	break; case TKN_OPERATOR_LESS:
 		ChunkWriteOpCode(chunk, OP_CMP_LESS);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->lhs));
-		return true;
-	case TKN_OPERATOR_LESS_EQUAL:
+	break; case TKN_OPERATOR_LESS_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_LESS_EQ);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->lhs));
-		return true;
-	case TKN_OPERATOR_EQUAL_EQUAL:
+	break; case TKN_OPERATOR_EQUAL_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_EQUAL);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->lhs));
-		return true;
-	case TKN_OPERATOR_BANG_EQUAL:
+	break; case TKN_OPERATOR_BANG_EQUAL:
 		ChunkWriteOpCode(chunk, OP_CMP_NOT_EQUAL);
 		ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->lhs));
-		return true;	
 
-	default:
+	break; default:
 		colt_unreachable("NOT IMPLEMENTED!");
 	}
 }
 
-bool gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* ptr)
+void gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* ptr)
 {
 	switch (TypeGetID(ptr->expr_type))
 	{
@@ -410,19 +386,17 @@ bool gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* pt
 	break; default:
 		colt_unreachable("Type ID should be of that of a built-in type!");
 	}
-	return true;
 }
 
-bool gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* ptr)
+void gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* ptr)
 {
 	gen_byte_code(chunk, table, ptr->child);
 	ChunkWriteOpCode(chunk, OP_CONVERT);
 	ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr->child));
 	ChunkWriteOperand(chunk, (BuiltinTypeID)ExprGetID(ptr));
-	return true;
 }
 
-bool gen_code_condition(Chunk* chunk, const ASTTable* table, const ConditionExpr* ptr)
+void gen_code_condition(Chunk* chunk, const ASTTable* table, const ConditionExpr* ptr)
 {
 	colt_assert(ptr->elif_conditions.count == ptr->elif_executes.count, "elif conditions count should match elif executes count!");
 
@@ -485,22 +459,18 @@ bool gen_code_condition(Chunk* chunk, const ASTTable* table, const ConditionExpr
 			*((uint32_t*)(chunk->code + to_override_jmp_out_array[i])) = (uint32_t)chunk->count;
 		safe_free(to_override_jmp_out_array);
 	}
-
-	return true;
 }
 
-bool gen_local_read(Chunk* chunk, const ASTTable* table, const LocalReadExpr* ptr)
+void gen_local_read(Chunk* chunk, const ASTTable* table, const LocalReadExpr* ptr)
 {
 	colt_assert(ptr->offset < 256, "Offset to cannot be represented");
 
 	ChunkWriteOpCode(chunk, OP_SLOAD_LOCAL);
 	BYTE byte = { .u8 = (uint8_t)ptr->offset };
 	ChunkWriteBYTE(chunk, byte);
-	
-	return true;
 }
 
-bool gen_local_write(Chunk* chunk, const ASTTable* table, const LocalWriteExpr* ptr)
+void gen_local_write(Chunk* chunk, const ASTTable* table, const LocalWriteExpr* ptr)
 {
 	colt_assert(ptr->offset < 256, "Offset to cannot be represented");
 	
@@ -509,11 +479,9 @@ bool gen_local_write(Chunk* chunk, const ASTTable* table, const LocalWriteExpr* 
 	ChunkWriteOpCode(chunk, OP_SSTORE_LOCAL);
 	BYTE byte = { .u8 = (uint8_t)ptr->offset };
 	ChunkWriteBYTE(chunk, byte);
-
-	return true;
 }
 
-bool gen_code_while(Chunk* chunk, const ASTTable* table, const WhileExpr* ptr)
+void gen_code_while(Chunk* chunk, const ASTTable* table, const WhileExpr* ptr)
 {
 	DWORD uninitialized_offset = { .i32 = 0xffffffff };
 
@@ -531,38 +499,28 @@ bool gen_code_while(Chunk* chunk, const ASTTable* table, const WhileExpr* ptr)
 	jmp_cond_begin += ChunkWriteDWORD(chunk, uninitialized_offset);
 	*((uint32_t*)(chunk->code + jmp_cond_begin)) = (uint32_t)cond_begin;
 
-
 	*((uint32_t*)(chunk->code + jump_out)) = (uint32_t)chunk->count;
-
-	return true;
 }
 
-bool gen_code_scope(Chunk* chunk, const ASTTable* table, const ScopeExpr* ptr)
+void gen_code_scope(Chunk* chunk, const ASTTable* table, const ScopeExpr* ptr)
 {
 	ChunkWriteOpCode(chunk, OP_PUSH_SCOPE);
 	DWORD dword = { .u32 = (uint32_t)ptr->var_count };
 	ChunkWriteDWORD(chunk, dword);
 	
-	//Generate byte-code while no error encountered
-	bool is_valid = true;
-	for (size_t i = 0; i < ptr->array.count && is_valid; i++)
+	for (size_t i = 0; i < ptr->array.count; i++)
 	{
-		is_valid = gen_byte_code(chunk, table, ptr->array.expressions[i]);
+		gen_byte_code(chunk, table, ptr->array.expressions[i]);
 		if (!ExprTypeEqualTypeID(ptr->array.expressions[i],ID_COLT_VOID))
 			ChunkWriteOpCode(chunk, OP_POP);
 	}
 
-	if (!is_valid)
-		return is_valid;
-
 	ChunkWriteOpCode(chunk, OP_POP_SCOPE);
 	dword.u32 = (uint32_t)ptr->var_count;
 	ChunkWriteDWORD(chunk, dword);
-
-	return is_valid;
 }
 
-bool gen_global_read(Chunk* chunk, const ASTTable* table, const GlobalReadExpr* ptr)
+void gen_global_read(Chunk* chunk, const ASTTable* table, const GlobalReadExpr* ptr)
 {
 	const GlobalEntry* entry = variable_table_find_entry(table->glob_table.entries, table->glob_table.capacity, ptr->var_name);	
 	colt_assert(entry->key.ptr != NULL, "Variable was not found!");
@@ -574,11 +532,9 @@ bool gen_global_read(Chunk* chunk, const ASTTable* table, const GlobalReadExpr* 
 	
 	if (ExprTypeEqualTypeID(ptr, ID_COLT_LSTRING))
 		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);
-
-	return true;
 }
 
-bool gen_global_write(Chunk* chunk, const ASTTable* table, const GlobalWriteExpr* ptr)
+void gen_global_write(Chunk* chunk, const ASTTable* table, const GlobalWriteExpr* ptr)
 {
 	//generate byte-code which pushes the value to write to the global
 	gen_byte_code(chunk, table, ptr->value);
@@ -599,10 +555,9 @@ bool gen_global_write(Chunk* chunk, const ASTTable* table, const GlobalWriteExpr
 	
 	if (ExprTypeEqualTypeID(ptr, ID_COLT_LSTRING))
 		ChunkWriteOpCode(chunk, OP_LOAD_LSTRING);
-	return true;
 }
 
-bool gen_and_and_bool_comparison(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
+void gen_and_and_bool_comparison(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 {
 	colt_assert(TypeGetID(ptr->expr_type) == ID_COLT_BOOL, "Operands of && should be of type bool!");
 	gen_byte_code(chunk, table, ptr->lhs);
@@ -619,11 +574,9 @@ bool gen_and_and_bool_comparison(Chunk* chunk, const ASTTable* table, const Bina
 	
 	//Override jump offset
 	*((uint32_t*)(chunk->code + jump_to)) = (uint32_t)chunk->count;
-	
-	return true;
 }
 
-bool gen_or_or_bool_comparison(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
+void gen_or_or_bool_comparison(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr)
 {
 	colt_assert(TypeGetID(ptr->expr_type) == ID_COLT_BOOL, "Operands of || should be of type bool!");
 	gen_byte_code(chunk, table, ptr->lhs);
@@ -640,8 +593,6 @@ bool gen_or_or_bool_comparison(Chunk* chunk, const ASTTable* table, const Binary
 	
 	//Override jump offset
 	*((uint32_t*)(chunk->code + jump_to)) = (uint32_t)chunk->count;
-
-	return true;
 }
 
 void gen_integral_short_jmp(Chunk* chunk, OpCode short_jump, QWORD cmp_to, BuiltinTypeID type)
