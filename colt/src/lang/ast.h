@@ -24,22 +24,28 @@
 /// to add a VM, or trans-pile Colt code to another language.
 typedef struct
 {
-	/// @brief The AST
-	ExprArray expr;
+	/// @brief The next token to consume from the scanner
+	Token current_tkn;
 	/// @brief The scanner providing the lexemes for the AST
 	Scanner scan;
+
+	/// @brief The expressions parsed by the AST
+	ExprArray expr;
+	/// @brief Table for string literals and const/global variables
+	ASTTable table;
+	
+	/// @brief The current scope or NULL if not in a scope
+	ScopeExpr* current_scope;
+	/// @brief True if inside of a loop's body
+	bool is_parsing_loop;
+
 	/// @brief The number of errors encountered
 	uint16_t error_nb;
 	/// @brief The number of warnings encountered
 	uint16_t warning_nb;
+	
 	/// @brief Options used when parsing
 	const ColtScanOptions* options;
-	/// @brief The next token to consume from the scanner
-	Token current_tkn;
-	/// @brief The current scope or NULL if not in a scope
-	ScopeExpr* current_scope;
-	/// @brief Table for string literals and const/global variables
-	ASTTable table;
 } AST;
 
 /// @brief Initializes an AST
@@ -50,7 +56,8 @@ void ASTInit(AST* ast);
 /// @param ast The AST to modify
 void ASTFree(AST* ast);
 
-/// @brief Parses the string stored in the initialized AST
+/// @brief Generates an Abstract Syntax Tree from 'to_parse'.
+/// This function does not reset the tables of Strings and Globals of the AST.
 /// @param ast The AST to modify
 /// @param to_parse The StringView to parse
 /// @param options The option used when scanning
@@ -69,7 +76,7 @@ IMPLEMENTATION HELPERS
 /// @param ast The AST from which to parse
 /// @param op_precedence The current_tkn operator precedence (which when first call should be -1)
 /// @return An Expr* representing either a binary or primary expression
-Expr* parse_binary(AST* ast, int op_precedence);
+Expr* parse_binary(AST* ast, uint8_t op_precedence);
 
 /// @brief Parses an assignment expression
 /// @param ast The AST from which to parse

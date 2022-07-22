@@ -62,7 +62,58 @@ void ASTReset(AST* ast)
 IMPLEMENTATION HELPERS
 ************************************/
 
-Expr* parse_binary(AST* ast, int op_precedence)
+Expr* parse_expression(AST* ast)
+{
+	Expr* expr;
+
+	switch (ast->current_tkn)
+	{
+	break; case TKN_LEFT_CURLY:
+		expr = parse_scope(ast);
+	break; case TKN_KEYWORD_IF:
+		expr = parse_conditional(ast);
+	break; case TKN_KEYWORD_WHILE:
+		expr = parse_while(ast);
+	break; default:
+	{
+		switch (ast->current_tkn)
+		{
+		case TKN_KEYWORD_VAR:
+		case TKN_BUILTIN_TYPE:
+			expr = parse_variable_declaration(ast, false);
+		break; case TKN_KEYWORD_CONST:
+			//Consume 'const'
+			ast->current_tkn = ScannerGetNextToken(&ast->scan);
+			expr = parse_variable_declaration(ast, true);
+
+		break; case TKN_SEMICOLON:
+			//EMPTY EXPRESSION, the AST will not save it
+			expr = NULL;
+
+		break; default:
+			expr = parse_binary(ast, -1);
+			if (ast->options->no_warn_unused_result == false && !(is_assignment_expr(expr) || ExprTypeEqualTypeID(expr, ID_COLT_VOID)))
+			{
+				ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
+				freeExpr(expr);
+				return NULL;
+			}
+		}
+		if (ast->current_tkn != TKN_SEMICOLON && ast->current_tkn != TKN_ERROR && ast->current_tkn != TKN_EOF)
+		{
+			ast_gen_error(ast,
+				ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
+				"Expected a semicolon ';'!"
+			);
+		}
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+	}
+	}
+
+	return expr;
+}
+
+Expr* parse_binary(AST* ast, uint8_t op_precedence)
 {
 	if (op_precedence == UINT8_MAX) //token was not an operator: error
 	{
@@ -476,57 +527,6 @@ Expr* parse_conditional(AST* ast)
 	}
 
 	return (Expr*)cond;
-}
-
-Expr* parse_expression(AST* ast)
-{
-	Expr* expr;
-
-	switch (ast->current_tkn)
-	{
-	break; case TKN_LEFT_CURLY:
-		expr = parse_scope(ast);
-	break; case TKN_KEYWORD_IF:
-		expr = parse_conditional(ast);
-	break; case TKN_KEYWORD_WHILE:
-		expr = parse_while(ast);
-	break; default:
-	{
-		switch (ast->current_tkn)
-		{
-		case TKN_KEYWORD_VAR:
-		case TKN_BUILTIN_TYPE:
-			expr = parse_variable_declaration(ast, false);
-		break; case TKN_KEYWORD_CONST:
-			//Consume 'const'
-			ast->current_tkn = ScannerGetNextToken(&ast->scan);
-			expr = parse_variable_declaration(ast, true);
-
-		break; case TKN_SEMICOLON:
-			//EMPTY EXPRESSION, the AST will not save it
-			expr = NULL;
-
-		break; default:
-			expr = parse_binary(ast, -1);
-			if (ast->options->no_warn_unused_result == false && !(is_assignment_expr(expr) || ExprTypeEqualTypeID(expr, ID_COLT_VOID)))
-			{
-				ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
-				freeExpr(expr);
-				return NULL;
-			}
-		}
-		if (ast->current_tkn != TKN_SEMICOLON && ast->current_tkn != TKN_ERROR && ast->current_tkn != TKN_EOF)
-		{
-			ast_gen_error(ast,
-				ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
-				"Expected a semicolon ';'!"
-			);
-		}
-		ast->current_tkn = ScannerGetNextToken(&ast->scan);
-	}
-	}
-	
-	return expr;
 }
 
 Expr* parse_while(AST* ast)
