@@ -80,6 +80,22 @@ Expr* parse_expression(AST* ast)
 		case TKN_KEYWORD_VAR:
 		case TKN_BUILTIN_TYPE:
 			expr = parse_variable_declaration(ast, false);
+		break; case TKN_KEYWORD_BREAK:
+			if (!ast->is_parsing_loop)
+			{
+				ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Unexpected 'break': this statement can only appear in a loop!");
+				return NULL;
+			}
+			expr = makeBreakExpr(ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan));
+			ast->current_tkn = ScannerGetNextToken(&ast->scan);
+		break; case TKN_KEYWORD_CONTINUE:
+			if (!ast->is_parsing_loop)
+			{
+				ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Unexpected 'break': this statement can only appear in a loop!");
+				return NULL;
+			}
+			expr = makeContinueExpr(ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan));
+			ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		break; case TKN_KEYWORD_CONST:
 			//Consume 'const'
 			ast->current_tkn = ScannerGetNextToken(&ast->scan);
@@ -105,7 +121,9 @@ Expr* parse_expression(AST* ast)
 				"Expected a semicolon ';'!"
 			);
 		}
-		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+		//so '}' missing is not generated
+		if (ast->current_tkn != TKN_RIGHT_CURLY)
+			ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	}
 	}
 
@@ -532,6 +550,10 @@ Expr* parse_while(AST* ast)
 {
 	colt_assert(ast->current_tkn == TKN_KEYWORD_WHILE, "Expected a while keyword!");
 	
+	//Save old state of AST parsing_loop
+	bool old_parse_loop = ast->is_parsing_loop;
+	ast->is_parsing_loop = true;
+	
 	//Consume WHILE
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 	
@@ -540,6 +562,8 @@ Expr* parse_while(AST* ast)
 	if (body)
 		return makeWhileExpr(cond, body);
 	freeExpr(cond);
+
+	ast->is_parsing_loop = old_parse_loop;
 	return NULL;
 }
 
