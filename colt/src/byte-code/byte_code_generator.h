@@ -14,22 +14,47 @@
 #include "lang/expr.h"	//we convert expressions to byte-code
 #include "type/type.h"	//for built-in types
 
-/// @brief Recursively converts an expression to byte-code in a Chunk
-/// @param chunk The Chunk in which to write the byte-code
-/// @param glob_table GlobalTable containing variables
-/// @param array The array of Expr* expression to convert
-/// @param print_last_expr If true, prints the last expression
-void generateByteCode(Chunk* chunk, const ASTTable* glob_table, const ExprArray* array);
-
 typedef struct
 {
+	Chunk* chunk;
 	const ASTTable* table;
-	const ExprArray* array;
 } ByteCodeGenerator;
+
+Chunk generateByteCode(const ASTTable* table, const ExprArray* array);
 
 /*************************************
 IMPLEMENTATION HELPERS
 *************************************/
+
+void gen_byte_code(const Expr* expr, ByteCodeGenerator* gen);
+
+void gen_code_unary(const UnaryExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_code_binary(const BinaryExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_code_literal(const LiteralExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_code_convert(const ConvertExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_code_condition(const ConditionExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_local_read(const LocalReadExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_local_write(const LocalWriteExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_code_while(const WhileExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_code_scope(const ScopeExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_code_convert(const ConvertExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_global_read(const GlobalReadExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_global_write(const GlobalWriteExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_and_and_bool_comparison(const BinaryExpr* ptr, ByteCodeGenerator* gen);
+
+void gen_or_or_bool_comparison(const BinaryExpr* ptr, ByteCodeGenerator* gen);
 
 /// @brief Generates the global and const memory pool, and return the offset to its beginning
 /// @param chunk The Chunk where to write the byte-code
@@ -45,118 +70,5 @@ void gen_string_literal_pool(Chunk* chunk, const StringTable* str_table);
 /// @param chunk The Chunk where to write the byte-code
 /// @param glob_table The GlobalTable whose entries to write
 void gen_debug_pool(Chunk* chunk, const ASTTable* glob_table);
-
-/// @brief Function which dispatches the expression to the write `gen_code_...`
-/// @param chunk The Chunk where to write the byte-code
-/// @param table ASTTable containing variables and strings
-/// @param expr The expression to dispatch
-void gen_byte_code(Chunk* chunk, const ASTTable* table, const Expr* expr);
-
-/// @brief Generate code necessary for unary operators
-/// @param chunk The Chunk where to write the byte-code
-/// @param table GlobalTable containing variables
-/// @param ptr The expression to convert to byte-code
-void gen_code_unary(Chunk* chunk, const ASTTable* table, const UnaryExpr* ptr);
-
-/// @brief Generate code necessary for binary operators
-/// @param chunk The Chunk where to write the byte-code
-/// @param table GlobalTable containing variables
-/// @param ptr The expression to convert to byte-code
-void gen_code_binary(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr);
-
-/// @brief Generate code necessary for literals.
-/// As literals never have child expressions, it doesn't need the variable
-/// GlobalTable.
-/// @param chunk The Chunk where to write the byte-code
-/// @param table GlobalTable containing variables
-/// @param ptr The expression to convert to byte-code
-void gen_code_literal(Chunk* chunk, const ASTTable* table, const LiteralExpr* ptr);
-
-/// @brief Generate code necessary for built-in conversions
-/// @param chunk The Chunk where to write the byte-code
-/// @param table GlobalTable containing variables
-/// @param ptr The expression to convert to byte-code
-void gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* ptr);
-
-/// @brief Generate code necessary for conditionals
-/// @param chunk The Chunk where to write the byte-code
-/// @param table GlobalTable containing variables
-/// @param ptr The expression to convert to byte-code
-void gen_code_condition(Chunk* chunk, const ASTTable* table, const ConditionExpr* ptr);
-
-/// @brief Generate code necessary for variable to r-value conversion
-/// @param chunk The Chunk where to write the byte-code
-/// @param table The variable table
-/// @param ptr The pointer to the expression
-void gen_local_read(Chunk* chunk, const ASTTable* table, const LocalReadExpr* ptr);
-
-/// @brief Generate the code necessary for a global variable assignment
-/// @param chunk The Chunk where to write the byte-code
-/// @param table The variable table from which to extract the offsets
-/// @param ptr The pointer to the expression
-void gen_local_write(Chunk* chunk, const ASTTable* table, const LocalWriteExpr* ptr);
-
-/// @brief Generate the code necessary for a while loop
-/// @param chunk The Chunk where to write the byte-code
-/// @param table The variable table from which to extract the offsets
-/// @param ptr The pointer to the expression
-void gen_code_while(Chunk* chunk, const ASTTable* table, const WhileExpr* ptr);
-
-/// @brief Generate the code necessary for a scope and its variables
-/// @param chunk The Chunk where to write the byte-code
-/// @param table The variable table
-/// @param ptr The pointer to the expression
-void gen_code_scope(Chunk* chunk, const ASTTable* table, const ScopeExpr* ptr);
-
-/// @brief Generate code necessary for built-in conversions
-/// @param chunk The Chunk where to write the byte-code
-/// @param table GlobalTable containing variables
-/// @param ptr The expression to convert to byte-code
-void gen_code_convert(Chunk* chunk, const ASTTable* table, const ConvertExpr* ptr);
-
-/// @brief Generate code necessary for variable to r-value conversion
-/// @param chunk The Chunk where to write the byte-code
-/// @param table The variable table
-/// @param ptr The pointer to the expression
-void gen_global_read(Chunk* chunk, const ASTTable* table, const GlobalReadExpr* ptr);
-
-/// @brief Generate the code necessary for a global variable assignment
-/// @param chunk The Chunk where to write the byte-code
-/// @param table The variable table from which to extract the offsets
-/// @param ptr The pointer to the expression
-void gen_global_write(Chunk* chunk, const ASTTable* table, const GlobalWriteExpr* ptr);
-
-/// @brief Generate the code necessary for an bool and (&&) comparison
-/// @param chunk The Chunk where to write the byte-code
-/// @param table The ASTTable of the AST whose being parsed
-/// @param ptr The BinaryExpr whose operator is &&
-void gen_and_and_bool_comparison(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr);
-
-/// @brief Generate the code necessary for an bool or (||) comparison
-/// @param chunk The Chunk where to write the byte-code
-/// @param table The ASTTable of the AST whose being parsed
-/// @param ptr The BinaryExpr whose operator is ||
-void gen_or_or_bool_comparison(Chunk* chunk, const ASTTable* table, const BinaryExpr* ptr);
-
-/// @brief Generate short jump code to ensure the last pushed operand is 'short_jump' 'cmp_to'
-/// @param chunk The Chunk where to write the byte-code
-/// @param short_jump The short jump OpCode to use
-/// @param cmp_to The value to compare to
-/// @param type The expression's type
-void gen_integral_short_jmp(Chunk* chunk, OpCode short_jump, QWORD cmp_to, BuiltinTypeID type);
-
-/// @brief Generates short jump codes to ensure the last pushed operand is a valid operand for a bit-shift operation performed on 'type'
-/// @param chunk The Chunk where to write the byte-code
-/// @param type The type of the expression
-void gen_bitshift_ub_checks(Chunk* chunk, Type type);
-
-void gen_signed_addition_checks(Chunk* chunk, BuiltinTypeID type);
-
-void gen_signed_subtraction_checks(Chunk* chunk, BuiltinTypeID type);
-
-void gen_signed_multiplication_checks(Chunk* chunk, BuiltinTypeID type);
-
-void gen_signed_division_checks(Chunk* chunk, BuiltinTypeID type);
-
 
 #endif //HG_COLT_BYTE_CODE_GENERATOR
