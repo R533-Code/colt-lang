@@ -390,6 +390,38 @@ typedef struct
 	Expr* while_body;
 } WhileExpr;
 
+/// @brief Represents a 'continue' in a loop
+typedef struct
+{
+	/// @brief should be EXPR_WHILE
+	ExprIdentifier identifier;
+	/// @brief The expression type, which should be 'void'
+	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
+} ContinueExpr;
+
+/// @brief Represents a 'break' in a loop
+typedef struct
+{
+	/// @brief should be EXPR_WHILE
+	ExprIdentifier identifier;
+	/// @brief The expression type, which should be 'void'
+	Type expr_type;
+
+	/// @brief The line number on which the expression begins
+	uint64_t line_nb;
+	/// @brief The line(s) where the expression was parsed
+	StringView line;
+	/// @brief The lexeme representing the whole expression
+	StringView lexeme;
+} BreakExpr;
+
 /// @brief Allocates a new literal expression on the heap, initializing it
 /// @param value The value of the literal expression
 /// @param type The type of the literal expression
