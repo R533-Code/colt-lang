@@ -400,6 +400,8 @@ void freeExpr(Expr* ptr)
 	break;
 	case EXPR_GLOB_READ:
 	case EXPR_LOCAL_READ:
+	case EXPR_CONTINUE:
+	case EXPR_BREAK:
 		safe_free(ptr);
 	break; default:
 		colt_unreachable("Expression identifier was invalid!");
