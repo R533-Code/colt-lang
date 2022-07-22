@@ -56,6 +56,10 @@ typedef enum
 	EXPR_CONDITION,
 	/// @brief WhileExpr type
 	EXPR_WHILE,
+	/// @brief ContinueExpr type
+	EXPR_CONTINUE,
+	/// @brief BreakExpr type
+	EXPR_BREAK,
 } ExprIdentifier;
 
 /// @brief Represents an unspecialized expression.
@@ -393,7 +397,7 @@ typedef struct
 /// @brief Represents a 'continue' in a loop
 typedef struct
 {
-	/// @brief should be EXPR_WHILE
+	/// @brief should be EXPR_CONTINUE
 	ExprIdentifier identifier;
 	/// @brief The expression type, which should be 'void'
 	Type expr_type;
@@ -409,7 +413,7 @@ typedef struct
 /// @brief Represents a 'break' in a loop
 typedef struct
 {
-	/// @brief should be EXPR_WHILE
+	/// @brief should be EXPR_BREAK
 	ExprIdentifier identifier;
 	/// @brief The expression type, which should be 'void'
 	Type expr_type;
