@@ -76,7 +76,7 @@ Chunk generateByteCode(const ASTTable* table, const ExprArray* array)
 	//write CODE offset
 	ChunkWriteCODESection(&chunk, chunk.count);
 
-	ByteCodeGenerator gen = { .chunk = &chunk, .table = table};
+	ByteCodeGenerator gen = { .chunk = &chunk, .table = table, .continue_offset = 0 };
 	for (size_t i = 0; i < array->count - 1; i++)
 	{
 		gen_byte_code(array->expressions[i], &gen);
@@ -103,6 +103,7 @@ IMPLEMENTATION HELPERS
 void gen_byte_code(const Expr* expr, ByteCodeGenerator* gen)
 {
 	colt_assert(expr != NULL, "Generation should never happen if AST was not valid!");
+	//TODO: reorder to help compiler optimize in jmp table
 	switch (expr->identifier)
 	{
 	break; case EXPR_UNARY:
@@ -119,6 +120,10 @@ void gen_byte_code(const Expr* expr, ByteCodeGenerator* gen)
 		gen_code_scope((const ScopeExpr*)expr, gen);
 	break; case EXPR_WHILE:
 		gen_code_while((const WhileExpr*)expr, gen);
+	break; case EXPR_CONTINUE:
+		gen_code_continue((const ContinueExpr*)expr, gen);
+	break; case EXPR_BREAK:
+		gen_code_break((const BreakExpr*)expr, gen);
 	break; case EXPR_LOCAL_READ:
 		gen_local_read((const LocalReadExpr*)expr, gen);
 	break; case EXPR_LOCAL_WRITE:
@@ -383,7 +388,9 @@ void gen_code_while(const WhileExpr* ptr, ByteCodeGenerator* gen)
 {
 	DWORD uninitialized_offset = { .i32 = 0xffffffff };
 
-	uint64_t cond_begin = gen->chunk->count;
+	//Save state of continue_offset
+	uint64_t old_jmp_continue = gen->continue_offset;
+	gen->continue_offset = gen->chunk->count;
 	
 	gen_byte_code(ptr->while_condition, gen);
 	ChunkWriteOpCode(gen->chunk, OP_JUMP_NOT_TRUE);
@@ -395,9 +402,25 @@ void gen_code_while(const WhileExpr* ptr, ByteCodeGenerator* gen)
 	ChunkWriteOpCode(gen->chunk, OP_JUMP);
 	uint64_t jmp_cond_begin = gen->chunk->count;
 	jmp_cond_begin += ChunkWriteDWORD(gen->chunk, uninitialized_offset);
-	*((uint32_t*)(gen->chunk->code + jmp_cond_begin)) = (uint32_t)cond_begin;
+	*((uint32_t*)(gen->chunk->code + jmp_cond_begin)) = (uint32_t)gen->continue_offset;
 
 	*((uint32_t*)(gen->chunk->code + jump_out)) = (uint32_t)gen->chunk->count;
+
+	//Reset the state
+	gen->continue_offset = old_jmp_continue;
+}
+
+void gen_code_continue(const ContinueExpr* ptr, ByteCodeGenerator* gen)
+{
+	colt_assert(gen->continue_offset != 0, "continue was outside of a loop!");
+
+	ChunkWriteOpCode(gen->chunk, OP_JUMP);
+	ChunkWriteU64(gen->chunk, gen->continue_offset);
+}
+
+void gen_code_break(const BreakExpr* ptr, ByteCodeGenerator* gen)
+{
+	colt_unreachable("NOT IMPLEMENTED YET");
 }
 
 void gen_code_scope(const ScopeExpr* ptr, ByteCodeGenerator* gen)

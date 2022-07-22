@@ -21,6 +21,8 @@ typedef struct
 	Chunk* chunk;
 	/// @brief The String and Global data
 	const ASTTable* table;
+	/// @brief The offset to jump to when a continue is hit
+	uint64_t continue_offset;
 } ByteCodeGenerator;
 
 /// @brief Generates byte-code to a Chunk
@@ -92,6 +94,16 @@ void gen_global_write(const GlobalWriteExpr* ptr, ByteCodeGenerator* gen);
 /// @param ptr The expression whose code to generate
 /// @param gen The data used in generation
 void gen_code_while(const WhileExpr* ptr, ByteCodeGenerator* gen);
+
+/// @brief Generates the code necessary for a ContinueExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
+void gen_code_continue(const ContinueExpr* ptr, ByteCodeGenerator* gen);
+
+/// @brief Generates the code necessary for a BreakExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
+void gen_code_break(const BreakExpr* ptr, ByteCodeGenerator* gen);
 
 
 /// @brief Generates the code necessary for a ScopeExpr
