@@ -369,6 +369,7 @@ typedef struct
 	Expr* else_execute;
 } ConditionExpr;
 
+/// @brief Represents a While-loop
 typedef struct
 {
 	/// @brief should be EXPR_WHILE
