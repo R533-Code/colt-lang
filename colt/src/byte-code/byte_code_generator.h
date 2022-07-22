@@ -14,47 +14,101 @@
 #include "lang/expr.h"	//we convert expressions to byte-code
 #include "type/type.h"	//for built-in types
 
+/// @brief A Helper used internally by generateByteCode
 typedef struct
 {
+	/// @brief The Chunk where to write the byte-code
 	Chunk* chunk;
+	/// @brief The String and Global data
 	const ASTTable* table;
 } ByteCodeGenerator;
 
+/// @brief Generates byte-code to a Chunk
+/// @param table The table of String and Globals
+/// @param array The array of expressions to compile
+/// @return A Chunk containing the executable byte-code
 Chunk generateByteCode(const ASTTable* table, const ExprArray* array);
 
 /*************************************
 IMPLEMENTATION HELPERS
 *************************************/
 
+/// @brief Dispatches an Expr* to the correct byte-code generating function
+/// @param expr The expression to dispatch
+/// @param gen The data used in generation
 void gen_byte_code(const Expr* expr, ByteCodeGenerator* gen);
 
+
+/// @brief Generates the code necessary for a UnaryExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
 void gen_code_unary(const UnaryExpr* ptr, ByteCodeGenerator* gen);
 
+/// @brief Generates the code necessary for a BinaryExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
 void gen_code_binary(const BinaryExpr* ptr, ByteCodeGenerator* gen);
 
+/// @brief Generates the code necessary for a LiteralExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
 void gen_code_literal(const LiteralExpr* ptr, ByteCodeGenerator* gen);
 
+
+/// @brief Generates the code necessary for a ConvertExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
 void gen_code_convert(const ConvertExpr* ptr, ByteCodeGenerator* gen);
 
+
+/// @brief Generates the code necessary for a ConditionExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
 void gen_code_condition(const ConditionExpr* ptr, ByteCodeGenerator* gen);
 
+
+/// @brief Generates the code necessary for a LocalReadExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
 void gen_local_read(const LocalReadExpr* ptr, ByteCodeGenerator* gen);
 
+/// @brief Generates the code necessary for a LocalWriteExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
 void gen_local_write(const LocalWriteExpr* ptr, ByteCodeGenerator* gen);
 
-void gen_code_while(const WhileExpr* ptr, ByteCodeGenerator* gen);
-
-void gen_code_scope(const ScopeExpr* ptr, ByteCodeGenerator* gen);
-
-void gen_code_convert(const ConvertExpr* ptr, ByteCodeGenerator* gen);
-
+/// @brief Generates the code necessary for a GlobalReadExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
 void gen_global_read(const GlobalReadExpr* ptr, ByteCodeGenerator* gen);
 
+/// @brief Generates the code necessary for a GlobalWriteExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
 void gen_global_write(const GlobalWriteExpr* ptr, ByteCodeGenerator* gen);
 
+
+/// @brief Generates the code necessary for a WhileExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
+void gen_code_while(const WhileExpr* ptr, ByteCodeGenerator* gen);
+
+
+/// @brief Generates the code necessary for a ScopeExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
+void gen_code_scope(const ScopeExpr* ptr, ByteCodeGenerator* gen);
+
+/// @brief Generates the code necessary for a && BinaryExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
 void gen_and_and_bool_comparison(const BinaryExpr* ptr, ByteCodeGenerator* gen);
 
+/// @brief Generates the code necessary for a || BinaryExpr
+/// @param ptr The expression whose code to generate
+/// @param gen The data used in generation
 void gen_or_or_bool_comparison(const BinaryExpr* ptr, ByteCodeGenerator* gen);
+
 
 /// @brief Generates the global and const memory pool, and return the offset to its beginning
 /// @param chunk The Chunk where to write the byte-code
