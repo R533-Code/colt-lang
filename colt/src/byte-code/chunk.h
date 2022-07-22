@@ -131,44 +131,50 @@ uint64_t unsafe_chunk_get_code_end(const Chunk* chunk);
 uint64_t unsafe_chunk_get_lstring_count(const Chunk* chunk);
 
 /// @brief Appends an OpCode to the end of the chunk
-/// @param chunk The chunk to append to
+/// @param chunk The Chunk to append to
 /// @param code The byte to append
 void ChunkWriteOpCode(Chunk* chunk, OpCode code);
 
 /// @brief Appends an BuiltinTypeID to the end of the chunk
-/// @param chunk The chunk to append to
+/// @param chunk The Chunk to append to
 /// @param type The type to append
 void ChunkWriteOperand(Chunk* chunk, BuiltinTypeID type);
 
-/// @brief Appends a byte to the end of the chunk
-/// @param chunk The chunk to append to
+/// @brief Appends a BYTE to the end of the chunk
+/// @param chunk The Chunk to append to
 /// @param byte The byte to append
-/// @return The padding used (which is always 1)
+/// @return The padding used (which is always 0)
 uint64_t ChunkWriteBYTE(Chunk* chunk, BYTE byte);
 
 /// @brief Appends multiple bytes to the end of a chunk
-/// @param chunk The chunk to append to
+/// @param chunk The Chunk to append to
 /// @param bytes The array of bytes from which to copy the bytes
 /// @param size The number of bytes to copy from 'bytes'
 void ChunkWriteBytes(Chunk* chunk, const uint8_t* const bytes, uint32_t size);
 
-/// @brief Writes an int16 to the end of a chunk, padding if necessary
-/// @param chunk The chunk to append to
+/// @brief Writes an WORD to the end of a chunk, padding if necessary
+/// @param chunk The Chunk to append to
 /// @param value The value to write
 /// @return The padding used
 uint64_t ChunkWriteWORD(Chunk* chunk, WORD value);
 
-/// @brief Writes an int32 to the end of a chunk, padding if necessary
-/// @param chunk The chunk to append to
+/// @brief Writes an DWORD to the end of a chunk, padding if necessary
+/// @param chunk The Chunk to append to
 /// @param value The value to write
 /// @return The padding used
 uint64_t ChunkWriteDWORD(Chunk* chunk, DWORD value);
 
-/// @brief Writes an int64 to the end of a chunk, padding if necessary
-/// @param chunk The chunk to append to
+/// @brief Writes an QWORD to the end of a chunk, padding if necessary
+/// @param chunk The Chunk to append to
 /// @param value The value to write
 /// @return The padding used
 uint64_t ChunkWriteQWORD(Chunk* chunk, QWORD value);
+
+/// @brief Writes an uint64_t to the end of a chunk, padding if necessary
+/// @param chunk The Chunk to append to
+/// @param value The value to write
+/// @return The padding used
+uint64_t ChunkWriteU64(Chunk* chunk, uint64_t value);
 
 /// @brief Gets a byte from the offset specified
 /// @param chunk The chunk to get the value from
