@@ -51,193 +51,16 @@ bool ASTParse(AST* ast, StringView to_parse, const ColtScanOptions* options)
 void ASTReset(AST* ast)
 {
 	ExprArrayClear(&ast->expr);
-	//TODO: add VariableTableFree
+	//TODO: add VariableTableReset
 	VariableTableFree(&ast->table.glob_table);
 	VariableTableInit(&ast->table.glob_table);
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
 }
 
-Expr* ast_convert_to(AST* ast, Expr* ptr, Type to)
-{
-	TypeConversion conv = ptr->expr_type.typeinfo->valid_conversions[TypeGetID(to)];
-	if (conv == CONV_INVALID)
-	{
-		ast_gen_error(ast, ptr->line_nb, ptr->line, ptr->lexeme,
-			"Incompatible types, invalid conversion from '%.*s' to '%.*s'!",
-			(uint32_t)(ptr->expr_type.typeinfo->name.end - ptr->expr_type.typeinfo->name.start), ptr->expr_type.typeinfo->name.start,
-			(uint32_t)(to.typeinfo->name.end - to.typeinfo->name.start), to.typeinfo->name.start);
-		return ptr;
-	}
-
-	if (conv & CONV_WLOSSY)
-	{
-		ast_gen_warning(ast, ptr->line_nb, ptr->line, ptr->lexeme,
-			"Lossy conversion from '%.*s' to '%.*s'!",
-			(uint32_t)(ptr->expr_type.typeinfo->name.end - ptr->expr_type.typeinfo->name.start), ptr->expr_type.typeinfo->name.start,
-			(uint32_t)(to.typeinfo->name.end - to.typeinfo->name.start), to.typeinfo->name.start);
-	}
-	if (conv & CONV_WSIGN)
-	{
-		ast_gen_warning(ast, ptr->line_nb, ptr->line, ptr->lexeme,
-			"Sign mismatch in conversion from '%.*s' to '%.*s'!",
-			(uint32_t)(ptr->expr_type.typeinfo->name.end - ptr->expr_type.typeinfo->name.start), ptr->expr_type.typeinfo->name.start,
-			(uint32_t)(to.typeinfo->name.end - to.typeinfo->name.start), to.typeinfo->name.start);
-	}
-
-	return makeConvertExpr(ptr, to, ptr->line_nb, ptr->line, ptr->lexeme);
-}
-
-void ast_convert_to_highest_type(AST* ast, Expr** plhs, Expr** prhs)
-{
-	if (ExprTypeEqualExprType(*plhs, *prhs))
-		return;
-
-	//TODO: optimize this boolean away
-	bool swapped = false;
-	if (is_type_greater((*plhs)->expr_type, (*prhs)->expr_type))
-	{
-		//Swap pointers
-		Expr* temp = *plhs;
-		*plhs = *prhs;
-		*prhs = temp;
-		swapped = true;
-	}
-	
-	Expr* lhs = *plhs;
-	Expr* rhs = *prhs;
-
-	TypeConversion conv = lhs->expr_type.typeinfo->valid_conversions[ExprGetID(rhs)];
-	if (conv == CONV_INVALID)
-	{
-		ast_gen_error(ast, lhs->line_nb, lhs->line, lhs->lexeme,
-			"Incompatible types, invalid conversion from '%.*s' to '%.*s'!",
-			(uint32_t)(lhs->expr_type.typeinfo->name.end - lhs->expr_type.typeinfo->name.start), lhs->expr_type.typeinfo->name.start,
-			(uint32_t)(rhs->expr_type.typeinfo->name.end - rhs->expr_type.typeinfo->name.start), rhs->expr_type.typeinfo->name.start);
-		return;
-	}
-
-	if (conv & CONV_WLOSSY)
-	{
-		ast_gen_warning(ast, lhs->line_nb, lhs->line, lhs->lexeme,
-			"Truncation from '%.*s' to '%.*s'!",
-			(uint32_t)(lhs->expr_type.typeinfo->name.end - lhs->expr_type.typeinfo->name.start), lhs->expr_type.typeinfo->name.start,
-			(uint32_t)(rhs->expr_type.typeinfo->name.end - rhs->expr_type.typeinfo->name.start), rhs->expr_type.typeinfo->name.start);
-	}
-	if (conv & CONV_WSIGN)
-	{
-		ast_gen_warning(ast, lhs->line_nb, lhs->line, lhs->lexeme,
-			"Sign mismatch conversion from '%.*s' to '%.*s'!",
-			(uint32_t)(lhs->expr_type.typeinfo->name.end - lhs->expr_type.typeinfo->name.start), lhs->expr_type.typeinfo->name.start,
-			(uint32_t)(rhs->expr_type.typeinfo->name.end - rhs->expr_type.typeinfo->name.start), rhs->expr_type.typeinfo->name.start);
-	}
-
-	Type conv_expr = builtin_inter_type(lhs->expr_type, rhs->expr_type);
-	*plhs = makeConvertExpr(lhs, conv_expr, lhs->line_nb, lhs->line, lhs->lexeme);
-
-	if (swapped)
-	{
-		//Swap pointers
-		Expr* temp = *plhs;
-		*plhs = *prhs;
-		*prhs = temp;
-	}
-}
-
-Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme)
-{
-	switch (binary_op)
-	{
-	case TKN_OPERATOR_PLUS:
-	case TKN_OPERATOR_MINUS:
-	case TKN_OPERATOR_STAR:
-	case TKN_OPERATOR_SLASH:
-	case TKN_OPERATOR_PLUS_EQUAL:
-	case TKN_OPERATOR_MINUS_EQUAL:
-	case TKN_OPERATOR_STAR_EQUAL:
-	case TKN_OPERATOR_SLASH_EQUAL:
-		if (TypeGetID(lhs) == ID_COLT_LSTRING || TypeGetID(rhs) == ID_COLT_LSTRING)
-		{
-			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' cannot have an 'lstring' as operand!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
-			Type ret = { .is_const = false, .typeinfo = &ColtVoid };
-			return ret;
-		}
-	//Fall through done on purpose
-	case TKN_OPERATOR_EQUAL:
-		return lhs;
-	case TKN_OPERATOR_AND:
-	case TKN_OPERATOR_OR:
-	case TKN_OPERATOR_XOR:
-	case TKN_OPERATOR_GREATER_GREATER:
-	case TKN_OPERATOR_LESS_LESS:
-	case TKN_OPERATOR_AND_EQUAL:
-	case TKN_OPERATOR_OR_EQUAL:
-	case TKN_OPERATOR_XOR_EQUAL:
-	case TKN_OPERATOR_MODULO:
-	case TKN_OPERATOR_LESS_LESS_EQUAL:
-	case TKN_OPERATOR_GREATER_GREATER_EQUAL:
-	case TKN_OPERATOR_MODULO_EQUAL:
-		if (is_type_integral(lhs) && is_type_integral(rhs))
-			return lhs;
-		else
-		{
-			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' expects integral operands!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
-			Type ret = { .is_const = false, .typeinfo = &ColtVoid };
-			return ret;
-		}
-	case TKN_OPERATOR_GREATER:
-	case TKN_OPERATOR_GREATER_EQUAL:
-	case TKN_OPERATOR_LESS:
-	case TKN_OPERATOR_LESS_EQUAL:
-	case TKN_OPERATOR_AND_AND:
-	case TKN_OPERATOR_OR_OR:
-	{
-		if (TypeGetID(lhs) == ID_COLT_LSTRING || TypeGetID(rhs) == ID_COLT_LSTRING)
-		{
-			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' cannot have an 'lstring' as operand!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
-			Type ret = { .is_const = false, .typeinfo = &ColtVoid };
-			return ret;
-		}
-	} //fall through on purpose
-	case TKN_OPERATOR_EQUAL_EQUAL:
-	case TKN_OPERATOR_BANG_EQUAL:
-	{
-		Type ret = { .is_const = false, .typeinfo = &ColtBool };
-		return ret;
-	}
-
-	default:
-		colt_unreachable("Invalid token");
-	}
-}
-
 /************************************
 IMPLEMENTATION HELPERS
 ************************************/
-
-uint8_t ast_op_precedence(Token token)
-{
-	static const uint8_t operator_precedence_table[] =
-	{
-		10, 13, 0,	// +
-		10, 13, 0,	// -
-		11, 0,		// *
-		11, 0,		// /
-		8, 9, 8, 0,	// <<
-		8, 9, 8, 0, // >>
-		0, 7,		// =
-		12, 7,		// !
-		6, 0, 3,	// &
-		4, 0, 2,	// |
-		5, 0,		// ^
-		12,			// ~
-		11, 0		// %
-	};
-	colt_assert(token >= 0, "Token should be greater or equal to 0!");
-	if (token < TKN_OPERATOR_LESS_COLON)
-		return operator_precedence_table[token];
-	return UINT8_MAX;
-}
 
 Expr* parse_binary(AST* ast, int op_precedence)
 {
@@ -912,6 +735,183 @@ bool is_assignment_expr(const Expr* expr)
 	if (expr->identifier == EXPR_GLOB_WRITE || expr->identifier == EXPR_GLOB_READ)
 		return true;
 	return false;
+}
+
+Expr* ast_convert_to(AST* ast, Expr* ptr, Type to)
+{
+	TypeConversion conv = ptr->expr_type.typeinfo->valid_conversions[TypeGetID(to)];
+	if (conv == CONV_INVALID)
+	{
+		ast_gen_error(ast, ptr->line_nb, ptr->line, ptr->lexeme,
+			"Incompatible types, invalid conversion from '%.*s' to '%.*s'!",
+			(uint32_t)(ptr->expr_type.typeinfo->name.end - ptr->expr_type.typeinfo->name.start), ptr->expr_type.typeinfo->name.start,
+			(uint32_t)(to.typeinfo->name.end - to.typeinfo->name.start), to.typeinfo->name.start);
+		return ptr;
+	}
+
+	if (conv & CONV_WLOSSY)
+	{
+		ast_gen_warning(ast, ptr->line_nb, ptr->line, ptr->lexeme,
+			"Lossy conversion from '%.*s' to '%.*s'!",
+			(uint32_t)(ptr->expr_type.typeinfo->name.end - ptr->expr_type.typeinfo->name.start), ptr->expr_type.typeinfo->name.start,
+			(uint32_t)(to.typeinfo->name.end - to.typeinfo->name.start), to.typeinfo->name.start);
+	}
+	if (conv & CONV_WSIGN)
+	{
+		ast_gen_warning(ast, ptr->line_nb, ptr->line, ptr->lexeme,
+			"Sign mismatch in conversion from '%.*s' to '%.*s'!",
+			(uint32_t)(ptr->expr_type.typeinfo->name.end - ptr->expr_type.typeinfo->name.start), ptr->expr_type.typeinfo->name.start,
+			(uint32_t)(to.typeinfo->name.end - to.typeinfo->name.start), to.typeinfo->name.start);
+	}
+
+	return makeConvertExpr(ptr, to, ptr->line_nb, ptr->line, ptr->lexeme);
+}
+
+void ast_convert_to_highest_type(AST* ast, Expr** plhs, Expr** prhs)
+{
+	if (ExprTypeEqualExprType(*plhs, *prhs))
+		return;
+
+	//TODO: optimize this boolean away
+	bool swapped = false;
+	if (is_type_greater((*plhs)->expr_type, (*prhs)->expr_type))
+	{
+		//Swap pointers
+		Expr* temp = *plhs;
+		*plhs = *prhs;
+		*prhs = temp;
+		swapped = true;
+	}
+
+	Expr* lhs = *plhs;
+	Expr* rhs = *prhs;
+
+	TypeConversion conv = lhs->expr_type.typeinfo->valid_conversions[ExprGetID(rhs)];
+	if (conv == CONV_INVALID)
+	{
+		ast_gen_error(ast, lhs->line_nb, lhs->line, lhs->lexeme,
+			"Incompatible types, invalid conversion from '%.*s' to '%.*s'!",
+			(uint32_t)(lhs->expr_type.typeinfo->name.end - lhs->expr_type.typeinfo->name.start), lhs->expr_type.typeinfo->name.start,
+			(uint32_t)(rhs->expr_type.typeinfo->name.end - rhs->expr_type.typeinfo->name.start), rhs->expr_type.typeinfo->name.start);
+		return;
+	}
+
+	if (conv & CONV_WLOSSY)
+	{
+		ast_gen_warning(ast, lhs->line_nb, lhs->line, lhs->lexeme,
+			"Truncation from '%.*s' to '%.*s'!",
+			(uint32_t)(lhs->expr_type.typeinfo->name.end - lhs->expr_type.typeinfo->name.start), lhs->expr_type.typeinfo->name.start,
+			(uint32_t)(rhs->expr_type.typeinfo->name.end - rhs->expr_type.typeinfo->name.start), rhs->expr_type.typeinfo->name.start);
+	}
+	if (conv & CONV_WSIGN)
+	{
+		ast_gen_warning(ast, lhs->line_nb, lhs->line, lhs->lexeme,
+			"Sign mismatch conversion from '%.*s' to '%.*s'!",
+			(uint32_t)(lhs->expr_type.typeinfo->name.end - lhs->expr_type.typeinfo->name.start), lhs->expr_type.typeinfo->name.start,
+			(uint32_t)(rhs->expr_type.typeinfo->name.end - rhs->expr_type.typeinfo->name.start), rhs->expr_type.typeinfo->name.start);
+	}
+
+	Type conv_expr = builtin_inter_type(lhs->expr_type, rhs->expr_type);
+	*plhs = makeConvertExpr(lhs, conv_expr, lhs->line_nb, lhs->line, lhs->lexeme);
+
+	if (swapped)
+	{
+		//Swap pointers
+		Expr* temp = *plhs;
+		*plhs = *prhs;
+		*prhs = temp;
+	}
+}
+
+Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme)
+{
+	switch (binary_op)
+	{
+	case TKN_OPERATOR_PLUS:
+	case TKN_OPERATOR_MINUS:
+	case TKN_OPERATOR_STAR:
+	case TKN_OPERATOR_SLASH:
+	case TKN_OPERATOR_PLUS_EQUAL:
+	case TKN_OPERATOR_MINUS_EQUAL:
+	case TKN_OPERATOR_STAR_EQUAL:
+	case TKN_OPERATOR_SLASH_EQUAL:
+		if (TypeGetID(lhs) == ID_COLT_LSTRING || TypeGetID(rhs) == ID_COLT_LSTRING)
+		{
+			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' cannot have an 'lstring' as operand!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
+			Type ret = { .is_const = false, .typeinfo = &ColtVoid };
+			return ret;
+		}
+		//Fall through done on purpose
+	case TKN_OPERATOR_EQUAL:
+		return lhs;
+	case TKN_OPERATOR_AND:
+	case TKN_OPERATOR_OR:
+	case TKN_OPERATOR_XOR:
+	case TKN_OPERATOR_GREATER_GREATER:
+	case TKN_OPERATOR_LESS_LESS:
+	case TKN_OPERATOR_AND_EQUAL:
+	case TKN_OPERATOR_OR_EQUAL:
+	case TKN_OPERATOR_XOR_EQUAL:
+	case TKN_OPERATOR_MODULO:
+	case TKN_OPERATOR_LESS_LESS_EQUAL:
+	case TKN_OPERATOR_GREATER_GREATER_EQUAL:
+	case TKN_OPERATOR_MODULO_EQUAL:
+		if (is_type_integral(lhs) && is_type_integral(rhs))
+			return lhs;
+		else
+		{
+			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' expects integral operands!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
+			Type ret = { .is_const = false, .typeinfo = &ColtVoid };
+			return ret;
+		}
+	case TKN_OPERATOR_GREATER:
+	case TKN_OPERATOR_GREATER_EQUAL:
+	case TKN_OPERATOR_LESS:
+	case TKN_OPERATOR_LESS_EQUAL:
+	case TKN_OPERATOR_AND_AND:
+	case TKN_OPERATOR_OR_OR:
+	{
+		if (TypeGetID(lhs) == ID_COLT_LSTRING || TypeGetID(rhs) == ID_COLT_LSTRING)
+		{
+			ast_gen_error(ast, line_nb, line, lexeme, "'%.*s' cannot have an 'lstring' as operand!", (uint32_t)(lexeme.end - lexeme.start), lexeme.start);
+			Type ret = { .is_const = false, .typeinfo = &ColtVoid };
+			return ret;
+		}
+	} //fall through on purpose
+	case TKN_OPERATOR_EQUAL_EQUAL:
+	case TKN_OPERATOR_BANG_EQUAL:
+	{
+		Type ret = { .is_const = false, .typeinfo = &ColtBool };
+		return ret;
+	}
+
+	default:
+		colt_unreachable("Invalid token");
+	}
+}
+
+uint8_t ast_op_precedence(Token token)
+{
+	static const uint8_t operator_precedence_table[] =
+	{
+		10, 13, 0,	// +
+		10, 13, 0,	// -
+		11, 0,		// *
+		11, 0,		// /
+		8, 9, 8, 0,	// <<
+		8, 9, 8, 0, // >>
+		0, 7,		// =
+		12, 7,		// !
+		6, 0, 3,	// &
+		4, 0, 2,	// |
+		5, 0,		// ^
+		12,			// ~
+		11, 0		// %
+	};
+	colt_assert(token >= 0, "Token should be greater or equal to 0!");
+	if (token < TKN_OPERATOR_LESS_COLON)
+		return operator_precedence_table[token];
+	return UINT8_MAX;
 }
 
 void ast_gen_warning(AST* ast, uint64_t line_nb, StringView line, StringView lexeme, const char* format, ...)

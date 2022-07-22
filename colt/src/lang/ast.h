@@ -65,39 +65,6 @@ void ASTReset(AST* ast);
 IMPLEMENTATION HELPERS
 ************************************/
 
-/// @brief Converts an expression to another type, generating warnings/error when necessary
-/// @param ast The AST to use to generate errors
-/// @param ptr The expression to convert
-/// @param to The type to convert to
-/// @return The converted expression
-Expr* ast_convert_to(AST* ast, Expr* ptr, Type to);
-
-/// @brief Converts two expressions so that their types match
-/// @param ast The AST from which to report errors
-/// @param lhs A pointer to the left hand side
-/// @param rhs A pointer to the right hand side
-void ast_convert_to_highest_type(AST* ast, Expr** lhs, Expr** rhs);
-
-/// @brief Does the type checking and error handling of built-in operators.
-/// This function returns the return type of built-in operators, handling errors
-/// when operands are not valid for the operator.
-/// This function will return ColtBool on error, but while this might seem counter-intuitive,
-/// as it generates an error, the AST is marked as invalid, meaning the type won't be read.
-/// @param ast The AST from which to generate errors
-/// @param lhs The left hand side of the operator
-/// @param binary_op The token representing the operator
-/// @param rhs The right hand side of the operator
-/// @param line_nb The line number, for when an error is generated
-/// @param line A StringView of the line, for when error is generated
-/// @param lexeme A StringView of the lexeme, for when error is generated
-/// @return The return type of the operator
-Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme);
-
-/// @brief Returns the precedence of an operator, and prints an error if the token is not an operator.
-/// @param token The token to get the precedence of
-/// @return A value between 0-13 (with 13 being the highest precedence) or UINT8_MAX if an error has been detected
-uint8_t ast_op_precedence(Token token);
-
 /// @brief Parses a binary expression or a primary expression.
 /// @param ast The AST from which to parse
 /// @param op_precedence The current_tkn operator precedence (which when first call should be -1)
@@ -173,6 +140,39 @@ bool is_assignment_token(Token tkn);
 /// @param expr The expression to check for
 /// @return True if the expression is binary having an assignment token
 bool is_assignment_expr(const Expr* expr);
+
+/// @brief Converts an expression to another type, generating warnings/error when necessary
+/// @param ast The AST to use to generate errors
+/// @param ptr The expression to convert
+/// @param to The type to convert to
+/// @return The converted expression
+Expr* ast_convert_to(AST* ast, Expr* ptr, Type to);
+
+/// @brief Converts two expressions so that their types match
+/// @param ast The AST from which to report errors
+/// @param lhs A pointer to the left hand side
+/// @param rhs A pointer to the right hand side
+void ast_convert_to_highest_type(AST* ast, Expr** lhs, Expr** rhs);
+
+/// @brief Does the type checking and error handling of built-in operators.
+/// This function returns the return type of built-in operators, handling errors
+/// when operands are not valid for the operator.
+/// This function will return ColtVoid on error, but while this might seem counter-intuitive,
+/// as it generates an error, the AST is marked as invalid, meaning the type won't be read.
+/// @param ast The AST from which to generate errors
+/// @param lhs The left hand side of the operator
+/// @param binary_op The token representing the operator
+/// @param rhs The right hand side of the operator
+/// @param line_nb The line number, for when an error is generated
+/// @param line A StringView of the line, for when error is generated
+/// @param lexeme A StringView of the lexeme, for when error is generated
+/// @return The return type of the operator
+Type ast_operator_return_type(AST* ast, Type lhs, Token binary_op, Type rhs, uint64_t line_nb, StringView line, StringView lexeme);
+
+/// @brief Returns the precedence of an operator, and prints an error if the token is not an operator.
+/// @param token The token to get the precedence of
+/// @return A value between 0-13 (with 13 being the highest precedence) or UINT8_MAX if an error has been detected
+uint8_t ast_op_precedence(Token token);
 
 /// @brief Prints a warning
 /// @param ast The AST from which to extract the current line and lexeme
