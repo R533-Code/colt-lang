@@ -74,7 +74,7 @@ IMPLEMENTATION HELPERS
 
 /// @brief Parses a binary expression or a primary expression.
 /// @param ast The AST from which to parse
-/// @param op_precedence The current_tkn operator precedence (which when first call should be -1)
+/// @param op_precedence The current_tkn operator precedence (which when first called should be 0)
 /// @return An Expr* representing either a binary or primary expression
 Expr* parse_binary(AST* ast, uint8_t op_precedence);
 

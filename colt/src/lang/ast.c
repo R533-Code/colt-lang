@@ -6,8 +6,6 @@
 
 void ASTInit(AST* ast)
 {
-	ast->error_nb = 0;
-	ast->warning_nb = 0;
 	ExprArrayInit(&ast->expr);
 	ASTTableInit(&ast->table);
 }
@@ -26,6 +24,7 @@ bool ASTParse(AST* ast, StringView to_parse, const ColtScanOptions* options)
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
 	ast->options = options;
+	ast->is_parsing_loop = false;
 	ast->current_scope = NULL;
 
 	//Reset the array
@@ -91,7 +90,7 @@ Expr* parse_expression(AST* ast)
 			expr = NULL;
 
 		break; default:
-			expr = parse_binary(ast, -1);
+			expr = parse_binary(ast, 0);
 			if (ast->options->no_warn_unused_result == false && !(is_assignment_expr(expr) || ExprTypeEqualTypeID(expr, ID_COLT_VOID)))
 			{
 				ast_gen_warning(ast, expr->line_nb, expr->line, expr->lexeme, "Unused expression result!");
@@ -215,7 +214,7 @@ Expr* parse_assignment(AST* ast, Expr* lhs, Token assignment_tkn)
 	uint64_t op_line_nb = ast->scan.current_line;
 
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
-	Expr* rhs = parse_binary(ast, -1);
+	Expr* rhs = parse_binary(ast, 0);
 	if (rhs == NULL)
 		return lhs;
 	
@@ -398,7 +397,7 @@ Expr* parse_paren_boolean(AST* ast)
 	ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
 	Type bool_t = { .typeinfo = &ColtBool, .is_const = false };
-	Expr* bin = parse_binary(ast, -1);
+	Expr* bin = parse_binary(ast, 0);
 	if (ast->current_tkn != TKN_RIGHT_PAREN)
 	{
 		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan), "Expected a right parenthesis ')'!");
@@ -629,7 +628,7 @@ Expr* parse_variable_declaration(AST* ast, bool is_const)
 
 		//save the old error
 		uint16_t old_error = ast->error_nb;
-		Expr* to_assign = parse_binary(ast, -1);
+		Expr* to_assign = parse_binary(ast, 0);
 
 		if (!to_assign)
 			return NULL;
