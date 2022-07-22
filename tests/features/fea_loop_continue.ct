@@ -1,0 +1,13 @@
+//^012346789
+var test = 0;
+
+while (test != 10)
+{
+	if (test == 5)
+	{
+		test += 1;
+		continue;
+	}
+	static_print test;
+	test += 1;
+}
