@@ -1006,6 +1006,6 @@ void ast_gen_error(AST* ast, uint64_t line_nb, StringView current_line, StringVi
 void ast_enter_panic_mode(AST* ast)
 {
 	ast->error_nb++;
-	while (ast->current_tkn != TKN_RIGHT_CURLY && ast->current_tkn != TKN_EOF && ast->current_tkn != TKN_SEMICOLON)
+	while (ast->current_tkn != TKN_RIGHT_CURLY && ast->current_tkn != TKN_RIGHT_PAREN && ast->current_tkn != TKN_EOF && ast->current_tkn != TKN_SEMICOLON)
 		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 }
