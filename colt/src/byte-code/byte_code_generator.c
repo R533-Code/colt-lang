@@ -166,13 +166,13 @@ void gen_code_binary(const BinaryExpr* ptr, ByteCodeGenerator* gen)
 {
 	switch (ptr->expr_operator)
 	{	
-	break; case TKN_OPERATOR_AND_AND:
+	case TKN_OPERATOR_AND_AND:
 		gen_and_and_bool_comparison(ptr, gen);
-
-	break; case TKN_OPERATOR_OR_OR:
+		return;
+	case TKN_OPERATOR_OR_OR:
 		gen_or_or_bool_comparison(ptr, gen);
-
-	break; default:
+		return;
+	default:
 		break;
 	}
 
