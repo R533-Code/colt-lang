@@ -515,6 +515,20 @@ Expr* makeLocalWriteExpr(StringView var_name, Type var_type, uint64_t var_offset
 /// @return A pointer to a heap allocated WhileExpr
 Expr* makeWhileExpr(Expr* cond, Expr* body);
 
+/// @brief Allocates a new ContinueExpr on the heap initializing it
+/// @param line_nb The line number from which the expression is extracted
+/// @param line A StringView over the line containing the expression
+/// @param lexeme A StringView over the lexeme representing the expression
+/// @return A pointer to a heap allocated ContinueExpr
+Expr* makeContinueExpr(uint64_t line_nb, StringView line, StringView lexeme);
+
+/// @brief Allocates a new BreakExpr on the heap initializing it
+/// @param line_nb The line number from which the expression is extracted
+/// @param line A StringView over the line containing the expression
+/// @param lexeme A StringView over the lexeme representing the expression
+/// @return A pointer to a heap allocated BreakExpr
+Expr* makeBreakExpr(uint64_t line_nb, StringView line, StringView lexeme);
+
 /// @brief Allocates a new scope expression on the heap, initializing it
 /// @param parent_scope The parent scope, or NULL
 /// @return A pointer to a heap allocated ScopeExpr

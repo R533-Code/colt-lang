@@ -298,6 +298,38 @@ Expr* makeWhileExpr(Expr* cond, Expr* body)
 	return (Expr*)ptr;
 }
 
+Expr* makeContinueExpr(uint64_t line_nb, StringView line, StringView lexeme)
+{
+	ContinueExpr* ptr = safe_malloc(sizeof(ContinueExpr));
+
+	ptr->identifier = EXPR_CONTINUE;
+
+	ptr->expr_type.typeinfo = &ColtVoid;
+	ptr->expr_type.is_const = true;
+
+	ptr->line_nb = line_nb;
+	ptr->line = line;
+	ptr->lexeme = lexeme;
+
+	return (Expr*)ptr;
+}
+
+Expr* makeBreakExpr(uint64_t line_nb, StringView line, StringView lexeme)
+{
+	BreakExpr* ptr = safe_malloc(sizeof(BreakExpr));
+
+	ptr->identifier = EXPR_BREAK;
+
+	ptr->expr_type.typeinfo = &ColtVoid;
+	ptr->expr_type.is_const = true;
+
+	ptr->line_nb = line_nb;
+	ptr->line = line;
+	ptr->lexeme = lexeme;
+
+	return (Expr*)ptr;
+}
+
 Expr* makeScopeExpr(ScopeExpr* parent_scope)
 {
 	ScopeExpr* ptr = safe_malloc(sizeof(ScopeExpr));
