@@ -415,7 +415,7 @@ void gen_code_continue(const ContinueExpr* ptr, ByteCodeGenerator* gen)
 	colt_assert(gen->continue_offset != 0, "continue was outside of a loop!");
 
 	ChunkWriteOpCode(gen->chunk, OP_JUMP);
-	ChunkWriteU64(gen->chunk, gen->continue_offset);
+	ChunkWriteU32(gen->chunk, (uint32_t)gen->continue_offset);
 }
 
 void gen_code_break(const BreakExpr* ptr, ByteCodeGenerator* gen)
