@@ -201,6 +201,23 @@ uint64_t ChunkWriteQWORD(Chunk* chunk, QWORD value)
 	return padding;
 }
 
+uint64_t ChunkWriteU32(Chunk* chunk, uint32_t value)
+{
+	uint64_t padding = 4 - (chunk->count & 3); //same as % 4
+	if (!(chunk->count + padding + sizeof(uint32_t) < chunk->capacity)) //Grow if needed
+		chunk_grow_double(chunk);
+
+	//Set the padding bytes to CD on Debug build
+	DO_IF_DEBUG_BUILD(if (padding != 0) memset(chunk->code + chunk->count, 205, padding););
+
+	//Copy the bytes of the integer to the aligned memory
+	memcpy(chunk->code + (chunk->count += padding), &value, sizeof(uint32_t));
+	//We already added offset to 'count' ^
+	chunk->count += sizeof(uint32_t);
+
+	return padding;
+}
+
 uint64_t ChunkWriteU64(Chunk* chunk, uint64_t value)
 {
 	uint64_t padding = 8 - (chunk->count & 7); //same as % 8

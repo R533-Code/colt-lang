@@ -170,6 +170,12 @@ uint64_t ChunkWriteDWORD(Chunk* chunk, DWORD value);
 /// @return The padding used
 uint64_t ChunkWriteQWORD(Chunk* chunk, QWORD value);
 
+/// @brief Writes an uint32_t to the end of a chunk, padding if necessary
+/// @param chunk The Chunk to append to
+/// @param value The value to write
+/// @return The padding used
+uint64_t ChunkWriteU32(Chunk* chunk, uint32_t value);
+
 /// @brief Writes an uint64_t to the end of a chunk, padding if necessary
 /// @param chunk The Chunk to append to
 /// @param value The value to write
