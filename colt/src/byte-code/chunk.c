@@ -336,9 +336,9 @@ Chunk ChunkDeserialize(const char* path)
 		print_error_format("Could not read all the file's (at path '%s') content!", path);
 		exit(EXIT_OS_RESOURCE_FAILURE);
 	}
-	if (memcmp(chunk.code, ChunkSignature, 8) != 0)
+	if (memcmp(chunk.code + 8, ChunkSignature, 8) != 0)
 	{
-		print_error_format("File (at path '%s') is not a Chunk!", path);
+		print_error_format("The file at path '%s' does not contain Colt byte-code!", path);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 
