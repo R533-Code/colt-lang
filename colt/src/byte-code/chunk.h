@@ -220,7 +220,9 @@ void ChunkReserve(Chunk* chunk, size_t more_byte_capacity);
 /// @param path The path to the file to which to serialize
 void ChunkSerialize(const Chunk* chunk, const char* path);
 
-/// @brief De-serializes a chunk from a file
+/// @brief De-serializes a chunk from a file.
+/// This function will ensure that the Chunk possesses a valid signature,
+/// else it will exit.
 /// @param path The path to the file from which to de-serialize
 /// @return The de-serialized chunk
 Chunk ChunkDeserialize(const char* path);
