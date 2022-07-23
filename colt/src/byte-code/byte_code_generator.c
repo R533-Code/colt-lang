@@ -484,7 +484,7 @@ void gen_and_and_bool_comparison(const BinaryExpr* ptr, ByteCodeGenerator* gen)
 	gen_byte_code(ptr->lhs, gen);
 	
 	//If the condition is false, we do not evaluate the second, by jumping over it
-	ChunkWriteOpCode(gen->chunk, OP_JUMP_FALSE);
+	ChunkWriteOpCode(gen->chunk, OP_JUMP_FALSE_TPOP);
 	
 	DWORD uninitialized_offset = { .u32 = 0xffffffff };
 	uint32_t jump_to = (uint32_t)gen->chunk->count;
@@ -503,7 +503,7 @@ void gen_or_or_bool_comparison(const BinaryExpr* ptr, ByteCodeGenerator* gen)
 	gen_byte_code(ptr->lhs, gen);
 	
 	//If the condition is true, we do not evaluate the second, by jumping over it
-	ChunkWriteOpCode(gen->chunk, OP_JUMP_TRUE);
+	ChunkWriteOpCode(gen->chunk, OP_JUMP_TRUE_FPOP);
 	
 	DWORD uninitialized_offset = { .u32 = 0xffffffff };
 	uint32_t jump_to = (uint32_t)gen->chunk->count;
