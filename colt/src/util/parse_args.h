@@ -9,7 +9,6 @@
 * To add new possible arguments:
 * - Add enum value
 * - Add case in args_string_to_arg
-* - Add help documentation function `args_help_...`
 * - Add case in `args_help`
 * - Add function `args_...` that handles parsing and error of the rest of the arguments
 * - Add case in ParseArguments
@@ -43,6 +42,8 @@ typedef enum
 	ARG_ENUM,
 	/// @brief -v, or --version
 	ARG_VERSION,
+	/// @brief -A, or --ABI
+	ARG_ABI_VERSION,
 	/// @brief -d, or --disassemble
 	ARG_DISASSEMBLE,
 	/// @brief -o, or --out
@@ -82,6 +83,12 @@ CommandLineArgument args_string_to_arg(const char* str);
 /// @param argv The argument values
 /// @param offset The current argument count 
 void args_version(int argc, const char** argv, uint64_t offset);
+
+/// @brief Handles the -A or --ABI logic, and exits
+/// @param argc The argument count
+/// @param argv The argument values
+/// @param offset The current argument count 
+void args_abi_version(int argc, const char** argv, uint64_t offset);
 
 /// @brief Handles the -d or --disassemble logic, and exits
 /// @param argc The argument count
@@ -133,29 +140,5 @@ void args_test_color(int argc, const char** argv, uint64_t offset);
 /// @param argv The argument values
 /// @param offset The current argument count
 void args_print_invalid_combination(int argc, const char** argv, uint64_t offset);
-
-/// @brief Prints the help of '-d' or '--disassemble'
-void args_help_disassemble();
-
-/// @brief Prints the help of '-v' or '--version'
-void args_help_version();
-
-/// @brief Prints the help of '-h' or '--help'
-void args_help_help();
-
-/// @brief Prints the help of '-e' or '--enum'
-void args_help_enum();
-
-/// @brief Prints the help of '-o' or '--out'
-void args_help_exec_out();
-
-/// @brief Prints the help of '-b' or '--byte-out'
-void args_help_byte_out();
-
-/// @brief Prints the help of '-r' or '--run'
-void args_help_run_byte();
-
-/// @brief Prints the help of '--test-color'
-void args_help_test_color();
 
 #endif //HG_COLT_PARSE_ARGS

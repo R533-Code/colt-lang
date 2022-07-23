@@ -77,6 +77,8 @@ CommandLineArgument args_string_to_arg(const char* str)
 	{
 		switch (str[length - 1])
 		{
+		case 'A':
+			return ARG_ABI_VERSION;
 		case 'e':
 			return ARG_ENUM;
 		case 'v':
@@ -100,6 +102,10 @@ CommandLineArgument args_string_to_arg(const char* str)
 		//We optimize comparing string by first checking for the first character after --
 		switch (str[2])
 		{
+		case 'A':
+			if (strcmp(str + 3, "BI") == 0)
+				return ARG_ABI_VERSION;
+			return ARG_INVALID;
 		case 't':
 			if (strcmp(str + 3, "est-color") == 0)
 				return ARG_TEST_COLOR_CONSOLE;
@@ -143,8 +149,23 @@ void args_version(int argc, const char** argv, uint64_t offset)
 {
 	if (argc == 2)
 	{
-		printf(CONSOLE_BACKGROUND_BRIGHT_MAGENTA CONSOLE_FOREGROUND_BLACK
-			"COLT v%s ("COLT_CONFIG_STRING") on %s" CONSOLE_COLOR_RESET "\n", COLT_VERSION_STRING, COLT_OS_STRING);
+		fputs(CONSOLE_BACKGROUND_BRIGHT_MAGENTA CONSOLE_FOREGROUND_BLACK
+			"COLT v" COLT_VERSION_STRING "("COLT_CONFIG_STRING") on " COLT_OS_STRING CONSOLE_COLOR_RESET "\n", stdout);
+		exit(EXIT_NO_FAILURE);
+	}
+	else
+	{
+		args_print_invalid_combination(argc, argv, offset);
+		exit(EXIT_USER_INVALID_INPUT);
+	}
+}
+
+void args_abi_version(int argc, const char** argv, uint64_t offset)
+{
+	if (argc == 2)
+	{
+		fputs(CONSOLE_BACKGROUND_BRIGHT_MAGENTA CONSOLE_FOREGROUND_BLACK
+			"COLTI ABI v" COLTI_ABI_STRING CONSOLE_COLOR_RESET "\n", stdout);
 		exit(EXIT_NO_FAILURE);
 	}
 	else
@@ -198,21 +219,23 @@ void args_help(int argc, const char** argv, uint64_t offset)
 		switch (arg)
 		{
 		break; case ARG_HELP:
-			args_help_help();
+			fputs(CONSOLE_FOREGROUND_BRIGHT_CYAN"-h, --help"CONSOLE_COLOR_RESET": Prints the purpose and use of an argument.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--help"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <ARG>\n"CONSOLE_COLOR_RESET, stdout);
 		break; case ARG_ENUM:
-			args_help_enum();
-		break; case ARG_DISASSEMBLE:
-			args_help_disassemble();
+			fputs(CONSOLE_FOREGROUND_BRIGHT_CYAN"-e, --enum"CONSOLE_COLOR_RESET": Prints all the possible valid arguments.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--enum\n"CONSOLE_COLOR_RESET, stdout);
 		break; case ARG_VERSION:
-			args_help_version();
+			fputs(CONSOLE_FOREGROUND_BRIGHT_CYAN"-v, --version"CONSOLE_COLOR_RESET": Prints the version of the compiler/interpreter.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--version\n"CONSOLE_COLOR_RESET, stdout);
+		break; case ARG_ABI_VERSION:
+			fputs(CONSOLE_FOREGROUND_BRIGHT_CYAN"-A, --ABI"CONSOLE_COLOR_RESET": Prints the ABI version of the interpreter.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--ABI\n"CONSOLE_COLOR_RESET, stdout);
+		break; case ARG_DISASSEMBLE:
+			fputs(CONSOLE_FOREGROUND_BRIGHT_CYAN"-d, --disassemble"CONSOLE_COLOR_RESET": Disassembles a serialized chunk of code (compiled byte-code), which usually ends with '.ctc'.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--disassemble"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET, stdout);
 		break; case ARG_EXEC_OUTPUT:
-			args_help_exec_out();
-		break; case ARG_TEST_COLOR_CONSOLE:
-			args_help_test_color();
+			fputs(CONSOLE_FOREGROUND_BRIGHT_CYAN"-o, --out"CONSOLE_COLOR_RESET": Specifies the executable output path.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--out"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET, stdout);
 		break; case ARG_BYTE_CODE_OUTPUT:
-			args_help_byte_out();
+			fputs(CONSOLE_FOREGROUND_BRIGHT_CYAN"-b, --byte-out"CONSOLE_COLOR_RESET": Specifies the byte-code output path.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--byte-out"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET, stdout);
 		break; case ARG_RUN_BYTE_CODE:
-			args_help_run_byte();
+			fputs(CONSOLE_FOREGROUND_BRIGHT_CYAN"-r, --run"CONSOLE_COLOR_RESET": Interpret serialized byte-code. To serialize byte-code, use "CONSOLE_FOREGROUND_BRIGHT_CYAN"-b"CONSOLE_COLOR_RESET".\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--run"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET, stdout);
+		break; case ARG_TEST_COLOR_CONSOLE:
+			fputs(CONSOLE_FOREGROUND_BRIGHT_CYAN"--test-color"CONSOLE_COLOR_RESET": Prints colored output (as a test) to the terminal.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--test-color\n"CONSOLE_COLOR_RESET, stdout);
 		break; default:
 			args_print_invalid_combination(argc, argv, offset);
 			exit(EXIT_USER_INVALID_INPUT);
@@ -230,17 +253,19 @@ void args_enum(int argc, const char** argv, uint64_t offset)
 {
 	if (argc == 2)
 	{
-		printf("The possible arguments are:"
+		fputs("The possible arguments are:"
 			CONSOLE_FOREGROUND_BRIGHT_CYAN "\n\t-h, --help              " CONSOLE_COLOR_RESET "Prints the usage of other command-line argument"
 			CONSOLE_FOREGROUND_BRIGHT_CYAN "\n\t-e, --enum              " CONSOLE_COLOR_RESET "Enumerate all valid command-line argument"
-			CONSOLE_FOREGROUND_BRIGHT_CYAN "\n\t-v, --version           " CONSOLE_COLOR_RESET "Prints the version of the Colt interpreter"
+			CONSOLE_FOREGROUND_BRIGHT_CYAN "\n\t-v, --version           " CONSOLE_COLOR_RESET "Prints the version of the Colt Compiler/Interpreter"
+			CONSOLE_FOREGROUND_BRIGHT_CYAN "\n\t-A, --ABI               " CONSOLE_COLOR_RESET "Prints the ABI version of the Colt interpreter"
 			CONSOLE_FOREGROUND_BRIGHT_CYAN "\n\t-d, --disassemble       " CONSOLE_COLOR_RESET "Disassembles a serialized byte-code"
 			CONSOLE_FOREGROUND_BRIGHT_CYAN "\n\t-o, --out               " CONSOLE_COLOR_RESET "Specifies the executable output name"
 			CONSOLE_FOREGROUND_BRIGHT_CYAN "\n\t-b, --byte-code         " CONSOLE_COLOR_RESET "Serializes generated byte-code"
 			CONSOLE_FOREGROUND_BRIGHT_CYAN "\n\t-r, --run               " CONSOLE_COLOR_RESET "Runs serialized byte-code"
 			CONSOLE_FOREGROUND_BRIGHT_CYAN "\n\t--test-color            " CONSOLE_COLOR_RESET "Writes colored text to the terminal"
 			"\n"
-		);
+		, stdout);
+		//Interpreter
 		exit(EXIT_NO_FAILURE);
 	}
 	else
@@ -349,44 +374,4 @@ void args_print_invalid_combination(int argc, const char** argv, uint64_t offset
 		}
 	}
 	fputs(".\n", stdout);
-}
-
-void args_help_disassemble()
-{
-	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-d, --disassemble"CONSOLE_COLOR_RESET": Disassembles a serialized chunk of code (compiled byte-code), which usually ends with '.ctc'.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--disassemble"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET);
-}
-
-void args_help_version()
-{
-	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-v, --version"CONSOLE_COLOR_RESET": Prints the version of the compiler.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--version\n"CONSOLE_COLOR_RESET);
-}
-
-void args_help_help()
-{
-	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-h, --help"CONSOLE_COLOR_RESET": Prints the purpose and use of an argument.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--help"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <ARG>\n"CONSOLE_COLOR_RESET);
-}
-
-void args_help_enum()
-{
-	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-e, --enum"CONSOLE_COLOR_RESET": Prints all the possible valid arguments.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--enum\n"CONSOLE_COLOR_RESET);
-}
-
-void args_help_exec_out()
-{
-	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-o, --out"CONSOLE_COLOR_RESET": Specifies the executable output path.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--out"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET);
-}
-
-void args_help_byte_out()
-{
-	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-b, --byte-out"CONSOLE_COLOR_RESET": Specifies the byte-code output path.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--byte-out"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET);
-}
-
-void args_help_run_byte()
-{
-	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-r, --run"CONSOLE_COLOR_RESET": Interpret serialized byte-code. To serialize byte-code, use "CONSOLE_FOREGROUND_BRIGHT_CYAN"-b"CONSOLE_COLOR_RESET".\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--run"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET);
-}
-
-void args_help_test_color()
-{
-	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"--test-color"CONSOLE_COLOR_RESET": Prints colored output (as a test) to the terminal.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--test-color\n"CONSOLE_COLOR_RESET);
 }
