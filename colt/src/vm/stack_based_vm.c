@@ -365,7 +365,6 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 		}
 		break; default:
 			colt_unreachable("Unknown byte-code!");
-			break;
 		}
 	}
 }
