@@ -302,91 +302,35 @@ int64_t StackVMRun(StackVM* vm, Chunk* chunk)
 			QWORD lhs = StackVMPop(vm);
 			StackVMPush(vm, OpCode_NotEqual(lhs, rhs, *(ip++)));
 		}
-		/******************************************************/
-
-		break; case OP_SJUMP_GREATER:
-		{
-			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
-			QWORD rhs = *(vm->stack_top - 1);
-			QWORD lhs = *(vm->stack_top - 2);
-			if (OpCode_Greater(lhs, rhs, *(ip++)).b)
-			{
-				ip += *ip;
-				continue;
-			}
-			ip++;
-		}
-		break; case OP_SJUMP_GREATER_EQ:
-		{
-			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
-			QWORD rhs = *(vm->stack_top - 1);
-			QWORD lhs = *(vm->stack_top - 2);
-			if (OpCode_GreaterEq(lhs, rhs, *(ip++)).b)
-			{
-				ip += *ip;
-				continue;
-			}
-			ip++;
-		}
-		break; case OP_SJUMP_LESS:
-		{
-			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
-			QWORD rhs = *(vm->stack_top - 1);
-			QWORD lhs = *(vm->stack_top - 2);
-			if (OpCode_Less(lhs, rhs, *(ip++)).b)
-			{
-				ip += *ip;
-				continue;
-			}
-			ip++;
-		}
-		break; case OP_SJUMP_LESS_EQ:
-		{
-			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
-			QWORD rhs = *(vm->stack_top - 1);
-			QWORD lhs = *(vm->stack_top - 2);
-			if (OpCode_LessEq(lhs, rhs, *(ip++)).b)
-			{
-				ip += *ip;
-				continue;
-			}
-			ip++;
-		}
-		break; case OP_SJUMP_EQUAL:
-		{
-			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
-			QWORD rhs = *(vm->stack_top - 1);
-			QWORD lhs = *(vm->stack_top - 2);
-			if (OpCode_Equal(lhs, rhs, *(ip++)).b)
-			{
-				ip += *ip;
-				continue;
-			}
-			ip++;
-		}
-		break; case OP_SJUMP_NOT_EQUAL:
-		{
-			colt_assert(StackVMSize(vm) >= 2, "Stack should contain at least 2 items!");
-			QWORD rhs = *(vm->stack_top - 1);
-			QWORD lhs = *(vm->stack_top - 2);
-			if (OpCode_NotEqual(lhs, rhs, *(ip++)).b)
-			{
-				ip += *ip;
-				continue;
-			}
-			ip++;
-		}
 
 		/******************************************************/
 
+		break; case OP_JUMP_TRUE_FPOP:
+		{
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			DWORD value = unsafe_get_dword(&ip);
+			if (StackVMTop(vm).b != false)
+				ip = chunk->code + value.u32;
+			else
+				StackVMPop(vm);
+		}
+		break; case OP_JUMP_FALSE_TPOP:
+		{
+			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
+			DWORD value = unsafe_get_dword(&ip);
+			if (StackVMTop(vm).b == false)
+				ip = chunk->code + value.u32;
+			else
+				StackVMPop(vm);
+		}
 		break; case OP_JUMP_TRUE:
 		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			DWORD value = unsafe_get_dword(&ip);
-			if (StackVMPop(vm).b == true)
+			if (StackVMPop(vm).b != false)
 				ip = chunk->code + value.u32;
 		}
-		break; case OP_JUMP_NOT_TRUE:
+		break; case OP_JUMP_FALSE:
 		{
 			colt_assert(!StackVMIsEmpty(vm), "Stack was empty!");
 			DWORD value = unsafe_get_dword(&ip);
