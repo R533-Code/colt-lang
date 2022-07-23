@@ -166,46 +166,24 @@ typedef enum
 	/// [OP_CMP_NOT_EQUAL][TYPE]
 	/// The type is a BuiltinTypeID (not lstring) to which to cast the QWORDs.
 	OP_CMP_NOT_EQUAL,
-
-	/// @brief Short Jump if Greater, compares the top 2 QWORDs, if the result is true, performs a jump
-	/// [OP_SJUMP_GREATER][TYPE][JUMP_OFFSET]
-	/// The type is a BuiltinTypeID (neither bool nor lstring) to cast the QWORDs.
-	/// The JUMP_OFFSET is an unsigned byte which is added to the instruction pointer of the VM.
-	OP_SJUMP_GREATER,
-	/// @brief Short Jump if Less, compares the top 2 QWORDs, if the result is true, performs a jump
-	/// [OP_SJUMP_LESS][TYPE][JUMP_OFFSET]
-	/// The type is a BuiltinTypeID (neither bool nor lstring) to cast the QWORDs.
-	/// The JUMP_OFFSET is an unsigned byte which is added to the instruction pointer of the VM.
-	OP_SJUMP_LESS,
-	/// @brief Short Jump if Greater or Equal, compares the top 2 QWORDs, if the result is true, performs a jump
-	/// [OP_SJUMP_GREATER_EQ][TYPE][JUMP_OFFSET]
-	/// The type is a BuiltinTypeID (neither bool nor lstring) to cast the QWORDs.
-	/// The JUMP_OFFSET is an unsigned byte which is added to the instruction pointer of the VM.
-	OP_SJUMP_GREATER_EQ,
-	/// @brief Short Jump if Greater or Equal, compares the top 2 QWORDs, if the result is true, performs a jump
-	/// [OP_SJUMP_LESS_EQ][TYPE][JUMP_OFFSET]
-	/// The type is a BuiltinTypeID (neither bool nor lstring) to cast the QWORDs.
-	/// The JUMP_OFFSET is an unsigned byte which is added to the instruction pointer of the VM.
-	OP_SJUMP_LESS_EQ,
-	/// @brief Short Jump if Equal, compares the top 2 QWORDs, if the result is true, performs a jump
-	/// [OP_SJUMP_EQUAL][TYPE][JUMP_OFFSET]
-	/// The type is a BuiltinTypeID (not lstring) to cast the QWORDs.
-	/// The JUMP_OFFSET is an unsigned byte which is added to the instruction pointer of the VM.
-	OP_SJUMP_EQUAL,
-	/// @brief Short Jump if Not Equal, compares the top 2 QWORDs, if the result is true, performs a jump
-	/// [OP_SJUMP_NOT_EQUAL][TYPE][JUMP_OFFSET]
-	/// The type is a BuiltinTypeID (not lstring) to cast the QWORDs.
-	/// The JUMP_OFFSET is an unsigned byte which is added to the instruction pointer of the VM.
-	OP_SJUMP_NOT_EQUAL,
 	
-	/// @brief Jump if True, pops the top, if the top QWORD.b == 1, if it evaluates to a true, perform a jump
-	/// [OP_SJUMP_NOT_TRUE][PADDING]?[JUMP_OFFSET]
+	/// @brief Jump if True, Pop if false, if the top QWORD.b != false, jumps, else pops the top QWORD
+	/// [OP_JUMP_TRUE_FPOP][PADDING]?[JUMP_OFFSET]
+	/// The JUMP_OFFSET is an aligned uint32_t assigned to the instruction pointer of the VM.
+	OP_JUMP_TRUE_FPOP,
+	/// @brief Jump if False, Pop if True, if the top QWORD.b == false, jumps, else pops the top QWORD
+	/// [OP_JUMP_FALSE_FPOP][PADDING]?[JUMP_OFFSET]
+	/// The JUMP_OFFSET is an aligned uint32_t assigned to the instruction pointer of the VM.
+	OP_JUMP_FALSE_TPOP,
+
+	/// @brief Jump if True, pops the top, if the top QWORD.b != false, perform a jump
+	/// [OP_JUMP_TRUE][PADDING]?[JUMP_OFFSET]
 	/// The JUMP_OFFSET is an aligned uint32_t assigned to the instruction pointer of the VM.
 	OP_JUMP_TRUE,
-	/// @brief Jump if Not True, pops the top if the top QWORD.b == 0, if it evaluates to a true, perform a jump
-	/// [OP_SJUMP_NOT_TRUE][PADDING]?[JUMP_OFFSET]
+	/// @brief Jump if Not True, pops the top if the top QWORD.b == false, perform a jump
+	/// [OP_JUMP_FALSE][PADDING]?[JUMP_OFFSET]
 	/// The JUMP_OFFSET is an aligned uint32_t assigned to the instruction pointer of the VM.
-	OP_JUMP_NOT_TRUE,
+	OP_JUMP_FALSE,
 	/// @brief Unconditional Jump
 	/// [OP_JUMP][PADDING]?[JUMP_OFFSET]
 	/// The JUMP_OFFSET is an aligned uint32_t assigned to the instruction pointer of the VM.
