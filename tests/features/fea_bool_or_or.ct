@@ -1,0 +1,7 @@
+//truetruetruefalse
+static_print(true || true);
+static_print(true || false);
+static_print(false || true);
+static_print(false || false);
+if (false || false)
+	static_print("Error");
