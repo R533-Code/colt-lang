@@ -34,6 +34,8 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 	fputs(CONSOLE_COLOR_REVERSE"SECTION HEADER:\n"CONSOLE_COLOR_RESET, stdout);
 	fputs("        ABI: ", stdout);
 	ChunkPrintABI(chunk, stdout);
+	if (memcmp(chunk->code + 8, ChunkSignature, 8) != 0)
+		fputs(", found valid Chunk signature", stdout);
 	printf("\n        %08"PRIu64": SECTION GLOBAL\n        %08"PRIu64": SECTION STRING\n        %08"PRIu64": SECTION DEBUG\n        %08"PRIu64": SECTION CODE\n",
 		global_offset, string_offset, debug_offset, code_offset
 	);
