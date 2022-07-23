@@ -13,6 +13,8 @@ void ChunkInit(Chunk* chunk)
 	//we set all the bytes of the header to 0
 	memset(chunk->code + 8, 0, sizeof(QWORD) * (CHUNK_HEADER_QWORD_COUNT - 1));
 	*(uint64_t*)chunk->code = COLTI_ABI;
+	//Sign the Chunk
+	memcpy(chunk->code + 8, ChunkSignature, 8);
 }
 
 void ChunkPrintABI(const Chunk* chunk, FILE* file)
@@ -334,6 +336,12 @@ Chunk ChunkDeserialize(const char* path)
 		print_error_format("Could not read all the file's (at path '%s') content!", path);
 		exit(EXIT_OS_RESOURCE_FAILURE);
 	}
+	if (memcmp(chunk.code, ChunkSignature, 8) != 0)
+	{
+		print_error_format("File (at path '%s') is not a Chunk!", path);
+		exit(EXIT_USER_INVALID_INPUT);
+	}
+
 	return chunk;
 }
 

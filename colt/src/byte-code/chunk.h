@@ -5,7 +5,7 @@
 * A Chunk usually contains 5 sections:
 * - The HEADER: 2 uint64_t giving informations about the Chunk, 5 uint64_t giving the offsets of the 5 other sections
 *	- First uint64_t   -> ABI
-*	- Second uint64_t  -> Unused (for now)
+*	- Second uint64_t  -> Chunk Signature, which allows to validate that a file is a Chunk
 *	- Third uint64_t   -> byte offset to GLOBAL section or 0 if this section does not exist
 *	- Fourth uint64_t   -> byte offset to STRING section or 0 if this section does not exist
 *	- Fifth uint64_t   -> byte offset to DEBUG section or 0 if this section does not exist
@@ -262,5 +262,8 @@ void chunk_grow_size(Chunk* chunk, size_t size);
 /// @param chunk The chunk to modify
 /// @param byte The byte to append
 void chunk_write_byte(Chunk* chunk, uint8_t byte);
+
+/// @brief The signature of a Chunk, which allows to check if a file contains serialized byte-code
+static const char ChunkSignature[] = "ColtR533";
 
 #endif //HG_COLT_CHUNK
