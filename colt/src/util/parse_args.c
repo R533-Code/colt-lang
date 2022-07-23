@@ -194,7 +194,7 @@ void args_disassemble(int argc, const char** argv, uint64_t offset)
 	}
 	else if (argc == 2)
 	{
-		args_help_disassemble();
+		fputs(CONSOLE_FOREGROUND_BRIGHT_CYAN"-d, --disassemble"CONSOLE_COLOR_RESET": Disassembles a serialized chunk of code (compiled byte-code), which usually ends with '.ctc'.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--disassemble"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET, stdout);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 	else
@@ -330,7 +330,7 @@ void args_run_byte(int argc, const char** argv, size_t current_argc)
 	}
 	else if (argc == 2)
 	{
-		args_help_run_byte();
+		fputs(CONSOLE_FOREGROUND_BRIGHT_CYAN"-r, --run"CONSOLE_COLOR_RESET": Interpret serialized byte-code. To serialize byte-code, use "CONSOLE_FOREGROUND_BRIGHT_CYAN"-b"CONSOLE_COLOR_RESET".\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--run"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET, stdout);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 	else
