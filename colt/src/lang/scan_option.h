@@ -17,8 +17,6 @@ typedef struct
 	bool no_warn_unused_result;
 	/// @brief If false, warns if a variable is not initialized
 	bool no_warn_uninitialized;
-	/// @brief If false, optimizes constant expressions
-	bool no_constant_folding;
 	/// @brief If false, allows messages to be printed
 	bool no_message;
 	/// @brief If false, allows warnings to be printed
