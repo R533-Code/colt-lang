@@ -50,9 +50,7 @@ bool ASTParse(AST* ast, StringView to_parse, const ColtScanOptions* options)
 void ASTReset(AST* ast)
 {
 	ExprArrayClear(&ast->expr);
-	//TODO: add VariableTableReset
-	VariableTableFree(&ast->table.glob_table);
-	VariableTableInit(&ast->table.glob_table);
+	ASTTableClear(&ast->table);
 	ast->error_nb = 0;
 	ast->warning_nb = 0;
 }
