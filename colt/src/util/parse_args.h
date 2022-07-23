@@ -4,14 +4,14 @@
 * If the arguments are informational (like --version, --help...), the function
 * `ParseArguments` will itself exit.
 * If not, then a ParseResult will be returned, containing the needed data.
-* To avoid having to deal with strings in most functions, impl_string_to_arg converts
+* To avoid having to deal with strings in most functions, args_string_to_arg converts
 * a string to an enum from CommandLineArgument.
 * To add new possible arguments:
 * - Add enum value
-* - Add case in impl_string_to_arg
-* - Add help documentation function `impl_help_...`
-* - Add case in impl_help
-* - Add function `impl_...` that handles parsing and error of the rest of the arguments
+* - Add case in args_string_to_arg
+* - Add help documentation function `args_help_...`
+* - Add case in `args_help`
+* - Add function `args_...` that handles parsing and error of the rest of the arguments
 * - Add case in ParseArguments
 */
 
@@ -75,87 +75,87 @@ IMPLEMENTATION HELPERS
 /// @brief Transform a string to an enum value, which makes it easier to deal with
 /// @param str The string to convert, which SHOULD start with '-'
 /// @return The argument type, which can be ARG_INVALID when the 'str' is not recognized
-CommandLineArgument impl_string_to_arg(const char* str);
+CommandLineArgument args_string_to_arg(const char* str);
 
 /// @brief Handles the -v or --version logic, and exits
 /// @param argc The argument count
 /// @param argv The argument values
 /// @param offset The current argument count 
-void impl_version(int argc, const char** argv, uint64_t offset);
+void args_version(int argc, const char** argv, uint64_t offset);
 
 /// @brief Handles the -d or --disassemble logic, and exits
 /// @param argc The argument count
 /// @param argv The argument values
 /// @param offset The current argument count
-void impl_disassemble(int argc, const char** argv, uint64_t offset);
+void args_disassemble(int argc, const char** argv, uint64_t offset);
 
 /// @brief Handles the -h or --help logic, and exits
 /// @param argc The argument count
 /// @param argv The argument values
 /// @param offset The current argument count
-void impl_help(int argc, const char** argv, uint64_t offset);
+void args_help(int argc, const char** argv, uint64_t offset);
 
 /// @brief Handles the -e or --enum logic and exits
 /// @param argc The argument count
 /// @param argv The argument values
 /// @param offset The current argument count
-void impl_enum(int argc, const char** argv, uint64_t offset);
+void args_enum(int argc, const char** argv, uint64_t offset);
 
 /// @brief Handles the -o or --out logic, returns a valid path or exits
 /// @param argc The argument count
 /// @param argv The argument values
 /// @param current_argc The offset to the value after -o
 /// @return A valid path to which to write the executable
-const char* impl_exec_out(int argc, const char** argv, size_t current_argc);
+const char* args_exec_out(int argc, const char** argv, size_t current_argc);
 
 /// @brief Handles the -b or --byte-out, returns a valid path or exits
 /// @param argc The argument count
 /// @param argv The argument values
 /// @param current_argc The offset to the value after -b
 /// @return A valid path to which to write the byte-code
-const char* impl_byte_out(int argc, const char** argv, size_t current_argc);
+const char* args_byte_out(int argc, const char** argv, size_t current_argc);
 
 /// @brief Handles -r or --run, always exits
 /// @param argc The argument count
 /// @param argv The argument values
 /// @param current_argc The offset to the value after -r
-void impl_run_byte(int argc, const char** argv, size_t current_argc);
+void args_run_byte(int argc, const char** argv, size_t current_argc);
 
 /// @brief Handles the --test-color and exits
 /// @param argc The argument count
 /// @param argv The argument values
 /// /// @param offset The current argument count
-void impl_test_color(int argc, const char** argv, uint64_t offset);
+void args_test_color(int argc, const char** argv, uint64_t offset);
 
 /// @brief Prints an error that is caused by an invalid combination of arguments.
 /// Expects at least that argc is 2.
 /// @param argc The argument count
 /// @param argv The argument values
 /// @param offset The current argument count
-void impl_print_invalid_combination(int argc, const char** argv, uint64_t offset);
+void args_print_invalid_combination(int argc, const char** argv, uint64_t offset);
 
 /// @brief Prints the help of '-d' or '--disassemble'
-void impl_help_disassemble();
+void args_help_disassemble();
 
 /// @brief Prints the help of '-v' or '--version'
-void impl_help_version();
+void args_help_version();
 
 /// @brief Prints the help of '-h' or '--help'
-void impl_help_help();
+void args_help_help();
 
 /// @brief Prints the help of '-e' or '--enum'
-void impl_help_enum();
+void args_help_enum();
 
 /// @brief Prints the help of '-o' or '--out'
-void impl_help_exec_out();
+void args_help_exec_out();
 
 /// @brief Prints the help of '-b' or '--byte-out'
-void impl_help_byte_out();
+void args_help_byte_out();
 
 /// @brief Prints the help of '-r' or '--run'
-void impl_help_run_byte();
+void args_help_run_byte();
 
 /// @brief Prints the help of '--test-color'
-void impl_help_test_color();
+void args_help_test_color();
 
 #endif //HG_COLT_PARSE_ARGS

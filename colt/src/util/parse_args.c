@@ -13,28 +13,28 @@ ParseResult ParseArguments(int argc, const char** argv)
 	{
 		if (argv[i][0] == '-')
 		{
-			CommandLineArgument arg = impl_string_to_arg(argv[i]);
+			CommandLineArgument arg = args_string_to_arg(argv[i]);
 			switch (arg)
 			{
 				//Even though all the impl_{ARG} do not return, break to silence warnings
 			break; case ARG_HELP:
-				impl_help(argc, argv, i);
+				args_help(argc, argv, i);
 			break; case ARG_ENUM:
-				impl_enum(argc, argv, i);
+				args_enum(argc, argv, i);
 			break; case ARG_VERSION:
-				impl_version(argc, argv, i);
+				args_version(argc, argv, i);
 			break; case ARG_DISASSEMBLE:
-				impl_disassemble(argc, argv, i);
+				args_disassemble(argc, argv, i);
 			break; case ARG_TEST_COLOR_CONSOLE:
-				impl_test_color(argc, argv, i);
+				args_test_color(argc, argv, i);
 			break; case ARG_EXEC_OUTPUT:
 				//As the function will read 1 argument more, we need to update i
-				result.file_path_out = impl_exec_out(argc, argv, ++i);
+				result.file_path_out = args_exec_out(argc, argv, ++i);
 			break; case ARG_BYTE_CODE_OUTPUT:
 				//As the function will read 1 argument more, we need to update i
-				result.byte_code_out = impl_byte_out(argc, argv, ++i);
+				result.byte_code_out = args_byte_out(argc, argv, ++i);
 			break; case ARG_RUN_BYTE_CODE:
-				impl_run_byte(argc, argv, i);
+				args_run_byte(argc, argv, i);
 			break; default:
 				print_error_format("Unknown argument '%s'!\nUse '-e' or '--enum' to get the list of valid arguments.", argv[i]);
 				exit(EXIT_USER_INVALID_INPUT);
@@ -67,7 +67,7 @@ bool checkIfValidFile(const char* path)
 IMPLEMENTATION HELPERS
 *****************************************/
 
-CommandLineArgument impl_string_to_arg(const char* str)
+CommandLineArgument args_string_to_arg(const char* str)
 {
 	colt_assert(strlen(str) > 1, "String size should be greater than 1!");
 	size_t length = strlen(str);
@@ -139,7 +139,7 @@ CommandLineArgument impl_string_to_arg(const char* str)
 	return ARG_INVALID;
 }
 
-void impl_version(int argc, const char** argv, uint64_t offset)
+void args_version(int argc, const char** argv, uint64_t offset)
 {
 	if (argc == 2)
 	{
@@ -149,12 +149,12 @@ void impl_version(int argc, const char** argv, uint64_t offset)
 	}
 	else
 	{
-		impl_print_invalid_combination(argc, argv, offset);
+		args_print_invalid_combination(argc, argv, offset);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 }
 
-void impl_disassemble(int argc, const char** argv, uint64_t offset)
+void args_disassemble(int argc, const char** argv, uint64_t offset)
 {
 	if (argc == 3)
 	{
@@ -173,17 +173,17 @@ void impl_disassemble(int argc, const char** argv, uint64_t offset)
 	}
 	else if (argc == 2)
 	{
-		impl_help_disassemble();
+		args_help_disassemble();
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 	else
 	{
-		impl_print_invalid_combination(argc, argv, offset);
+		args_print_invalid_combination(argc, argv, offset);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 }
 
-void impl_help(int argc, const char** argv, uint64_t offset)
+void args_help(int argc, const char** argv, uint64_t offset)
 {
 	if (argc == 2)
 	{
@@ -194,39 +194,39 @@ void impl_help(int argc, const char** argv, uint64_t offset)
 	}
 	else if (argc == 3)
 	{
-		CommandLineArgument arg = impl_string_to_arg(argv[2]);
+		CommandLineArgument arg = args_string_to_arg(argv[2]);
 		switch (arg)
 		{
 		break; case ARG_HELP:
-			impl_help_help();
+			args_help_help();
 		break; case ARG_ENUM:
-			impl_help_enum();
+			args_help_enum();
 		break; case ARG_DISASSEMBLE:
-			impl_help_disassemble();
+			args_help_disassemble();
 		break; case ARG_VERSION:
-			impl_help_version();
+			args_help_version();
 		break; case ARG_EXEC_OUTPUT:
-			impl_help_exec_out();
+			args_help_exec_out();
 		break; case ARG_TEST_COLOR_CONSOLE:
-			impl_help_test_color();
+			args_help_test_color();
 		break; case ARG_BYTE_CODE_OUTPUT:
-			impl_help_byte_out();
+			args_help_byte_out();
 		break; case ARG_RUN_BYTE_CODE:
-			impl_help_run_byte();
+			args_help_run_byte();
 		break; default:
-			impl_print_invalid_combination(argc, argv, offset);
+			args_print_invalid_combination(argc, argv, offset);
 			exit(EXIT_USER_INVALID_INPUT);
 		}
 		exit(EXIT_NO_FAILURE);
 	}
 	else
 	{
-		impl_print_invalid_combination(argc, argv, offset);
+		args_print_invalid_combination(argc, argv, offset);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 }
 
-void impl_enum(int argc, const char** argv, uint64_t offset)
+void args_enum(int argc, const char** argv, uint64_t offset)
 {
 	if (argc == 2)
 	{
@@ -245,19 +245,19 @@ void impl_enum(int argc, const char** argv, uint64_t offset)
 	}
 	else
 	{
-		impl_print_invalid_combination(argc, argv, offset);
+		args_print_invalid_combination(argc, argv, offset);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 }
 
-const char* impl_exec_out(int argc, const char** argv, size_t current_argc)
+const char* args_exec_out(int argc, const char** argv, size_t current_argc)
 {
 	if (current_argc == argc)
 	{
 		print_error_format("'%s' expects a file path!", argv[current_argc - 1]);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
-	if (impl_string_to_arg(argv[current_argc]) == ARG_INVALID)
+	if (args_string_to_arg(argv[current_argc]) == ARG_INVALID)
 		return argv[current_argc];
 	else
 	{
@@ -266,14 +266,14 @@ const char* impl_exec_out(int argc, const char** argv, size_t current_argc)
 	}
 }
 
-const char* impl_byte_out(int argc, const char** argv, size_t current_argc)
+const char* args_byte_out(int argc, const char** argv, size_t current_argc)
 {
 	if (current_argc == argc)
 	{
 		print_error_format("'%s' expects a file path!", argv[current_argc - 1]);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
-	if (impl_string_to_arg(argv[current_argc]) == ARG_INVALID)
+	if (args_string_to_arg(argv[current_argc]) == ARG_INVALID)
 		return argv[current_argc];
 	else
 	{
@@ -282,7 +282,7 @@ const char* impl_byte_out(int argc, const char** argv, size_t current_argc)
 	}
 }
 
-void impl_run_byte(int argc, const char** argv, size_t current_argc)
+void args_run_byte(int argc, const char** argv, size_t current_argc)
 {
 	if (argc == 3)
 	{
@@ -305,21 +305,21 @@ void impl_run_byte(int argc, const char** argv, size_t current_argc)
 	}
 	else if (argc == 2)
 	{
-		impl_help_run_byte();
+		args_help_run_byte();
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 	else
 	{
-		impl_print_invalid_combination(argc, argv, current_argc);
+		args_print_invalid_combination(argc, argv, current_argc);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 }
 
-void impl_test_color(int argc, const char** argv, uint64_t offset)
+void args_test_color(int argc, const char** argv, uint64_t offset)
 {
 	if (argc > 2)
 	{
-		impl_print_invalid_combination(argc, argv, offset);
+		args_print_invalid_combination(argc, argv, offset);
 		exit(EXIT_USER_INVALID_INPUT);
 	}
 	int n;
@@ -334,7 +334,7 @@ void impl_test_color(int argc, const char** argv, uint64_t offset)
 	exit(EXIT_NO_FAILURE);
 }
 
-void impl_print_invalid_combination(int argc, const char** argv, uint64_t offset)
+void args_print_invalid_combination(int argc, const char** argv, uint64_t offset)
 {
 	colt_assert(argc >= 2, "Expected 'argc' greater or equal to 2!");
 	
@@ -351,42 +351,42 @@ void impl_print_invalid_combination(int argc, const char** argv, uint64_t offset
 	fputs(".\n", stdout);
 }
 
-void impl_help_disassemble()
+void args_help_disassemble()
 {
 	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-d, --disassemble"CONSOLE_COLOR_RESET": Disassembles a serialized chunk of code (compiled byte-code), which usually ends with '.ctc'.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--disassemble"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET);
 }
 
-void impl_help_version()
+void args_help_version()
 {
 	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-v, --version"CONSOLE_COLOR_RESET": Prints the version of the compiler.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--version\n"CONSOLE_COLOR_RESET);
 }
 
-void impl_help_help()
+void args_help_help()
 {
 	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-h, --help"CONSOLE_COLOR_RESET": Prints the purpose and use of an argument.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--help"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <ARG>\n"CONSOLE_COLOR_RESET);
 }
 
-void impl_help_enum()
+void args_help_enum()
 {
 	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-e, --enum"CONSOLE_COLOR_RESET": Prints all the possible valid arguments.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--enum\n"CONSOLE_COLOR_RESET);
 }
 
-void impl_help_exec_out()
+void args_help_exec_out()
 {
 	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-o, --out"CONSOLE_COLOR_RESET": Specifies the executable output path.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--out"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET);
 }
 
-void impl_help_byte_out()
+void args_help_byte_out()
 {
 	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-b, --byte-out"CONSOLE_COLOR_RESET": Specifies the byte-code output path.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--byte-out"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET);
 }
 
-void impl_help_run_byte()
+void args_help_run_byte()
 {
 	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"-r, --run"CONSOLE_COLOR_RESET": Interpret serialized byte-code. To serialize byte-code, use "CONSOLE_FOREGROUND_BRIGHT_CYAN"-b"CONSOLE_COLOR_RESET".\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--run"CONSOLE_FOREGROUND_BRIGHT_MAGENTA" <PATH>\n"CONSOLE_COLOR_RESET);
 }
 
-void impl_help_test_color()
+void args_help_test_color()
 {
 	printf(CONSOLE_FOREGROUND_BRIGHT_CYAN"--test-color"CONSOLE_COLOR_RESET": Prints colored output (as a test) to the terminal.\nUse: "CONSOLE_FOREGROUND_BRIGHT_CYAN"--test-color\n"CONSOLE_COLOR_RESET);
 }
