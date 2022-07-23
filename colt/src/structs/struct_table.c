@@ -16,6 +16,12 @@ void ASTTableFree(ASTTable* table)
 	VariableTableFree(&table->glob_table);
 }
 
+void ASTTableClear(ASTTable* table)
+{
+	VariableTableClear(&table->glob_table);
+	StringTableClear(&table->str_table);
+}
+
 void StringTableInit(StringTable* table)
 {
 	table->insertion_alloc_capacity = 10;
@@ -39,13 +45,26 @@ void StringTableFree(StringTable* table)
 	safe_free(table->str_entries);
 }
 
+void StringTableClear(StringTable* table)
+{
+	for (size_t i = 0; i < table->capacity; i++)
+	{
+		if (table->str_entries[i].key.ptr != NULL)
+		{
+			StringFree(&table->str_entries[i].key);
+			table->str_entries[i].key.ptr = NULL;
+		}
+	}
+	table->count = 0;
+	table->all_str_size = 0;
+}
+
 void StringTableAdd(StringTable* table, const String* to_add)
 {
 	if ((double)table->count + 1 > (double)table->capacity * STRING_TABLE_MAX_LOAD)
 	{
 		string_table_grow_capacity(table, table->capacity * 2);
-	}
-	
+	}	
 
 	StringEntry* entry = string_table_find_entry(table->str_entries, table->capacity, StringToStringView(to_add));
 	if (entry->key.ptr == NULL)
@@ -84,6 +103,19 @@ void VariableTableFree(GlobalTable* table)
 			StringFree(&table->entries[i].key);
 	}
 	safe_free(table->entries);
+}
+
+void VariableTableClear(GlobalTable* table)
+{
+	for (size_t i = 0; i < table->capacity; i++)
+	{
+		if (table->entries[i].key.ptr != NULL)
+		{
+			StringFree(&table->entries[i].key);
+			table->entries[i].key.ptr = NULL;
+		}
+	}
+	table->count = 0;
 }
 
 bool VariableTableGet(GlobalTable* table, StringView key, QWORD* value)

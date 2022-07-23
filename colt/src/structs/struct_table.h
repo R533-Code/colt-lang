@@ -88,6 +88,10 @@ void ASTTableInit(ASTTable* table);
 /// @param table The table to modify
 void ASTTableFree(ASTTable* table);
 
+/// @brief Resets the state of both tables inside the ASTTable
+/// @param table The table to modify
+void ASTTableClear(ASTTable* table);
+
 /// @brief Initializes a StringTable
 /// @param table The StringTable to initialize
 void StringTableInit(StringTable* table);
@@ -96,10 +100,15 @@ void StringTableInit(StringTable* table);
 /// @param table The StringTable whose resources to free
 void StringTableFree(StringTable* table);
 
+/// @brief Clear all the strings from the table, keeping its capacity
+/// @param table The StringTable whose resources to clear
+void StringTableClear(StringTable* table);
+
 /// @brief Adds a String to the table
 /// @param table The StringTable to add to
 /// @param to_add The String to add
 void StringTableAdd(StringTable* table, const String* to_add);
+
 
 /// @brief Initializes a GlobalTable
 /// @param table The GlobalTable to initialize
@@ -108,6 +117,10 @@ void VariableTableInit(GlobalTable* table);
 /// @brief Frees the resources used by a GlobalTable
 /// @param table The GlobalTable whose resources to free
 void VariableTableFree(GlobalTable* table);
+
+/// @brief Clears the resources used by a GlobalTable
+/// @param table The GlobalTable whose resources to clear
+void VariableTableClear(GlobalTable* table);
 
 /// @brief Get the value of an entry if it exists.
 /// If this function returns True, then it has written the value
