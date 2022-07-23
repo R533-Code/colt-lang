@@ -246,34 +246,21 @@ uint64_t dis_chunk_print_code(const Chunk* chunk, uint64_t offset)
 		return dis_print_operand_instruction("OP_CMP_NOT_EQUAL", chunk->code[offset + 1], offset);
 
 		/******************************************************/
-
-	case OP_SJUMP_GREATER:
-		return dis_print_sjump_instruction("OP_SJUMP_GREATER", chunk->code[offset + 1], chunk->code[offset + 2], offset);
-	case OP_SJUMP_GREATER_EQ:
-		return dis_print_sjump_instruction("OP_SJUMP_GREATER_EQ", chunk->code[offset + 1], chunk->code[offset + 2], offset);
-	case OP_SJUMP_LESS:
-		return dis_print_sjump_instruction("OP_SJUMP_LESS", chunk->code[offset + 1], chunk->code[offset + 2], offset);
-	case OP_SJUMP_LESS_EQ:
-		return dis_print_sjump_instruction("OP_SJUMP_LESS_EQ", chunk->code[offset + 1], chunk->code[offset + 2], offset);
-	case OP_SJUMP_EQUAL:
-		return dis_print_sjump_instruction("OP_SJUMP_EQUAL", chunk->code[offset + 1], chunk->code[offset + 2], offset);
-	case OP_SJUMP_NOT_EQUAL:
-		return dis_print_sjump_instruction("OP_SJUMP_NOT_EQUAL", chunk->code[offset + 1], chunk->code[offset + 2], offset);
 	
-	case OP_JUMP_NOT_TRUE:
-		printf(CONSOLE_FOREGROUND_YELLOW "%-20s "
-			CONSOLE_FOREGROUND_CYAN "TO: '%"PRIu32"'\n"
-			CONSOLE_COLOR_RESET, "OP_JUMP_NOT_TRUE", ChunkGetDWORD(chunk, &offset).i32);
+	case OP_JUMP_FALSE_TPOP:
+		dis_print_jump_instruction("OP_JUMP_FALSE_TPOP", ChunkGetDWORD(chunk, &offset).u32);
+		return offset;
+	case OP_JUMP_TRUE_FPOP:
+		dis_print_jump_instruction("OP_JUMP_TRUE_FPOP", ChunkGetDWORD(chunk, &offset).u32);
+		return offset;
+	case OP_JUMP_FALSE:
+		dis_print_jump_instruction("OP_JUMP_FALSE", ChunkGetDWORD(chunk, &offset).u32);
 		return offset;
 	case OP_JUMP_TRUE:
-		printf(CONSOLE_FOREGROUND_YELLOW "%-20s "
-			CONSOLE_FOREGROUND_CYAN "TO: '%"PRIu32"'\n"
-			CONSOLE_COLOR_RESET, "OP_JUMP_TRUE", ChunkGetDWORD(chunk, &offset).i32);
+		dis_print_jump_instruction("OP_JUMP_TRUE", ChunkGetDWORD(chunk, &offset).u32);
 		return offset;
 	case OP_JUMP:
-		printf(CONSOLE_FOREGROUND_YELLOW "%-20s "
-			CONSOLE_FOREGROUND_CYAN "TO: '%"PRIu32"'\n"
-			CONSOLE_COLOR_RESET, "OP_JUMP", ChunkGetDWORD(chunk, &offset).i32);
+		dis_print_jump_instruction("OP_JUMP", ChunkGetDWORD(chunk, &offset).u32);
 		return offset;
 
 		/******************************************************/
@@ -323,13 +310,11 @@ uint64_t dis_print_2operand_instruction(const char* name, uint8_t first, uint8_t
 	return offset + 3;
 }
 
-uint64_t dis_print_sjump_instruction(const char* name, uint8_t type, uint8_t to_offset, uint64_t offset)
+void dis_print_jump_instruction(const char* name, uint32_t to_offset)
 {
 	printf(CONSOLE_FOREGROUND_YELLOW "%-20s "
-		CONSOLE_FOREGROUND_CYAN "'%s'" CONSOLE_COLOR_RESET ", "
-		CONSOLE_FOREGROUND_CYAN "TO: '%"PRIu64"'\n"
-		CONSOLE_COLOR_RESET, name, BuiltinTypeIDToString(type), offset + 2 + to_offset);
-	return offset + 3;
+		CONSOLE_FOREGROUND_CYAN "TO: '%"PRIu32"'\n"
+		CONSOLE_COLOR_RESET, name, to_offset);
 }
 
 void dis_print_hex_instruction(const char* name, uint64_t value)

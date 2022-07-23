@@ -55,11 +55,8 @@ uint64_t dis_print_2operand_instruction(const char* name, uint8_t first, uint8_t
 
 /// @brief Prints a short jump instruction, which is followed by a type operand, and a byte offset
 /// @param name The name of the instruction
-/// @param type The type operand
 /// @param to_offset The offset value
-/// @param offset The current byte offset
-/// @return The current byte offset + 3
-uint64_t dis_print_sjump_instruction(const char* name, uint8_t type, uint8_t to_offset, uint64_t offset);
+void dis_print_jump_instruction(const char* name, uint32_t to_offset);
 
 /// @brief Prints a one byte instruction followed by the int following it.
 /// There is no offset to pass to this function, but rather, the 'value' argument

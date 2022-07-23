@@ -304,7 +304,7 @@ void gen_code_condition(const ConditionExpr* ptr, ByteCodeGenerator* gen)
 	colt_assert(ptr->elif_conditions.count == ptr->elif_executes.count, "elif conditions count should match elif executes count!");
 
 	gen_byte_code(ptr->if_condition, gen);
-	ChunkWriteOpCode(gen->chunk, OP_JUMP_NOT_TRUE);
+	ChunkWriteOpCode(gen->chunk, OP_JUMP_FALSE);
 	
 	DWORD uninitialized_offset = { .i32 = 0xffffffff };
 	
@@ -334,7 +334,7 @@ void gen_code_condition(const ConditionExpr* ptr, ByteCodeGenerator* gen)
 	for (size_t i = 0; i < ptr->elif_conditions.count; i++)
 	{
 		gen_byte_code(ptr->elif_conditions.expressions[i], gen);
-		ChunkWriteOpCode(gen->chunk, OP_JUMP_NOT_TRUE);
+		ChunkWriteOpCode(gen->chunk, OP_JUMP_FALSE);
 		//Store the jump to the next condition to test
 		to_override_jmp_next = gen->chunk->count;
 		to_override_jmp_next += ChunkWriteDWORD(gen->chunk, uninitialized_offset);
@@ -393,7 +393,7 @@ void gen_code_while(const WhileExpr* ptr, ByteCodeGenerator* gen)
 	gen->continue_offset = gen->chunk->count;
 	
 	gen_byte_code(ptr->while_condition, gen);
-	ChunkWriteOpCode(gen->chunk, OP_JUMP_NOT_TRUE);
+	ChunkWriteOpCode(gen->chunk, OP_JUMP_FALSE);
 
 	uint64_t jump_out = gen->chunk->count;
 	jump_out += ChunkWriteDWORD(gen->chunk, uninitialized_offset);
@@ -484,14 +484,13 @@ void gen_and_and_bool_comparison(const BinaryExpr* ptr, ByteCodeGenerator* gen)
 	gen_byte_code(ptr->lhs, gen);
 	
 	//If the condition is false, we do not evaluate the second, by jumping over it
-	ChunkWriteOpCode(gen->chunk, OP_JUMP_NOT_TRUE);
+	ChunkWriteOpCode(gen->chunk, OP_JUMP_FALSE);
 	
 	DWORD uninitialized_offset = { .u32 = 0xffffffff };
 	uint32_t jump_to = (uint32_t)gen->chunk->count;
 	jump_to += (uint32_t)ChunkWriteDWORD(gen->chunk, uninitialized_offset);
 	
-	//If it is true, we pop the true, to evaluate the second condition
-	ChunkWriteOpCode(gen->chunk, OP_POP);
+	//There is no need to pop the last bool as OP_JUMP_FALSE does it
 	gen_byte_code(ptr->rhs, gen);
 	
 	//Override jump offset
@@ -510,10 +509,9 @@ void gen_or_or_bool_comparison(const BinaryExpr* ptr, ByteCodeGenerator* gen)
 	uint32_t jump_to = (uint32_t)gen->chunk->count;
 	jump_to += (uint32_t)ChunkWriteDWORD(gen->chunk, uninitialized_offset);
 	
-	//If it is false, we pop the false, to evaluate the second condition
-	ChunkWriteOpCode(gen->chunk, OP_POP);
+	//There is no need to pop the last bool as OP_JUMP_TRUE does it
 	gen_byte_code(ptr->rhs, gen);
-	
+
 	//Override jump offset
 	*((uint32_t*)(gen->chunk->code + jump_to)) = (uint32_t)gen->chunk->count;
 }
