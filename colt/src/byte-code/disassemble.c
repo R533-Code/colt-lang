@@ -4,6 +4,8 @@
 
 #include "disassemble.h"
 
+#ifndef COLT_NO_DISASSEMBLY
+
 void ChunkDisassemble(const Chunk* chunk, const char* name)
 {
 	printf("================ %s ================\n", name);
@@ -353,3 +355,12 @@ void dis_print_global_instruction(const char* name, uint64_t byte_offset, const 
 	}
 
 }
+
+#else
+
+void ChunkDisassemble(const Chunk* chunk, const char* name)
+{
+	print_error_string("Cannot print disassembly as this interpreter/compiler was compiled with the option COLT_NO_DISASSEMBLY.");
+}
+
+#endif

@@ -17,6 +17,8 @@ void ChunkDisassemble(const Chunk* chunk, const char* name);
 IMPLEMENTATION HELPERS
 **********************************/
 
+#ifndef COLT_NO_DISASSEMBLY
+
 /// @brief Writes a string to 'stdout', highlighting escape characters, and quoting it
 /// @param str The string to print
 void print_lstring(const char* str);
@@ -70,5 +72,7 @@ void dis_print_hex_instruction(const char* name, uint64_t value);
 /// @param byte_offset The offset of the QWORD (from ChunkGetQWORD)
 /// @param chunk The Chunk from which to read debug data
 void dis_print_global_instruction(const char* name, uint64_t byte_offset, const Chunk* chunk);
+
+#endif
 
 #endif //HG_COLT_DISASSEMBLE
