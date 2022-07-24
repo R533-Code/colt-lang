@@ -371,11 +371,7 @@ Expr* parse_primary(AST* ast)
 		/**************** PARENTHESIS ****************/
 
 	break; case TKN_LEFT_PAREN:
-		primary = parse_paren_binary(ast);
-		//So (...; only generates an error once
-		if (ast->current_tkn != TKN_SEMICOLON)
-			ast->current_tkn = ScannerGetNextToken(&ast->scan);
-		return primary;
+		return parse_paren_binary(ast);		
 
 		/**************** VARIABLE ****************/
 	
@@ -488,6 +484,9 @@ Expr* parse_paren_binary(AST* ast)
 		ast_gen_error(ast, ast->scan.current_line, ScannerGetCurrentLine(&ast->scan), ScannerGetCurrentLexeme(&ast->scan),
 			"Expected a closing parenthesis ')'!");
 	}
+	//So that (...; only generates an error once
+	if (ast->current_tkn != TKN_SEMICOLON)
+		ast->current_tkn = ScannerGetNextToken(&ast->scan);
 
 	return ret;
 }
