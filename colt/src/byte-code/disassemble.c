@@ -11,7 +11,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 	//size of the header
 	if (chunk->count <= CHUNK_HEADER_QWORD_COUNT * sizeof(QWORD))
 	{
-		printf("!EMPTY CHUNK!");
+		fputs("!EMPTY CHUNK!", stdout);
 		return;
 	}
 	if (ChunkGetABI(chunk) != COLTI_ABI)
@@ -38,10 +38,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 	if (memcmp(chunk->code + 8, ChunkSignature, 8) == 0)
 		fputs(", found valid signature", stdout);
 	
-	if (debug_offset != 0)
-		fputs(", found DEBUG informations", stdout);
-	else
-		fputs(", no DEBUG informations found", stdout);
+	printf("\n        DEBUG informations: %sfound", debug_offset != 0 ? "" : "not ");
 
 	printf("\n        %08"PRIu64": SECTION GLOBAL\n        %08"PRIu64": SECTION STRING\n        %08"PRIu64": SECTION DEBUG\n        %08"PRIu64": SECTION CODE\n",
 		global_offset, string_offset, debug_offset, code_offset
@@ -85,9 +82,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		fputs(CONSOLE_COLOR_REVERSE"SECTION CODE:\n"CONSOLE_COLOR_RESET, stdout);
 		//loop to print byte-code to execute
 		for (uint64_t offset = code_offset; offset < chunk->count;)
-		{
 			offset = dis_chunk_print_code(chunk, offset);
-		}
 	}
 
 }
@@ -131,6 +126,8 @@ void print_lstring(const char* str)
 void unsafe_print_global_variable(const Chunk* chunk, uint64_t var_nb)
 {
 	uint64_t debug_offset = ChunkGetDEBUGSection(chunk);
+	colt_assert(debug_offset != 0, "Cannot be called if no debug data exist!");
+	
 	uint64_t offset = ChunkGetGLOBALSection(chunk);
 
 	// + sizeof(QWORD) as we need to offset by one QWORD to get the offset to the name
