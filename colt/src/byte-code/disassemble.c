@@ -37,9 +37,10 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 	
 	if (memcmp(chunk->code + 8, ChunkSignature, 8) == 0)
 		fputs(", found valid signature", stdout);
-	
+	//Debug informations are not? found
 	printf("\n        DEBUG informations: %sfound", debug_offset != 0 ? "" : "not ");
 
+	//Print informations about each section
 	printf("\n        %08"PRIu64": SECTION GLOBAL\n        %08"PRIu64": SECTION STRING\n        %08"PRIu64": SECTION DEBUG\n        %08"PRIu64": SECTION CODE\n",
 		global_offset, string_offset, debug_offset, code_offset
 	);
