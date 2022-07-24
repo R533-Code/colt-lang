@@ -14,6 +14,15 @@
 #include "lang/expr.h"	//we convert expressions to byte-code
 #include "type/type.h"	//for built-in types
 
+/// @brief Flags used by generateByteCode to customize generation
+typedef struct
+{
+	/// @brief If false, generates debug symbols
+	bool no_generate_debug_symbols;
+	/// @brief If true, prints the last expression's result (used for the REPL)
+	bool print_last_expr;
+} ByteCodeGeneratorFlags;
+
 /// @brief A Helper used internally by generateByteCode
 typedef struct
 {
@@ -23,6 +32,8 @@ typedef struct
 	const ASTTable* table;
 	/// @brief The offset to jump to when a continue is hit
 	uint64_t continue_offset;
+	/// @brief The flags to use when generating byte-code
+	ByteCodeGeneratorFlags* flags;
 } ByteCodeGenerator;
 
 /// @brief Generates byte-code to a Chunk
