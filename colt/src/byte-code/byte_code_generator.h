@@ -33,14 +33,15 @@ typedef struct
 	/// @brief The offset to jump to when a continue is hit
 	uint64_t continue_offset;
 	/// @brief The flags to use when generating byte-code
-	ByteCodeGeneratorFlags* flags;
+	bool print_expr;
 } ByteCodeGenerator;
 
 /// @brief Generates byte-code to a Chunk
 /// @param table The table of String and Globals
 /// @param array The array of expressions to compile
+/// @param flags The flags to customize generation
 /// @return A Chunk containing the executable byte-code
-Chunk generateByteCode(const ASTTable* table, const ExprArray* array);
+Chunk generateByteCode(const ASTTable* table, const ExprArray* array, const ByteCodeGeneratorFlags* flags);
 
 /*************************************
 IMPLEMENTATION HELPERS

@@ -54,7 +54,7 @@
 							ChunkWriteOperand(gen->chunk, (BuiltinTypeID)TypeGetID(ptr->expr_type)); } while (0)
 
 
-Chunk generateByteCode(const ASTTable* table, const ExprArray* array)
+Chunk generateByteCode(const ASTTable* table, const ExprArray* array, const ByteCodeGeneratorFlags* flags)
 {
 	colt_assert(array->count != 0, "Cannot generate byte-code if AST reported an error!");
 
@@ -70,18 +70,23 @@ Chunk generateByteCode(const ASTTable* table, const ExprArray* array)
 	gen_global_pool(&chunk, &table->glob_table);
 	//write string literals in the constant pool
 	gen_string_literal_pool(&chunk, &table->str_table);
-	//write DEBUG offset
-	gen_debug_pool(&chunk, table);
+	
+	if (flags->no_generate_debug_symbols == false)
+		gen_debug_pool(&chunk, table);
+	else
+		ChunkWriteDEBUGSection(&chunk, 0);
 
 	//write CODE offset
 	ChunkWriteCODESection(&chunk, chunk.count);
 
-	ByteCodeGenerator gen = { .chunk = &chunk, .table = table, .continue_offset = 0 };
+	ByteCodeGenerator gen = { .chunk = &chunk, .table = table, .continue_offset = 0, .print_expr = false };
 	for (size_t i = 0; i < array->count - 1; i++)
 		gen_byte_code_and_pop(array->expressions[i], &gen);
 	
+	//If we need to print the expression, then set the flag to print
+	gen.print_expr = flags->print_last_expr;
+	
 	//Generate last expression
-	//TODO: flag for printing last expression
 	gen_byte_code_and_pop(expr_array_back(array), &gen);	
 	
 	ChunkWriteOpCode(&chunk, OP_EXIT);
@@ -162,6 +167,12 @@ void gen_code_unary(const UnaryExpr* ptr, ByteCodeGenerator* gen)
 	break; default:
 		colt_unreachable("Operator was not unary!");
 	}
+
+	if (gen->print_expr)
+	{
+		ChunkWriteOpCode(gen->chunk, OP_PRINT);
+		ChunkWriteOperand(gen->chunk, (BuiltinTypeID)ExprGetID(ptr));
+	}
 }
 
 void gen_code_binary(const BinaryExpr* ptr, ByteCodeGenerator* gen)
@@ -237,6 +248,12 @@ void gen_code_binary(const BinaryExpr* ptr, ByteCodeGenerator* gen)
 	break; default:
 		colt_unreachable("NOT IMPLEMENTED!");
 	}
+	
+	if (gen->print_expr)
+	{
+		ChunkWriteOpCode(gen->chunk, OP_PRINT);
+		ChunkWriteOperand(gen->chunk, (BuiltinTypeID)ExprGetID(ptr));
+	}
 }
 
 void gen_code_literal(const LiteralExpr* ptr, ByteCodeGenerator* gen)
@@ -291,6 +308,12 @@ void gen_code_literal(const LiteralExpr* ptr, ByteCodeGenerator* gen)
 	break; default:
 		colt_unreachable("Type ID should be of that of a built-in type!");
 	}
+	
+	if (gen->print_expr)
+	{
+		ChunkWriteOpCode(gen->chunk, OP_PRINT);
+		ChunkWriteOperand(gen->chunk, (BuiltinTypeID)ExprGetID(ptr));
+	}
 }
 
 void gen_code_convert(const ConvertExpr* ptr, ByteCodeGenerator* gen)
@@ -299,6 +322,12 @@ void gen_code_convert(const ConvertExpr* ptr, ByteCodeGenerator* gen)
 	ChunkWriteOpCode(gen->chunk, OP_CONVERT);
 	ChunkWriteOperand(gen->chunk, (BuiltinTypeID)ExprGetID(ptr->child));
 	ChunkWriteOperand(gen->chunk, (BuiltinTypeID)ExprGetID(ptr));
+
+	if (gen->print_expr)
+	{
+		ChunkWriteOpCode(gen->chunk, OP_PRINT);
+		ChunkWriteOperand(gen->chunk, (BuiltinTypeID)ExprGetID(ptr));
+	}
 }
 
 void gen_code_condition(const ConditionExpr* ptr, ByteCodeGenerator* gen)
