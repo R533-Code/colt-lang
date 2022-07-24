@@ -58,7 +58,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		else
 		{
 			for (size_t i = global_offset; i < global_end; i += sizeof(QWORD))
-				printf("        %08"PRIu64": 0x%"PRIX64"\n", i, *(uint64_t*)(chunk->code + global_offset + i));
+				printf("        %08"PRIu64": 0x%"PRIX64"\n", i, *(uint64_t*)(chunk->code + i));
 		}
 	}
 	if (string_offset != 0)
