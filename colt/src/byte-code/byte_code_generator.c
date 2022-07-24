@@ -78,16 +78,11 @@ Chunk generateByteCode(const ASTTable* table, const ExprArray* array)
 
 	ByteCodeGenerator gen = { .chunk = &chunk, .table = table, .continue_offset = 0 };
 	for (size_t i = 0; i < array->count - 1; i++)
-	{
-		gen_byte_code(array->expressions[i], &gen);
-		if (TypeGetID(array->expressions[i]->expr_type) != ID_COLT_VOID)
-			ChunkWriteOpCode(&chunk, OP_POP);
-	}
+		gen_byte_code_and_pop(array->expressions[i], &gen);
+	
 	//Generate last expression
 	//TODO: flag for printing last expression
-	gen_byte_code(expr_array_back(array), &gen);
-	if (ExprGetID(expr_array_back(array)) != ID_COLT_VOID)
-		ChunkWriteOpCode(&chunk, OP_POP);
+	gen_byte_code_and_pop(expr_array_back(array), &gen);	
 	
 	ChunkWriteOpCode(&chunk, OP_EXIT);
 	//Exit successfully
@@ -135,6 +130,13 @@ void gen_byte_code(const Expr* expr, ByteCodeGenerator* gen)
 	break; default:
 		colt_unreachable("NOT IMPLEMENTED YET!");
 	}
+}
+
+void gen_byte_code_and_pop(const Expr* expr, ByteCodeGenerator* gen)
+{
+	gen_byte_code(expr, gen);
+	if (ExprGetID(expr) != ID_COLT_VOID)
+		ChunkWriteOpCode(gen->chunk, OP_POP);
 }
 
 void gen_code_unary(const UnaryExpr* ptr, ByteCodeGenerator* gen)
@@ -311,7 +313,7 @@ void gen_code_condition(const ConditionExpr* ptr, ByteCodeGenerator* gen)
 	uint64_t to_override_jmp_next = gen->chunk->count;
 	to_override_jmp_next += ChunkWriteDWORD(gen->chunk, uninitialized_offset);
 
-	gen_byte_code(ptr->if_execute, gen);
+	gen_byte_code_and_pop(ptr->if_execute, gen);
 
 	//byte offset to the uint32_t to override
 	uint64_t to_override_jmp_out = 0;
@@ -339,7 +341,7 @@ void gen_code_condition(const ConditionExpr* ptr, ByteCodeGenerator* gen)
 		to_override_jmp_next = gen->chunk->count;
 		to_override_jmp_next += ChunkWriteDWORD(gen->chunk, uninitialized_offset);
 
-		gen_byte_code(ptr->elif_executes.expressions[i], gen);
+		gen_byte_code_and_pop(ptr->elif_executes.expressions[i], gen);
 		
 		//Write the jump to 'exit' of the elif execute expression
 		ChunkWriteOpCode(gen->chunk, OP_JUMP);
@@ -351,7 +353,7 @@ void gen_code_condition(const ConditionExpr* ptr, ByteCodeGenerator* gen)
 	}
 	
 	if (ptr->else_execute != NULL)
-		gen_byte_code(ptr->else_execute, gen);
+		gen_byte_code_and_pop(ptr->else_execute, gen);
 	
 	//If the interior of the if is executed, we need to jump to after all the elif, and else byte-code
 	if (to_override_jmp_out != 0)
@@ -398,7 +400,9 @@ void gen_code_while(const WhileExpr* ptr, ByteCodeGenerator* gen)
 	uint64_t jump_out = gen->chunk->count;
 	jump_out += ChunkWriteDWORD(gen->chunk, uninitialized_offset);
 
-	gen_byte_code(ptr->while_body, gen);
+	gen_byte_code_and_pop(ptr->while_body, gen);
+
+	//Jump back to before the condition
 	ChunkWriteOpCode(gen->chunk, OP_JUMP);
 	uint64_t jmp_cond_begin = gen->chunk->count;
 	jmp_cond_begin += ChunkWriteDWORD(gen->chunk, uninitialized_offset);
@@ -430,11 +434,7 @@ void gen_code_scope(const ScopeExpr* ptr, ByteCodeGenerator* gen)
 	ChunkWriteDWORD(gen->chunk, dword);
 	
 	for (size_t i = 0; i < ptr->array.count; i++)
-	{
-		gen_byte_code(ptr->array.expressions[i], gen);
-		if (!ExprTypeEqualTypeID(ptr->array.expressions[i],ID_COLT_VOID))
-			ChunkWriteOpCode(gen->chunk, OP_POP);
-	}
+		gen_byte_code_and_pop(ptr->array.expressions[i], gen);
 
 	ChunkWriteOpCode(gen->chunk, OP_POP_SCOPE);
 	dword.u32 = (uint32_t)ptr->var_count;
@@ -490,7 +490,7 @@ void gen_and_and_bool_comparison(const BinaryExpr* ptr, ByteCodeGenerator* gen)
 	uint32_t jump_to = (uint32_t)gen->chunk->count;
 	jump_to += (uint32_t)ChunkWriteDWORD(gen->chunk, uninitialized_offset);
 	
-	//There is no need to pop the last bool as OP_JUMP_FALSE does it
+	//There is no need to pop the last bool as OP_JUMP_FALSE_TPOP does it
 	gen_byte_code(ptr->rhs, gen);
 	
 	//Override jump offset
@@ -509,7 +509,7 @@ void gen_or_or_bool_comparison(const BinaryExpr* ptr, ByteCodeGenerator* gen)
 	uint32_t jump_to = (uint32_t)gen->chunk->count;
 	jump_to += (uint32_t)ChunkWriteDWORD(gen->chunk, uninitialized_offset);
 	
-	//There is no need to pop the last bool as OP_JUMP_TRUE does it
+	//There is no need to pop the last bool as OP_JUMP_TRUE_FPOP does it
 	gen_byte_code(ptr->rhs, gen);
 
 	//Override jump offset

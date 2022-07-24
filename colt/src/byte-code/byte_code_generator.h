@@ -51,6 +51,10 @@ IMPLEMENTATION HELPERS
 /// @param gen The data used in generation
 void gen_byte_code(const Expr* expr, ByteCodeGenerator* gen);
 
+/// @brief Generates the byte-code of an expression and pops it value
+/// @param expr The expression whose code to generate
+/// @param gen The data used in generation
+void gen_byte_code_and_pop(const Expr* expr, ByteCodeGenerator* gen);
 
 /// @brief Generates the code necessary for a UnaryExpr
 /// @param ptr The expression whose code to generate
