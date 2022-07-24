@@ -170,9 +170,9 @@ Token ScannerGetNextToken(Scanner* scan)
 			return TKN_OPERATOR_MODULO_EQUAL;
 		}
 		return TKN_OPERATOR_MODULO;
+	default:
+		return TKN_EOF;
 	}
-
-	return TKN_EOF;
 }
 
 StringView ScannerGetCurrentLine(const Scanner* scan)
