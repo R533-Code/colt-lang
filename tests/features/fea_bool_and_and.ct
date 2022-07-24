@@ -1,4 +1,4 @@
-//falsefalsefalsetrue
+//truefalsefalsefalse
 static_print(true && true);
 static_print(true && false);
 static_print(false && true);
