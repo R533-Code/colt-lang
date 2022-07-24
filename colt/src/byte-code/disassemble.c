@@ -38,6 +38,11 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 	if (memcmp(chunk->code + 8, ChunkSignature, 8) == 0)
 		fputs(", found valid signature", stdout);
 	
+	if (debug_offset != 0)
+		fputs(", found DEBUG informations", stdout);
+	else
+		fputs(", no DEBUG informations found", stdout);
+
 	printf("\n        %08"PRIu64": SECTION GLOBAL\n        %08"PRIu64": SECTION STRING\n        %08"PRIu64": SECTION DEBUG\n        %08"PRIu64": SECTION CODE\n",
 		global_offset, string_offset, debug_offset, code_offset
 	);
@@ -55,7 +60,7 @@ void ChunkDisassemble(const Chunk* chunk, const char* name)
 		else
 		{
 			for (size_t i = global_offset; i < global_end; i += sizeof(QWORD))
-				printf("        %08"PRIu64": 0x%"PRIX64, i, *(uint64_t*)chunk->code + i);
+				printf("        %08"PRIu64": 0x%"PRIX64"\n", i, *(uint64_t*)(chunk->code + global_offset + i));
 		}
 	}
 	if (string_offset != 0)
@@ -332,12 +337,21 @@ void dis_print_global_instruction(const char* name, uint64_t byte_offset, const 
 {
 	uint64_t debug_offset = ChunkGetDEBUGSection(chunk);
 	uint64_t var_nb = (byte_offset - ChunkGetGLOBALSection(chunk)) / sizeof(QWORD);
+	
+	if (debug_offset != 0)
+	{
+		// + sizeof(QWORD) as we need to offset by one QWORD to get the offset to the name
+		const char* var_name = chunk->code + *(uint64_t*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD) + sizeof(QWORD));
+		BuiltinTypeID id = (BuiltinTypeID)((QWORD*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD)))->u8;
+		printf(CONSOLE_FOREGROUND_BRIGHT_BLUE "%-20s "
+			CONSOLE_FOREGROUND_BRIGHT_GREEN "'%s'"
+			CONSOLE_FOREGROUND_BRIGHT_CYAN " (%s)\n"
+			CONSOLE_COLOR_RESET, name, var_name, BuiltinTypeIDToString(id));
+	}
+	else
+	{
+		printf(CONSOLE_FOREGROUND_BRIGHT_BLUE "%-20s\n"
+			CONSOLE_COLOR_RESET, name);
+	}
 
-	// + sizeof(QWORD) as we need to offset by one QWORD to get the offset to the name
-	const char* var_name = chunk->code + *(uint64_t*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD) + sizeof(QWORD));
-	BuiltinTypeID id = (BuiltinTypeID)((QWORD*)(chunk->code + debug_offset + var_nb * 2 * sizeof(QWORD)))->u8;
-	printf(CONSOLE_FOREGROUND_BRIGHT_BLUE "%-20s "
-		CONSOLE_FOREGROUND_BRIGHT_GREEN "'%s'"
-		CONSOLE_FOREGROUND_BRIGHT_CYAN " (%s)\n"
-		CONSOLE_COLOR_RESET, name, var_name, BuiltinTypeIDToString(id));
 }
