@@ -181,8 +181,17 @@ Expr* parse_binary(AST* ast, uint8_t op_precedence)
 		if (!right) //propagate error
 			return left; // we don't want memory leaks
 
-		//Convert both expressions to the same type
-		ast_convert_to_highest_type(ast, &left, &right);
+		if (bin_operator == TKN_OPERATOR_OR_OR || bin_operator == TKN_OPERATOR_AND_AND)
+		{
+			Type bool_t = { .typeinfo = &ColtBool, .is_const = false };
+			left = ast_convert_to(ast, left, bool_t);
+			right = ast_convert_to(ast, right, bool_t);
+		}
+		else
+		{
+			//Convert both expressions to the same type
+			ast_convert_to_highest_type(ast, &left, &right);
+		}			
 		//Get the return type of the operator associated to the binary operator token
 		//because operators like ==, >=, ... returns bool
 		Type expr_type = ast_operator_return_type(ast, left->expr_type, bin_operator, right->expr_type,
@@ -363,7 +372,9 @@ Expr* parse_primary(AST* ast)
 
 	break; case TKN_LEFT_PAREN:
 		primary = parse_paren_binary(ast);
-		ast->current_tkn = ScannerGetNextToken(&ast->scan);
+		//So (...; only generates an error once
+		if (ast->current_tkn != TKN_SEMICOLON)
+			ast->current_tkn = ScannerGetNextToken(&ast->scan);
 		return primary;
 
 		/**************** VARIABLE ****************/
