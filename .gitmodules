@@ -1,0 +1,3 @@
+[submodule "libraries/colt-cpp"]
+	path = libraries/colt-cpp
+	url = https://github.com/R533-Code/colt-cpp.git
