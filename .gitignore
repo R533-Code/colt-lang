@@ -1,0 +1,15 @@
+# CMAKE OUTPUT DIR
+build/
+# VISUAL STUDIO / VSCODE
+.vs/
+*tasks.json
+# CMAKE CONFIGURED FILE
+colt_config.h
+# DOXYGEN OUTPUT
+docs/Doxyfile.out
+docs/latex
+docs/html
+# PYTHON OUTPUT
+__pycache__
+# COMPILED ICON
+/resources/icon/colt.aps
