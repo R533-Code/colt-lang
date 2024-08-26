@@ -111,7 +111,21 @@ endif()
 
 message(STATUS "Setting up libraries...")
 
-# Add colt-cpp
+#########################################
+# LIBFFI
+#########################################
+message(STATUS "Adding 'libffi'...")
+add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/libffi")
+target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC ffi_shared)
+
+install(TARGETS ffi_shared
+  LIBRARY DESTINATION bin
+  RUNTIME DESTINATION bin
+)
+
+#########################################
+# COLT-CPP
+#########################################
 message(STATUS "Adding 'colt-cpp'...")
 add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/colt-cpp")
 target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC colt_helper)
@@ -121,7 +135,6 @@ target_include_directories(${COLT_EXECUTABLE_NAME} PUBLIC
   "${CMAKE_SOURCE_DIR}/src"
   "${CMAKE_SOURCE_DIR}/src/frontend"
   "${CMAKE_SOURCE_DIR}/src/backend"
-  "${CMAKE_SOURCE_DIR}/src/util"
   SYSTEM # So no warning is shown
   "${CMAKE_SOURCE_DIR}/libraries/colt-cpp/include"
   #"${CMAKE_SOURCE_DIR}/libraries/llvm-project/llvm/include"
