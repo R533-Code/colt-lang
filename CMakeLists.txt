@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.21)
 
 # C++20 is required
 set(CMAKE_CXX_STANDARD 20)
@@ -118,10 +118,17 @@ message(STATUS "Adding 'libffi'...")
 add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/libffi")
 target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC ffi_shared)
 
-install(TARGETS ffi_shared
-  LIBRARY DESTINATION bin
-  RUNTIME DESTINATION bin
+add_custom_command(TARGET ${COLT_EXECUTABLE_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${COLT_EXECUTABLE_NAME}> 
+        $<TARGET_FILE_DIR:${COLT_EXECUTABLE_NAME}>
+    COMMAND_EXPAND_LISTS
 )
+
+#install(TARGETS ffi_shared
+#  LIBRARY DESTINATION bin
+#  RUNTIME DESTINATION bin
+#  CONFIGURATIONS Release Debug MinSizeRel RelWithDebInfo
+#)
 
 #########################################
 # COLT-CPP
