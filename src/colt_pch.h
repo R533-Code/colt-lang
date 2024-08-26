@@ -1,6 +1,17 @@
 #ifndef HG_COLT_PCH
 #define HG_COLT_PCH
 
+// COLT/MACRO
+
+#include <colt/macro/config.h>
+#if defined(COLT_DEBUG) && defined(COLT_MSVC)
+  // needed  as realloc will be defined as a macro
+  #undef realloc
+#endif
+#include <colt/macro/macro.h>
+#include <colt/macro/assert.h>
+#include <colt/macro/on_scope_exit.h>
+
 #include <colt/typedefs.h>
 
 // COLT/BIT
@@ -19,13 +30,6 @@
 // COLT/IO
 
 #include <colt/io/print.h>
-
-// COLT/MACRO
-
-#include <colt/macro/macro.h>
-#include <colt/macro/assert.h>
-#include <colt/macro/config.h>
-#include <colt/macro/on_scope_exit.h>
 
 // COLT/META
 
