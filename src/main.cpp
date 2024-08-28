@@ -10,8 +10,7 @@ unsigned char foo(unsigned int, float)
 
 int main(int argc, const char** argv)
 {
-  using namespace clt::io;
-
+  using namespace clt::io;  
   print(
       "{}coltc{} (v{}.{}.{}.{} {}) on {}{}{} ({}{}{})\n"
       "using: {}colt-cpp{} (v{}.{}.{}.{}), {}unicode{} (v{}.{}.{}), "
@@ -23,9 +22,9 @@ int main(int argc, const char** argv)
       COLT_VERSION_TWEAK, BrightYellowF, Reset, COLT_UNICODE_VERSION_MAJOR,
       COLT_UNICODE_VERSION_MINOR, COLT_UNICODE_VERSION_UPDATE, BrightYellowF, Reset,
       SIMDUTF_VERSION, BrightYellowF, Reset, FMT_VERSION / 10'000,
-      (FMT_VERSION % 10'000) / 100, FMT_VERSION % 100);
+        (FMT_VERSION % 10'000) / 100, FMT_VERSION % 100);
 
-      ffi_cif cif;
+  ffi_cif cif;
   ffi_type* arg_types[2];
   void* arg_values[2];
   ffi_status status;
@@ -48,7 +47,7 @@ int main(int argc, const char** argv)
 
   // Specify the values of each argument.
   unsigned int arg1 = 42;
-  float arg2        = 5.1;
+  float arg2        = 5.1f;
 
   arg_values[0] = &arg1;
   arg_values[1] = &arg2;
@@ -59,4 +58,5 @@ int main(int argc, const char** argv)
   // The ffi_arg 'result' now contains the unsigned char returned from foo(),
   // which can be accessed by a typecast.
   printf("result is %hhu", (unsigned char)result);
+
 }
