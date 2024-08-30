@@ -23,7 +23,7 @@ COLT_DECLARE_TYPE(MyStruct, a, b, c);
 
 MyStruct test()
 {
-  return {10, new char{12}, {100, 200}};
+  return {10, (void*)0xdeadbeefULL, {100, 200}};
 }
 
 int main(int argc, const char** argv)

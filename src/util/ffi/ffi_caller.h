@@ -102,13 +102,13 @@ namespace clt
     /// members of a type
     /// @tparam T The reflectable type
     template<meta::reflectable T>
-    static constexpr auto STRUCT_FFI_MEMBER_ARRAY = generate_table<T>();
+    static inline auto STRUCT_FFI_MEMBER_ARRAY = generate_table<T>();
 
     /// @brief Represents a custom FFI information for reflectable type.
     /// The memory is mutable
     /// @tparam T The reflectable type
     template<meta::reflectable T>
-    static constexpr ffi_type STRUCT_FFI_TYPE = {
+    static inline ffi_type STRUCT_FFI_TYPE = {
         0, 0, FFI_TYPE_STRUCT, STRUCT_FFI_MEMBER_ARRAY<T>.data()};
 
     /// @brief Converts a C++ type to its FFI equivalent
@@ -131,9 +131,8 @@ namespace clt
     template<typename Ret, typename... Args>
     static Ret call(void* fn, Args&&... args)
     {
-      constexpr size_t SIZE                   = sizeof...(Args) + 1;
-      constexpr ffi_type* CONSTANT_ARGS[SIZE] = {
-          type_to_ffi<Ret>(), type_to_ffi<Args>()...};
+      constexpr size_t SIZE         = sizeof...(Args) + 1;
+      ffi_type* CONSTANT_ARGS[SIZE] = {type_to_ffi<Ret>(), type_to_ffi<Args>()...};
 
       std::conditional_t<(sizeof(Ret) < sizeof(long)), ffi_arg, Ret> result;
 
