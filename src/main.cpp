@@ -1,49 +1,48 @@
 #include <colt_pch.h>
 #include <colt_config.h>
-#include <util/ffi/ffi_caller.h>
+#include <fmt/ranges.h>
 
-struct MyStruct2
+struct ColoredVersion
 {
-  int a;
-  int b;
-  COLT_ENABLE_REFLECTION();
+  clt::io::ANSIEffect color;
+  const char* name;
+  clt::vers::Version version;
 };
-COLT_DECLARE_TYPE(MyStruct2, a, b);
 
-struct MyStruct
+template<>
+struct fmt::formatter<ColoredVersion>
 {
+  template<typename ParseContext>
+  constexpr auto parse(ParseContext& ctx)
+  {
+    // TODO: add format option
+    return ctx.begin();
+  }
 
-  int a;
-  void* b;
-  MyStruct2 c;
-
-  COLT_ENABLE_REFLECTION();
+  template<typename FormatContext>
+  auto format(const ColoredVersion& version, FormatContext& ctx) const
+  {
+    return fmt::format_to(
+        ctx.out(), "{}{:<8}{} : v{}", version.color, version.name, clt::io::Reset, version.version);
+  }
 };
-COLT_DECLARE_TYPE(MyStruct, a, b, c);
-
-MyStruct test()
-{
-  return {10, (void*)0xdeadbeefULL, {100, 200}};
-}
 
 int main(int argc, const char** argv)
 {
-  using namespace clt;  
-  using namespace clt::io;  
+  using namespace clt;
+  using namespace clt::io;
   
-  print(
-      "{}coltc{} (v{}.{}.{}.{} {}) on {}{}{} ({}{}{})\n"
-      "using: {}colt-cpp{} (v{}.{}.{}.{}), {}unicode{} (v{}.{}.{}), "
-      "{}simdutf{} (v{}), {}fmt{} (v{}.{}.{})",
-      BrightCyanF, Reset, COLTC_VERSION_MAJOR, COLTC_VERSION_MINOR,
-      COLTC_VERSION_PATCH, COLTC_VERSION_TWEAK, COLT_CONFIG_STRING, BrightBlueF,
-      COLT_OS_STRING, Reset, BrightMagentaF, COLT_ARCH_STRING, Reset, BrightGreenF,
-      Reset, COLT_VERSION_MAJOR, COLT_VERSION_MINOR, COLT_VERSION_PATCH,
-      COLT_VERSION_TWEAK, BrightYellowF, Reset, COLT_UNICODE_VERSION_MAJOR,
-      COLT_UNICODE_VERSION_MINOR, COLT_UNICODE_VERSION_UPDATE, BrightYellowF, Reset,
-      SIMDUTF_VERSION, BrightYellowF, Reset, FMT_VERSION / 10'000,
-        (FMT_VERSION % 10'000) / 100, FMT_VERSION % 100);
-  
-  auto value = FFICaller::call<MyStruct>(&test);
-  print("{}", value);
+  static std::array Versions = {
+      ColoredVersion{BrightGreenF, "coltcpp", vers::ColtCppVersion},
+      ColoredVersion{BrightYellowF, "fmt", vers::FmtVersion},
+      ColoredVersion{BrightYellowF, "scn", vers::ScnVersion},
+      ColoredVersion{BrightYellowF, "simdutf", vers::SimdUtfVersion},
+      ColoredVersion{BrightYellowF, "unialgo", vers::UniAlgoVersion},
+      ColoredVersion{BrightYellowF, "unicode", vers::UnicodeVersion},
+  };
+
+
+  io::print("{}coltc{} (v{} {}) on {}{}{} ({}{}{})\nusing: {}",
+      BrightCyanF, Reset, vers::ColtcVersion, COLT_CONFIG_STRING, BrightBlueF, COLT_OS_STRING, Reset,
+      BrightMagentaF, COLT_ARCH_STRING, Reset, fmt::join(Versions, "\n       "));
 }
