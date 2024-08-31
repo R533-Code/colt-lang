@@ -1,6 +1,8 @@
 #ifndef COLTC_CONFIG
 #define COLTC_CONFIG
 
+#include <colt/versions.h>
+
 /// @brief Major version of coltc
 #define COLTC_VERSION_MAJOR 		${PROJECT_VERSION_MAJOR}
 /// @brief Minor version of coltc
@@ -11,5 +13,12 @@
 #define COLTC_VERSION_TWEAK 		${PROJECT_VERSION_TWEAK}
 /// @brief The project version as a string
 #define COLTC_VERSION_STRING 	"${PROJECT_VERSION}"
+
+namespace clt::vers
+{
+  static constexpr Version ColtcVersion = {COLTC_VERSION_MAJOR, COLTC_VERSION_MINOR,
+    COLTC_VERSION_PATCH, COLTC_VERSION_TWEAK
+  };
+}
 
 #endif // !COLTC_CONFIG
