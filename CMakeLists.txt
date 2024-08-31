@@ -6,11 +6,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 project(Colt-Compiler VERSION 0.0.0.0 LANGUAGES CXX)
 
+set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
+
 # Save all the files to compile
 file(GLOB_RECURSE ColtHeaders "src/*.h")
 file(GLOB_RECURSE ColtUnits "src/*.cpp")
 file(GLOB_RECURSE ColtGithubActions ".github/workflows/*.yml")
 file(GLOB ColtDesignFiles "resources/*.md")
+file(GLOB_RECURSE ColtTestUnits "test/*.cpp")
 # Save test files
 file(GLOB_RECURSE ColtASTTestsPath "resources/tests/ast/*.ct")
 file(GLOB_RECURSE ColtLexerTestsPath "resources/tests/lexer/*.ct")
@@ -21,24 +24,36 @@ set(COLT_EXECUTABLE_NAME coltc)
 # Create the compiler executable
 if (WIN32)
   add_executable(${COLT_EXECUTABLE_NAME}
-    ${ColtHeaders} ${ColtUnits} ${ColtASTTestsPath} ${ColtLexerTestsPath}
+    ${ColtHeaders} ${ColtUnits}
+    ${ColtASTTestsPath} ${ColtLexerTestsPath}
     "resources/icon/colt.rc"
     ${ColtGithubActions} ${ColtDesignFiles}
   )
 else()
   add_executable(${COLT_EXECUTABLE_NAME}
-    ${ColtHeaders} ${ColtUnits} ${ColtASTTestsPath} ${ColtLexerTestsPath}
+    ${ColtHeaders} ${ColtUnits} ${ColtTestUnits}
+    ${ColtASTTestsPath} ${ColtLexerTestsPath}
     ${ColtGithubActions} ${ColtDesignFiles}
   )
 endif()
 
+list(REMOVE_ITEM ColtUnits "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
+add_executable(coltc_test
+    ${ColtHeaders} ${ColtUnits} ${ColtTestUnits}
+)
+
 # Add precompiled header
 target_precompile_headers(${COLT_EXECUTABLE_NAME} PUBLIC 
+  "$<$<COMPILE_LANGUAGE:CXX>:${PROJECT_SOURCE_DIR}/src/colt_pch.h>")
+target_precompile_headers(coltc_test PUBLIC 
   "$<$<COMPILE_LANGUAGE:CXX>:${PROJECT_SOURCE_DIR}/src/colt_pch.h>")
 
 # Define COLT_DEBUG_BUILD for debug config
 target_compile_definitions(
   ${COLT_EXECUTABLE_NAME} PRIVATE $<$<CONFIG:Debug>:COLT_DEBUG> $<$<CONFIG:Debug>:COLT_DEBUG_BUILD> _CRT_SECURE_NO_WARNINGS
+)
+target_compile_definitions(
+  coltc_test PRIVATE $<$<CONFIG:Debug>:COLT_DEBUG> $<$<CONFIG:Debug>:COLT_DEBUG_BUILD> _CRT_SECURE_NO_WARNINGS
 )
 
 set(CMAKE_ENABLE_EXPORTS True)
@@ -56,6 +71,13 @@ if (MSVC)
       "/Zc:preprocessor"
       "/Zi"
   )
+  target_compile_options(
+      coltc_test PUBLIC 
+      "/external:anglebrackets"
+      "/external:W0"
+      "/Zc:preprocessor"
+      "/Zi"
+  )
   
   #target_compile_options(${COLT_EXECUTABLE_NAME} PRIVATE "$<$<CONFIG:Release>:/Zi>")
   #target_link_options(${COLT_EXECUTABLE_NAME} PRIVATE "$<$<CONFIG:Release>:/DEBUG>")
@@ -65,6 +87,10 @@ else()
   set(CMAKE_EXE_LINKER_FLAGS "-Wl,-export-dynamic")
   target_compile_options(
     ${COLT_EXECUTABLE_NAME} PUBLIC
+      "-fvisibility=hidden"
+    )
+  target_compile_options(
+    coltc_test PUBLIC
       "-fvisibility=hidden"
     )
 endif()
@@ -116,26 +142,16 @@ message(STATUS "Setting up libraries...")
 #########################################
 message(STATUS "Adding 'libffi'...")
 add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/libffi")
-target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC ffi_shared)
-
-add_custom_command(TARGET ${COLT_EXECUTABLE_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${COLT_EXECUTABLE_NAME}> 
-        $<TARGET_FILE_DIR:${COLT_EXECUTABLE_NAME}>
-    COMMAND_EXPAND_LISTS
-)
-
-#install(TARGETS ffi_shared
-#  LIBRARY DESTINATION bin
-#  RUNTIME DESTINATION bin
-#  CONFIGURATIONS Release Debug MinSizeRel RelWithDebInfo
-#)
+target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC ffi::ffi)
+target_link_libraries(coltc_test PUBLIC ffi::ffi)
 
 #########################################
 # COLT-CPP
 #########################################
 message(STATUS "Adding 'colt-cpp'...")
 add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/colt-cpp")
-target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC colt_helper)
+target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC colt::coltcpp)
+target_link_libraries(coltc_test PUBLIC colt::coltcpp)
 
 # Directories for '#include <...>'
 target_include_directories(${COLT_EXECUTABLE_NAME} PUBLIC 
@@ -147,6 +163,33 @@ target_include_directories(${COLT_EXECUTABLE_NAME} PUBLIC
   #"${CMAKE_SOURCE_DIR}/libraries/llvm-project/llvm/include"
   #"${CMAKE_BINARY_DIR}/libraries/llvm-project/llvm/include"
 )
+target_include_directories(coltc_test PUBLIC 
+  "${CMAKE_SOURCE_DIR}/src"
+  "${CMAKE_SOURCE_DIR}/src/frontend"
+  "${CMAKE_SOURCE_DIR}/src/backend"
+  SYSTEM # So no warning is shown
+  "${CMAKE_SOURCE_DIR}/libraries/colt-cpp/include"
+  "${PROJECT_SOURCE_DIR}/test"
+  #"${CMAKE_SOURCE_DIR}/libraries/llvm-project/llvm/include"
+  #"${CMAKE_BINARY_DIR}/libraries/llvm-project/llvm/include"
+)
+
+###########################
+# Catch2
+message(STATUS "Adding 'Catch2'...")
+target_include_directories(coltc_test PUBLIC "${PROJECT_SOURCE_DIR}/libraries/colt-cpp/libraries/Catch2")
+#add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/colt-cpp/libraries/Catch2")
+target_link_libraries(coltc_test PUBLIC Catch2::Catch2)
+
+#list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+#include(CTest)
+#include(Catch)
+catch_discover_tests(coltc_test DISCOVERY_MODE PRE_TEST)
+add_dependencies(coltc_test coltcpp_tests)
+###########################
+
+copy_all_dl_to_bin(${COLT_EXECUTABLE_NAME})
+copy_all_dl_to_bin(coltc_test)
 
 #########################################
 # COLT TESTS
@@ -251,10 +294,6 @@ foreach(testPath ${ColtLexerTestsPath})
   set_property(TEST ${testName} PROPERTY PASS_REGULAR_EXPRESSION "Tested [0-9]+ features with 0")
   set_property(TEST ${testName} PROPERTY TIMEOUT 10) # 10s
 endforeach()
-
-add_test(NAME "TEST_FFI" COMMAND ${COLT_EXECUTABLE_NAME} ${COLT_ADDITIONAL_ARGS} -run-tests "-test-ffi")
-set_property(TEST "TEST_FFI" PROPERTY PASS_REGULAR_EXPRESSION "Tested [0-9]+ features with 0")
-set_property(TEST "TEST_FFI" PROPERTY TIMEOUT 10) # 10s
 
 if (NOT ${testCountAST} EQUAL 0 AND ${ENUM_TESTS})
   message(STATUS "Finished enumerating tests!")
