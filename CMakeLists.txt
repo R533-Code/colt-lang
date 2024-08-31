@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 project(Colt-Compiler VERSION 0.0.0.0 LANGUAGES CXX)
-
 set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
 
 # Save all the files to compile
