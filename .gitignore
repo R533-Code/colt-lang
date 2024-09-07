@@ -9,7 +9,8 @@ colt_config.h
 docs/Doxyfile.out
 docs/latex
 docs/html
+docs/
 # PYTHON OUTPUT
 __pycache__
 # COMPILED ICON
-/resources/icon/colt.aps
+*.aps
