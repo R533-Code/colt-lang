@@ -1,6 +1,7 @@
 #include <colt_pch.h>
 #include <colt_config.h>
 #include <fmt/ranges.h>
+#include <colt/os/dynamic_lib.h>
 
 struct ColoredVersion
 {
@@ -27,6 +28,12 @@ struct fmt::formatter<ColoredVersion>
   }
 };
 
+
+extern "C" CLT_EXPORT u32 colt_test_dl()
+{
+  return 32;
+}
+
 int main(int argc, const char** argv)
 {
   using namespace clt;
@@ -45,4 +52,13 @@ int main(int argc, const char** argv)
   io::print("{}coltc{} (v{} {}) on {}{}{} ({}{}{})\nusing: {}",
       BrightCyanF, Reset, vers::ColtcVersion, COLT_CONFIG_STRING, BrightBlueF, COLT_OS_STRING, Reset,
       BrightMagentaF, COLT_ARCH_STRING, Reset, fmt::join(Versions, "\n       "));
+
+  auto err = os::DynamicLib::open();
+  if (err.is_none())
+  {
+    io::print_fatal("Could not introspect!");
+    return 1;
+  }
+  auto ptr = err->find<u32(*)()>("colt_test_dl");
+  io::print("Value: {}", (*ptr)());
 }
