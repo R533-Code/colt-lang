@@ -13,6 +13,7 @@
 #define COLTC_VERSION_TWEAK 		${PROJECT_VERSION_TWEAK}
 /// @brief The project version as a string
 #define COLTC_VERSION_STRING 	"${PROJECT_VERSION}"
+#define COLTC_EXECUTABLE_NAME "${COLT_EXECUTABLE_NAME}"
 
 namespace clt::vers
 {
