@@ -82,7 +82,7 @@ namespace clt
               }>>,
       // -v
       cl::Opt<
-          "-version", cl::alias<"V">, cl::desc<"Prints the version of the compiler">,
+          "-version", cl::alias<"v">, cl::desc<"Prints the version of the compiler">,
           cl::callback<&details::print_version>>,
       // -o <output>
       cl::Opt<"o", cl::desc<"Output file name">, cl::location<OutputFile>>,
