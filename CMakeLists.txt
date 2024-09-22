@@ -178,22 +178,22 @@ message(STATUS "Finished configuring 'colt_config.h'!\n")
 
 #########################################
 # Configure CPack
-set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
-set(CPACK_PROJECT_VERSION "${PROJECT_VERSION}")
-
-# Enable NSIS generator
-set(CPACK_GENERATOR "NSIS")
-
-# Set NSIS-related options
-set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/resources/icon/Colt-Logo-Installer.ico")
-set(CPACK_NSIS_MUI_UNICON "${CMAKE_CURRENT_SOURCE_DIR}/resources/icon/Colt-Logo-Installer.ico")
-set(CPACK_NSIS_DISPLAY_NAME "${PROJECT_NAME} ${PROJECT_VERSION}")
-
-# Include custom NSIS scripts
-list(APPEND CPACK_NSI_INCLUDES
-  "${CMAKE_CURRENT_SOURCE_DIR}/resources/colt-compiler.nsh"
-)
-
-# Generate the installer
-include(CPack)
+# set(CPACK_PROJECT_NAME "${PROJECT_NAME}")
+# set(CPACK_PROJECT_VERSION "${PROJECT_VERSION}")
+# 
+# # Enable NSIS generator
+# set(CPACK_GENERATOR "NSIS")
+# 
+# # Set NSIS-related options
+# set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/resources/icon/Colt-Logo-Installer.ico")
+# set(CPACK_NSIS_MUI_UNICON "${CMAKE_CURRENT_SOURCE_DIR}/resources/icon/Colt-Logo-Installer.ico")
+# set(CPACK_NSIS_DISPLAY_NAME "${PROJECT_NAME} ${PROJECT_VERSION}")
+# 
+# # Include custom NSIS scripts
+# list(APPEND CPACK_NSI_INCLUDES
+#   "${CMAKE_CURRENT_SOURCE_DIR}/resources/colt-compiler.nsh"
+# )
+# 
+# # Generate the installer
+# include(CPack)
 #########################################
