@@ -27,6 +27,25 @@ namespace clt::cl
   };
 } // namespace clt::cl
 
+template<>
+struct fmt::formatter<clt::cl::ColoredVersion>
+{
+  template<typename ParseContext>
+  constexpr auto parse(ParseContext& ctx)
+  {
+    // TODO: add format option
+    return ctx.begin();
+  }
+
+  template<typename FormatContext>
+  auto format(const clt::cl::ColoredVersion& version, FormatContext& ctx) const
+  {
+    return fmt::format_to(
+        ctx.out(), "{}{:<8}{} : v{}", version.color, version.name, clt::io::Reset,
+        version.version);
+  }
+};
+
 namespace clt
 {
   /// @brief Flag to check if the application must wait for input before exiting.
@@ -71,22 +90,4 @@ namespace clt
       cl::OptPos<"input_file", cl::desc<"The input file">, cl::location<InputFile>>>;
 } // namespace clt
 
-template<>
-struct fmt::formatter<clt::cl::ColoredVersion>
-{
-  template<typename ParseContext>
-  constexpr auto parse(ParseContext& ctx)
-  {
-    // TODO: add format option
-    return ctx.begin();
-  }
-
-  template<typename FormatContext>
-  auto format(const clt::cl::ColoredVersion& version, FormatContext& ctx) const
-  {
-    return fmt::format_to(
-        ctx.out(), "{}{:<8}{} : v{}", version.color, version.name, clt::io::Reset,
-        version.version);
-  }
-};
 #endif // !HG_COLTC_ARGS
