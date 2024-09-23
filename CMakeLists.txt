@@ -82,6 +82,7 @@ message(STATUS "Added 'libffi'!\n")
 
 #########################################
 # COLT-CPP
+set(COLT_DEFINE_MAIN true CACHE BOOL "" FORCE)
 message(STATUS "Adding 'colt-cpp'...")
 add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/colt-cpp")
 target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC colt::coltcpp)
