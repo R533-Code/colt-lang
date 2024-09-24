@@ -27,7 +27,7 @@ MyStruct test()
 
 extern "C" CLT_EXPORT u32 colt_test_dl()
 {
-  return 32;
+  return 42;
 }
 
 TEST_CASE("coltc FFICaller")
@@ -45,6 +45,6 @@ TEST_CASE("coltc DynamicLib")
   auto err = os::DynamicLib::open();
   REQUIRE(err.is_value());
   auto ptr = err->find<u32 (*)()>("colt_test_dl");
-  REQUIRE(ptr != nullptr);
+  REQUIRE(!ptr.is_none());
   REQUIRE((*ptr)() == 42);
 }
