@@ -30,6 +30,17 @@ namespace clt::lng
     } -> std::same_as<void>;
   };
 
+  /// @brief What is the diagnostic type
+  enum class ReportKind : u8
+  {
+    /// @brief A Message
+    MESSAGE,
+    /// @brief A Warning
+    WARNING,
+    /// @brief An Error
+    ERROR
+  };
+
   namespace details
   {
     template<Reporter T>
