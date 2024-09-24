@@ -32,7 +32,7 @@ extern "C" CLT_EXPORT u32 colt_test_dl()
 
 TEST_CASE("coltc FFICaller")
 {
-  auto value = clt::FFICaller::call<MyStruct>(&test);
+  auto value = clt::ffi::FFICaller::call<MyStruct>(&test);
   REQUIRE(value.a == 10);
   REQUIRE(value.b == (void*)0xdeadbeefULL);
   REQUIRE(value.c.a == 100);

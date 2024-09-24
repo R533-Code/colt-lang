@@ -60,7 +60,7 @@ target_compile_options(
   $<$<NOT:$<BOOL:${MSVC}>>:-fvisibility=hidden>
 )
 target_compile_options(
-  coltc_test PUBLIC
+  coltc_test PUBLIC  
   $<$<BOOL:${MSVC}>:/Zc:preprocessor;/external:W0;/external:anglebrackets>
   $<$<NOT:$<BOOL:${MSVC}>>:-fvisibility=hidden>
 )
@@ -82,7 +82,6 @@ message(STATUS "Added 'libffi'!\n")
 
 #########################################
 # COLT-CPP
-set(COLT_DEFINE_MAIN true CACHE BOOL "" FORCE)
 message(STATUS "Adding 'colt-cpp'...")
 add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/colt-cpp")
 target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC colt::coltcpp)
