@@ -7,6 +7,7 @@
 #include <colt_config.h>
 #include <colt/io/args_parsing.h>
 #include <colt/meta/traits.h>
+#include <util/ffi/plugin_loader.h>
 
 namespace clt::cl
 {
@@ -68,6 +69,46 @@ namespace clt
           fmt::join(cl::Versions, "\n       "));
       std::exit(0);
     }
+
+    inline void print_plugins() noexcept
+    {
+      std::error_code err;
+      size_t count = 0;
+      size_t valid = 0;
+      io::print("\n======================= Plugins =======================");
+      for (auto& i : std::filesystem::directory_iterator{"plugins", err})
+      {
+        if (std::filesystem::is_regular_file(i, err))
+        {
+          auto plugin = ffi::ColtPlugin::open(i.path().generic_string().c_str());
+          count++;
+          if (plugin.is_none())
+          {
+            io::print(
+                "{}Could not greet '{}{}{}'!{}", io::BrightYellowF, io::BrightGreenF,
+                i.path().filename().generic_string(), io::BrightYellowF, io::Reset);
+            continue;
+          }
+          io::print(
+              "Hello '{}{}{}'! ({}{}{}, setup code {})", io::BrightCyanF,
+              (const char*)plugin->name(), io::Reset, io::BrightGreenF,
+              i.path().filename().generic_string(), io::Reset, plugin->run_setup());
+          valid++;
+        }
+      }
+      std::fputc('\n', stdout);
+      if (err.default_error_condition().value() == ENOENT)
+        io::print_warn("'plugins' directory not found!");
+      else if (count == 0)
+        io::print_message("No plugins to greet!");
+      else if (count != valid)
+        io::print_warn(
+            "Only greeted {}/{} plugin{}", valid, count, count == 1 ? "!" : "s!");
+      else
+        io::print_message(
+            "Greeted {}/{} plugin{}", valid, count, count == 1 ? "!" : "s!");
+      io::print("=======================================================\n");
+    }
   } // namespace details
 
   /// @brief The meta type used to generated command line argument handling function
@@ -80,10 +121,17 @@ namespace clt
       cl::Opt<"-nowait", cl::desc<"Do not wait for user input">, cl::callback<[] {
                 clt::WaitForUserInput = false;
               }>>,
-      // -v
+
+      // --version or -v
       cl::Opt<
           "-version", cl::alias<"v">, cl::desc<"Prints the version of the compiler">,
           cl::callback<&details::print_version>>,
+      // --enum-plugins or -eP
+      cl::Opt<
+          "-enum-plugins", cl::alias<"ep">,
+          cl::desc<"Enumerates the compiler's plugins">,
+          cl::callback<&details::print_plugins>>,
+
       // -o <output>
       cl::Opt<"o", cl::desc<"Output file name">, cl::location<OutputFile>>,
       // <input_file>
