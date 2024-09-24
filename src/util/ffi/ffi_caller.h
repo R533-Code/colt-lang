@@ -15,7 +15,7 @@
 #include <colt/typedefs.h>
 #include <colt/meta/reflect.h>
 
-namespace clt
+namespace clt::ffi
 {
   /// @brief Wrapper over libffi.
   /// This class is NOT thread safe as type informations are stored
