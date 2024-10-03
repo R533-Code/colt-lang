@@ -11,8 +11,8 @@ namespace clt::ffi
     friend class Option;
 
     os::DynamicLib lib;
-    i32 errc = 0;
-    u8 setup_ran : 1 = false;
+    i32 errc            = 0;
+    u8 setup_ran : 1    = false;
     u8 shutdown_ran : 1 = false;
 
     ColtPlugin() = delete;
@@ -20,16 +20,11 @@ namespace clt::ffi
         : lib(std::move(lib))
     {
     }
-    ColtPlugin(os::DynamicLib&& lib, i32 errc) noexcept
-        : lib(std::move(lib))
-        , errc(errc)
-        , setup_ran(true)
-    {
-    }
+
+  public:
     ColtPlugin(ColtPlugin&&) noexcept            = default;
     ColtPlugin& operator=(ColtPlugin&&) noexcept = default;
 
-  public:
     /// @brief Possible failure on plugin opening
     enum class OpenError
     {
@@ -54,11 +49,13 @@ namespace clt::ffi
 
     /// @brief Function that returns a string, without taking any arguments.
     /// Example: colt_desc, colt_name
-    using fn_name_t  = const Char8* (*)();
+    using fn_name_t = const Char8* (*)();
     /// @brief Function that returns an int without taking any arguments.
-    using fn_setup_t = i32(*)();
+    using fn_setup_t = i32 (*)();
+    /// @brief Function that takes no arguments and returns nothing
+    using fn_shutdown_t = void (*)();
     /// @brief Function that returns the plugin type
-    using fn_type_t = PluginType(*)();
+    using fn_type_t = PluginType (*)();
 
     /// @brief Returns the name of the plugin
     /// @return The name of the plugin
@@ -96,17 +93,16 @@ namespace clt::ffi
     /// This function is idempotent, and is only run once.
     void run_shutdown()
     {
-      if (shutdown_ran || setup_ran == false)
+      if (lib.is_closed() || shutdown_ran || setup_ran == false)
         return;
       shutdown_ran = true;
-      lib.find<fn_setup_t>("colt_shutdown").map([](fn_setup_t a) { a(); });
+      auto find    = lib.find<fn_shutdown_t>("colt_shutdown");
+      if (find.is_value())
+        (**find)();
     }
 
     /// @brief Calls run_shutdown on the plugin
-    ~ColtPlugin()
-    {
-      run_shutdown();
-    }    
+    ~ColtPlugin() { run_shutdown(); }
 
     /// @brief Opens a ColtPlugin.
     /// If 'manual_setup' is false, then run_setup is automatically
@@ -123,9 +119,9 @@ namespace clt::ffi
         return {Error, OpenError::OS_ERR};
       auto plugin = ColtPlugin(std::move(*lib));
       if (manual_setup)
-        return {InPlace, std::move(plugin)};
+        return {std::move(plugin)};
       if (auto a = plugin.run_setup(); a == 0)
-        return {InPlace, std::move(plugin), 0};
+        return {std::move(plugin)};
       plugin.run_shutdown();
       return {Error, OpenError::SETUP_ERR};
     }
