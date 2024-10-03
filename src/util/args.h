@@ -96,7 +96,8 @@ namespace clt
           valid++;
         }
       }
-      std::fputc('\n', stdout);
+      if (count != 0)
+        std::fputc('\n', stdout);
       if (err.default_error_condition().value() == ENOENT)
         io::print_warn("'plugins' directory not found!");
       else if (count == 0)
