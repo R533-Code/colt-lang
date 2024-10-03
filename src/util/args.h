@@ -82,7 +82,7 @@ namespace clt
         {
           auto plugin = ffi::ColtPlugin::open(i.path().generic_string().c_str());
           count++;
-          if (plugin.is_none())
+          if (plugin.is_error())
           {
             io::print(
                 "{}Could not greet '{}{}{}'!{}", io::BrightYellowF, io::BrightGreenF,
@@ -91,7 +91,7 @@ namespace clt
           }
           io::print(
               "Hello '{}{}{}'! ({}{}{}, setup code {})", io::BrightCyanF,
-              (const char*)plugin->name(), io::Reset, io::BrightGreenF,
+              plugin->name(), io::Reset, io::BrightGreenF,
               i.path().filename().generic_string(), io::Reset, plugin->run_setup());
           valid++;
         }
