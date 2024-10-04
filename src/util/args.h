@@ -90,9 +90,10 @@ namespace clt
             continue;
           }
           io::print(
-              "Hello '{}{}{}'! ({}{}{}, setup code {})", io::BrightCyanF,
+              "Hello '{}{}{}'! ({}{}{}, setup code {}, {:h})", io::BrightCyanF,
               plugin->name(), io::Reset, io::BrightGreenF,
-              i.path().filename().generic_string(), io::Reset, plugin->run_setup());
+              i.path().filename().generic_string(), io::Reset, plugin->run_setup(),
+              plugin->advertised_purpose());
           valid++;
         }
       }
