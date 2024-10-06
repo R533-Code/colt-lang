@@ -30,11 +30,9 @@ int wmain(int argc, const wchar_t** argv)
   using namespace clt;
 
   // Set console code page to UTF-8 so console known how to interpret string data
-  SetConsoleOutputCP(CP_UTF8);
-  // Enable buffering to prevent VS from chopping up UTF-8 byte sequences
-  setvbuf(stdout, nullptr, _IOFBF, 1000);
+  //SetConsoleOutputCP(CP_UTF8);
   // Set support to wchar_t in Console
-  _setmode(_fileno(stdin), _O_WTEXT);
+  _setmode(_fileno(stdin), _O_U16TEXT);
 
   // Allocator used for needed memory to convert 'argv' to UTF8
   mem::FallbackAllocator<mem::StackAllocator<1024>, mem::Mallocator> allocator;
@@ -58,6 +56,7 @@ int wmain(int argc, const wchar_t** argv)
   for (int i = 0; i < argc; i++)
   {
     auto ptr     = reinterpret_cast<const char16_t*>(argv[i]);
+    // We convert back the length
     auto written = simdutf::convert_utf16_to_utf8(
         ptr, reinterpret_cast<uintptr_t*>(pointers.ptr())[i],
         reinterpret_cast<char*>(current_str));
