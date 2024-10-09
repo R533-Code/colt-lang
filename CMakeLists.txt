@@ -89,6 +89,16 @@ target_link_libraries(coltc_test PUBLIC colt::coltcpp)
 message(STATUS "Added 'colt-cpp'!\n")
 #########################################
 
+#########################################
+# COLT-CPP
+message(STATUS "Adding 'lua'...")
+add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/lua-cmake")
+target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC lua_library)
+target_link_libraries(coltc_test PUBLIC lua_library)
+set_target_properties(lua_library PROPERTIES OUTPUT_NAME liblua PREFIX "")
+message(STATUS "Added 'lua'!\n")
+#########################################
+
 # Directories for '#include <...>'
 target_include_directories(${COLT_EXECUTABLE_NAME} PUBLIC 
   "${CMAKE_SOURCE_DIR}/src"
