@@ -4,3 +4,6 @@
 [submodule "libraries/libffi"]
 	path = libraries/libffi
 	url = https://github.com/R533-Code/libffi
+[submodule "libraries/lua-cmake"]
+	path = libraries/lua-cmake
+	url = https://gitlab.com/codelibre/lua/lua-cmake
