@@ -8,6 +8,14 @@
 #include <colt/io/args_parsing.h>
 #include <colt/meta/traits.h>
 #include <util/ffi/plugin_loader.h>
+#include <lua.h>
+
+namespace clt::vers
+{
+  static constexpr Version LuaVersion = {
+      parse_major(LUA_VERSION_MAJOR), parse_major(LUA_VERSION_MINOR),
+      parse_major(LUA_VERSION_RELEASE)};
+}
 
 namespace clt::cl
 {
@@ -22,6 +30,7 @@ namespace clt::cl
       ColoredVersion{io::BrightGreenF, "coltcpp", vers::ColtCppVersion},
       ColoredVersion{io::BrightYellowF, "fmt", vers::FmtVersion},
       ColoredVersion{io::BrightYellowF, "scn", vers::ScnVersion},
+      ColoredVersion{io::BrightYellowF, "lua", vers::LuaVersion},
       ColoredVersion{io::BrightYellowF, "simdutf", vers::SimdUtfVersion},
       ColoredVersion{io::BrightYellowF, "unialgo", vers::UniAlgoVersion},
       ColoredVersion{io::BrightYellowF, "unicode", vers::UnicodeVersion},
