@@ -10,6 +10,7 @@
 #ifndef HG_COLT_COMPILER_LIMITS
 #define HG_COLT_COMPILER_LIMITS
 
+#include <exception>
 #include "colt/macro/assert.h"
 
 #ifndef COLT_NO_COMPILER_ASSERTS
@@ -24,5 +25,13 @@
 #else
   #define compiler_assert_true(MESSAGE, COND, ...) ((void)0)
 #endif // !COLT_NO_COMPILER_ASSERTS
+
+namespace clt
+{
+  /// @brief Exception thrown to exit recursive functions (in the AST and Lexer)
+  class ExitRecursionException
+    : public std::exception
+  {};
+}
 
 #endif // !HG_COLT_COMPILER_LIMITS
