@@ -13,7 +13,16 @@
 #include <colt/meta/reflect.h>
 
 DECLARE_ENUM_WITH_TYPE(
-    u8, clt::lng, PrimitiveType, iw8b, iw16b, iw32b, iw64b, fw32b, fw64b);
+    u8, clt::lng, PrimitiveType,
+    iw08b, // integer with 8 bits
+    iw16b, // integer with 16 bits
+    iw32b, // integer with 32 bits
+    iw64b, // integer with 64 bits
+    fw32b, // float   with 32 bits
+    fw64b, // float   with 64 bits
+    dtptr, // data      pointer
+    fnptr  // function  pointer
+);
 
 namespace clt::lng
 {
@@ -44,11 +53,6 @@ namespace clt::lng
 
     /// @brief The endianness of the target
     Endianess endian;
-    /// @brief The size of data pointers in bytes
-    u8 data_ptr_size;
-    /// @brief The size of function pointers in bytes
-    /// This is usually equal to 'data_ptr_size'.
-    u8 func_ptr_size;
 
     /// @brief The information that describe primitive types.
     std::array<PrimitiveTypeInfo, meta::reflect<PrimitiveType>::max()>
