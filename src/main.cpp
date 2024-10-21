@@ -20,6 +20,7 @@ int colt_main(Span<const char8_t*> argv)
   auto val = os::ViewOfFile::open("test.txt");
   if (val.is_value())
   {
+    io::print_message("Opened 'test.txt'!");
     auto reporter = lng::make_error_reporter<lng::ConsoleReporter>();
     auto value    = lng::lex(*reporter, *val->view());
     for (auto& i : value.token_buffer())
