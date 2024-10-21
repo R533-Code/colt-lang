@@ -1,6 +1,8 @@
 #include <colt_pch.h>
 #include <util/args.h>
+#include <colt/os/mmap_file.h>
 #include <frontend/lex/lex.h>
+#include <frontend/err/composable_reporter.h>
 
 using namespace clt;
 
@@ -14,6 +16,15 @@ int colt_main(Span<const char8_t*> argv)
 {
   cl::parse_command_line_options<CMDs>(
       argv, COLTC_EXECUTABLE_NAME, "The Colt compiler.");
+  
+  auto val = os::ViewOfFile::open("test.txt");
+  if (val.is_none())
+    return 1;
+  auto reporter = lng::make_error_reporter<lng::ConsoleReporter>();
+  auto value    = lng::lex(*reporter, *val->view());
+  for (auto& i : value.token_buffer())
+    lng::print_token(i, value);
+
   io::print_warn("REPL is not implemented.");
   return 0;
 }
@@ -30,9 +41,9 @@ int wmain(int argc, const wchar_t** argv)
   using namespace clt;
 
   // Set console code page to UTF-8 so console known how to interpret string data
-  //SetConsoleOutputCP(CP_UTF8);
+  SetConsoleOutputCP(CP_UTF8);
   // Set support to wchar_t in Console
-  _setmode(_fileno(stdin), _O_U16TEXT);
+  //_setmode(_fileno(stdin), _O_U16TEXT);
 
   // Allocator used for needed memory to convert 'argv' to UTF8
   mem::FallbackAllocator<mem::StackAllocator<1024>, mem::Mallocator> allocator;
