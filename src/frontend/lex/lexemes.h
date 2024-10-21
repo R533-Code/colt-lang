@@ -141,27 +141,11 @@ DECLARE_ENUM_WITH_TYPE(
     TKN_BOOL_L,
     /// @brief '.'
     TKN_CHAR_L,
-    /// @brief NUMu8
-    TKN_U8_L,
-    /// @brief NUMu16
-    TKN_U16_L,
-    /// @brief NUMu32
-    TKN_U32_L,
-    /// @brief NUMu64
-    TKN_U64_L,
-    /// @brief NUMi8
-    TKN_I8_L,
-    /// @brief NUMi16
-    TKN_I16_L,
-    /// @brief NUMi32
-    TKN_I32_L,
-    /// @brief NUMi64
-    TKN_I64_L,
-    /// @brief REALf
-    TKN_F32_L,
-    /// @brief REALd
-    TKN_F64_L,
-    /// @brief UTF8 string "..." or "..."
+    /// @brief INT
+    TKN_INT_L,
+    /// @brief REAL
+    TKN_FLOAT_L,
+    /// @brief UTF8 string "..."
     TKN_STRING_L,
 
     /********* END OF LITERAL TOKENS *******/
