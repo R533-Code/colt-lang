@@ -10,6 +10,7 @@
 
 #include <colt/dsa/option.h>
 #include <colt/dsa/string_view.h>
+#include <colt/dsa/smart_pointers.h>
 #include "io_reporter.h"
 
 namespace clt::lng
@@ -17,7 +18,7 @@ namespace clt::lng
   /// @brief A Reporter is any type supporting message(...), error(...), warn(...) methods
   template<typename T, typename... Args>
   concept Reporter = requires(
-      T reporter, StringView str, const Option<SourceInfo>& src_info,
+      T reporter, u8StringView str, const Option<SourceInfo>& src_info,
       const Option<ReportNumber>& msg_nb) {
     {
       reporter.message(str, src_info, msg_nb)
@@ -66,21 +67,21 @@ namespace clt::lng
     /// @param src_info The source information
     /// @param msg_nb The message number
     virtual void message(
-        StringView str, const Option<SourceInfo>& src_info = None,
+        u8StringView str, const Option<SourceInfo>& src_info = None,
         const Option<ReportNumber>& msg_nb = None) noexcept = 0;
     /// @brief Reports a warning
     /// @param str The warning string
     /// @param src_info The source information
     /// @param msg_nb The warning number
     virtual void warn(
-        StringView str, const Option<SourceInfo>& src_info = None,
+        u8StringView str, const Option<SourceInfo>& src_info = None,
         const Option<ReportNumber>& msg_nb = None) noexcept = 0;
     /// @brief Reports an error
     /// @param str The error string
     /// @param src_info The source information
     /// @param msg_nb The error number
     virtual void error(
-        StringView str, const Option<SourceInfo>& src_info = None,
+        u8StringView str, const Option<SourceInfo>& src_info = None,
         const Option<ReportNumber>& msg_nb = None) noexcept = 0;
 
     /// @brief Returns the count of errors generated
@@ -113,7 +114,7 @@ namespace clt::lng
       }
 
       void message(
-          StringView str, const Option<SourceInfo>& src_info = None,
+          u8StringView str, const Option<SourceInfo>& src_info = None,
           const Option<ReportNumber>& msg_nb = None) noexcept override
       {
         ++ErrorReporter::_message_count;
@@ -121,7 +122,7 @@ namespace clt::lng
       }
 
       void warn(
-          StringView str, const Option<SourceInfo>& src_info = None,
+          u8StringView str, const Option<SourceInfo>& src_info = None,
           const Option<ReportNumber>& msg_nb = None) noexcept override
       {
         ++ErrorReporter::_warn_count;
@@ -129,7 +130,7 @@ namespace clt::lng
       }
 
       void error(
-          StringView str, const Option<SourceInfo>& src_info = None,
+          u8StringView str, const Option<SourceInfo>& src_info = None,
           const Option<ReportNumber>& msg_nb = None) noexcept override
       {
         ++ErrorReporter::_error_count;
@@ -140,18 +141,16 @@ namespace clt::lng
     };
   } // namespace details
 
-  /*template<
-      Reporter Rep, auto ALLOCATOR = mem::GlobalAllocatorDescription,
-      typename... Args>
+  template<Reporter Rep, typename... Args>
   /// @brief Creates an error reporter from a composable error reporter
   /// @tparam Rep The error reporter type
   /// @param args The arguments to forward to the error reporter constructor
   /// @return UniquePtr to the error reporter
-  UniquePtr<ErrorReporter> make_error_reporter(Args&&... args) noexcept(
+  auto make_error_reporter(Args&&... args) noexcept(
       std::is_nothrow_constructible_v<Rep, Args...>)
   {
     return make_unique<details::ToErrorReporter<Rep>>(std::forward<Args>(args)...);
-  }*/
+  }
 } // namespace clt::lng
 
 #endif // !HG_COLTC_ERROR_REPORTER
