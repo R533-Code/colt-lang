@@ -7,3 +7,6 @@
 [submodule "libraries/lua-cmake"]
 	path = libraries/lua-cmake
 	url = https://gitlab.com/codelibre/lua/lua-cmake
+[submodule "libraries/tracy"]
+	path = libraries/tracy
+	url = https://github.com/wolfpld/tracy.git
