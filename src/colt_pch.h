@@ -13,6 +13,7 @@
 #include <colt/macro/on_scope_exit.h>
 
 #include <colt/typedefs.h>
+#include <util/tracing.h>
 
 // COLT/BIT
 
