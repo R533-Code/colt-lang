@@ -90,13 +90,23 @@ message(STATUS "Added 'colt-cpp'!\n")
 #########################################
 
 #########################################
-# COLT-CPP
+# LUA-CMAKE
 message(STATUS "Adding 'lua'...")
 add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/lua-cmake")
 target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC lua_library)
 target_link_libraries(coltc_test PUBLIC lua_library)
 set_target_properties(lua_library PROPERTIES OUTPUT_NAME liblua PREFIX "")
 message(STATUS "Added 'lua'!\n")
+#########################################
+
+#########################################
+# TRACY
+message(STATUS "Adding 'Tracy'...")
+add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/tracy")
+target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC Tracy::TracyClient)
+target_link_libraries(coltc_test PUBLIC Tracy::TracyClient)
+set_target_properties(TracyClient PROPERTIES OUTPUT_NAME libtracy PREFIX "")
+message(STATUS "Added 'Tracy'!\n")
 #########################################
 
 # Directories for '#include <...>'
