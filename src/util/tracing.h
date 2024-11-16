@@ -5,6 +5,7 @@
 
 namespace clt
 {
+  /// @brief Colors to pass to COLT_TRACE_*_C macros
   struct Color
   {
     enum ColorType
@@ -687,15 +688,49 @@ namespace clt
       Teal                 = 0x008080,
     };
   };
+} // namespace clt
+
+template<typename Fun>
+/// @brief Helper for TRACE_BLOCK
+void operator&(const tracy::ScopedZone& timer, Fun&& fn) noexcept
+{
+  fn();
 }
 
 /// @brief Traces the current function
-#define COLT_TRACE_FN()                 ZoneScoped
-/// @brief Traces a block (which is named)
-#define COLT_TRACE_BLOCK(name)          ZoneScopedN(name)
+#define COLT_TRACE_FN() ZoneScoped
 /// @brief Traces the current function (with color, use clt::Color!)
-#define COLT_TRACE_FN_C(color)          ZoneScopedC(color)
+#define COLT_TRACE_FN_C(color) ZoneScopedC(color)
+/// @brief Traces a block (which is named)
+/// @code{.cpp}
+/// COLT_TRACE_BLOCK("print_token")
+/// {
+///   for (auto& i : value.token_buffer())
+///     lng::print_token(i, value);
+/// }; // <- do not forget the semicolon!
+/// @endcode
+#define COLT_TRACE_BLOCK(name) ZoneNamedN(, name, true) + [&]()
 /// @brief Traces a block (which is named) (with color, use clt::Color!)
-#define COLT_TRACE_BLOCK_C(name, color) ZoneScopedNC(name, color)
+/// @code{.cpp}
+/// COLT_TRACE_BLOCK_C("print_token", clt::Color::Chartreuse3)
+/// {
+///   for (auto& i : value.token_buffer())
+///     lng::print_token(i, value);
+/// }; // <- do not forget the semicolon!
+/// @endcode
+#define COLT_TRACE_BLOCK_C(name, color) ZoneNamedNC(, name, color, true)& [&]()
+
+#define COLT_TRACE_EXPR(expr) \
+  [&]()                       \
+  {                           \
+    ZoneScopedN(#expr);       \
+    return (expr);            \
+  }()
+#define COLT_TRACE_EXPR_C(expr, color) \
+  [&]()                                \
+  {                                    \
+    ZoneScopedNC(#expr, color);        \
+    return (expr);                     \
+  }()
 
 #endif // !HG_COLT_TRACING
