@@ -70,6 +70,7 @@ namespace clt
   {
     void wait_for_tracy() noexcept
     {
+      COLT_TRACE_FN_C(clt::Color::Black);
       using namespace std::literals::chrono_literals;
 
       auto start = std::chrono::system_clock::now();
