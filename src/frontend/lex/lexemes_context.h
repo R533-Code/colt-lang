@@ -94,8 +94,6 @@ namespace clt::lng
     /// @brief Returns the Lexeme the Token represents
     /// @return The Lexeme representing the Token
     constexpr Lexeme lexeme() const noexcept { return static_cast<Lexeme>(*this); }
-
-    COLT_ENABLE_REFLECTION();
   };
 
   /// @brief Represents a range of Token
@@ -124,8 +122,6 @@ namespace clt::lng
     constexpr LexemeTokenRange& operator=(LexemeTokenRange&&) noexcept = default;
     constexpr LexemeTokenRange& operator=(const LexemeTokenRange&) noexcept =
         default;
-
-    COLT_ENABLE_REFLECTION();
   };
 
   /// @brief The result of lexing a Colt source.
@@ -397,18 +393,8 @@ namespace clt::lng
     /// @brief Returns the list of lines
     /// @return The list of lines
     auto& line_buffer() const noexcept { return lines; }
-
-    COLT_ENABLE_REFLECTION();
   };
 
 } // namespace clt::lng
-
-// Declare reflection for serialization
-
-COLT_DECLARE_TYPE(clt::lng::LexemeToken, field);
-COLT_DECLARE_TYPE(clt::lng::LexemeTokenRange, start_index, end_index);
-COLT_DECLARE_TYPE(
-    clt::lng::LexemesContext, int_literals, float_literals, char_literals,
-    identifiers, str_literals, lines, tokens_info, tokens);
 
 #endif // !HG_COLT_TOKEN_BUFFER
