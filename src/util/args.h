@@ -8,6 +8,7 @@
 #include <colt/io/args_parsing.h>
 #include <colt/meta/traits.h>
 #include <util/ffi/plugin_loader.h>
+#include <util/tracing.h>
 #include <lua.h>
 
 namespace clt::vers
@@ -67,6 +68,24 @@ namespace clt
 
   namespace details
   {
+    void wait_for_tracy() noexcept
+    {
+      using namespace std::literals::chrono_literals;
+
+      auto start = std::chrono::system_clock::now();
+      io::print_message("Waiting for Tracy...");
+      while (std::chrono::system_clock::now() - start < 1min)
+      {
+        if (tracy::GetProfiler().IsConnected())
+          break;
+        std::this_thread::sleep_for(0.2s);
+      }
+      if (tracy::GetProfiler().IsConnected())
+        io::print_message("Tracy connected!");
+      else
+        io::print_warn("Tracy not connected!");
+    }
+
     /// @brief Prints the current version of Colt and exits
     [[noreturn]] inline void print_version() noexcept
     {
@@ -137,11 +156,16 @@ namespace clt
       cl::Opt<
           "-version", cl::alias<"v">, cl::desc<"Prints the version of the compiler">,
           cl::callback<&details::print_version>>,
-      // --enum-plugins or -eP
+      // --enum-plugins or -ep
       cl::Opt<
           "-enum-plugins", cl::alias<"ep">,
           cl::desc<"Enumerates the compiler's plugins">,
           cl::callback<&details::print_plugins>>,
+      
+      cl::Opt<
+          "-wait-for-tracy",
+          cl::desc<"Waits for the Tracy profiler to be connected">,
+          cl::callback<&details::wait_for_tracy>>,
 
       // -o <output>
       cl::Opt<"o", cl::desc<"Output file name">, cl::location<OutputFile>>,
