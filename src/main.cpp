@@ -14,9 +14,9 @@ using namespace clt;
 /// @return The exit code
 int colt_main(Span<const char8_t*> argv)
 {
+  COLT_TRACE_FN_C(clt::Color::Crimson);
   cl::parse_command_line_options<CMDs>(
-      argv, COLTC_EXECUTABLE_NAME, "The Colt compiler.");
-  
+      argv, COLTC_EXECUTABLE_NAME, "The Colt compiler.");  
   auto val = os::ViewOfFile::open("test.txt");
   if (val.is_value())
   {
@@ -42,6 +42,8 @@ int colt_main(Span<const char8_t*> argv)
 // the arguments as Unicode.
 int wmain(int argc, const wchar_t** argv)
 {
+  COLT_TRACE_FN_C(clt::Color::Crimson);
+  
   using namespace clt;
 
   // Set console code page to UTF-8 so console known how to interpret string data

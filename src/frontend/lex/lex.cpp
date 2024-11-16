@@ -4,6 +4,7 @@ namespace clt::lng
 {
   LexemesContext lex(ErrorReporter& reporter, View<u8> to_parse) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     // The result of lexing
     LexemesContext ctx;
     // Initialize the Lexer, which will populate the lexemes context
@@ -27,6 +28,7 @@ namespace clt::lng
 
   bool Lexer::is_valid_identifier(u8StringView strv) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto begin               = strv.begin();
     auto end                 = strv.end();
     char32_t chr             = *begin;
@@ -47,6 +49,7 @@ namespace clt::lng
 
   u8 Lexer::next() noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     if (_parse_offset >= to_parse.size()) [[unlikely]]
     {
       // If next is called twice after hitting EOF,
@@ -118,6 +121,7 @@ namespace clt::lng
 
   SourceInfo Lexer::make_source(const Lexer::Snapshot& snap) const noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     const auto to_parse_data = reinterpret_cast<const Char8*>(
         to_parse.data());
     // As the current line is most likely not set, we need to search for 
@@ -141,6 +145,7 @@ namespace clt::lng
   void Lexer::add_identifier(
       u8StringView identifier, const Snapshot& snap) const noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     assert_true("Invalid call to addToken", size_lexeme != 0);
     ctx.add_identifier(
         identifier, Lexeme::TKN_IDENTIFIER, snap.line_nb, snap.column_nb,
@@ -149,12 +154,14 @@ namespace clt::lng
 
   void Lexer::add_token(Lexeme lexeme, const Snapshot& snap) const noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     assert_true("Invalid call to add_token", size_lexeme != 0);
     ctx.add_token(lexeme, snap.line_nb, snap.column_nb, size_lexeme);
   }
 
   void Lexer::add_int(num::BigInt&& value, const Snapshot& snap) const noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     //Hello 1.e Hello 1.e2
     assert_true("Invalid call to add_token", size_lexeme != 0);
     ctx.add_int_literal(std::move(value), snap.line_nb, snap.column_nb, size_lexeme);
@@ -162,24 +169,28 @@ namespace clt::lng
 
   void Lexer::add_float(num::BigRational&& value, const Snapshot& snap) const noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     assert_true("Invalid call to add_token", size_lexeme != 0);
     ctx.add_float_literal(std::move(value), snap.line_nb, snap.column_nb, size_lexeme);
   }
 
   void Lexer::add_bool(bool value, const Snapshot& snap) const noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     assert_true("Invalid call to add_token", size_lexeme != 0);
     ctx.add_bool_literal(value, snap.line_nb, snap.column_nb, size_lexeme);
   }
 
   void Lexer::add_char(u32 value, const Snapshot& snap) const noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     assert_true("Invalid call to add_token", size_lexeme != 0);
     ctx.add_char_literal(value, snap.line_nb, snap.column_nb, size_lexeme);
   }
 
   void Lexer::consume_till_whitespaces(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     // Consume till a whitespace or U8_EOF is hit
     while (!clt::isspace(lexer._next) && lexer._next != U8_EOF)
       lexer._next = lexer.next();
@@ -187,6 +198,7 @@ namespace clt::lng
 
   void Lexer::consume_till_space_or_punct(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     // Consume till a whitespace or a punctuation or U8_EOF is hit
     while (!clt::isspace(lexer._next) && !clt::ispunct(lexer._next)
            && lexer._next != U8_EOF)
@@ -195,6 +207,7 @@ namespace clt::lng
 
   void Lexer::consume_whitespaces(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     // Consume while whitespace and not U8_EOF is hit
     while (clt::isspace(lexer._next) && lexer._next != U8_EOF)
       lexer._next = lexer.next();
@@ -202,6 +215,7 @@ namespace clt::lng
 
   void Lexer::consume_lines_comment_throw(Lexer& lexer)
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     const u32 line_nb = lexer._line_nb;
 
     if (lexer.comment_depth == std::numeric_limits<u8>::max())
@@ -260,6 +274,7 @@ namespace clt::lng
 
   void Lexer::consume_digits(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     // Consume while is digit and not U8_EOF is hit
     while (clt::isdigit(lexer._next) && lexer._next != U8_EOF)
     {
@@ -270,6 +285,7 @@ namespace clt::lng
 
   void Lexer::consume_digits(Lexer& lexer, int base) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     assert_true("Invalid base!", base > 1, base <= 16);
     if (base <= 10)
     {
@@ -295,6 +311,7 @@ namespace clt::lng
 
   void Lexer::consume_alnum(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     // Consume while is alnum and not U8_EOF is hit
     while (clt::isalnum(lexer._next) && lexer._next != U8_EOF)
     {
@@ -305,6 +322,7 @@ namespace clt::lng
 
   void Lexer::parse_invalid(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap = lexer.start_lexeme();
 
     lexer._next = lexer.next();
@@ -317,6 +335,7 @@ namespace clt::lng
 
   void Lexer::parse_plus(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap = lexer.start_lexeme();
 
     lexer._next = lexer.next();
@@ -338,6 +357,7 @@ namespace clt::lng
 
   void Lexer::parse_minus(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap = lexer.start_lexeme();
 
     lexer._next = lexer.next();
@@ -359,6 +379,7 @@ namespace clt::lng
 
   void Lexer::parse_star(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap = lexer.start_lexeme();
 
     lexer._next = lexer.next();
@@ -373,6 +394,7 @@ namespace clt::lng
 
   void Lexer::parse_slash(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap = lexer.start_lexeme();
 
     lexer._next = lexer.next();
@@ -401,6 +423,7 @@ namespace clt::lng
 
   void Lexer::parse_percent(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap = lexer.start_lexeme();
 
     lexer._next = lexer.next();
@@ -415,6 +438,7 @@ namespace clt::lng
 
   void Lexer::parse_colon(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap = lexer.start_lexeme();
 
     lexer._next = lexer.next();
@@ -429,6 +453,7 @@ namespace clt::lng
 
   void Lexer::parse_equal(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     using enum Lexeme;
     auto snap = lexer.start_lexeme();
 
@@ -451,6 +476,7 @@ namespace clt::lng
 
   void Lexer::parse_exclam(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap = lexer.start_lexeme();
 
     lexer._next = lexer.next();
@@ -465,6 +491,7 @@ namespace clt::lng
 
   void Lexer::parse_lt(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     using enum Lexeme;
     auto snap = lexer.start_lexeme();
 
@@ -495,6 +522,7 @@ namespace clt::lng
 
   void Lexer::parse_gt(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     using enum Lexeme;
     auto snap = lexer.start_lexeme();
 
@@ -525,6 +553,7 @@ namespace clt::lng
 
   void Lexer::parse_and(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     using enum Lexeme;
     auto snap = lexer.start_lexeme();
 
@@ -547,6 +576,7 @@ namespace clt::lng
 
   void Lexer::parse_or(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     using enum Lexeme;
     auto snap = lexer.start_lexeme();
 
@@ -569,6 +599,7 @@ namespace clt::lng
 
   void Lexer::parse_caret(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap = lexer.start_lexeme();
 
     lexer._next = lexer.next();
@@ -583,6 +614,7 @@ namespace clt::lng
 
   void Lexer::parse_digit(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap = lexer.start_lexeme();
     lexer.temp.clear();
     lexer.temp.push_back(lexer._next);
@@ -717,6 +749,7 @@ namespace clt::lng
  
   void Lexer::parse_identifier(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap = lexer.start_lexeme();
 
     // Consume till a whitespace or U8_EOF is hit
@@ -761,6 +794,7 @@ namespace clt::lng
 
   void Lexer::parse_dot(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap = lexer.start_lexeme();
 
     lexer._next = lexer.next();
@@ -802,6 +836,7 @@ namespace clt::lng
 
   void Lexer::parse_floating(Lexer& lexer, const Lexer::Snapshot& snap) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     // TODO: actual parsing
     lexer.add_float(std::move(num::BigRational(1)), snap);
 
@@ -812,6 +847,7 @@ namespace clt::lng
   void Lexer::parse_integral(
       Lexer& lexer, const Lexer::Snapshot& snap, int base) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     using namespace num;
     auto value = BigInt::from(lexer.temp.c_str(), base);
 
@@ -824,6 +860,7 @@ namespace clt::lng
 
   void print_token(LexemeToken tkn, const LexemesContext& buffer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     using enum Lexeme;
 
     if (is_literal(tkn) && tkn != TKN_STRING_L)

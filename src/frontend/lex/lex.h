@@ -69,6 +69,7 @@ namespace clt::lng
     /// @brief Parses all lexemes and populates the context
     void parse() noexcept
     {
+      COLT_TRACE_FN_C(clt::Color::DarkCyan);
       _next = next();
       while (_next != U8_EOF)
         Lexer::LexingTable[_next](*this);
@@ -347,6 +348,7 @@ namespace clt::lng
   template<Lexeme lexeme>
   void Lexer::parse_single(Lexer& lexer) noexcept
   {
+    COLT_TRACE_FN_C(clt::Color::DarkCyan);
     auto snap   = lexer.start_lexeme();
     lexer._next = lexer.next();
     lexer.add_token(lexeme, snap);
