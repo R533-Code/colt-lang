@@ -75,7 +75,7 @@ const char8_t** wmain_UTF16_to_UTF8(int argc, const wchar_t** argv)
     if (written == 0)
     {
       io::print_fatal("Argument '{}' is not valid Unicode!", i);
-      std::exit(-1);
+      return nullptr;
     }
     reinterpret_cast<const char8_t**>(pointers.ptr())[i] = current_str;
     current_str += written;
@@ -85,34 +85,92 @@ const char8_t** wmain_UTF16_to_UTF8(int argc, const wchar_t** argv)
   return reinterpret_cast<const char8_t**>(pointers.ptr());
 }
 
+struct TracyInitializer
+{
+  TracyInitializer() { tracy::StartupProfiler(); }
+
+  ~TracyInitializer() { tracy::ShutdownProfiler(); }
+};
+
+inline TracyInitializer TRACY_INITIALIZER;
+
 // On Windows, we make use of 'wmain' to obtain
 // the arguments as Unicode.
 int wmain(int argc, const wchar_t** argv)
 {
   COLT_TRACE_FN_C(clt::Color::Crimson);
 
+  bool wait_for_tracy = false;
+  bool is_tracing_enabled = false;
+  for (size_t i = 0; i < argc; i++)
+  {
+    if (std::wcscmp(argv[i], L"--enable-tracing") == 0)
+    {
+      is_tracing_enabled = true;
+      continue;
+    }
+    if (std::wcscmp(argv[i], L"--wait-for-tracy") == 0)
+    {
+      wait_for_tracy = true;
+      continue;
+    }
+  }
+#ifdef COLT_ENABLE_TRACING
+  if (!is_tracing_enabled)
+    COLT_STOP_TRACING();
+  if (wait_for_tracy)
+  {
+    if (!is_tracing_enabled)
+      io::print_warn(
+          "'--wait-for-tracy' is inactive as '--enable-tracing' was not specified!");
+    else
+      details::wait_for_tracy();
+  }
+#else
+  if (wait_for_tracy || is_tracing_enabled)
+    io::print_warn(
+        "'--wait-for-tracy' and '--enable-tracing' inactive as the compiler executable was not compiled with tracing support!");
+#endif // COLT_ENABLE_TRACING
+
+  
   using namespace clt;
 
   // Set console code page to UTF-8 so console known how to interpret string data
-  COLT_TRACE_EXPR(SetConsoleOutputCP(CP_UTF8));
 
   // Set support to wchar_t in Console
   //_setmode(_fileno(stdin), _O_U16TEXT);
+  int return_value = -1;
   try
   {
-    return colt_main(clt::Span{wmain_UTF16_to_UTF8(argc, argv), (size_t)argc});
+    COLT_TRACE_EXPR(SetConsoleOutputCP(CP_UTF8));
+    auto new_argv = wmain_UTF16_to_UTF8(argc, argv);
+    if (new_argv != nullptr)
+      return_value = colt_main(clt::Span{new_argv, (size_t)argc});
   }
   catch (const std::exception& e)
   {
     io::print_fatal(stderr, "Uncaught Exception: {}", e.what());
-    return -1;
   }
+  
+  return return_value;
 }
 
 #else
 
 int main(int argc, const char** argv)
 {
+  bool is_tracing_enabled = false;
+  for (size_t i = 0; i < argc; i++)
+  {
+    if (std::strcmp(argv[i], "--enable-tracing") == 0)
+    {
+      is_tracing_enabled = true;
+      break;
+    }
+  }
+  if (is_tracing_enabled)
+    tracy::StartupProfiler();
+
   try
   {
     return colt_main(clt::Span{reinterpret_cast<const char8_t**>(argv), argc});

@@ -70,6 +70,7 @@ namespace clt
   {
     void wait_for_tracy() noexcept
     {
+#ifdef COLT_ENABLE_TRACING
       COLT_TRACE_FN_C(clt::Color::Black);
       using namespace std::literals::chrono_literals;
 
@@ -85,6 +86,9 @@ namespace clt
         io::print_message("Tracy connected!");
       else
         io::print_warn("Tracy not connected!");
+#else
+      io::print_warn("Compiler executable was built without support for tracing!");
+#endif // !COLT_ENABLE_TRACING
     }
 
     /// @brief Prints the current version of Colt and exits
@@ -166,7 +170,11 @@ namespace clt
       cl::Opt<
           "-wait-for-tracy",
           cl::desc<"Waits for the Tracy profiler to be connected">,
-          cl::callback<&details::wait_for_tracy>>,
+          cl::callback<[]() {}>>,
+      cl::Opt<
+          "-enable-tracing",
+          cl::desc<"Enables tracing of the compiler.">,
+          cl::callback<[]() {}>>,
 
       // -o <output>
       cl::Opt<"o", cl::desc<"Output file name">, cl::location<OutputFile>>,

@@ -1,7 +1,81 @@
 #ifndef HG_COLT_TRACING
 #define HG_COLT_TRACING
 
-#include <tracy/Tracy.hpp>
+#ifdef COLT_ENABLE_TRACING
+
+  #include <tracy/Tracy.hpp>
+
+template<typename Fun>
+/// @brief Helper for TRACE_BLOCK
+void operator&(const tracy::ScopedZone& timer, Fun&& fn) noexcept
+{
+  fn();
+}
+
+  #define COLT_STOP_TRACING() tracy::GetProfiler().RequestShutdown();
+  /// @brief Traces the current function
+  #define COLT_TRACE_FN() ZoneScoped
+  /// @brief Traces the current function (with color, use clt::Color!)
+  #define COLT_TRACE_FN_C(color) ZoneScopedC(color)
+  /// @brief Traces a block (which is named)
+  /// @code{.cpp}
+  /// COLT_TRACE_BLOCK("print_token")
+  /// {
+  ///   for (auto& i : value.token_buffer())
+  ///     lng::print_token(i, value);
+  /// }; // <- do not forget the semicolon!
+  /// @endcode
+  #define COLT_TRACE_BLOCK(name) ZoneNamedN(, name, true) + [&]()
+  /// @brief Traces a block (which is named) (with color, use clt::Color!)
+  /// @code{.cpp}
+  /// COLT_TRACE_BLOCK_C("print_token", clt::Color::Chartreuse3)
+  /// {
+  ///   for (auto& i : value.token_buffer())
+  ///     lng::print_token(i, value);
+  /// }; // <- do not forget the semicolon!
+  /// @endcode
+  #define COLT_TRACE_BLOCK_C(name, color) ZoneNamedNC(, name, color, true)& [&]()
+
+  #define COLT_TRACE_EXPR(expr) \
+    [&]()                       \
+    {                           \
+      ZoneScopedN(#expr);       \
+      return (expr);            \
+    }()
+  #define COLT_TRACE_EXPR_C(expr, color) \
+    [&]()                                \
+    {                                    \
+      ZoneScopedNC(#expr, color);        \
+      return (expr);                     \
+    }()
+
+#else
+  #define COLT_STOP_TRACING() ((void)0)
+  /// @brief Traces the current function
+  #define COLT_TRACE_FN()
+  /// @brief Traces the current function (with color, use clt::Color!)
+  #define COLT_TRACE_FN_C(color)
+  /// @brief Traces a block (which is named)
+  /// @code{.cpp}
+  /// COLT_TRACE_BLOCK("print_token")
+  /// {
+  ///   for (auto& i : value.token_buffer())
+  ///     lng::print_token(i, value);
+  /// }; // <- do not forget the semicolon!
+  /// @endcode
+  #define COLT_TRACE_BLOCK(name)
+  /// @brief Traces a block (which is named) (with color, use clt::Color!)
+  /// @code{.cpp}
+  /// COLT_TRACE_BLOCK_C("print_token", clt::Color::Chartreuse3)
+  /// {
+  ///   for (auto& i : value.token_buffer())
+  ///     lng::print_token(i, value);
+  /// }; // <- do not forget the semicolon!
+  /// @endcode
+  #define COLT_TRACE_BLOCK_C(name, color)
+  #define COLT_TRACE_EXPR(expr)          expr
+  #define COLT_TRACE_EXPR_C(expr, color) expr
+#endif // COLT_ENABLE_TRACING
 
 namespace clt
 {
@@ -689,48 +763,5 @@ namespace clt
     };
   };
 } // namespace clt
-
-template<typename Fun>
-/// @brief Helper for TRACE_BLOCK
-void operator&(const tracy::ScopedZone& timer, Fun&& fn) noexcept
-{
-  fn();
-}
-
-/// @brief Traces the current function
-#define COLT_TRACE_FN() ZoneScoped
-/// @brief Traces the current function (with color, use clt::Color!)
-#define COLT_TRACE_FN_C(color) ZoneScopedC(color)
-/// @brief Traces a block (which is named)
-/// @code{.cpp}
-/// COLT_TRACE_BLOCK("print_token")
-/// {
-///   for (auto& i : value.token_buffer())
-///     lng::print_token(i, value);
-/// }; // <- do not forget the semicolon!
-/// @endcode
-#define COLT_TRACE_BLOCK(name) ZoneNamedN(, name, true) + [&]()
-/// @brief Traces a block (which is named) (with color, use clt::Color!)
-/// @code{.cpp}
-/// COLT_TRACE_BLOCK_C("print_token", clt::Color::Chartreuse3)
-/// {
-///   for (auto& i : value.token_buffer())
-///     lng::print_token(i, value);
-/// }; // <- do not forget the semicolon!
-/// @endcode
-#define COLT_TRACE_BLOCK_C(name, color) ZoneNamedNC(, name, color, true)& [&]()
-
-#define COLT_TRACE_EXPR(expr) \
-  [&]()                       \
-  {                           \
-    ZoneScopedN(#expr);       \
-    return (expr);            \
-  }()
-#define COLT_TRACE_EXPR_C(expr, color) \
-  [&]()                                \
-  {                                    \
-    ZoneScopedNC(#expr, color);        \
-    return (expr);                     \
-  }()
 
 #endif // !HG_COLT_TRACING
