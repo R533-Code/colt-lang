@@ -94,7 +94,7 @@ struct TracyInitializer
   ~TracyInitializer() { tracy::ShutdownProfiler(); }
 };
 
-inline TracyInitializer TRACY_INITIALIZER;
+const TracyInitializer TRACY_INITIALIZER;
 
 #endif // COLT_ENABLE_TRACING
 
