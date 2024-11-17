@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 project(Colt-Compiler VERSION 0.0.0.0 LANGUAGES CXX)
+option(COLT_ENABLE_TRACING "Enable tracing of the compiler" OFF)
+
 set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
 
 # Save all the files to compile
@@ -101,13 +103,20 @@ message(STATUS "Added 'lua'!\n")
 
 #########################################
 # TRACY
-message(STATUS "Adding 'Tracy'...")
-add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/tracy")
-target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC Tracy::TracyClient)
-target_link_libraries(coltc_test PUBLIC Tracy::TracyClient)
-set_target_properties(TracyClient PROPERTIES OUTPUT_NAME libtracy PREFIX "")
-# TODO: build Tracy profiler?
-message(STATUS "Added 'Tracy'!\n")
+if (${COLT_ENABLE_TRACING})
+    message(STATUS "Adding 'Tracy'...")
+    set(TRACY_IMPORTS ON CACHE BOOL "" FORCE)
+    set(TRACY_DELAYED_INIT ON CACHE BOOL "" FORCE)
+    set(TRACY_MANUAL_LIFETIME ON CACHE BOOL "" FORCE)
+
+    add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/tracy")
+    target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC Tracy::TracyClient)
+    set_target_properties(TracyClient PROPERTIES OUTPUT_NAME libtracy PREFIX "")    
+    target_compile_definitions(${COLT_EXECUTABLE_NAME} PUBLIC COLT_ENABLE_TRACING)
+    message(STATUS "Added 'Tracy'!\n")
+else()
+    message(STATUS "Skipping library 'Tracy'. Set COLT_ENABLE_TRACING to ON to enable tracing.")
+endif()
 #########################################
 
 # Directories for '#include <...>'
