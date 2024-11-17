@@ -203,14 +203,14 @@ int main(int argc, const char** argv)
   try
   {
     return_value = colt_main(
-        clt::Span<const char8_t*>{reinterpret_cast<const char8_t**>(argv), argc});
+        clt::Span<const char8_t*>{reinterpret_cast<const char8_t**>(argv), (size_t)argc});
   }
   catch (const std::exception& e)
   {
     std::printf("FATAL: Uncaught Exception: %s", e.what());
   }
 
-5  return return_value;
+  return return_value;
 }
 
 #endif // COLT_WINDOWS
