@@ -165,27 +165,51 @@ int wmain(int argc, const wchar_t** argv)
 
 int main(int argc, const char** argv)
 {
+  COLT_TRACE_FN_C(clt::Color::Crimson);
+
+  bool wait_for_tracy     = false;
   bool is_tracing_enabled = false;
   for (size_t i = 0; i < argc; i++)
   {
     if (std::strcmp(argv[i], "--enable-tracing") == 0)
     {
       is_tracing_enabled = true;
-      break;
+      continue;
+    }
+    if (std::strcmp(argv[i], "--wait-for-tracy") == 0)
+    {
+      wait_for_tracy = true;
+      continue;
     }
   }
-  if (is_tracing_enabled)
-    tracy::StartupProfiler();
+  #ifdef COLT_ENABLE_TRACING
+  if (!is_tracing_enabled)
+    COLT_STOP_TRACING();
+  if (wait_for_tracy)
+  {
+    if (!is_tracing_enabled)
+      io::print_warn(
+          "'--wait-for-tracy' is inactive as '--enable-tracing' was not specified!");
+    else
+      details::wait_for_tracy();
+  }
+  #else
+  if (wait_for_tracy || is_tracing_enabled)
+    io::print_warn("'--wait-for-tracy' and '--enable-tracing' inactive as the "
+                   "compiler executable was not compiled with tracing support!");
+  #endif // COLT_ENABLE_TRACING
 
+  int return_value = -1;
   try
   {
-    return colt_main(clt::Span{reinterpret_cast<const char8_t**>(argv), argc});
+    return_value = colt_main(clt::Span{reinterpret_cast<const char8_t**>(argv), argc});
   }
   catch (const std::exception& e)
   {
     std::printf("FATAL: Uncaught Exception: %s", e.what());
-    return -1;
   }
+
+5  return return_value;
 }
 
 #endif // COLT_WINDOWS
