@@ -81,5 +81,5 @@ jobs:
       run: $SDE_PATH/sde -bdw -- ctest --output-on-failure --build-config ${{ matrix.build_type }} --test-dir ${{ steps.strings.outputs.build-output-dir }}
     
     - name: Test AVX512
-      run: $SDE_PATH/sde -skx -- ctest --output-on-failure --build-config ${{ matrix.build_type }} --test-dir
+      run: $SDE_PATH/sde -skx -- ctest --output-on-failure --build-config ${{ matrix.build_type }} --test-dir ${{ steps.strings.outputs.build-output-dir }}
       
