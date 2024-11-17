@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 project(Colt-Compiler VERSION 0.0.0.0 LANGUAGES CXX)
 option(COLT_ENABLE_TRACING "Enable tracing of the compiler" OFF)
+enable_testing()
 
 set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
 
@@ -94,6 +95,8 @@ message(STATUS "Added 'colt-cpp'!\n")
 #########################################
 # LUA-CMAKE
 message(STATUS "Adding 'lua'...")
+# Disable testing
+set(LUA_TESTS "No Tests" CACHE STRING "" FORCE)
 add_subdirectory("${PROJECT_SOURCE_DIR}/libraries/lua-cmake")
 target_link_libraries(${COLT_EXECUTABLE_NAME} PUBLIC lua_library)
 target_link_libraries(coltc_test PUBLIC lua_library)
