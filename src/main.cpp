@@ -85,6 +85,8 @@ const char8_t** wmain_UTF16_to_UTF8(int argc, const wchar_t** argv)
   return reinterpret_cast<const char8_t**>(pointers.ptr());
 }
 
+#ifdef COLT_ENABLE_TRACING
+
 struct TracyInitializer
 {
   TracyInitializer() { tracy::StartupProfiler(); }
@@ -93,6 +95,10 @@ struct TracyInitializer
 };
 
 inline TracyInitializer TRACY_INITIALIZER;
+
+#endif // COLT_ENABLE_TRACING
+
+
 
 // On Windows, we make use of 'wmain' to obtain
 // the arguments as Unicode.
