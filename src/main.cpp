@@ -151,7 +151,7 @@ int wmain(int argc, const wchar_t** argv)
     COLT_TRACE_EXPR(SetConsoleOutputCP(CP_UTF8));
     auto new_argv = wmain_UTF16_to_UTF8(argc, argv);
     if (new_argv != nullptr)
-      return_value = colt_main(clt::Span{new_argv, (size_t)argc});
+      return_value = colt_main(clt::Span<const char8_t*>{new_argv, (size_t)argc});
   }
   catch (const std::exception& e)
   {
@@ -202,7 +202,8 @@ int main(int argc, const char** argv)
   int return_value = -1;
   try
   {
-    return_value = colt_main(clt::Span{reinterpret_cast<const char8_t**>(argv), argc});
+    return_value = colt_main(
+        clt::Span<const char8_t*>{reinterpret_cast<const char8_t**>(argv), argc});
   }
   catch (const std::exception& e)
   {
