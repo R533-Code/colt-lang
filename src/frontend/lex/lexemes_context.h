@@ -5,7 +5,7 @@
 #include "colt/dsa/trie.h"
 #include "colt/dsa/vector.h"
 #include "colt/dsa/string.h"
-#include "colt/bit/bitfields.h"
+#include "colt/num/bitfields.h"
 #include "err/error_reporter.h"
 #include "err/compiler_limits.h"
 #include "lexemes.h"
@@ -48,8 +48,8 @@ namespace clt::lng
     /// 0 -> (8 bits) The actual lexeme
     /// 1 -> (24 bits) The literal index (this depends on the actual lexeme)
     /// 2 -> (32 bits) The TokenInfo index
-    using Fields = bit::Bitfields<
-        u64, bit::Bitfield<0, 8>, bit::Bitfield<1, 24>, bit::Bitfield<2, 32>>;
+    using Fields = clt::Bitfields<
+        u64, clt::Bitfield<0, 8>, clt::Bitfield<1, 24>, clt::Bitfield<2, 32>>;
 
     static_assert(
         meta::reflect<Lexeme>::max() < 256, "Cannot fit Lexeme in 8 bits!");

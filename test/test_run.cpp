@@ -7,7 +7,7 @@
  *********************************************************************/
 #include <catch2/catch_session.hpp>
 #include <colt/macro/config.h>
-#include <colt/bit/detect_simd.h>
+#include <colt/algo/detect_simd.h>
 #include <colt/io/print.h>
 
 /// @brief Catch2 starting point
@@ -30,6 +30,6 @@ int main(int argc, char* argv[])
 #else
       "big",
 #endif // COLT_LITTLE_ENDIAN
-      BrightBlueF, bit::detect_supported_architectures(), Reset);
+      BrightBlueF, detect_supported_architectures(), Reset);
   return result;
 }

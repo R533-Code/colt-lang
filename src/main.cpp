@@ -1,6 +1,6 @@
 #include <colt_pch.h>
 #include <util/args.h>
-#include <colt/os/mmap_file.h>
+#include <colt/io/mmap.h>
 #include <frontend/lex/lex.h>
 #include <frontend/err/composable_reporter.h>
 
@@ -17,7 +17,7 @@ int colt_main(Span<const char8_t*> argv)
   COLT_TRACE_FN_C(clt::Color::Crimson);
   COLT_TRACE_EXPR(cl::parse_command_line_options<CMDs>(
       argv, COLTC_EXECUTABLE_NAME, "The Colt compiler."));
-  auto val = COLT_TRACE_EXPR(os::ViewOfFile::open("test.txt"));
+  auto val = COLT_TRACE_EXPR(ViewOfFile::open("test.txt"));
   if (val.is_value())
   {
     io::print_message("Opened 'test.txt'!");

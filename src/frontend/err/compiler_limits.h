@@ -11,7 +11,7 @@
 #define HG_COLT_COMPILER_LIMITS
 
 #include <exception>
-#include "colt/macro/assert.h"
+#include "colt/typedefs.h"
 
 #ifndef COLT_NO_COMPILER_ASSERTS
   /// @brief Assertion that is always checked

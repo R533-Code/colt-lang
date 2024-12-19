@@ -1,7 +1,7 @@
 #ifndef HG_COLTC_PLUGIN_LOADER
 #define HG_COLTC_PLUGIN_LOADER
 
-#include <colt/os/dynamic_lib.h>
+#include <colt/io/dynamic_lib.h>
 
 namespace clt::ffi
 {
@@ -10,13 +10,13 @@ namespace clt::ffi
     template<typename Ty>
     friend class Option;
 
-    os::DynamicLib lib;
+    DynamicLib lib;
     i32 errc            = 0;
     u8 setup_ran : 1    = false;
     u8 shutdown_ran : 1 = false;
 
     ColtPlugin() = delete;
-    ColtPlugin(os::DynamicLib&& lib) noexcept
+    ColtPlugin(DynamicLib&& lib) noexcept
         : lib(std::move(lib))
     {
     }
@@ -134,7 +134,7 @@ namespace clt::ffi
     static Expect<ColtPlugin, OpenError> open(
         const char* path, bool manual_setup = false) noexcept
     {
-      auto lib = os::DynamicLib::open(path);
+      auto lib = DynamicLib::open(path);
       if (lib == None)
         return {Error, OpenError::OS_ERR};
       if (lib->find_symbol("colt_name") == nullptr

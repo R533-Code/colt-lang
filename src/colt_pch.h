@@ -8,19 +8,14 @@
   // needed  as realloc will be defined as a macro
   #undef realloc
 #endif
-#include <colt/macro/macro.h>
-#include <colt/macro/assert.h>
-#include <colt/macro/on_scope_exit.h>
 
 #include <colt/typedefs.h>
 #include <util/tracing.h>
 
 // COLT/BIT
 
-#include <colt/bit/bitfields.h>
-#include <colt/bit/endian.h>
-#include <colt/bit/operations.h>
-#include <colt/bit/detect_simd.h>
+#include <colt/num/bitfields.h>
+#include <colt/algo/detect_simd.h>
 
 // COLT/DSA
 
@@ -31,6 +26,8 @@
 // COLT/IO
 
 #include <colt/io/print.h>
+#include <colt/io/dynamic_lib.h>
+#include <colt/io/mmap.h>
 
 // COLT/META
 
@@ -44,10 +41,6 @@
 #include <colt/num/math.h>
 #include <colt/num/big_int.h>
 #include <colt/num/big_rational.h>
-#include <colt/num/check_overflow.h>
-
-// COLT/OS
-
-#include <colt/os/dynamic_lib.h>
+#include <colt/num/overflow.h>
 
 #endif // !HG_COLT_PCH
