@@ -113,7 +113,7 @@ namespace clt
       cl::Opt<
           "-enum-plugins", cl::alias<"ep">,
           cl::desc<"Enumerates the compiler's plugins">,
-          cl::callback<&print_plugins>>,
+          cl::callback<&ffi::print_plugins>>,
 
       ///////////////////////////////////////////
 
