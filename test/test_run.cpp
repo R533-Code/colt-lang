@@ -20,8 +20,8 @@ int main(int argc, char* argv[])
   using namespace clt::io;
 
   auto result = Catch::Session().run(argc, argv);
-  fmt::println(
-      stderr,
+  print(
+      File::get_stderr(),
       "Running tests on {}{} {}{}{} ({}).\nThis is a {}-endian system.\nSupported "
       "SIMD instructions: {}{}{}.\n",
       CyanF, COLT_OS_STRING, MagentaF, COLT_ARCH_STRING, Reset, COLT_CONFIG_STRING,
