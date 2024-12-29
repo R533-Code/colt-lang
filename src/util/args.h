@@ -66,88 +66,35 @@ namespace clt
   /// @brief The input file name
   inline std::string_view InputFile = {};
 
-  namespace details
+  /// @brief Prints the current version of Colt and exits
+  [[noreturn]] inline void print_version() noexcept
   {
-    void wait_for_tracy() noexcept
-    {
-#ifdef COLT_ENABLE_TRACING
-      COLT_TRACE_FN_C(clt::Color::Black);
-      using namespace std::literals::chrono_literals;
-
-      auto start = std::chrono::system_clock::now();
-      io::print_message("Waiting for Tracy...");
-      while (std::chrono::system_clock::now() - start < 1min)
-      {
-        if (tracy::GetProfiler().IsConnected())
-          break;
-        std::this_thread::sleep_for(0.2s);
-      }
-      if (tracy::GetProfiler().IsConnected())
-        io::print_message("Tracy connected!");
-      else
-        io::print_warn("Tracy not connected!");
-#else
-      io::print_warn("Compiler executable was built without support for tracing!");
-#endif // !COLT_ENABLE_TRACING
-    }
-
-    /// @brief Prints the current version of Colt and exits
-    [[noreturn]] inline void print_version() noexcept
-    {
-      using namespace io;
-      io::print(
-          "{}coltc{} (v{} {}) on {}{}{} ({}{}{})\nusing: {}", BrightCyanF, Reset,
-          vers::ColtcVersion, COLT_CONFIG_STRING, BrightBlueF, COLT_OS_STRING, Reset,
-          BrightMagentaF, COLT_ARCH_STRING, Reset,
-          fmt::join(cl::Versions, "\n       "));
-      std::exit(0);
-    }
-
-    inline void print_plugins() noexcept
-    {
-      std::error_code err;
-      size_t count = 0;
-      size_t valid = 0;
-      io::print("\n======================= Plugins =======================");
-      for (auto& i : std::filesystem::directory_iterator{"plugins", err})
-      {
-        if (std::filesystem::is_regular_file(i, err))
-        {
-          auto plugin = ffi::ColtPlugin::open(i.path().generic_string().c_str());
-          count++;
-          if (plugin.is_error())
-          {
-            io::print(
-                "{}Could not greet '{}{}{}'!{}", io::BrightYellowF, io::BrightGreenF,
-                i.path().filename().generic_string(), io::BrightYellowF, io::Reset);
-            continue;
-          }
-          io::print(
-              "Hello '{}{}{}'! ({}{}{}, setup code {}, {:h})", io::BrightCyanF,
-              plugin->name(), io::Reset, io::BrightGreenF,
-              i.path().filename().generic_string(), io::Reset, plugin->run_setup(),
-              plugin->advertised_purpose());
-          valid++;
-        }
-      }
-      if (count != 0)
-        std::fputc('\n', stdout);
-      if (err.default_error_condition().value() == ENOENT)
-        io::print_warn("'plugins' directory not found!");
-      else if (count == 0)
-        io::print_message("No plugins to greet!");
-      else if (count != valid)
-        io::print_warn(
-            "Only greeted {}/{} plugin{}", valid, count, count == 1 ? "!" : "s!");
-      else
-        io::print_message(
-            "Greeted {}/{} plugin{}", valid, count, count == 1 ? "!" : "s!");
-      io::print("=======================================================\n");
-    }
-  } // namespace details
+    using namespace io;
+    clt::print(
+        "{}coltc{} (v{} {}) on {}{}{} ({}{}{})\nusing: {}", BrightCyanF, Reset,
+        vers::ColtcVersion, COLT_CONFIG_STRING, BrightBlueF, COLT_OS_STRING, Reset,
+        BrightMagentaF, COLT_ARCH_STRING, Reset,
+        fmt::join(cl::Versions, "\n       "));
+    std::exit(0);
+  }
 
   /// @brief The meta type used to generated command line argument handling function
   using CMDs = clt::meta::type_list<
+
+      // --version or -v
+      cl::Opt<
+          "-version", cl::alias<"v">, cl::desc<"Prints the version of the compiler">,
+          cl::callback<&print_version>>,
+
+      // -o <output>
+      cl::Opt<"o", cl::desc<"Output file name">, cl::location<OutputFile>>,
+      // <input_file>
+      cl::OptPos<"input_file", cl::desc<"The input file">, cl::location<InputFile>>,
+
+      ///////////////////////////////////////////
+
+      cl::Group<"Compiler Behavior", io::BrightBlueF>,
+
       // --nocolor or -C
       cl::Opt<
           "-nocolor", cl::desc<"Turns off colored output">, cl::alias<"C">,
@@ -157,29 +104,32 @@ namespace clt
                 clt::WaitForUserInput = false;
               }>>,
 
-      // --version or -v
-      cl::Opt<
-          "-version", cl::alias<"v">, cl::desc<"Prints the version of the compiler">,
-          cl::callback<&details::print_version>>,
+      ///////////////////////////////////////////
+
+      ///////////////////////////////////////////
+      cl::Group<"Compiler Plugins", io::BrightBlueF>,
+
       // --enum-plugins or -ep
       cl::Opt<
           "-enum-plugins", cl::alias<"ep">,
           cl::desc<"Enumerates the compiler's plugins">,
-          cl::callback<&details::print_plugins>>,
-      
+          cl::callback<&print_plugins>>,
+
+      ///////////////////////////////////////////
+
+      cl::Group<"Compiler Tracing", io::BrightBlueF>,
+
       cl::Opt<
           "-wait-for-tracy",
           cl::desc<"Waits for the Tracy profiler to be connected">,
-          cl::callback<[]() {}>>,
+          cl::callback<[]() { /*handled in `true_main.cpp`*/ }>>,
       cl::Opt<
-          "-enable-tracing",
-          cl::desc<"Enables tracing of the compiler.">,
-          cl::callback<[]() {}>>,
+          "-enable-tracing", cl::desc<"Enables tracing of the compiler.">,
+          cl::callback<[]() { /*handled in `true_main.cpp`*/ }>>
 
-      // -o <output>
-      cl::Opt<"o", cl::desc<"Output file name">, cl::location<OutputFile>>,
-      // <input_file>
-      cl::OptPos<"input_file", cl::desc<"The input file">, cl::location<InputFile>>>;
+      ///////////////////////////////////////////
+
+      >;
 } // namespace clt
 
 #endif // !HG_COLTC_ARGS
