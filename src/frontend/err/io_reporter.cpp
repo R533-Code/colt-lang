@@ -22,7 +22,7 @@ namespace clt::lng
         u8StringView end_line, size_t line_nb_size) noexcept
     {
       //TODO: implement HighlightCode
-      io::print(
+      print(
           " {} | {}{}{}{}{}", src_info.line_begin, /*io::HighlightCode*/ begin_line,
           highlight, src_info.expr, io::Reset, /*io::HighlightCode*/ end_line);
 
@@ -30,7 +30,7 @@ namespace clt::lng
       //So no overflow happens when the expr is empty
       sz += static_cast<size_t>(sz == 0);
       sz -= 1;
-      io::print(
+      print(
           " {: <{}} | {: <{}}{:~<{}}^", "", line_nb_size, "", begin_line.size(), "",
           sz);
     }
@@ -62,14 +62,14 @@ namespace clt::lng
           break;
         }
 
-        io::print(
+        print(
             " {: >{}} | {}", current_line, line_nb_size,
             /*io::HighlightCode*/
             u8StringView{
                 begin_line.data() + previous_offset, begin_line.data() + offset});
         ++current_line;
       }
-      io::print(
+      print(
           " {: >{}} | {}{}{}{}", current_line, line_nb_size,
           /*io::HighlightCode*/
           u8StringView{
@@ -92,7 +92,7 @@ namespace clt::lng
           break;
         }
 
-        io::print(
+        print(
             " {: >{}} | {}{}{}", current_line, line_nb_size, highlight,
             u8StringView{
                 src_info.expr.data() + previous_offset,
@@ -100,7 +100,7 @@ namespace clt::lng
             io::Reset);
         ++current_line;
       }
-      io::print(
+      print(
           " {: >{}} | {}{}{}{}", current_line, line_nb_size, highlight,
           u8StringView{
               src_info.expr.data() + previous_offset,
@@ -118,7 +118,7 @@ namespace clt::lng
         {
           if (previous_offset < end_line.size())
           {
-            io::print(
+            print(
                 " {: >{}} | {}", current_line, line_nb_size,
                 /*io::HighlightCode*/
                 u8StringView{
@@ -128,7 +128,7 @@ namespace clt::lng
           break;
         }
 
-        io::print(
+        print(
             " {: >{}} | {}", current_line, line_nb_size,
             /*io::HighlightCode*/
             u8StringView{end_line.data() + previous_offset, end_line.data() + offset});
@@ -174,9 +174,9 @@ namespace clt::lng
       const Option<ReportNumber>& nb) noexcept
   {
     if (nb.is_none())
-      io::print_message("{}", fmt);
+      print_message("{}", fmt);
     else
-      io::print_message("(M{}) {}", nb.value(), fmt);
+      print_message("(M{}) {}", nb.value(), fmt);
 
     if (src.is_value())
       details::handle_valid_src(src.value(), io::CyanF);
@@ -187,9 +187,9 @@ namespace clt::lng
       const Option<ReportNumber>& nb) noexcept
   {
     if (nb.is_none())
-      io::print_warn("{}", fmt);
+      print_warn("{}", fmt);
     else
-      io::print_warn("(W{}) {}", nb.value(), fmt);
+      print_warn("(W{}) {}", nb.value(), fmt);
 
     if (src.is_value())
       details::handle_valid_src(src.value(), io::YellowF);
@@ -200,9 +200,9 @@ namespace clt::lng
       const Option<ReportNumber>& nb) noexcept
   {
     if (nb.is_none())
-      io::print_error("{}", fmt);
+      print_error("{}", fmt);
     else
-      io::print_error("(E{}) {}", nb.value(), fmt);
+      print_error("(E{}) {}", nb.value(), fmt);
 
     if (src.is_value())
       details::handle_valid_src(src.value(), io::BrightRedB);

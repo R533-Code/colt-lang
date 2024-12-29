@@ -868,17 +868,19 @@ namespace clt::lng
       switch_no_default(tkn.lexeme())
       {
       case TKN_BOOL_L:
-        return io::print("{:h} {}", tkn.lexeme(), buffer.extract_bool_literal(tkn));
+        return (void)print("{:h} {}", tkn.lexeme(), buffer.extract_bool_literal(tkn));
       case TKN_CHAR_L:
-        return io::print("{:h} U+{:04x}", tkn.lexeme(), buffer.extract_char_literal(tkn));
+        return (void)print(
+            "{:h} U+{:04x}", tkn.lexeme(), buffer.extract_char_literal(tkn));
       case TKN_FLOAT_L:
-        return io::print("{:h} {}", tkn.lexeme(), buffer.extract_float_literal(tkn));
+        return (void)print(
+            "{:h} {}", tkn.lexeme(), buffer.extract_float_literal(tkn));
       case TKN_INT_L:
-        return io::print("{:h} {}", tkn.lexeme(), buffer.extract_int_literal(tkn));
+        return (void)print("{:h} {}", tkn.lexeme(), buffer.extract_int_literal(tkn));
       }
     }
     else if (tkn == TKN_IDENTIFIER)
-      return io::print("{:h} {}", tkn.lexeme(), buffer.extract_identifier(tkn));
-    return io::print("{:h}", tkn.lexeme());
+      return (void)print("{:h} {}", tkn.lexeme(), buffer.extract_identifier(tkn));
+    return (void)print("{:h}", tkn.lexeme());
   }
 } // namespace clt::lng
