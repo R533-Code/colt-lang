@@ -1,6 +1,8 @@
 #ifndef HG_COLT_TRACING
 #define HG_COLT_TRACING
 
+#include <colt/io/print.h>
+
 #ifdef COLT_ENABLE_TRACING
 
   #include <tracy/Tracy.hpp>
@@ -12,6 +14,7 @@ void operator&(const tracy::ScopedZone& timer, Fun&& fn) noexcept
   fn();
 }
 
+  /// @brief Stop tracing
   #define COLT_STOP_TRACING() tracy::GetProfiler().RequestShutdown();
   /// @brief Traces the current function
   #define COLT_TRACE_FN() ZoneScoped
@@ -75,6 +78,19 @@ void operator&(const tracy::ScopedZone& timer, Fun&& fn) noexcept
   #define COLT_TRACE_BLOCK_C(name, color)
   #define COLT_TRACE_EXPR(expr)          expr
   #define COLT_TRACE_EXPR_C(expr, color) expr
+#endif // COLT_ENABLE_TRACING
+
+#ifdef COLT_ENABLE_TRACING
+
+struct TracyInitializer
+{
+  TracyInitializer() { tracy::StartupProfiler(); }
+
+  ~TracyInitializer() { tracy::ShutdownProfiler(); }
+};
+
+inline const TracyInitializer init;
+
 #endif // COLT_ENABLE_TRACING
 
 namespace clt
@@ -762,6 +778,29 @@ namespace clt
       Teal                 = 0x008080,
     };
   };
+
+  inline void wait_for_profiler() noexcept
+  {
+#ifdef COLT_ENABLE_TRACING
+    COLT_TRACE_FN_C(clt::Color::Black);
+    using namespace std::literals::chrono_literals;
+
+    auto start = std::chrono::system_clock::now();
+    print_message("Waiting for Tracy...");
+    while (std::chrono::system_clock::now() - start < 1min)
+    {
+      if (tracy::GetProfiler().IsConnected())
+        break;
+      std::this_thread::sleep_for(0.2s);
+    }
+    if (tracy::GetProfiler().IsConnected())
+      print_message("Tracy connected!");
+    else
+      print_warn("Tracy not connected!");
+#else
+    print_warn("Compiler executable was built without support for tracing!");
+#endif // !COLT_ENABLE_TRACING
+  }
 } // namespace clt
 
 #endif // !HG_COLT_TRACING
